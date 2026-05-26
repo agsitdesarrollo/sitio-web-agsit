@@ -1,0 +1,34 @@
+---
+import { siteMetadata } from '../../data/siteMetadata';
+
+type Props = {
+  title?: string;
+  description?: string;
+  canonicalUrl?: string;
+  image?: string;
+};
+
+const {
+  title = siteMetadata.title,
+  description = siteMetadata.description,
+  canonicalUrl = siteMetadata.canonicalUrl,
+  image = siteMetadata.image,
+} = Astro.props;
+
+const absoluteImage = image.startsWith('http') ? image : new URL(image, canonicalUrl).toString();
+---
+
+<title>{title}</title>
+<meta name="description" content={description} />
+<link rel="canonical" href={canonicalUrl} />
+<meta property="og:type" content="website" />
+<meta property="og:locale" content={siteMetadata.locale} />
+<meta property="og:site_name" content={siteMetadata.siteName} />
+<meta property="og:title" content={title} />
+<meta property="og:description" content={description} />
+<meta property="og:url" content={canonicalUrl} />
+<meta property="og:image" content={absoluteImage} />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content={title} />
+<meta name="twitter:description" content={description} />
+<meta name="twitter:image" content={absoluteImage} />

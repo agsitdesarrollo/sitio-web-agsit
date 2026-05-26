@@ -1,0 +1,22 @@
+---
+type Props = {
+  fillOnScroll?: boolean;
+  text: string;
+};
+
+const { fillOnScroll = false, text } = Astro.props;
+---
+
+{
+  text.split(' ').map((word, wordIndex, words) => (
+    <span class="split-word" aria-hidden="true">
+      {Array.from(word).map((letter) => (
+        <span class={`split-letter js-reveal-letter${fillOnScroll ? ' fill-title-letter' : ''}`}>
+          {letter}
+          {fillOnScroll ? <span class="title-fill-letter js-title-fill-letter">{letter}</span> : null}
+        </span>
+      ))}
+      {wordIndex < words.length - 1 ? <span class="split-space">&nbsp;</span> : null}
+    </span>
+  ))
+}

@@ -1,0 +1,49 @@
+.site-footer {
+  background: linear-gradient(120deg, var(--bg-dark), var(--bg-ink));
+  color: #d6e6fc;
+  padding: clamp(40px, 7vw, 76px) clamp(20px, 6vw, 88px);
+  display: grid;
+  grid-template-columns: 1.4fr 1fr 1fr 1fr;
+  gap: clamp(20px, 3vw, 44px);
+}
+
+.site-footer h4 {
+  margin: 0 0 14px;
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: clamp(1.75rem, 2.2vw, 2.35rem);
+  font-weight: 300;
+  line-height: 1;
+  color: #ffffff;
+}
+
+.site-footer a,
+.site-footer span,
+.site-footer p {
+  display: block;
+  margin: 0 0 10px;
+  color: #b8cae4;
+  font-family: 'Inter', 'Segoe UI', Tahoma, sans-serif;
+  font-size: 0.93rem;
+  line-height: 1.55;
+}
+
+.site-footer a:hover {
+  color: var(--primary-soft);
+}
+
+.footer-brand img {
+  width: clamp(180px, 15vw, 220px);
+  margin-bottom: 16px;
+}
+
+@media (max-width: 1080px) {
+  .site-footer {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 900px) {
+  .site-footer {
+    grid-template-columns: 1fr;
+  }
+}

@@ -1,1 +1,68 @@
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Inter:wght@300;400;500;600;700;800&display=swap');
 @import "tailwindcss";
+@import "../components/navigation/Header.css";
+@import "../components/contact/ContactDrawer.css";
+@import "../components/hero/Hero.css";
+@import "../components/services/Services.css";
+@import "../components/about/AboutHorizontal.css";
+@import "../components/video-story/VideoStory.css";
+@import "../components/final-contact/FinalContact.css";
+@import "../components/footer/Footer.css";
+
+:root {
+  --nav-h: clamp(76px, 10vh, 96px);
+  --bg-dark: #020712;
+  --bg-ink: #08152b;
+  --primary: #41c8f6;
+  --primary-soft: #8be2ff;
+  --text-main: #f2f8ff;
+  --text-soft: #b4c5db;
+  --stroke: rgba(220, 237, 255, 0.88);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  width: 100%;
+  min-height: 100%;
+}
+
+body {
+  font-family: 'Inter', 'Segoe UI', Tahoma, sans-serif;
+  background: linear-gradient(180deg, #f3f7fb 0%, #ddeef4 65%, #f6fafe 100%);
+  color: #0d1522;
+  overflow-x: hidden;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.app-shell {
+  position: relative;
+}
+
+main {
+  position: relative;
+  padding-top: var(--nav-h);
+}
+
+@media (max-width: 900px) {
+  :root {
+    --nav-h: 74px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0ms !important;
+    scroll-behavior: auto !important;
+  }
+}

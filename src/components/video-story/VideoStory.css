@@ -1,0 +1,384 @@
+.video-story-overlap {
+  position: relative;
+  margin-top: 0;
+}
+
+.video-story-section {
+  --transition-blue: #020712;
+  position: relative;
+  margin-top: 0;
+  min-height: calc(100svh - var(--nav-h));
+  overflow: hidden;
+  background: var(--transition-blue);
+}
+
+.video-story-stage {
+  position: relative;
+  min-height: calc(100svh - var(--nav-h));
+  background: var(--transition-blue);
+}
+
+.partners-screen {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  min-height: calc(100svh - var(--nav-h));
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  padding: clamp(24px, 4vw, 64px);
+  background: var(--transition-blue);
+  color: #ffffff;
+}
+
+.partners-visuals {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background:
+    radial-gradient(circle at 50% 18%, rgba(65, 200, 246, 0.16), transparent 26%),
+    linear-gradient(135deg, #020712 0%, #061326 54%, #020712 100%);
+  pointer-events: none;
+}
+
+.partners-visuals::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.032) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.032) 1px, transparent 1px);
+  background-size: 56px 56px;
+  mask-image: radial-gradient(circle at center, black 0%, transparent 74%);
+  pointer-events: none;
+}
+
+.partners-content {
+  position: relative;
+  z-index: 1;
+  width: min(1360px, 92vw);
+  min-height: min(760px, calc(100svh - var(--nav-h) - 56px));
+  display: grid;
+  grid-template-rows: auto auto auto 1fr auto;
+  align-items: center;
+  text-align: center;
+}
+
+.partners-kicker {
+  margin: 0 0 14px;
+  color: #41c8f6;
+  font-size: clamp(0.76rem, 1vw, 0.92rem);
+  font-weight: 800;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.partners-content h2 {
+  margin: 0;
+  color: #ffffff;
+  font-family: 'Barlow Condensed', 'Arial Narrow', sans-serif;
+  font-size: clamp(4.2rem, 8vw, 9rem);
+  font-weight: 700;
+  line-height: 0.9;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+.partners-summary {
+  max-width: 850px;
+  margin: clamp(16px, 2vw, 24px) auto 0;
+  color: rgba(255, 255, 255, 0.66);
+  font-size: clamp(1rem, 1.3vw, 1.22rem);
+  line-height: 1.7;
+  text-wrap: balance;
+}
+
+.partners-grid {
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: center;
+  align-items: stretch;
+  gap: clamp(12px, 1.6vw, 24px);
+  width: min(1100px, 88vw);
+  margin: clamp(30px, 5vh, 58px) auto 0;
+}
+
+.partner-logo {
+  flex: 1 1 0;
+  min-width: 0;
+  min-height: clamp(160px, 17vw, 220px);
+  display: grid;
+  align-content: center;
+  justify-items: center;
+  gap: 10px;
+  padding: clamp(16px, 2vw, 28px) clamp(12px, 1.6vw, 22px);
+  background: rgba(255, 255, 255, 0.96);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 10px;
+  box-shadow: 0 26px 72px rgba(0, 0, 0, 0.28);
+  color: #08152b;
+  overflow: hidden;
+}
+
+.partner-logo strong {
+  display: block;
+  font-size: clamp(1.4rem, 2.2vw, 2.6rem);
+  font-weight: 800;
+  line-height: 0.95;
+  letter-spacing: 0;
+  word-break: break-word;
+}
+
+.partner-logo span {
+  color: rgba(8, 21, 43, 0.66);
+  font-size: clamp(0.72rem, 0.88vw, 0.9rem);
+  line-height: 1.45;
+}
+
+.partner-mark {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  background: #41c8f6;
+}
+
+.partner-logo.is-bitrix {
+  background: #21bce6;
+  color: #ffffff;
+}
+
+.partner-logo.is-bitrix strong {
+  font-size: clamp(1.7rem, 2.45vw, 2.85rem);
+}
+
+.partner-logo.is-bitrix span {
+  color: rgba(255, 255, 255, 0.86);
+}
+
+.partner-logo.is-bitrix .partner-mark {
+  width: 64px;
+  height: 5px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.9);
+}
+
+.partner-logo.is-oracle strong {
+  color: #f21f26;
+  font-size: clamp(1.5rem, 2.4vw, 2.9rem);
+}
+
+.partner-logo.is-oracle .partner-mark {
+  width: 68px;
+  height: 8px;
+  border-radius: 999px;
+  background: #f21f26;
+}
+
+.partner-logo.is-bizagi strong {
+  color: #707579;
+  font-weight: 500;
+  text-transform: lowercase;
+}
+
+.partner-logo.is-bizagi .partner-mark {
+  width: 46px;
+  height: 46px;
+  border-radius: 10px;
+  background:
+    linear-gradient(30deg, transparent 28%, #f3ba2f 29% 41%, transparent 42%),
+    linear-gradient(150deg, transparent 28%, #58b97d 29% 41%, transparent 42%),
+    linear-gradient(270deg, transparent 28%, #3d7ff0 29% 41%, transparent 42%);
+  border: 2px solid #d8dde4;
+  transform: rotate(45deg);
+}
+
+.partner-logo.is-google strong {
+  max-width: 100%;
+  color: #5f6368;
+  font-size: clamp(1.1rem, 1.7vw, 2rem);
+  line-height: 1.04;
+}
+
+.partner-logo.is-google .partner-mark {
+  width: 54px;
+  height: 54px;
+  border-radius: 14px 14px 42px 14px;
+  background:
+    linear-gradient(120deg, #34a853 0 32%, transparent 33%),
+    linear-gradient(240deg, #4285f4 0 38%, transparent 39%),
+    linear-gradient(0deg, #fbbc04 0 34%, transparent 35%);
+}
+
+.partners-more {
+  margin: clamp(8px, 1.5vh, 18px) 0 0;
+  color: #41c8f6;
+  font-family: 'Barlow Condensed', 'Arial Narrow', sans-serif;
+  font-size: clamp(2rem, 3.4vw, 4rem);
+  font-weight: 700;
+  line-height: 0.95;
+  text-transform: uppercase;
+}
+
+.video-story-frame {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 4;
+  width: 100vw;
+  height: calc(100svh - var(--nav-h));
+  overflow: hidden;
+  background: var(--transition-blue);
+  border-radius: 0;
+  box-shadow: none;
+  transform-origin: top center;
+}
+
+.video-story-media {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: contain;
+  object-position: center center;
+  background: var(--transition-blue);
+}
+
+.video-story-copy {
+  position: absolute;
+  top: calc(34px + 44vh);
+  bottom: 0;
+  left: 50%;
+  z-index: 5;
+  width: min(900px, 88vw);
+  transform: translateX(-50%);
+  display: grid;
+  place-items: center;
+  text-align: center;
+  pointer-events: none;
+}
+
+.video-story-line {
+  grid-area: 1 / 1;
+  margin: 0;
+  color: #253f6c;
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: clamp(2.1rem, 4.2vw, 5rem);
+  font-weight: 300;
+  line-height: 1;
+  letter-spacing: 0;
+  text-wrap: balance;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.7);
+}
+
+@media (max-width: 1024px) {
+  .partners-content {
+    min-height: min(720px, calc(100svh - var(--nav-h) - 48px));
+  }
+
+  .partners-grid {
+    width: min(860px, 88vw);
+    gap: clamp(8px, 1.2vw, 14px);
+  }
+
+  .video-story-copy {
+    top: calc(28px + 34vh);
+    width: min(760px, 90vw);
+  }
+
+  .video-story-line {
+    font-size: clamp(2rem, 6.2vw, 3.7rem);
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1024px) {
+  .video-story-copy {
+    top: calc(24px + (94vw * 0.5625));
+    width: min(680px, 86vw);
+  }
+}
+
+@media (max-width: 767px) {
+  .partners-screen {
+    padding: 18px;
+  }
+
+  .partners-content {
+    width: min(352px, 92vw);
+    min-height: calc(100svh - var(--nav-h) - 36px);
+  }
+
+  .partners-content h2 {
+    font-size: clamp(3rem, 16vw, 4.5rem);
+  }
+
+  .partners-summary {
+    margin-top: 12px;
+    font-size: 0.88rem;
+    line-height: 1.45;
+  }
+
+  .partners-grid {
+    flex-wrap: wrap;
+    width: min(336px, 90vw);
+    gap: 8px;
+    margin-top: 22px;
+  }
+
+  .partner-logo {
+    flex: 1 1 calc(50% - 4px);
+    max-width: calc(50% - 4px);
+    min-height: 122px;
+    padding: 12px 8px;
+    gap: 7px;
+  }
+
+  .partner-mark {
+    width: 28px;
+    height: 28px;
+  }
+
+  .partner-logo strong {
+    font-size: clamp(1.2rem, 7.6vw, 1.8rem);
+  }
+
+  .partner-logo span {
+    font-size: 0.64rem;
+  }
+
+  .partner-logo.is-oracle strong {
+    font-size: clamp(1.28rem, 8vw, 1.9rem);
+  }
+
+  .partner-logo.is-google strong {
+    max-width: 122px;
+    font-size: clamp(1rem, 6.3vw, 1.5rem);
+  }
+
+  .partner-logo.is-bitrix .partner-mark {
+    width: 46px;
+    height: 4px;
+  }
+
+  .partner-logo.is-oracle .partner-mark {
+    width: 42px;
+    height: 6px;
+  }
+
+  .partner-logo.is-bizagi .partner-mark,
+  .partner-logo.is-google .partner-mark {
+    width: 32px;
+    height: 32px;
+  }
+
+  .partners-more {
+    font-size: clamp(1.7rem, 9vw, 2.4rem);
+  }
+
+  .video-story-copy {
+    top: calc(22px + 32vh);
+    width: min(340px, 88vw);
+  }
+
+  .video-story-line {
+    font-size: clamp(1.72rem, 9.5vw, 2.75rem);
+  }
+}

@@ -1,0 +1,45 @@
+---
+import { Image } from 'astro:assets';
+import SplitLetters from './SplitLetters.astro';
+import windowOverlayImage from '../../assets/images/fondo-ventana.webp';
+import personImage from '../../assets/images/personaje.webp';
+---
+
+<div class="hero-person js-floating-person" aria-hidden="true">
+  <Image src={personImage} alt="" loading="eager" fetchpriority="high" />
+</div>
+
+<div class="hero-copy js-hero-copy">
+  <div class="hero-left-panel">
+    <div class="hero-copy-block">
+      <h1 class="hero-side-titles" aria-label="Decisiones que definen el futuro de su empresa">
+        <span class="hero-main-line">Decisiones que</span>
+        <span class="hero-side-title hero-emphasis-word">
+          <SplitLetters fillOnScroll text="definen el futuro" />
+        </span>
+        <span class="hero-main-line">de su empresa</span>
+      </h1>
+
+      <p class="hero-support-copy">
+        Acompañamos a organizaciones ambiciosas en sus momentos más determinantes. Estrategia, claridad y resultados
+        medibles cuando más importan.
+      </p>
+    </div>
+
+    <div class="hero-cta-wrap">
+      <button class="hero-contact-button" type="button" data-contact-trigger>Conversemos sobre tu empresa</button>
+    </div>
+  </div>
+</div>
+
+<section id="inicio" class="hero-section js-hero">
+  <div class="hero-video-wrap" aria-hidden="true">
+    <video class="hero-video" autoplay muted loop playsinline preload="auto">
+      <source src="/assets/AGSIT%20Banner%20v2.webm" type="video/webm" />
+      <source src="/assets/AGSIT%20Banner%20v2.mp4" type="video/mp4" />
+    </video>
+    <div class="hero-window-overlay">
+      <Image src={windowOverlayImage} alt="" loading="eager" fetchpriority="high" />
+    </div>
+  </div>
+</section>

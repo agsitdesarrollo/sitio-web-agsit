@@ -1,0 +1,26 @@
+---
+import { Image } from 'astro:assets';
+import logoImage from '../../assets/images/logo-asit.webp';
+---
+
+<header class="site-nav">
+  <a class="brand" href="#inicio" aria-label="Inicio AGSIT" data-nav-close>
+    <Image src={logoImage} alt="AGSIT" loading="eager" fetchpriority="high" />
+  </a>
+  <button
+    class="menu-toggle"
+    type="button"
+    aria-label="Abrir menú"
+    aria-expanded="false"
+    aria-controls="main-navigation"
+  >
+    <span></span>
+    <span></span>
+    <span></span>
+  </button>
+  <nav id="main-navigation">
+    <a href="#inicio" data-nav-close>Inicio</a>
+    <a href="#servicios" data-nav-close>Servicios</a>
+    <button type="button" data-contact-trigger>Contacto</button>
+  </nav>
+</header>

@@ -1,0 +1,36 @@
+---
+import { Image } from 'astro:assets';
+import { services } from '../../data/services';
+import logoImage from '../../assets/images/logo-asit.webp';
+---
+
+<footer class="site-footer">
+  <div class="footer-brand">
+    <Image src={logoImage} alt="Logo AGSIT" loading="lazy" />
+    <p>Consultoría empresarial para transformar operaciones, procesos y crecimiento con enfoque en resultados reales.</p>
+  </div>
+
+  <div>
+    <h4>Menu</h4>
+    <a href="#inicio">Inicio</a>
+    <a href="#servicios">Servicios</a>
+    <a href="#contacto">Contacto</a>
+  </div>
+
+  <div>
+    <h4>Servicios</h4>
+    {
+      services.map((service) => (
+        <span>{service.title}</span>
+      ))
+    }
+  </div>
+
+  <div>
+    <h4>Contacto</h4>
+    <span>CDMX, México</span>
+    <a href="mailto:contacto@agsit.com.mx">contacto@agsit.com.mx</a>
+    <a href="tel:+525588905291">+52 55 8890 5291</a>
+    <a href="tel:+525570267458">+52 55 7026 7458</a>
+  </div>
+</footer>

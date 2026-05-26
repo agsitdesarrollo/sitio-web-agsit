@@ -1,0 +1,30 @@
+---
+import { storyLines } from '../../data/videoStory';
+---
+
+<div class="video-story-overlap">
+  <section class="video-story-section js-video-story" aria-label="Presentación corporativa AGSIT">
+    <div class="video-story-stage js-video-story-stage">
+      <div class="video-story-frame js-video-story-frame">
+        <video
+          class="video-story-media"
+          data-src="/assets/AGSIT%20Presentaci%C3%B3n%20Corporativa%20-%20AGSIT%20Consultor%C3%ADa%20Especializada%20en%20Soluciones%20Empresariales.mp4"
+          autoplay
+          muted
+          loop
+          playsinline
+          preload="none"
+          aria-label="Presentación corporativa AGSIT"
+        ></video>
+      </div>
+
+      <div class="video-story-copy">
+        {
+          storyLines.map((line) => (
+            <p class="video-story-line js-video-story-line">{line}</p>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+</div>
