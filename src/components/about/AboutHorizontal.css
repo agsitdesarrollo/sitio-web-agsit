@@ -1164,7 +1164,8 @@
 
   .about-clients-stage {
     width: min(340px, 88vw);
-    height: min(360px, 40vh);
+    height: min(460px, 52vh);
+    margin-top: -28px;
     border-radius: 20px;
   }
 

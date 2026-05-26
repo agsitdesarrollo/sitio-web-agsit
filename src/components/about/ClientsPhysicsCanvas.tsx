@@ -80,12 +80,12 @@ function ClientsPhysicsCanvas({ items }: { items: ClientLogo[] }) {
       const isMobile = width < 520;
       const isTablet = width < 900;
       const baseH = isMobile
-        ? clamp(height * 0.15, 48, 64)
+        ? clamp(height * 0.13, 44, 58)
         : isTablet
           ? clamp(height * 0.15, 56, 76)
           : clamp(height * 0.18, 66, 88);
-      const minW = isMobile ? 74 : isTablet ? 88 : 104;
-      const maxW = isMobile ? 130 : isTablet ? 156 : 178;
+      const minW = isMobile ? 70 : isTablet ? 88 : 104;
+      const maxW = isMobile ? 118 : isTablet ? 156 : 178;
       const ratio = image.complete && image.naturalWidth > 0 ? image.naturalWidth / image.naturalHeight : 1.65;
       const w = clamp(baseH * ratio + baseH * 0.58, minW, maxW);
 
@@ -100,10 +100,11 @@ function ClientsPhysicsCanvas({ items }: { items: ClientLogo[] }) {
         render: { visible: false },
       };
       const thickness = 72;
+      const topInset = width < 520 ? 28 : 0;
 
       return [
         Matter.Bodies.rectangle(width / 2, height + thickness / 2, width * 3, thickness, wallOptions),
-        Matter.Bodies.rectangle(width / 2, -thickness / 2, width * 3, thickness, wallOptions),
+        Matter.Bodies.rectangle(width / 2, topInset - thickness / 2, width * 3, thickness, wallOptions),
         Matter.Bodies.rectangle(-thickness / 2, height / 2, thickness, height * 3, wallOptions),
         Matter.Bodies.rectangle(width + thickness / 2, height / 2, thickness, height * 3, wallOptions),
       ];
@@ -116,7 +117,7 @@ function ClientsPhysicsCanvas({ items }: { items: ClientLogo[] }) {
       const averageW = sizes.reduce((total, size) => total + size.w, 0) / Math.max(sizes.length, 1);
       const averageH = sizes.reduce((total, size) => total + size.h, 0) / Math.max(sizes.length, 1);
       const gap = width < 520 ? 10 : width < 900 ? 13 : 16;
-      const cols = clamp(Math.floor(width / (averageW + gap)), width < 520 ? 2 : 3, width < 520 ? 3 : width < 900 ? 4 : 5);
+      const cols = width < 520 ? 3 : clamp(Math.floor(width / (averageW + gap)), 3, width < 900 ? 4 : 5);
       const rows = Math.ceil(items.length / cols);
       const stackHeight = rows * (averageH + gap);
       const startY = clamp(height - stackHeight - gap * 2, gap, height * 0.56);
