@@ -56,8 +56,14 @@ const iconPath = (icon: ServicePoint['icon']) => {
             </svg>
           </span>
           <div class="service-card-copy">
-            <h3>{service.title}</h3>
-            <p>{service.description}</p>
+            <h3>
+              <span class="copy-desktop">{service.title}</span>
+              <span class="copy-mobile">{service.mobileTitle ?? service.title}</span>
+            </h3>
+            <p>
+              <span class="copy-desktop">{service.description}</span>
+              <span class="copy-mobile">{service.mobileDescription ?? service.description}</span>
+            </p>
           </div>
         </article>
       ))

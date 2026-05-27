@@ -39,17 +39,65 @@ function ScrollExperienceController() {
       const getAboutServiceStep = () => (isMobile ? 1.88 : 1.72);
       const getConsultLogoBottomY = () => getViewportHeight() - (isMobile ? 42 : isTablet ? 44 : 40);
       const getConsultLogoTravelScale = () => (isMobile ? 0.58 : isTablet ? 0.66 : 0.68);
-      const getConsultLogoStartTop = () => getViewportHeight() - (isMobile ? 106 : isTablet ? 118 : 128);
-      const getConsultLogoStartScale = () => (isMobile ? 0.36 : isTablet ? 0.42 : 0.46);
+      const getConsultLogoStartScale = () => (isMobile ? 0.26 : isTablet ? 0.34 : 0.46);
+      const getElementRect = (selector: string) => document.querySelector<HTMLElement>(selector)?.getBoundingClientRect();
+      const getServicesPersonTargetRect = () => {
+        const services = document.querySelector<HTMLElement>('.js-services');
+        const person = document.querySelector<HTMLElement>('.js-services-person');
+
+        if (!services || !person) {
+          return undefined;
+        }
+
+        const servicesRect = services.getBoundingClientRect();
+        const personRect = person.getBoundingClientRect();
+
+        return {
+          bottom: personRect.bottom - servicesRect.top,
+          width: personRect.width,
+        };
+      };
+      const getFloatingPersonTargetY = () => {
+        const target = getServicesPersonTargetRect();
+
+        if (!target) {
+          return -getViewportHeight() * (isCompact ? 0.28 : 0.18);
+        }
+
+        return target.bottom - getViewportHeight();
+      };
+      const getFloatingPersonTargetScale = () => {
+        const floating = document.querySelector<HTMLElement>('.js-floating-person');
+        const target = getServicesPersonTargetRect();
+
+        if (!floating || !target) {
+          return isCompact ? 0.58 : 0.74;
+        }
+
+        return target.width / Math.max(floating.offsetWidth, 1);
+      };
+      const getConsultLogoStartTop = () => {
+        const cta = getElementRect('.services-advice-cta');
+
+        if (isCompact && cta) {
+          return cta.bottom + (isMobile ? 30 : 38);
+        }
+
+        return getViewportHeight() - 128;
+      };
       const getConsultLogoBridgeY = () => {
-        const cta = document.querySelector('.services-advice-cta')?.getBoundingClientRect();
+        const cta = getElementRect('.services-advice-cta');
         const fallback = getViewportHeight() + (isMobile ? 26 : isTablet ? 34 : 42);
 
         if (!cta || cta.bottom <= 0 || cta.top >= getViewportHeight()) {
           return fallback;
         }
 
-        return cta.bottom + (isMobile ? 52 : isTablet ? 62 : 70);
+        if (isCompact) {
+          return cta.bottom + (isMobile ? 30 : 38);
+        }
+
+        return cta.bottom + 70;
       };
       const setIfFound = (selector: string, vars: gsap.TweenVars) => {
         const targets = gsap.utils.toArray<HTMLElement>(selector);
@@ -206,6 +254,7 @@ function ScrollExperienceController() {
             start: 'top bottom',
             end: 'top top',
             scrub: true,
+            invalidateOnRefresh: true,
             onEnter: () => gsap.set('.js-floating-person', { zIndex: 1 }),
             onLeave: () => {
               gsap.set('.js-floating-person', { autoAlpha: 0 });
@@ -221,9 +270,9 @@ function ScrollExperienceController() {
             },
           },
         }).to('.js-floating-person', {
-          y: () => -getViewportHeight() * 0.2,
+          y: getFloatingPersonTargetY,
           yPercent: 0,
-          scale: 0.58,
+          scale: getFloatingPersonTargetScale,
           ease: 'none',
           duration: 1,
         });
@@ -234,6 +283,7 @@ function ScrollExperienceController() {
             start: 'top bottom',
             end: 'top top',
             scrub: true,
+            invalidateOnRefresh: true,
             onEnter: () => gsap.set('.js-floating-person', { zIndex: 1 }),
             onLeave: () => {
               gsap.set('.js-floating-person', { autoAlpha: 0 });
@@ -257,6 +307,9 @@ function ScrollExperienceController() {
         });
       }
 
+      let compactServicesScrollTrigger: ScrollTrigger | undefined;
+      let compactServicesLogoStartProgress = 1;
+
       if (isDesktop) {
         const getDesktopCardStartY = () => Math.min(Math.max(getViewportHeight() * 0.3, 220), 330);
         const getDesktopCardStartX = () => Math.min(Math.max(window.innerWidth * 0.18, 260), 380);
@@ -279,6 +332,7 @@ function ScrollExperienceController() {
             scrub: true,
             pin: true,
             anticipatePin: 1,
+            invalidateOnRefresh: true,
             onEnter: () => {
               gsap.set('.js-floating-person', { autoAlpha: 0 });
               gsap.set('.js-services-person', { autoAlpha: 1 });
@@ -362,6 +416,7 @@ function ScrollExperienceController() {
             scrub: true,
             pin: true,
             anticipatePin: 1,
+            invalidateOnRefresh: true,
             onEnter: () => {
               gsap.set('.js-floating-person', { autoAlpha: 0 });
               gsap.set('.js-services-person', { autoAlpha: 1 });
@@ -376,6 +431,11 @@ function ScrollExperienceController() {
             },
           },
         });
+        compactServicesScrollTrigger = servicesTimeline.scrollTrigger;
+        const tabletCardOutEnd = Math.max(cards.length - 1, 0) * 0.64 + 0.1 + 0.85 + 0.28;
+        const tabletLogoTravelDuration = 0.72;
+        servicesTimeline.to({}, { duration: tabletLogoTravelDuration }, tabletCardOutEnd);
+        compactServicesLogoStartProgress = tabletCardOutEnd / (tabletCardOutEnd + tabletLogoTravelDuration);
 
         cards.forEach((card, index) => {
           const startAt = index * 0.64 + 0.1;
@@ -420,6 +480,7 @@ function ScrollExperienceController() {
             scrub: true,
             pin: true,
             anticipatePin: 1,
+            invalidateOnRefresh: true,
             onEnter: () => {
               gsap.set('.js-floating-person', { autoAlpha: 0 });
               gsap.set('.js-services-person', { autoAlpha: 1 });
@@ -434,6 +495,11 @@ function ScrollExperienceController() {
             },
           },
         });
+        compactServicesScrollTrigger = compactServicesTimeline.scrollTrigger;
+        const mobileCardOutEnd = Math.max(cards.length - 1, 0) * 0.7 + 0.08 + 0.62 + 0.24;
+        const mobileLogoTravelDuration = 0.72;
+        compactServicesTimeline.to({}, { duration: mobileLogoTravelDuration }, mobileCardOutEnd);
+        compactServicesLogoStartProgress = mobileCardOutEnd / (mobileCardOutEnd + mobileLogoTravelDuration);
 
         cards.forEach((card, index) => {
           const startAt = index * 0.7 + 0.08;
@@ -464,10 +530,13 @@ function ScrollExperienceController() {
       const updateConsultLogoBridge = () => {
         const about = document.querySelector<HTMLElement>('.js-about-horizontal');
         const aboutTop = about?.getBoundingClientRect().top ?? getViewportHeight();
-        const startY = getViewportHeight() * (isMobile ? 0.76 : isTablet ? 0.74 : 0.72);
+        const startY = getViewportHeight() * (isMobile ? 1.18 : isTablet ? 1.06 : 0.72);
         const endY = getNavHeight() + (isMobile ? 44 : isTablet ? 52 : 58);
 
-        if (aboutTop > startY) {
+        if (isCompact && compactServicesScrollTrigger) {
+          const serviceProgress = compactServicesScrollTrigger.progress;
+
+          if (compactServicesScrollTrigger.isActive && serviceProgress < compactServicesLogoStartProgress) {
             gsap.set('.js-scroll-consult-logo', {
               autoAlpha: 0,
               pointerEvents: 'none',
@@ -478,6 +547,61 @@ function ScrollExperienceController() {
             document.querySelector('.js-scroll-consult-logo')?.classList.remove('is-tooltip-visible');
             return;
           }
+
+          const servicesCta = getElementRect('.services-advice-cta');
+          const isServicesCtaVisible =
+            Boolean(servicesCta) && servicesCta!.bottom > 0 && servicesCta!.top < getViewportHeight();
+
+          if (
+            serviceProgress >= compactServicesLogoStartProgress &&
+            aboutTop > endY &&
+            (compactServicesScrollTrigger.isActive || isServicesCtaVisible)
+          ) {
+            const serviceLogoProgress = gsap.utils.clamp(
+              0,
+              1,
+              (serviceProgress - compactServicesLogoStartProgress) /
+                Math.max(1 - compactServicesLogoStartProgress, 0.01),
+            );
+            const aboutLogoProgress =
+              aboutTop > startY ? 0 : gsap.utils.clamp(0, 1, (startY - aboutTop) / Math.max(startY - endY, 1));
+            const logoProgress = Math.max(serviceLogoProgress, aboutLogoProgress);
+            const logoStartY = getConsultLogoStartTop();
+            const logoLiftY = logoStartY + (isMobile ? 22 : 30);
+            const liftProgress = gsap.utils.clamp(0, 1, logoProgress / 0.36);
+            const travelProgress = gsap.utils.clamp(0, 1, (logoProgress - 0.28) / 0.72);
+
+            gsap.set('.js-scroll-consult-logo', {
+              autoAlpha: logoProgress,
+              pointerEvents: logoProgress > 0.4 ? 'auto' : 'none',
+              left: '50%',
+              top: gsap.utils.interpolate(
+                gsap.utils.interpolate(logoStartY, logoLiftY, liftProgress),
+                getConsultLogoBottomY(),
+                travelProgress,
+              ),
+              scale: gsap.utils.interpolate(
+                getConsultLogoStartScale() * 0.58,
+                getConsultLogoTravelScale(),
+                logoProgress,
+              ),
+            });
+            document.querySelector('.js-scroll-consult-logo')?.classList.remove('is-tooltip-visible');
+            return;
+          }
+        }
+
+        if (aboutTop > startY) {
+          gsap.set('.js-scroll-consult-logo', {
+            autoAlpha: 0,
+            pointerEvents: 'none',
+            left: '50%',
+            top: getConsultLogoStartTop,
+            scale: getConsultLogoStartScale,
+          });
+          document.querySelector('.js-scroll-consult-logo')?.classList.remove('is-tooltip-visible');
+          return;
+        }
 
         if (aboutTop <= endY) {
           const trackX = Number(gsap.getProperty('.js-about-track', 'x')) || 0;
