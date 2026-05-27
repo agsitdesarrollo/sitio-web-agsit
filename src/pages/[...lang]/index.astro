@@ -1,10 +1,10 @@
 ---
 import { Image } from 'astro:assets';
 import AboutHorizontalSection from '../../components/about/AboutHorizontalSection.astro';
+import ContactDrawer from '../../components/contact/ContactDrawer.astro';
 import FinalContactSection from '../../components/final-contact/FinalContactSection.astro';
 import Footer from '../../components/footer/Footer.astro';
 import HeroSection from '../../components/hero/HeroSection.astro';
-import SiteInteractivity from '../../components/interactivity/SiteInteractivity';
 import Header from '../../components/navigation/Header.astro';
 import ScrollExperienceController from '../../components/scroll/ScrollExperienceController';
 import ServicesSection from '../../components/services/ServicesSection.astro';
@@ -77,7 +77,47 @@ const alternates = [
       </button>
     </main>
     <Footer copy={footerCopy} services={servicesContent.services} />
-    <SiteInteractivity copy={contactCopy} openMenuLabel={t('nav.openMenu')} closeMenuLabel={t('nav.closeMenu')} client:load />
+    <ContactDrawer copy={contactCopy} />
+    <script define:vars={{ closeMenuLabel: t('nav.closeMenu'), openMenuLabel: t('nav.openMenu') }}>
+      const nav = document.querySelector('.site-nav nav');
+      const toggle = document.querySelector('.menu-toggle');
+      const drawer = document.querySelector('.contact-drawer');
+      const openButtons = Array.from(document.querySelectorAll('[data-contact-trigger]'));
+      const closeButtons = Array.from(document.querySelectorAll('[data-contact-close]'));
+      const navLinks = Array.from(document.querySelectorAll('[data-nav-close]'));
+      const forms = Array.from(document.querySelectorAll('[data-contact-form]'));
+
+      const setMenuOpen = (isOpen) => {
+        nav?.classList.toggle('is-open', isOpen);
+        toggle?.classList.toggle('is-open', isOpen);
+        toggle?.setAttribute('aria-expanded', String(isOpen));
+        toggle?.setAttribute('aria-label', isOpen ? closeMenuLabel : openMenuLabel);
+      };
+
+      const setContactOpen = (isOpen) => {
+        drawer?.classList.toggle('is-open', isOpen);
+        drawer?.setAttribute('aria-hidden', String(!isOpen));
+        document.body.classList.toggle('drawer-open', isOpen);
+      };
+
+      toggle?.addEventListener('click', () => setMenuOpen(!nav?.classList.contains('is-open')));
+      navLinks.forEach((link) => link.addEventListener('click', () => setMenuOpen(false)));
+      openButtons.forEach((button) =>
+        button.addEventListener('click', () => {
+          setMenuOpen(false);
+          setContactOpen(true);
+        }),
+      );
+      closeButtons.forEach((button) => button.addEventListener('click', () => setContactOpen(false)));
+      forms.forEach((form) => form.addEventListener('submit', (event) => event.preventDefault()));
+      window.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape') {
+          setContactOpen(false);
+        }
+      });
+      window.addEventListener('agsit:open-contact', () => setContactOpen(true));
+      window.addEventListener('agsit:close-contact', () => setContactOpen(false));
+    </script>
     <ScrollExperienceController client:load />
   </div>
 </SiteLayout>

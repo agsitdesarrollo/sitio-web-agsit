@@ -33,7 +33,15 @@ const { content } = Astro.props;
         <article class="about-panel about-panel-services">
           <article class="about-service-story js-about-service-card">
             <div class="about-service-image-frame js-about-service-visual" aria-label={service.alt}>
-              <video data-src={service.image} autoplay muted loop playsinline preload="none"></video>
+              <video
+                data-src={service.image}
+                poster="/assets/fondo-ventana.webp"
+                autoplay
+                muted
+                loop
+                playsinline
+                preload="none"
+              ></video>
             </div>
             <div class="about-service-body js-about-service-body">
               <p class="about-service-number" aria-hidden="true">
@@ -64,7 +72,7 @@ const { content } = Astro.props;
         <p>{content.clients.copy}</p>
       </div>
       <div class="about-clients-stage js-about-clients-stage">
-        <ClientsPhysicsCanvas items={clientLogos} client:load />
+        <ClientsPhysicsCanvas items={clientLogos} client:visible />
       </div>
     </article>
 

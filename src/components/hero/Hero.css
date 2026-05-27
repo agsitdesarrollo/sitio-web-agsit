@@ -1,7 +1,7 @@
 .hero-section {
   position: relative;
-  height: calc(100svh - var(--nav-h));
-  min-height: calc(100svh - var(--nav-h));
+  height: calc(var(--app-vh, 100svh) - var(--nav-h));
+  min-height: calc(var(--app-vh, 100svh) - var(--nav-h));
   display: grid;
   align-items: center;
   isolation: isolate;
@@ -46,14 +46,14 @@
 }
 
 .hero-person {
-  --hero-person-height-limit: calc((100svh - var(--nav-h)) * 0.94);
+  --hero-person-height-limit: calc((var(--app-vh, 100svh) - var(--nav-h)) * 0.94);
   position: fixed;
   left: 50%;
   bottom: 0;
   width: min(clamp(470px, 48vw, 700px), var(--hero-person-height-limit));
   z-index: 4;
   pointer-events: none;
-  transform: translateX(-50%);
+  transform: translate(-50%, -5%) scale(1.08);
   transform-origin: center bottom;
   will-change: transform, opacity;
 }
@@ -298,7 +298,7 @@
 
 @media (max-height: 760px) and (min-width: 901px) {
   .hero-person {
-    --hero-person-height-limit: calc((100svh - var(--nav-h)) * 0.9);
+    --hero-person-height-limit: calc((var(--app-vh, 100svh) - var(--nav-h)) * 0.9);
   }
 }
 
@@ -326,8 +326,8 @@
 
 @media (max-width: 900px) {
   .hero-section {
-    height: calc(100svh - var(--nav-h));
-    min-height: 560px;
+    height: calc(var(--app-vh, 100svh) - var(--nav-h));
+    min-height: calc(var(--app-vh, 100svh) - var(--nav-h));
   }
 
   .hero-person {
@@ -415,12 +415,37 @@
 }
 
 @media (max-width: 640px) {
+  .hero-video-wrap {
+    background:
+      radial-gradient(circle at 50% 28%, rgba(40, 124, 161, 0.34), rgba(2, 7, 18, 0.16) 34%, rgba(2, 7, 18, 0.96) 82%),
+      linear-gradient(180deg, #061326 0%, #020712 100%);
+  }
+
+  .hero-video {
+    display: block;
+    object-position: center bottom;
+  }
+
+  .hero-window-overlay img {
+    object-position: center bottom;
+    opacity: 0.92;
+  }
+
   .hero-left-panel {
     min-height: auto;
-    padding: 60px 22px 0;
+    padding: clamp(34px, 7vh, 54px) 22px 0;
     align-items: center;
     justify-content: flex-start;
     text-align: center;
+  }
+
+  .hero-person {
+    --hero-person-height-limit: calc((var(--app-vh, 100svh) - var(--nav-h)) * 0.86);
+    width: min(430px, 112vw, var(--hero-person-height-limit));
+  }
+
+  .hero-person img {
+    transform: translateY(2%);
   }
 
   .outline-text-top {

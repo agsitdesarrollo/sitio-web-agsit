@@ -1,6 +1,6 @@
 .about-horizontal-section {
   position: relative;
-  height: calc(100svh - var(--nav-h));
+  height: calc(var(--app-vh, 100svh) - var(--nav-h));
   overflow: hidden;
   background: #ffffff;
 }
@@ -960,7 +960,7 @@
 
 @media (max-width: 767px) {
   .about-horizontal-section {
-    height: calc(100svh - var(--nav-h));
+    height: calc(var(--app-vh, 100svh) - var(--nav-h));
   }
 
   .about-panel {
@@ -1009,17 +1009,17 @@
 
   .about-service-story {
     height: 100%;
-    padding: 24px 22px 28px;
+    padding: 20px 20px 24px;
     grid-template-columns: 1fr;
-    grid-template-rows: auto minmax(230px, 1fr);
-    gap: 20px;
+    grid-template-rows: auto minmax(180px, 1fr);
+    gap: 12px;
     align-content: center;
   }
 
   .about-service-image-frame {
     grid-column: 1;
     grid-row: 2;
-    height: clamp(250px, 43vh, 360px);
+    height: clamp(190px, 34vh, 280px);
     border-radius: 8px;
   }
 
@@ -1054,15 +1054,15 @@
   }
 
   .about-service-body h3 {
-    font-size: clamp(2.1rem, 9.6vw, 2.95rem);
+    font-size: clamp(1.96rem, 8.8vw, 2.62rem);
     line-height: 1.02;
   }
 
   .about-service-description {
     max-width: 340px;
-    margin-top: 7px;
-    font-size: clamp(0.88rem, 3.75vw, 1.02rem);
-    line-height: 1.42;
+    margin-top: 6px;
+    font-size: clamp(0.82rem, 3.45vw, 0.96rem);
+    line-height: 1.36;
   }
 
   .about-service-tags {

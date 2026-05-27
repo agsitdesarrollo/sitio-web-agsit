@@ -1,0 +1,33 @@
+---
+import type { ContactCopy } from '../../data/contact';
+import ContactDirectCard from './ContactDirectCard.astro';
+import ContactForm from './ContactForm.astro';
+
+type Props = {
+  copy: ContactCopy;
+};
+
+const { copy } = Astro.props;
+---
+
+<div class="contact-drawer" aria-hidden="true">
+  <button class="contact-drawer-backdrop" type="button" aria-label={copy.drawer.closeLabel} data-contact-close></button>
+  <section class="contact-drawer-panel" role="dialog" aria-modal="true" aria-labelledby="contact-drawer-title">
+    <div class="contact-drawer-handle" aria-hidden="true"></div>
+    <button class="contact-drawer-close" type="button" aria-label={copy.drawer.closeLabel} data-contact-close>
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+    </button>
+
+    <div class="contact-drawer-content">
+      <div class="contact-drawer-heading">
+        <p>{copy.drawer.eyebrow}</p>
+        <h2 id="contact-drawer-title">{copy.drawer.title}</h2>
+        <span>{copy.drawer.copy}</span>
+      </div>
+
+      <ContactForm copy={copy.form} />
+      <ContactDirectCard copy={copy.direct} />
+    </div>
+  </section>
+</div>

@@ -198,7 +198,7 @@
 
 @media (max-width: 1024px) {
   .services-section {
-    min-height: calc(100svh - var(--nav-h));
+    min-height: calc(var(--app-vh, 100svh) - var(--nav-h));
     padding: calc(var(--nav-h) + 22px) clamp(18px, 5vw, 42px) 72px;
     overflow: hidden;
   }
@@ -259,7 +259,7 @@
 
 @media (min-width: 768px) and (max-width: 1024px) {
   .services-section {
-    min-height: 100svh;
+    min-height: var(--app-vh, 100svh);
     padding-inline: clamp(24px, 4vw, 42px);
     padding-bottom: 0;
   }

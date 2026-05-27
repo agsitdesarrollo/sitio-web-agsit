@@ -14,6 +14,7 @@ function ScrollExperienceController() {
     }
 
     let cleanupBridgeScroll: (() => void) | undefined;
+    let cleanupViewportRefresh: (() => void) | undefined;
 
     const context = gsap.context(() => {
       window.scrollTo(0, 0);
@@ -25,22 +26,26 @@ function ScrollExperienceController() {
       const isMobile = window.matchMedia('(max-width: 767px)').matches;
       const isTablet = isCompact && !isMobile;
       const isDesktop = !isCompact;
+      const getViewportHeight = () => window.visualViewport?.height ?? window.innerHeight;
       const getNavHeight = () => document.querySelector('.site-nav')?.getBoundingClientRect().height ?? 0;
       const getPinnedSectionStart = () => `top top+=${getNavHeight()}`;
       const getVideoStoryInset = () => (isMobile ? 22 : isTablet ? 24 : isCompact ? 28 : 34);
-      const getAboutScrollMultiplier = () => (isMobile ? 28.5 : isTablet ? 14.3 : 12.9);
+      const getHeroScrollEnd = () => (isMobile ? 105 : isCompact ? 105 : 220);
+      const getMobileServicesScrollEnd = () => (isMobile ? 275 : 560);
+      const getAboutScrollMultiplier = () => (isMobile ? 12.2 : isTablet ? 14.3 : 12.9);
+      const getVideoStoryScrollEnd = () => (isMobile ? 360 : isCompact ? 980 : 1100);
       const getAboutIntroHold = () => (isMobile ? 0.56 : 0.38);
       const getAboutServiceHold = () => (isMobile ? 0.58 : 0.42);
       const getAboutServiceStep = () => (isMobile ? 1.88 : 1.72);
-      const getConsultLogoBottomY = () => window.innerHeight - (isMobile ? 42 : isTablet ? 44 : 40);
+      const getConsultLogoBottomY = () => getViewportHeight() - (isMobile ? 42 : isTablet ? 44 : 40);
       const getConsultLogoTravelScale = () => (isMobile ? 0.58 : isTablet ? 0.66 : 0.68);
-      const getConsultLogoStartTop = () => window.innerHeight - (isMobile ? 106 : isTablet ? 118 : 128);
+      const getConsultLogoStartTop = () => getViewportHeight() - (isMobile ? 106 : isTablet ? 118 : 128);
       const getConsultLogoStartScale = () => (isMobile ? 0.36 : isTablet ? 0.42 : 0.46);
       const getConsultLogoBridgeY = () => {
         const cta = document.querySelector('.services-advice-cta')?.getBoundingClientRect();
-        const fallback = window.innerHeight + (isMobile ? 26 : isTablet ? 34 : 42);
+        const fallback = getViewportHeight() + (isMobile ? 26 : isTablet ? 34 : 42);
 
-        if (!cta || cta.bottom <= 0 || cta.top >= window.innerHeight) {
+        if (!cta || cta.bottom <= 0 || cta.top >= getViewportHeight()) {
           return fallback;
         }
 
@@ -59,17 +64,24 @@ function ScrollExperienceController() {
       };
       const getVideoStoryHeight = () => {
         if (isMobile) {
-          return window.innerHeight * 0.32;
+          return getViewportHeight() * 0.32;
         }
 
         if (isTablet) {
           return getVideoStoryWidth() * 0.5625;
         }
 
-        return window.innerHeight * (isCompact ? 0.34 : 0.44);
+        return getViewportHeight() * (isCompact ? 0.34 : 0.44);
       };
       const hydrateVideo = (video: HTMLVideoElement | null | undefined) => {
         if (!video) {
+          return;
+        }
+
+        if (isMobile && video.dataset.mobile === 'static') {
+          video.pause();
+          video.removeAttribute('src');
+          video.load();
           return;
         }
 
@@ -96,7 +108,7 @@ function ScrollExperienceController() {
         top: 0,
         left: '50%',
         width: () => window.innerWidth,
-        height: () => window.innerHeight - getNavHeight(),
+        height: () => getViewportHeight() - getNavHeight(),
         xPercent: -50,
       });
       gsap.set('.js-hero-copy', { autoAlpha: 1, y: 0 });
@@ -143,11 +155,29 @@ function ScrollExperienceController() {
         textShadow: '0 0 0 rgba(65, 200, 246, 0)',
       });
 
+      let viewportRefreshFrame = 0;
+      const requestViewportRefresh = () => {
+        cancelAnimationFrame(viewportRefreshFrame);
+        viewportRefreshFrame = requestAnimationFrame(() => {
+          ScrollTrigger.refresh();
+        });
+      };
+
+      window.visualViewport?.addEventListener('resize', requestViewportRefresh, { passive: true });
+      window.addEventListener('orientationchange', requestViewportRefresh, { passive: true });
+      window.addEventListener('agsit:viewport-change', requestViewportRefresh, { passive: true });
+      cleanupViewportRefresh = () => {
+        cancelAnimationFrame(viewportRefreshFrame);
+        window.visualViewport?.removeEventListener('resize', requestViewportRefresh);
+        window.removeEventListener('orientationchange', requestViewportRefresh);
+        window.removeEventListener('agsit:viewport-change', requestViewportRefresh);
+      };
+
       const heroTimeline = gsap.timeline({
         scrollTrigger: {
           trigger: '.js-hero',
           start: () => `top top+=${getNavHeight()}`,
-          end: () => `+=${isCompact ? 105 : 220}%`,
+          end: () => `+=${getHeroScrollEnd()}%`,
           scrub: true,
           pin: true,
           anticipatePin: 1,
@@ -191,7 +221,7 @@ function ScrollExperienceController() {
             },
           },
         }).to('.js-floating-person', {
-          y: () => -window.innerHeight * 0.2,
+          y: () => -getViewportHeight() * 0.2,
           yPercent: 0,
           scale: 0.58,
           ease: 'none',
@@ -219,7 +249,7 @@ function ScrollExperienceController() {
             },
           },
         }).to('.js-floating-person', {
-          y: () => -window.innerHeight * 0.18,
+          y: () => -getViewportHeight() * 0.18,
           yPercent: 0,
           scale: 0.74,
           ease: 'none',
@@ -228,7 +258,7 @@ function ScrollExperienceController() {
       }
 
       if (isDesktop) {
-        const getDesktopCardStartY = () => Math.min(Math.max(window.innerHeight * 0.3, 220), 330);
+        const getDesktopCardStartY = () => Math.min(Math.max(getViewportHeight() * 0.3, 220), 330);
         const getDesktopCardStartX = () => Math.min(Math.max(window.innerWidth * 0.18, 260), 380);
 
         cards.forEach((card, index) => {
@@ -386,7 +416,7 @@ function ScrollExperienceController() {
           scrollTrigger: {
             trigger: '.js-services',
             start: 'top top',
-            end: '+=470%',
+            end: () => `+=${getMobileServicesScrollEnd()}%`,
             scrub: true,
             pin: true,
             anticipatePin: 1,
@@ -433,8 +463,8 @@ function ScrollExperienceController() {
 
       const updateConsultLogoBridge = () => {
         const about = document.querySelector<HTMLElement>('.js-about-horizontal');
-        const aboutTop = about?.getBoundingClientRect().top ?? window.innerHeight;
-        const startY = window.innerHeight * (isMobile ? 0.76 : isTablet ? 0.74 : 0.72);
+        const aboutTop = about?.getBoundingClientRect().top ?? getViewportHeight();
+        const startY = getViewportHeight() * (isMobile ? 0.76 : isTablet ? 0.74 : 0.72);
         const endY = getNavHeight() + (isMobile ? 44 : isTablet ? 52 : 58);
 
         if (aboutTop > startY) {
@@ -836,7 +866,7 @@ function ScrollExperienceController() {
         scrollTrigger: {
           trigger: '.js-video-story',
           start: getPinnedSectionStart,
-          end: () => `+=${isMobile ? 920 : isCompact ? 980 : 1100}%`,
+          end: () => `+=${getVideoStoryScrollEnd()}%`,
           scrub: true,
           pin: true,
           anticipatePin: 1,
@@ -906,6 +936,7 @@ function ScrollExperienceController() {
 
     return () => {
       cleanupBridgeScroll?.();
+      cleanupViewportRefresh?.();
       context.revert();
     };
   }, []);

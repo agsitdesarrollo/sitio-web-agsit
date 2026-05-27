@@ -1,4 +1,3 @@
-@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Inter:wght@300;400;500;600;700;800&display=swap');
 @import "tailwindcss";
 @import "../components/navigation/Header.css";
 @import "../components/contact/ContactDrawer.css";
@@ -11,6 +10,7 @@
 
 :root {
   --nav-h: clamp(76px, 10vh, 96px);
+  --app-vh: 100svh;
   --bg-dark: #020712;
   --bg-ink: #08152b;
   --primary: #41c8f6;
