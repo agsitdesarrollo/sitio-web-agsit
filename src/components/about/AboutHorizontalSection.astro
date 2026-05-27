@@ -1,29 +1,35 @@
 ---
 import { Image } from 'astro:assets';
-import ClientsPhysicsCanvas from './ClientsPhysicsCanvas';
-import { aboutServices, clientLogos } from '../../data/about';
+import type { AboutContent } from '../../data/about';
+import { clientLogos } from '../../data/about';
 import logoImage from '../../assets/images/logo-asit.webp';
+import ClientsPhysicsCanvas from './ClientsPhysicsCanvas';
+
+type Props = {
+  content: AboutContent;
+};
+
+const { content } = Astro.props;
 ---
 
-<section class="about-horizontal-section js-about-horizontal" aria-label="Quiénes somos">
+<section class="about-horizontal-section js-about-horizontal" aria-label={content.sectionLabel}>
   <div class="about-horizontal-track js-about-track">
     <article class="about-panel about-panel-question about-panel-overview">
       <div class="about-overview">
-        <p class="about-overview-kicker js-about-intro-fade">6 especialidades integradas</p>
+        <p class="about-overview-kicker js-about-intro-fade">{content.overview.kicker}</p>
         <h2 class="about-overview-title js-about-intro-fade">
-          Seis áreas clave.
-          <span>Una sola visión.</span>
+          {content.overview.title}
+          <span>{content.overview.titleAccent}</span>
         </h2>
         <p class="about-overview-copy js-about-intro-fade">
-          AGSIT interviene en las áreas estratégicas y tácticas que toda organización necesita para funcionar
-          correctamente, crecer de forma sostenida y maximizar su rentabilidad.
+          {content.overview.copy}
         </p>
-        <p class="about-overview-scroll js-about-intro-fade">Continúa desplazando &gt;&gt;&gt;</p>
+        <p class="about-overview-scroll js-about-intro-fade">{content.overview.scroll}</p>
       </div>
     </article>
 
     {
-      aboutServices.map((service) => (
+      content.services.map((service) => (
         <article class="about-panel about-panel-services">
           <article class="about-service-story js-about-service-card">
             <div class="about-service-image-frame js-about-service-visual" aria-label={service.alt}>
@@ -43,7 +49,9 @@ import logoImage from '../../assets/images/logo-asit.webp';
                   <span>{tag}</span>
                 ))}
               </div>
-              <p class="about-service-link">Ver servicios {service.code} →</p>
+              <p class="about-service-link">
+                {content.serviceLinkLabel} {service.code} →
+              </p>
             </div>
           </article>
         </article>
@@ -52,11 +60,8 @@ import logoImage from '../../assets/images/logo-asit.webp';
 
     <article class="about-panel about-panel-clients">
       <div class="about-clients-copy js-about-clients-copy">
-        <h2>Empresas que han confiado en AGSIT.</h2>
-        <p>
-          Una muestra editable de clientes y organizaciones con las que hemos colaborado. Los bloques reaccionan al
-          avance del scroll con gravedad, rebote e inercia.
-        </p>
+        <h2>{content.clients.title}</h2>
+        <p>{content.clients.copy}</p>
       </div>
       <div class="about-clients-stage js-about-clients-stage">
         <ClientsPhysicsCanvas items={clientLogos} client:load />
@@ -67,25 +72,29 @@ import logoImage from '../../assets/images/logo-asit.webp';
       <div class="about-transition-veil js-about-transition-veil" aria-hidden="true"></div>
       <div class="about-alliance-layout">
         <div class="about-alliance-copy js-about-alliance-copy">
-          <h2 class="about-alliance-title" aria-label="Proceso probado. Resultados reales.">
-            <span class="about-alliance-title-line">Proceso probado.</span>
-            <span class="about-alliance-title-line">Resultados reales.</span>
+          <h2 class="about-alliance-title" aria-label={content.alliance.titleLabel}>
+            {content.alliance.titleLines.map((line) => (
+              <span class="about-alliance-title-line">{line}</span>
+            ))}
           </h2>
-          <p>
-            Integramos las seis áreas clave para equilibrar alcance, costo y tiempo con una visión completa de
-            crecimiento empresarial.
-          </p>
+          <p>{content.alliance.copy}</p>
         </div>
         <div class="about-transition-logo js-about-transition-logo" aria-hidden="true">
           <Image class="about-transition-logo-image" src={logoImage} alt="" loading="lazy" draggable="false" />
         </div>
         <div class="about-alliance-orbit" aria-hidden="true">
-          <span class="about-alliance-metric about-alliance-metric-scope js-about-alliance-metric">Alcance</span>
-          <span class="about-alliance-metric about-alliance-metric-cost js-about-alliance-metric">Costo</span>
-          <span class="about-alliance-metric about-alliance-metric-time js-about-alliance-metric">Tiempo</span>
+          <span class="about-alliance-metric about-alliance-metric-scope js-about-alliance-metric">
+            {content.alliance.metrics.scope}
+          </span>
+          <span class="about-alliance-metric about-alliance-metric-cost js-about-alliance-metric">
+            {content.alliance.metrics.cost}
+          </span>
+          <span class="about-alliance-metric about-alliance-metric-time js-about-alliance-metric">
+            {content.alliance.metrics.time}
+          </span>
         </div>
         <button class="about-alliance-cta js-about-alliance-cta" type="button" data-contact-trigger>
-          Agenda una asesoría sin costo
+          {content.alliance.cta}
         </button>
       </div>
     </article>

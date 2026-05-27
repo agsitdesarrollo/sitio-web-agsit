@@ -1,3 +1,5 @@
+import type { SupportedLang } from '../i18n/ui';
+
 export type WordToken = {
   text: string;
   emphasis?: 'underline' | 'glow' | 'scale' | 'highlight';
@@ -19,73 +21,233 @@ export type ClientLogo = {
   src: string;
 };
 
-export const aboutServices: AboutService[] = [
-  {
+export type AboutContent = {
+  sectionLabel: string;
+  overview: {
+    kicker: string;
+    title: string;
+    titleAccent: string;
+    copy: string;
+    scroll: string;
+  };
+  serviceLinkLabel: string;
+  services: AboutService[];
+  clients: {
+    title: string;
+    copy: string;
+  };
+  alliance: {
+    titleLabel: string;
+    titleLines: string[];
+    copy: string;
+    metrics: {
+      scope: string;
+      cost: string;
+      time: string;
+    };
+    cta: string;
+  };
+};
+
+const commonServices = {
+  its: {
     number: '01',
     code: 'ITS',
     label: 'Information Technologies Solutions',
-      title: 'Soluciones Tecnológicas',
-      description:
-      'Arquitectura, software, infraestructura, inteligencia artificial y ciberseguridad para acelerar la transformación digital.',
-    tags: ['ITIL', 'Cloud', 'Desarrollo de software', 'IA & Big Data'],
     image: '/assets/servicios.webm',
-    alt: 'Visual de soluciones tecnológicas',
   },
-  {
+  bpm: {
     number: '02',
     code: 'BPM',
     label: 'Business Process Management',
-    title: 'Administración de Procesos',
-    description:
-      'Análisis, documentación y optimización de procesos para mejorar eficiencia, control operativo y rentabilidad.',
-    tags: ['AS-IS / TO-BE', 'BPMS Automation', 'KPIs operativos', 'Auditoría'],
     image: '/assets/servicios.webm',
-    alt: 'Visual de administración de procesos',
   },
-  {
+  dm: {
     number: '03',
     code: 'DM',
     label: 'Digital Marketing',
-    title: 'Mercadotecnia Digital',
-    description: 'Estrategias digitales integrales para generar demanda, posicionamiento, conversión y resultados medibles.',
-    tags: ['SEO & SEM', 'Social Media', 'E-commerce', 'Analytics'],
     image: '/assets/servicios.webm',
-    alt: 'Visual de mercadotecnia digital',
   },
-  {
+  pm: {
     number: '04',
     code: 'PM',
     label: 'Project Management',
-    title: 'Dirección de Proyectos',
-    description:
-      'Gestión profesional de proyectos, PMOs y metodologías ágiles o waterfall para cumplir tiempos y presupuesto.',
-    tags: ['PMO', 'Scrum & Agile', 'OPM3', 'PMP'],
     image: '/assets/servicios.webm',
-    alt: 'Visual de dirección de proyectos',
   },
-  {
+  qm: {
     number: '05',
     code: 'QM',
     label: 'Quality Management',
-    title: 'Gestión de Calidad',
-    description:
-      'Sistemas de calidad, mejora continua, auditorías y modelos de madurez para elevar estándares operativos.',
-    tags: ['ISO 9001', 'CMMI', 'Mejora continua', 'Auditorías'],
     image: '/assets/servicios.webm',
-    alt: 'Visual de gestión de calidad',
   },
-  {
+  spm: {
     number: '06',
     code: 'SPM',
     label: 'Strategic Planning & Management',
-    title: 'Planeación Estratégica',
-    description:
-      'Definición de objetivos, diagnóstico empresarial, gobierno corporativo y tableros para orientar el crecimiento.',
-    tags: ['Plan estratégico', 'Gobierno corporativo', 'KPIs & Dashboards', 'Franquicia'],
     image: '/assets/servicios.webm',
-    alt: 'Visual de planeación estratégica',
   },
-];
+} as const;
+
+export const aboutContentByLang: Record<SupportedLang, AboutContent> = {
+  es: {
+    sectionLabel: 'Quiénes somos',
+    overview: {
+      kicker: '6 especialidades integradas',
+      title: 'Seis áreas clave.',
+      titleAccent: 'Una sola visión.',
+      copy:
+        'AGSIT interviene en las áreas estratégicas y tácticas que toda organización necesita para funcionar correctamente, crecer de forma sostenida y maximizar su rentabilidad.',
+      scroll: 'Continúa desplazando >>>',
+    },
+    serviceLinkLabel: 'Ver servicios',
+    services: [
+      {
+        ...commonServices.its,
+        title: 'Soluciones Tecnológicas',
+        description:
+          'Arquitectura, software, infraestructura, inteligencia artificial y ciberseguridad para acelerar la transformación digital.',
+        tags: ['ITIL', 'Cloud', 'Desarrollo de software', 'IA & Big Data'],
+        alt: 'Visual de soluciones tecnológicas',
+      },
+      {
+        ...commonServices.bpm,
+        title: 'Administración de Procesos',
+        description:
+          'Análisis, documentación y optimización de procesos para mejorar eficiencia, control operativo y rentabilidad.',
+        tags: ['AS-IS / TO-BE', 'BPMS Automation', 'KPIs operativos', 'Auditoría'],
+        alt: 'Visual de administración de procesos',
+      },
+      {
+        ...commonServices.dm,
+        title: 'Mercadotecnia Digital',
+        description: 'Estrategias digitales integrales para generar demanda, posicionamiento, conversión y resultados medibles.',
+        tags: ['SEO & SEM', 'Social Media', 'E-commerce', 'Analytics'],
+        alt: 'Visual de mercadotecnia digital',
+      },
+      {
+        ...commonServices.pm,
+        title: 'Dirección de Proyectos',
+        description:
+          'Gestión profesional de proyectos, PMOs y metodologías ágiles o waterfall para cumplir tiempos y presupuesto.',
+        tags: ['PMO', 'Scrum & Agile', 'OPM3', 'PMP'],
+        alt: 'Visual de dirección de proyectos',
+      },
+      {
+        ...commonServices.qm,
+        title: 'Gestión de Calidad',
+        description:
+          'Sistemas de calidad, mejora continua, auditorías y modelos de madurez para elevar estándares operativos.',
+        tags: ['ISO 9001', 'CMMI', 'Mejora continua', 'Auditorías'],
+        alt: 'Visual de gestión de calidad',
+      },
+      {
+        ...commonServices.spm,
+        title: 'Planeación Estratégica',
+        description:
+          'Definición de objetivos, diagnóstico empresarial, gobierno corporativo y tableros para orientar el crecimiento.',
+        tags: ['Plan estratégico', 'Gobierno corporativo', 'KPIs & Dashboards', 'Franquicia'],
+        alt: 'Visual de planeación estratégica',
+      },
+    ],
+    clients: {
+      title: 'Empresas que han confiado en AGSIT.',
+      copy:
+        'Una muestra editable de clientes y organizaciones con las que hemos colaborado. Los bloques reaccionan al avance del scroll con gravedad, rebote e inercia.',
+    },
+    alliance: {
+      titleLabel: 'Proceso probado. Resultados reales.',
+      titleLines: ['Proceso probado.', 'Resultados reales.'],
+      copy:
+        'Integramos las seis áreas clave para equilibrar alcance, costo y tiempo con una visión completa de crecimiento empresarial.',
+      metrics: {
+        scope: 'Alcance',
+        cost: 'Costo',
+        time: 'Tiempo',
+      },
+      cta: 'Agenda una asesoría sin costo',
+    },
+  },
+  en: {
+    sectionLabel: 'About AGSIT',
+    overview: {
+      kicker: '6 integrated specialties',
+      title: 'Six key areas.',
+      titleAccent: 'One clear vision.',
+      copy:
+        'AGSIT works across the strategic and tactical areas every organization needs to operate correctly, grow sustainably and maximize profitability.',
+      scroll: 'Keep scrolling >>>',
+    },
+    serviceLinkLabel: 'View services',
+    services: [
+      {
+        ...commonServices.its,
+        title: 'Technology Solutions',
+        description:
+          'Architecture, software, infrastructure, artificial intelligence and cybersecurity to accelerate digital transformation.',
+        tags: ['ITIL', 'Cloud', 'Software development', 'AI & Big Data'],
+        alt: 'Technology solutions visual',
+      },
+      {
+        ...commonServices.bpm,
+        title: 'Process Management',
+        description:
+          'Process analysis, documentation and optimization to improve efficiency, operational control and profitability.',
+        tags: ['AS-IS / TO-BE', 'BPMS Automation', 'Operational KPIs', 'Auditing'],
+        alt: 'Process management visual',
+      },
+      {
+        ...commonServices.dm,
+        title: 'Digital Marketing',
+        description: 'Integrated digital strategies to generate demand, positioning, conversion and measurable results.',
+        tags: ['SEO & SEM', 'Social Media', 'E-commerce', 'Analytics'],
+        alt: 'Digital marketing visual',
+      },
+      {
+        ...commonServices.pm,
+        title: 'Project Management',
+        description:
+          'Professional project management, PMOs and agile or waterfall methodologies to meet timelines and budgets.',
+        tags: ['PMO', 'Scrum & Agile', 'OPM3', 'PMP'],
+        alt: 'Project management visual',
+      },
+      {
+        ...commonServices.qm,
+        title: 'Quality Management',
+        description:
+          'Quality systems, continuous improvement, audits and maturity models to raise operational standards.',
+        tags: ['ISO 9001', 'CMMI', 'Continuous improvement', 'Audits'],
+        alt: 'Quality management visual',
+      },
+      {
+        ...commonServices.spm,
+        title: 'Strategic Planning',
+        description:
+          'Objective definition, business diagnosis, corporate governance and dashboards to guide growth.',
+        tags: ['Strategic plan', 'Corporate governance', 'KPIs & Dashboards', 'Franchise'],
+        alt: 'Strategic planning visual',
+      },
+    ],
+    clients: {
+      title: 'Companies that have trusted AGSIT.',
+      copy:
+        'An editable sample of clients and organizations we have worked with. The blocks react to scroll progress with gravity, bounce and inertia.',
+    },
+    alliance: {
+      titleLabel: 'Proven process. Real results.',
+      titleLines: ['Proven process.', 'Real results.'],
+      copy:
+        'We integrate the six key areas to balance scope, cost and time with a complete view of business growth.',
+      metrics: {
+        scope: 'Scope',
+        cost: 'Cost',
+        time: 'Time',
+      },
+      cta: 'Schedule a free consultation',
+    },
+  },
+};
+
+export const aboutServices = aboutContentByLang.es.services;
 
 export const clientLogos: ClientLogo[] = [
   { label: '01', src: 'https://agsit.com.mx/wp-content/uploads/2023/01/imageedit_6_4472145671.png' },
@@ -107,3 +269,7 @@ export const clientLogos: ClientLogo[] = [
   { label: '14', src: 'https://agsit.com.mx/wp-content/uploads/2021/11/VC-Logo.webp' },
   { label: '15', src: 'https://agsit.com.mx/wp-content/uploads/2021/11/AGSIT-Aldrete-Asociados-1.webp' },
 ];
+
+export function getAboutContent(lang: SupportedLang) {
+  return aboutContentByLang[lang];
+}

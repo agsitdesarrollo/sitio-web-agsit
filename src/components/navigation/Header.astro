@@ -1,16 +1,26 @@
 ---
 import { Image } from 'astro:assets';
 import logoImage from '../../assets/images/logo-asit.webp';
+import type { SupportedLang } from '../../i18n/ui';
+import { getAlternateLangPath, useTranslations } from '../../i18n/utils';
+
+type Props = {
+  lang: SupportedLang;
+};
+
+const { lang } = Astro.props;
+const t = useTranslations(lang);
+const alternateLangPath = getAlternateLangPath(lang);
 ---
 
 <header class="site-nav">
-  <a class="brand" href="#inicio" aria-label="Inicio AGSIT" data-nav-close>
+  <a class="brand" href="#inicio" aria-label={t('nav.brandLabel')} data-nav-close>
     <Image src={logoImage} alt="AGSIT" loading="eager" fetchpriority="high" />
   </a>
   <button
     class="menu-toggle"
     type="button"
-    aria-label="Abrir menú"
+    aria-label={t('nav.openMenu')}
     aria-expanded="false"
     aria-controls="main-navigation"
   >
@@ -19,8 +29,11 @@ import logoImage from '../../assets/images/logo-asit.webp';
     <span></span>
   </button>
   <nav id="main-navigation">
-    <a href="#inicio" data-nav-close>Inicio</a>
-    <a href="#servicios" data-nav-close>Servicios</a>
-    <button type="button" data-contact-trigger>Contacto</button>
+    <a href="#inicio" data-nav-close>{t('nav.home')}</a>
+    <a href="#servicios" data-nav-close>{t('nav.services')}</a>
+    <button type="button" data-contact-trigger>{t('nav.contact')}</button>
+    <a class="language-switch" href={alternateLangPath} aria-label={t('language.switchLabel')} data-nav-close>
+      {t('language.switchText')}
+    </a>
   </nav>
 </header>

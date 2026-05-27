@@ -1,27 +1,37 @@
+---
+import type { ContactFormCopy } from '../../data/contact';
+
+type Props = {
+  copy: ContactFormCopy;
+};
+
+const { copy } = Astro.props;
+---
+
 <form class="contact-form" data-contact-form>
   <label>
-    Nombre
-    <input type="text" name="name" placeholder="Tu nombre" />
+    {copy.name}
+    <input type="text" name="name" placeholder={copy.namePlaceholder} />
   </label>
   <label>
-    Apellido
-    <input type="text" name="lastName" placeholder="Tu apellido" />
+    {copy.lastName}
+    <input type="text" name="lastName" placeholder={copy.lastNamePlaceholder} />
   </label>
   <label>
-    Teléfono
-    <input type="tel" name="phone" placeholder="+52" />
+    {copy.phone}
+    <input type="tel" name="phone" placeholder={copy.phonePlaceholder} />
   </label>
   <label>
-    Email
-    <input type="email" name="email" placeholder="correo@empresa.com" />
+    {copy.email}
+    <input type="email" name="email" placeholder={copy.emailPlaceholder} />
   </label>
   <label class="contact-form-wide">
-    Nombre de la compañía
-    <input type="text" name="company" placeholder="Empresa" />
+    {copy.company}
+    <input type="text" name="company" placeholder={copy.companyPlaceholder} />
   </label>
   <label class="contact-form-wide">
-    Comentario
-    <textarea name="message" placeholder="Describe brevemente el proyecto o necesidad" rows="4"></textarea>
+    {copy.message}
+    <textarea name="message" placeholder={copy.messagePlaceholder} rows="4"></textarea>
   </label>
-  <button class="contact-submit" type="submit">Solicitar asesoría</button>
+  <button class="contact-submit" type="submit">{copy.submit}</button>
 </form>

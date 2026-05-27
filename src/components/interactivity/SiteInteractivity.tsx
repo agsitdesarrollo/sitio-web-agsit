@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
+import type { ContactCopy } from '../../data/contact';
 
 function OfficeIcon() {
   return (
@@ -29,45 +30,45 @@ function MailIcon() {
   );
 }
 
-function ContactForm() {
+function ContactForm({ copy }: { copy: ContactCopy['form'] }) {
   return (
     <form className="contact-form" onSubmit={(event) => event.preventDefault()}>
       <label>
-        Nombre
-        <input type="text" name="name" placeholder="Tu nombre" />
+        {copy.name}
+        <input type="text" name="name" placeholder={copy.namePlaceholder} />
       </label>
       <label>
-        Apellido
-        <input type="text" name="lastName" placeholder="Tu apellido" />
+        {copy.lastName}
+        <input type="text" name="lastName" placeholder={copy.lastNamePlaceholder} />
       </label>
       <label>
-        Teléfono
-        <input type="tel" name="phone" placeholder="+52" />
+        {copy.phone}
+        <input type="tel" name="phone" placeholder={copy.phonePlaceholder} />
       </label>
       <label>
-        Email
-        <input type="email" name="email" placeholder="correo@empresa.com" />
+        {copy.email}
+        <input type="email" name="email" placeholder={copy.emailPlaceholder} />
       </label>
       <label className="contact-form-wide">
-        Nombre de la compañía
-        <input type="text" name="company" placeholder="Empresa" />
+        {copy.company}
+        <input type="text" name="company" placeholder={copy.companyPlaceholder} />
       </label>
       <label className="contact-form-wide">
-        Comentario
-        <textarea name="message" placeholder="Describe brevemente el proyecto o necesidad" rows={4} />
+        {copy.message}
+        <textarea name="message" placeholder={copy.messagePlaceholder} rows={4} />
       </label>
       <button className="contact-submit" type="submit">
-        Solicitar asesoría
+        {copy.submit}
       </button>
     </form>
   );
 }
 
-function ContactDirectCard() {
+function ContactDirectCard({ copy }: { copy: ContactCopy['direct'] }) {
   return (
-    <aside className="contact-direct-card" aria-label="Información de contacto">
-      <h3>Contacto directo</h3>
-      <p>También puedes comunicarte con nuestro equipo por estos canales.</p>
+    <aside className="contact-direct-card" aria-label={copy.label}>
+      <h3>{copy.title}</h3>
+      <p>{copy.copy}</p>
       <a href="tel:+525570267458">
         <span className="contact-direct-icon">
           <OfficeIcon />
@@ -90,7 +91,15 @@ function ContactDirectCard() {
   );
 }
 
-function ContactDrawer({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
+function ContactDrawer({
+  copy,
+  isOpen,
+  onClose,
+}: {
+  copy: ContactCopy;
+  isOpen: boolean;
+  onClose: () => void;
+}) {
   useEffect(() => {
     if (!isOpen) {
       return undefined;
@@ -113,30 +122,38 @@ function ContactDrawer({ isOpen, onClose }: { isOpen: boolean; onClose: () => vo
 
   return (
     <div className={`contact-drawer ${isOpen ? 'is-open' : ''}`} aria-hidden={!isOpen}>
-      <button className="contact-drawer-backdrop" type="button" aria-label="Cerrar formulario" onClick={onClose} />
+      <button className="contact-drawer-backdrop" type="button" aria-label={copy.drawer.closeLabel} onClick={onClose} />
       <section className="contact-drawer-panel" role="dialog" aria-modal="true" aria-labelledby="contact-drawer-title">
         <div className="contact-drawer-handle" aria-hidden="true" />
-        <button className="contact-drawer-close" type="button" aria-label="Cerrar formulario" onClick={onClose}>
+        <button className="contact-drawer-close" type="button" aria-label={copy.drawer.closeLabel} onClick={onClose}>
           <span aria-hidden="true" />
           <span aria-hidden="true" />
         </button>
 
         <div className="contact-drawer-content">
           <div className="contact-drawer-heading">
-            <p>Agenda una asesoría sin costo</p>
-            <h2 id="contact-drawer-title">Cuéntanos qué necesita tu empresa.</h2>
-            <span>Un especialista de AGSIT revisará tu solicitud para orientar el siguiente paso.</span>
+            <p>{copy.drawer.eyebrow}</p>
+            <h2 id="contact-drawer-title">{copy.drawer.title}</h2>
+            <span>{copy.drawer.copy}</span>
           </div>
 
-          <ContactForm />
-          <ContactDirectCard />
+          <ContactForm copy={copy.form} />
+          <ContactDirectCard copy={copy.direct} />
         </div>
       </section>
     </div>
   );
 }
 
-function SiteInteractivity() {
+function SiteInteractivity({
+  closeMenuLabel,
+  copy,
+  openMenuLabel,
+}: {
+  closeMenuLabel: string;
+  copy: ContactCopy;
+  openMenuLabel: string;
+}) {
   const [isContactOpen, setIsContactOpen] = useState(false);
 
   const closeContact = useCallback(() => setIsContactOpen(false), []);
@@ -153,7 +170,7 @@ function SiteInteractivity() {
       nav?.classList.toggle('is-open', isOpen);
       toggle?.classList.toggle('is-open', isOpen);
       toggle?.setAttribute('aria-expanded', String(isOpen));
-      toggle?.setAttribute('aria-label', isOpen ? 'Cerrar menú' : 'Abrir menú');
+      toggle?.setAttribute('aria-label', isOpen ? closeMenuLabel : openMenuLabel);
     };
 
     const handleToggle = () => setMenuOpen(!nav?.classList.contains('is-open'));
@@ -181,9 +198,9 @@ function SiteInteractivity() {
       window.removeEventListener('agsit:open-contact', handleOpenEvent);
       window.removeEventListener('agsit:close-contact', handleCloseEvent);
     };
-  }, [closeContact, openContact]);
+  }, [closeContact, closeMenuLabel, openContact, openMenuLabel]);
 
-  return <ContactDrawer isOpen={isContactOpen} onClose={closeContact} />;
+  return <ContactDrawer copy={copy} isOpen={isContactOpen} onClose={closeContact} />;
 }
 
 export default SiteInteractivity;

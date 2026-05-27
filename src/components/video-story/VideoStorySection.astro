@@ -1,9 +1,17 @@
 ---
-import { storyLines } from '../../data/videoStory';
+import type { SupportedLang } from '../../i18n/ui';
+
+type Props = {
+  lines: string[];
+  lang: SupportedLang;
+};
+
+const { lines, lang } = Astro.props;
+const label = lang === 'es' ? 'Presentación corporativa AGSIT' : 'AGSIT corporate presentation';
 ---
 
 <div class="video-story-overlap">
-  <section class="video-story-section js-video-story" aria-label="Presentación corporativa AGSIT">
+  <section class="video-story-section js-video-story" aria-label={label}>
     <div class="video-story-stage js-video-story-stage">
       <div class="video-story-frame js-video-story-frame">
         <video
@@ -14,13 +22,13 @@ import { storyLines } from '../../data/videoStory';
           loop
           playsinline
           preload="none"
-          aria-label="Presentación corporativa AGSIT"
+          aria-label={label}
         ></video>
       </div>
 
       <div class="video-story-copy">
         {
-          storyLines.map((line) => (
+          lines.map((line) => (
             <p class="video-story-line js-video-story-line">{line}</p>
           ))
         }

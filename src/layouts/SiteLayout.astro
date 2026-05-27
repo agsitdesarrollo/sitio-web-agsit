@@ -6,20 +6,23 @@ type Props = {
   title?: string;
   description?: string;
   canonicalUrl?: string;
+  htmlLang?: string;
+  locale?: string;
+  alternates?: Array<{ lang: string; href: string }>;
 };
 
-const { title, description, canonicalUrl } = Astro.props;
+const { title, description, canonicalUrl, htmlLang = 'es-MX', locale, alternates = [] } = Astro.props;
 ---
 
 <!doctype html>
-<html lang="es-MX">
+<html lang={htmlLang}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width" />
     <meta name="generator" content={Astro.generator} />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="icon" href="/favicon.ico" />
-    <SeoHead title={title} description={description} canonicalUrl={canonicalUrl} />
+    <SeoHead title={title} description={description} canonicalUrl={canonicalUrl} locale={locale} alternates={alternates} />
   </head>
   <body>
     <slot />

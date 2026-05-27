@@ -1,6 +1,16 @@
-<aside class="contact-direct-card" aria-label="Información de contacto">
-  <h3>Contacto directo</h3>
-  <p>También puedes comunicarte con nuestro equipo por estos canales.</p>
+---
+import type { ContactCopy } from '../../data/contact';
+
+type Props = {
+  copy: ContactCopy['direct'];
+};
+
+const { copy } = Astro.props;
+---
+
+<aside class="contact-direct-card" aria-label={copy.label}>
+  <h3>{copy.title}</h3>
+  <p>{copy.copy}</p>
   <a href="tel:+525570267458">
     <span class="contact-direct-icon">
       <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">

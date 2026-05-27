@@ -6,6 +6,8 @@ type Props = {
   description?: string;
   canonicalUrl?: string;
   image?: string;
+  locale?: string;
+  alternates?: Array<{ lang: string; href: string }>;
 };
 
 const {
@@ -13,6 +15,8 @@ const {
   description = siteMetadata.description,
   canonicalUrl = siteMetadata.canonicalUrl,
   image = siteMetadata.image,
+  locale = siteMetadata.locale,
+  alternates = [],
 } = Astro.props;
 
 const absoluteImage = image.startsWith('http') ? image : new URL(image, canonicalUrl).toString();
@@ -21,8 +25,9 @@ const absoluteImage = image.startsWith('http') ? image : new URL(image, canonica
 <title>{title}</title>
 <meta name="description" content={description} />
 <link rel="canonical" href={canonicalUrl} />
+{alternates.map((alternate) => <link rel="alternate" hreflang={alternate.lang} href={alternate.href} />)}
 <meta property="og:type" content="website" />
-<meta property="og:locale" content={siteMetadata.locale} />
+<meta property="og:locale" content={locale} />
 <meta property="og:site_name" content={siteMetadata.siteName} />
 <meta property="og:title" content={title} />
 <meta property="og:description" content={description} />

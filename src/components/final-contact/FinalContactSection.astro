@@ -1,21 +1,25 @@
 ---
+import type { ContactCopy } from '../../data/contact';
 import ContactDirectCard from '../contact/ContactDirectCard.astro';
 import ContactForm from '../contact/ContactForm.astro';
+
+type Props = {
+  copy: ContactCopy;
+};
+
+const { copy } = Astro.props;
 ---
 
 <section id="contacto" class="final-contact-section" aria-labelledby="final-contact-title">
   <div class="final-contact-content">
     <div class="final-contact-heading">
-      <h2 id="final-contact-title">Hablemos de tu siguiente avance.</h2>
-      <p>
-        Agenda una asesoría sin costo para revisar tus prioridades, detectar oportunidades y definir el siguiente paso
-        con claridad.
-      </p>
+      <h2 id="final-contact-title">{copy.final.title}</h2>
+      <p>{copy.final.copy}</p>
     </div>
 
     <div class="final-contact-grid">
-      <ContactDirectCard />
-      <ContactForm />
+      <ContactDirectCard copy={copy.direct} />
+      <ContactForm copy={copy.form} />
     </div>
   </div>
 </section>

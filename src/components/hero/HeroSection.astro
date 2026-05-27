@@ -1,8 +1,15 @@
 ---
 import { Image } from 'astro:assets';
-import SplitLetters from './SplitLetters.astro';
-import windowOverlayImage from '../../assets/images/fondo-ventana.webp';
+import type { HeroContent } from '../../data/hero';
 import personImage from '../../assets/images/personaje.webp';
+import windowOverlayImage from '../../assets/images/fondo-ventana.webp';
+import SplitLetters from './SplitLetters.astro';
+
+type Props = {
+  copy: HeroContent;
+};
+
+const { copy } = Astro.props;
 ---
 
 <div class="hero-person js-floating-person" aria-hidden="true">
@@ -12,22 +19,21 @@ import personImage from '../../assets/images/personaje.webp';
 <div class="hero-copy js-hero-copy">
   <div class="hero-left-panel">
     <div class="hero-copy-block">
-      <h1 class="hero-side-titles" aria-label="Decisiones que definen el futuro de su empresa">
-        <span class="hero-main-line">Decisiones que</span>
+      <h1 class="hero-side-titles" aria-label={copy.titleLabel}>
+        <span class="hero-main-line">{copy.lineStart}</span>
         <span class="hero-side-title hero-emphasis-word">
-          <SplitLetters fillOnScroll text="definen el futuro" />
+          <SplitLetters fillOnScroll text={copy.emphasis} />
         </span>
-        <span class="hero-main-line">de su empresa</span>
+        <span class="hero-main-line">{copy.lineEnd}</span>
       </h1>
 
       <p class="hero-support-copy">
-        Acompañamos a organizaciones ambiciosas en sus momentos más determinantes. Estrategia, claridad y resultados
-        medibles cuando más importan.
+        {copy.support}
       </p>
     </div>
 
     <div class="hero-cta-wrap">
-      <button class="hero-contact-button" type="button" data-contact-trigger>Conversemos sobre tu empresa</button>
+      <button class="hero-contact-button" type="button" data-contact-trigger>{copy.cta}</button>
     </div>
   </div>
 </div>

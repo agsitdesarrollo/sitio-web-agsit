@@ -1,7 +1,13 @@
 ---
 import { Image } from 'astro:assets';
-import { servicePoints, type ServicePoint } from '../../data/services';
+import type { ServicePoint, ServicesContent } from '../../data/services';
 import personImage from '../../assets/images/personaje.webp';
+
+type Props = {
+  content: ServicesContent;
+};
+
+const { content } = Astro.props;
 
 const iconPath = (icon: ServicePoint['icon']) => {
   if (icon === 'layers') {
@@ -28,19 +34,19 @@ const iconPath = (icon: ServicePoint['icon']) => {
   <div class="services-background" aria-hidden="true"></div>
 
   <div class="services-intro">
-    <h2>Transformamos tus oportunidades en éxitos empresariales.</h2>
-    <p>Una consultoría real, no una promesa de papel</p>
+    <h2>{content.introTitle}</h2>
+    <p>{content.introSubtitle}</p>
   </div>
 
   <div class="services-person js-services-person" aria-hidden="true">
     <Image src={personImage} alt="" loading="lazy" />
   </div>
 
-  <button class="services-advice-cta" type="button" data-contact-trigger>Agenda una asesoría sin costo</button>
+  <button class="services-advice-cta" type="button" data-contact-trigger>{content.cta}</button>
 
   <div class="services-cards-layer">
     {
-      servicePoints.map((service, index) => (
+      content.servicePoints.map((service, index) => (
         <article class={`service-card ${index % 2 === 0 ? 'left' : 'right'}`} aria-label={service.title}>
           <span class="service-card-icon">
             <svg viewBox="0 0 24 24" aria-hidden="true">

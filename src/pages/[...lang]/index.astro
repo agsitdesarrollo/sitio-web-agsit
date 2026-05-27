@@ -1,0 +1,83 @@
+---
+import { Image } from 'astro:assets';
+import AboutHorizontalSection from '../../components/about/AboutHorizontalSection.astro';
+import FinalContactSection from '../../components/final-contact/FinalContactSection.astro';
+import Footer from '../../components/footer/Footer.astro';
+import HeroSection from '../../components/hero/HeroSection.astro';
+import SiteInteractivity from '../../components/interactivity/SiteInteractivity';
+import Header from '../../components/navigation/Header.astro';
+import ScrollExperienceController from '../../components/scroll/ScrollExperienceController';
+import ServicesSection from '../../components/services/ServicesSection.astro';
+import VideoStorySection from '../../components/video-story/VideoStorySection.astro';
+import SiteLayout from '../../layouts/SiteLayout.astro';
+import logoImage from '../../assets/images/logo-asit.webp';
+import { getAboutContent } from '../../data/about';
+import { getContactCopy } from '../../data/contact';
+import { getFooterCopy } from '../../data/footer';
+import { getHeroContent } from '../../data/hero';
+import { getServicesContent } from '../../data/services';
+import { getSiteMetadata, siteMetadataByLang } from '../../data/siteMetadata';
+import { getStoryLines } from '../../data/videoStory';
+import { useTranslations } from '../../i18n/utils';
+import type { SupportedLang } from '../../i18n/ui';
+
+export function getStaticPaths() {
+  return [
+    { params: { lang: undefined }, props: { lang: 'es' } },
+    { params: { lang: 'en' }, props: { lang: 'en' } },
+  ];
+}
+
+type Props = {
+  lang: SupportedLang;
+};
+
+const { lang } = Astro.props;
+const metadata = getSiteMetadata(lang);
+const aboutContent = getAboutContent(lang);
+const contactCopy = getContactCopy(lang);
+const footerCopy = getFooterCopy(lang);
+const heroContent = getHeroContent(lang);
+const servicesContent = getServicesContent(lang);
+const storyLines = getStoryLines(lang);
+const t = useTranslations(lang);
+const alternates = [
+  { lang: 'es-MX', href: siteMetadataByLang.es.canonicalUrl },
+  { lang: 'en', href: siteMetadataByLang.en.canonicalUrl },
+  { lang: 'x-default', href: siteMetadataByLang.es.canonicalUrl },
+];
+---
+
+<SiteLayout
+  title={metadata.title}
+  description={metadata.description}
+  canonicalUrl={metadata.canonicalUrl}
+  htmlLang={metadata.htmlLang}
+  locale={metadata.locale}
+  alternates={alternates}
+>
+  <div class="app-shell" data-scroll-root>
+    <Header lang={lang} />
+    <main>
+      <HeroSection copy={heroContent} />
+      <ServicesSection content={servicesContent} />
+      <AboutHorizontalSection content={aboutContent} />
+      <VideoStorySection lines={storyLines} lang={lang} />
+      <FinalContactSection copy={contactCopy} />
+      <button
+        class="scroll-consult-logo js-scroll-consult-logo"
+        type="button"
+        data-contact-trigger
+        aria-label={t('floatingCta.label')}
+      >
+        <span class="scroll-consult-logo-mark" aria-hidden="true">
+          <Image src={logoImage} alt="" loading="lazy" draggable="false" />
+        </span>
+        <span class="scroll-consult-logo-tooltip">{t('floatingCta.tooltip')}</span>
+      </button>
+    </main>
+    <Footer copy={footerCopy} services={servicesContent.services} />
+    <SiteInteractivity copy={contactCopy} openMenuLabel={t('nav.openMenu')} closeMenuLabel={t('nav.closeMenu')} client:load />
+    <ScrollExperienceController client:load />
+  </div>
+</SiteLayout>
