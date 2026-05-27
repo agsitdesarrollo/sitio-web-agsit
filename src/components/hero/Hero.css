@@ -219,9 +219,17 @@
 }
 
 .title-fill-letter {
+  --hero-fill-x-bleed: 0.35em;
+  --hero-fill-y-bleed: 1em;
   position: absolute;
-  inset: 0;
-  color: #ffffff;
+  top: calc(var(--hero-fill-y-bleed) * -1);
+  right: calc(var(--hero-fill-x-bleed) * -1);
+  bottom: calc(var(--hero-fill-y-bleed) * -1);
+  left: calc(var(--hero-fill-x-bleed) * -1);
+  box-sizing: border-box;
+  padding: var(--hero-fill-y-bleed) var(--hero-fill-x-bleed);
+  /* color: #d83a3a; */
+  color: #fc0303;
   clip-path: inset(0 100% 0 0);
   -webkit-text-stroke: 0;
   will-change: clip-path;

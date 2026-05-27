@@ -46,9 +46,9 @@ export const servicesContentByLang: Record<SupportedLang, ServicesContent> = {
       },
       {
         icon: 'trend',
-        title: 'Resultados medibles desde el primer mes',
+        title: 'Resultados medibles',
         description:
-          'No entregamos informes y desaparecemos. Permanecemos activos hasta que los resultados se consolidan y su equipo tiene la autonomía para sostenerlos.',
+          'Damos seguimiento continuo a cada iniciativa con indicadores claros, ajustes oportunos y acompañamiento hasta consolidar avances que su equipo pueda sostener.',
       },
       {
         icon: 'root',
@@ -85,9 +85,9 @@ export const servicesContentByLang: Record<SupportedLang, ServicesContent> = {
       },
       {
         icon: 'trend',
-        title: 'Measurable results from the first month',
+        title: 'Measurable results',
         description:
-          'We do not deliver reports and disappear. We stay active until results are consolidated and your team can sustain them independently.',
+          'We track every initiative with clear indicators, timely adjustments and ongoing support until progress is consolidated and your team can sustain it.',
       },
       {
         icon: 'root',

@@ -92,7 +92,7 @@ export const aboutContentByLang: Record<SupportedLang, AboutContent> = {
   es: {
     sectionLabel: 'Quiénes somos',
     overview: {
-      kicker: '6 especialidades integradas',
+      kicker: 'Somos una consultoría integral para empresas.',
       title: 'Seis áreas clave.',
       titleAccent: 'Una sola visión.',
       copy:
@@ -170,7 +170,7 @@ export const aboutContentByLang: Record<SupportedLang, AboutContent> = {
   en: {
     sectionLabel: 'About AGSIT',
     overview: {
-      kicker: '6 integrated specialties',
+      kicker: 'We are an integrated consulting firm for businesses.',
       title: 'Six key areas.',
       titleAccent: 'One clear vision.',
       copy:
