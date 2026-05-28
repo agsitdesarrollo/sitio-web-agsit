@@ -49,7 +49,7 @@
   --hero-person-height-limit: calc((var(--app-stable-vh, 100svh) - var(--nav-h)) * 0.94);
   position: fixed;
   left: 50%;
-  bottom: 0;
+  bottom: max(0px, calc(var(--app-vh, 100dvh) - var(--app-stable-vh, 100svh)));
   width: min(clamp(470px, 48vw, 700px), var(--hero-person-height-limit));
   z-index: 4;
   pointer-events: none;
