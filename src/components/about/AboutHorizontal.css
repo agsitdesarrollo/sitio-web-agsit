@@ -1,6 +1,6 @@
 .about-horizontal-section {
   position: relative;
-  height: calc(var(--app-vh, 100svh) - var(--nav-h));
+  height: calc(var(--app-stable-vh, 100svh) - var(--nav-h));
   overflow: hidden;
   background: #ffffff;
 }
@@ -960,7 +960,7 @@
 
 @media (max-width: 767px) {
   .about-horizontal-section {
-    height: calc(var(--app-vh, 100svh) - var(--nav-h));
+    height: calc(var(--app-stable-vh, 100svh) - var(--nav-h));
   }
 
   .about-panel {

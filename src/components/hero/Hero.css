@@ -1,7 +1,7 @@
 .hero-section {
   position: relative;
-  height: calc(var(--app-vh, 100svh) - var(--nav-h));
-  min-height: calc(var(--app-vh, 100svh) - var(--nav-h));
+  height: calc(var(--app-stable-vh, 100svh) - var(--nav-h));
+  min-height: calc(var(--app-stable-vh, 100svh) - var(--nav-h));
   display: grid;
   align-items: center;
   isolation: isolate;
@@ -46,7 +46,7 @@
 }
 
 .hero-person {
-  --hero-person-height-limit: calc((var(--app-vh, 100svh) - var(--nav-h)) * 0.94);
+  --hero-person-height-limit: calc((var(--app-stable-vh, 100svh) - var(--nav-h)) * 0.94);
   position: fixed;
   left: 50%;
   bottom: 0;
@@ -298,7 +298,7 @@
 
 @media (max-height: 760px) and (min-width: 901px) {
   .hero-person {
-    --hero-person-height-limit: calc((var(--app-vh, 100svh) - var(--nav-h)) * 0.9);
+    --hero-person-height-limit: calc((var(--app-stable-vh, 100svh) - var(--nav-h)) * 0.9);
   }
 }
 
@@ -326,8 +326,8 @@
 
 @media (max-width: 900px) {
   .hero-section {
-    height: calc(var(--app-vh, 100svh) - var(--nav-h));
-    min-height: calc(var(--app-vh, 100svh) - var(--nav-h));
+    height: calc(var(--app-stable-vh, 100svh) - var(--nav-h));
+    min-height: calc(var(--app-stable-vh, 100svh) - var(--nav-h));
   }
 
   .hero-person {
@@ -440,7 +440,7 @@
   }
 
   .hero-person {
-    --hero-person-height-limit: calc((var(--app-vh, 100svh) - var(--nav-h)) * 0.86);
+    --hero-person-height-limit: calc((var(--app-stable-vh, 100svh) - var(--nav-h)) * 0.86);
     width: min(430px, 112vw, var(--hero-person-height-limit));
   }
 

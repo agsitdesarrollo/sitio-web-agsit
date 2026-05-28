@@ -86,6 +86,8 @@ const alternates = [
       const closeButtons = Array.from(document.querySelectorAll('[data-contact-close]'));
       const navLinks = Array.from(document.querySelectorAll('[data-nav-close]'));
       const forms = Array.from(document.querySelectorAll('[data-contact-form]'));
+      let contactScrollY = 0;
+      let isContactOpen = false;
 
       const setMenuOpen = (isOpen) => {
         nav?.classList.toggle('is-open', isOpen);
@@ -94,10 +96,40 @@ const alternates = [
         toggle?.setAttribute('aria-label', isOpen ? closeMenuLabel : openMenuLabel);
       };
 
+      const lockBodyScroll = () => {
+        contactScrollY = window.scrollY || document.documentElement.scrollTop || 0;
+        document.body.style.position = 'fixed';
+        document.body.style.top = `-${contactScrollY}px`;
+        document.body.style.left = '0';
+        document.body.style.right = '0';
+        document.body.style.width = '100%';
+        document.body.classList.add('drawer-open');
+      };
+
+      const unlockBodyScroll = () => {
+        document.body.classList.remove('drawer-open');
+        document.body.style.position = '';
+        document.body.style.top = '';
+        document.body.style.left = '';
+        document.body.style.right = '';
+        document.body.style.width = '';
+        window.scrollTo(0, contactScrollY);
+      };
+
       const setContactOpen = (isOpen) => {
+        if (!drawer || isOpen === isContactOpen) {
+          return;
+        }
+
+        isContactOpen = isOpen;
         drawer?.classList.toggle('is-open', isOpen);
         drawer?.setAttribute('aria-hidden', String(!isOpen));
-        document.body.classList.toggle('drawer-open', isOpen);
+
+        if (isOpen) {
+          lockBodyScroll();
+        } else {
+          unlockBodyScroll();
+        }
       };
 
       toggle?.addEventListener('click', () => setMenuOpen(!nav?.classList.contains('is-open')));

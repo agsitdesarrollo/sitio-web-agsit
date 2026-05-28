@@ -26,7 +26,14 @@ function ScrollExperienceController() {
       const isMobile = window.matchMedia('(max-width: 767px)').matches;
       const isTablet = isCompact && !isMobile;
       const isDesktop = !isCompact;
-      const getViewportHeight = () => window.visualViewport?.height ?? window.innerHeight;
+      ScrollTrigger.config({ ignoreMobileResize: true });
+
+      const getRootPixelValue = (name: string, fallback: number) => {
+        const value = Number.parseFloat(getComputedStyle(document.documentElement).getPropertyValue(name));
+        return Number.isFinite(value) && value > 0 ? value : fallback;
+      };
+      const getViewportHeight = () =>
+        isCompact ? getRootPixelValue('--app-stable-vh', window.innerHeight) : window.innerHeight;
       const getNavHeight = () => document.querySelector('.site-nav')?.getBoundingClientRect().height ?? 0;
       const getPinnedSectionStart = () => `top top+=${getNavHeight()}`;
       const getVideoStoryInset = () => (isMobile ? 22 : isTablet ? 24 : isCompact ? 28 : 34);
@@ -204,19 +211,31 @@ function ScrollExperienceController() {
       });
 
       let viewportRefreshFrame = 0;
-      const requestViewportRefresh = () => {
+      let viewportRefreshTimeout = 0;
+      const requestViewportRefresh = (event?: Event) => {
+        const viewportEvent = event as CustomEvent<{ stableChanged?: boolean }> | undefined;
+
+        if (isCompact && event?.type === 'agsit:viewport-change' && !viewportEvent?.detail?.stableChanged) {
+          return;
+        }
+
         cancelAnimationFrame(viewportRefreshFrame);
-        viewportRefreshFrame = requestAnimationFrame(() => {
-          ScrollTrigger.refresh();
-        });
+        window.clearTimeout(viewportRefreshTimeout);
+        viewportRefreshTimeout = window.setTimeout(
+          () => {
+            viewportRefreshFrame = requestAnimationFrame(() => {
+              ScrollTrigger.refresh();
+            });
+          },
+          isCompact ? 180 : 0,
+        );
       };
 
-      window.visualViewport?.addEventListener('resize', requestViewportRefresh, { passive: true });
       window.addEventListener('orientationchange', requestViewportRefresh, { passive: true });
       window.addEventListener('agsit:viewport-change', requestViewportRefresh, { passive: true });
       cleanupViewportRefresh = () => {
         cancelAnimationFrame(viewportRefreshFrame);
-        window.visualViewport?.removeEventListener('resize', requestViewportRefresh);
+        window.clearTimeout(viewportRefreshTimeout);
         window.removeEventListener('orientationchange', requestViewportRefresh);
         window.removeEventListener('agsit:viewport-change', requestViewportRefresh);
       };
@@ -432,13 +451,17 @@ function ScrollExperienceController() {
           },
         });
         compactServicesScrollTrigger = servicesTimeline.scrollTrigger;
-        const tabletCardOutEnd = Math.max(cards.length - 1, 0) * 0.64 + 0.1 + 0.85 + 0.28;
+        const tabletCardStep = 0.98;
+        const tabletCardExitStart = 0.74;
+        const tabletCardExitDuration = 0.26;
+        const tabletCardOutEnd =
+          Math.max(cards.length - 1, 0) * tabletCardStep + 0.1 + tabletCardExitStart + tabletCardExitDuration;
         const tabletLogoTravelDuration = 0.72;
         servicesTimeline.to({}, { duration: tabletLogoTravelDuration }, tabletCardOutEnd);
         compactServicesLogoStartProgress = tabletCardOutEnd / (tabletCardOutEnd + tabletLogoTravelDuration);
 
         cards.forEach((card, index) => {
-          const startAt = index * 0.64 + 0.1;
+          const startAt = index * tabletCardStep + 0.1;
           servicesTimeline
             .to(
               card,
@@ -446,7 +469,7 @@ function ScrollExperienceController() {
                 autoAlpha: 1,
                 x: 0,
                 y: 0,
-                duration: 0.28,
+                duration: 0.26,
                 ease: 'power2.out',
               },
               startAt,
@@ -456,10 +479,10 @@ function ScrollExperienceController() {
               {
                 autoAlpha: 0,
                 y: -28,
-                duration: 0.28,
+                duration: tabletCardExitDuration,
                 ease: 'power1.inOut',
               },
-              startAt + 0.85,
+              startAt + tabletCardExitStart,
             );
         });
 
@@ -496,20 +519,24 @@ function ScrollExperienceController() {
           },
         });
         compactServicesScrollTrigger = compactServicesTimeline.scrollTrigger;
-        const mobileCardOutEnd = Math.max(cards.length - 1, 0) * 0.7 + 0.08 + 0.62 + 0.24;
+        const mobileCardStep = 0.96;
+        const mobileCardExitStart = 0.7;
+        const mobileCardExitDuration = 0.24;
+        const mobileCardOutEnd =
+          Math.max(cards.length - 1, 0) * mobileCardStep + 0.08 + mobileCardExitStart + mobileCardExitDuration;
         const mobileLogoTravelDuration = 0.72;
         compactServicesTimeline.to({}, { duration: mobileLogoTravelDuration }, mobileCardOutEnd);
         compactServicesLogoStartProgress = mobileCardOutEnd / (mobileCardOutEnd + mobileLogoTravelDuration);
 
         cards.forEach((card, index) => {
-          const startAt = index * 0.7 + 0.08;
+          const startAt = index * mobileCardStep + 0.08;
           compactServicesTimeline
             .to(
               card,
               {
                 autoAlpha: 1,
                 y: 0,
-                duration: 0.28,
+                duration: 0.26,
                 ease: 'power2.out',
               },
               startAt,
@@ -519,10 +546,10 @@ function ScrollExperienceController() {
               {
                 autoAlpha: 0,
                 y: -24,
-                duration: 0.24,
+                duration: mobileCardExitDuration,
                 ease: 'power1.inOut',
               },
-              startAt + 0.62,
+              startAt + mobileCardExitStart,
             );
         });
       }

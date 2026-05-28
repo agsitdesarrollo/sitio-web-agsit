@@ -11,6 +11,7 @@
 :root {
   --nav-h: clamp(76px, 10vh, 96px);
   --app-vh: 100svh;
+  --app-stable-vh: 100svh;
   --bg-dark: #020712;
   --bg-ink: #08152b;
   --primary: #41c8f6;

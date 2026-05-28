@@ -7,14 +7,14 @@
   --transition-blue: #020712;
   position: relative;
   margin-top: 0;
-  min-height: calc(var(--app-vh, 100svh) - var(--nav-h));
+  min-height: calc(var(--app-stable-vh, 100svh) - var(--nav-h));
   overflow: hidden;
   background: var(--transition-blue);
 }
 
 .video-story-stage {
   position: relative;
-  min-height: calc(var(--app-vh, 100svh) - var(--nav-h));
+  min-height: calc(var(--app-stable-vh, 100svh) - var(--nav-h));
   background: var(--transition-blue);
 }
 
@@ -22,7 +22,7 @@
   position: absolute;
   inset: 0;
   z-index: 3;
-  min-height: calc(var(--app-vh, 100svh) - var(--nav-h));
+  min-height: calc(var(--app-stable-vh, 100svh) - var(--nav-h));
   display: grid;
   place-items: center;
   overflow: hidden;
@@ -57,7 +57,7 @@
   position: relative;
   z-index: 1;
   width: min(1360px, 92vw);
-  min-height: min(760px, calc(var(--app-vh, 100svh) - var(--nav-h) - 56px));
+  min-height: min(760px, calc(var(--app-stable-vh, 100svh) - var(--nav-h) - 56px));
   display: grid;
   grid-template-rows: auto auto auto 1fr auto;
   align-items: center;
@@ -225,7 +225,7 @@
   left: 0;
   z-index: 4;
   width: 100vw;
-  height: calc(var(--app-vh, 100svh) - var(--nav-h));
+  height: calc(var(--app-stable-vh, 100svh) - var(--nav-h));
   overflow: hidden;
   background: var(--transition-blue);
   border-radius: 0;
@@ -271,7 +271,7 @@
 
 @media (max-width: 1024px) {
   .partners-content {
-    min-height: min(720px, calc(var(--app-vh, 100svh) - var(--nav-h) - 48px));
+    min-height: min(720px, calc(var(--app-stable-vh, 100svh) - var(--nav-h) - 48px));
   }
 
   .partners-grid {
@@ -303,7 +303,7 @@
 
   .partners-content {
     width: min(352px, 92vw);
-    min-height: calc(var(--app-vh, 100svh) - var(--nav-h) - 36px);
+    min-height: calc(var(--app-stable-vh, 100svh) - var(--nav-h) - 36px);
   }
 
   .partners-content h2 {

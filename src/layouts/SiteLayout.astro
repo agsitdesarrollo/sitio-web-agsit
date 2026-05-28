@@ -18,7 +18,7 @@ const { title, description, canonicalUrl, htmlLang = 'es-MX', locale, alternates
 <html lang={htmlLang}>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <meta name="generator" content={Astro.generator} />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -34,22 +34,65 @@ const { title, description, canonicalUrl, htmlLang = 'es-MX', locale, alternates
     <script is:inline>
       (() => {
         const root = document.documentElement;
+        const compactQuery = window.matchMedia('(max-width: 900px)');
         let frame = 0;
-        const applyViewportHeight = () => {
-          const height = window.visualViewport?.height || window.innerHeight;
-          root.style.setProperty('--app-vh', `${height}px`);
-          window.dispatchEvent(new CustomEvent('agsit:viewport-change'));
-        };
-        const scheduleViewportHeight = () => {
-          cancelAnimationFrame(frame);
-          frame = requestAnimationFrame(applyViewportHeight);
+        let stableHeight = 0;
+        let lastWidth = window.innerWidth;
+
+        const getDynamicHeight = () => Math.round(window.visualViewport?.height || window.innerHeight);
+        const getStableCandidate = () => Math.round(Math.max(window.innerHeight, getDynamicHeight()));
+
+        const applyViewportHeight = (reason = 'resize', forceStable = false) => {
+          const dynamicHeight = getDynamicHeight();
+          const stableCandidate = getStableCandidate();
+          const width = window.innerWidth;
+          const isCompact = compactQuery.matches;
+          const widthChanged = Math.abs(width - lastWidth) > 24;
+          let stableChanged = false;
+
+          root.style.setProperty('--app-vh', `${dynamicHeight}px`);
+
+          if (!stableHeight || !isCompact || forceStable || widthChanged) {
+            stableHeight = stableCandidate;
+            root.style.setProperty('--app-stable-vh', `${stableHeight}px`);
+            stableChanged = true;
+          }
+
+          lastWidth = width;
+
+          if (stableChanged || !isCompact) {
+            window.dispatchEvent(
+              new CustomEvent('agsit:viewport-change', {
+                detail: {
+                  reason,
+                  stableChanged,
+                  dynamicHeight,
+                  stableHeight,
+                },
+              }),
+            );
+          }
         };
 
-        applyViewportHeight();
-        window.visualViewport?.addEventListener('resize', scheduleViewportHeight, { passive: true });
-        window.addEventListener('resize', scheduleViewportHeight, { passive: true });
-        window.addEventListener('orientationchange', scheduleViewportHeight, { passive: true });
-        window.addEventListener('pageshow', scheduleViewportHeight, { passive: true });
+        const scheduleViewportHeight = (reason = 'resize', forceStable = false) => {
+          cancelAnimationFrame(frame);
+          frame = requestAnimationFrame(() => applyViewportHeight(reason, forceStable));
+        };
+
+        applyViewportHeight('load', true);
+        window.visualViewport?.addEventListener('resize', () => scheduleViewportHeight('visual-resize'), {
+          passive: true,
+        });
+        window.addEventListener('resize', () => scheduleViewportHeight('resize'), { passive: true });
+        window.addEventListener(
+          'orientationchange',
+          () => {
+            scheduleViewportHeight('orientationchange', true);
+            window.setTimeout(() => scheduleViewportHeight('orientationchange-settled', true), 240);
+          },
+          { passive: true },
+        );
+        window.addEventListener('pageshow', () => scheduleViewportHeight('pageshow', true), { passive: true });
       })();
     </script>
     <slot />

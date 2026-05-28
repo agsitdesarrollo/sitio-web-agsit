@@ -202,7 +202,7 @@
 
 @media (max-width: 1024px) {
   .services-section {
-    min-height: calc(var(--app-vh, 100svh) - var(--nav-h));
+    min-height: calc(var(--app-stable-vh, 100svh) - var(--nav-h));
     padding: calc(var(--nav-h) + 22px) clamp(18px, 5vw, 42px) 72px;
     overflow: hidden;
   }
@@ -263,7 +263,7 @@
 
 @media (min-width: 768px) and (max-width: 1024px) {
   .services-section {
-    min-height: var(--app-vh, 100svh);
+    min-height: var(--app-stable-vh, 100svh);
     padding-inline: clamp(24px, 4vw, 42px);
     padding-bottom: 0;
   }
@@ -331,7 +331,7 @@
 
 @media (max-width: 767px) {
   .services-section {
-    min-height: calc(var(--app-vh, 100svh) - var(--nav-h));
+    min-height: calc(var(--app-stable-vh, 100svh) - var(--nav-h));
     padding:
       calc(var(--nav-h) + clamp(12px, 2.2svh, 20px))
       18px
