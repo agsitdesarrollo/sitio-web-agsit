@@ -88,6 +88,8 @@ const alternates = [
       const openButtons = Array.from(document.querySelectorAll('[data-contact-trigger]'));
       const closeButtons = Array.from(document.querySelectorAll('[data-contact-close]'));
       const navLinks = Array.from(document.querySelectorAll('[data-nav-close]'));
+      const homeLinks = Array.from(document.querySelectorAll('a[href="#inicio"]'));
+      const servicesLinks = Array.from(document.querySelectorAll('a[href="#servicios"]'));
       const forms = Array.from(document.querySelectorAll('[data-contact-form]'));
       let contactScrollY = 0;
       let isContactOpen = false;
@@ -137,6 +139,49 @@ const alternates = [
 
       toggle?.addEventListener('click', () => setMenuOpen(!nav?.classList.contains('is-open')));
       navLinks.forEach((link) => link.addEventListener('click', () => setMenuOpen(false)));
+      homeLinks.forEach((link) =>
+        link.addEventListener('click', (event) => {
+          event.preventDefault();
+          setMenuOpen(false);
+          window.history.pushState(null, '', '#inicio');
+          window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
+          requestAnimationFrame(() => window.scrollTo({ top: 0, left: 0, behavior: 'auto' }));
+        }),
+      );
+      servicesLinks.forEach((link) =>
+        link.addEventListener('click', (event) => {
+          const services = document.querySelector('#servicios');
+
+          if (!services) {
+            return;
+          }
+
+          event.preventDefault();
+          setMenuOpen(false);
+          window.history.pushState(null, '', '#servicios');
+          const navigationEvent = new CustomEvent('agsit:navigate-services', { cancelable: true });
+          const wasHandled = !window.dispatchEvent(navigationEvent);
+
+          if (wasHandled) {
+            return;
+          }
+
+          services.scrollIntoView({ block: 'start', behavior: 'auto' });
+
+          requestAnimationFrame(() => {
+            const revealOffset = Math.max(
+              560,
+              Math.min(window.innerWidth * 0.62, window.innerHeight * 1.05),
+            );
+
+            window.scrollTo({
+              top: window.scrollY + revealOffset,
+              left: 0,
+              behavior: 'auto',
+            });
+          });
+        }),
+      );
       openButtons.forEach((button) =>
         button.addEventListener('click', () => {
           setMenuOpen(false);

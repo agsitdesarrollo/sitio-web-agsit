@@ -13,6 +13,7 @@ export function initScrollExperience(): (() => void) | undefined {
 
   let cleanupBridgeScroll: (() => void) | undefined;
   let cleanupViewportRefresh: (() => void) | undefined;
+  let cleanupServicesAnchorNavigation: (() => void) | undefined;
 
   const context = gsap.context(() => {
     window.scrollTo(0, 0);
@@ -695,6 +696,28 @@ export function initScrollExperience(): (() => void) | undefined {
         },
       });
 
+      const navigateToServices = (event: Event) => {
+        event.preventDefault();
+        aboutTimeline.scrollTrigger?.refresh();
+
+        const trigger = aboutTimeline.scrollTrigger;
+
+        if (!trigger) {
+          return;
+        }
+
+        const revealProgress = gsap.utils.clamp(0, 1, 0.76 / Math.max(aboutTimeline.duration(), 1));
+        const targetY = trigger.start + (trigger.end - trigger.start) * revealProgress;
+
+        window.scrollTo({ top: targetY, left: 0, behavior: 'auto' });
+        requestAnimationFrame(() => ScrollTrigger.update());
+      };
+
+      window.addEventListener('agsit:navigate-services', navigateToServices);
+      cleanupServicesAnchorNavigation = () => {
+        window.removeEventListener('agsit:navigate-services', navigateToServices);
+      };
+
       const animatePanelEmphasis = (panel: HTMLElement, at: number) => {
         const underlines = panel.querySelectorAll<HTMLElement>('.js-about-emphasis-underline');
         const glows = panel.querySelectorAll<HTMLElement>('.js-about-emphasis-glow .about-word-fill');
@@ -1139,6 +1162,7 @@ export function initScrollExperience(): (() => void) | undefined {
   return () => {
     cleanupBridgeScroll?.();
     cleanupViewportRefresh?.();
+    cleanupServicesAnchorNavigation?.();
     context.revert();
   };
 }

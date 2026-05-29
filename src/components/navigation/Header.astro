@@ -31,7 +31,7 @@ const alternateLangPath = getAlternateLangPath(lang);
   <nav id="main-navigation">
     <a href="#inicio" data-nav-close>{t('nav.home')}</a>
     <a href="#servicios" data-nav-close>{t('nav.services')}</a>
-    <button type="button" data-contact-trigger>{t('nav.contact')}</button>
+    <a href="#contacto" data-nav-close>{t('nav.contact')}</a>
     <a class="language-switch" href={alternateLangPath} aria-label={t('language.switchLabel')} data-nav-close>
       {t('language.switchText')}
     </a>
