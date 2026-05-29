@@ -99,7 +99,7 @@ export const aboutContentByLang: Record<SupportedLang, AboutContent> = {
         'AGSIT interviene en las áreas estratégicas y tácticas que toda organización necesita para funcionar correctamente, crecer de forma sostenida y maximizar su rentabilidad.',
       scroll: 'Continúa desplazando >>>',
     },
-    serviceLinkLabel: 'Ver servicios',
+    serviceLinkLabel: 'Ver más servicios',
     services: [
       {
         ...commonServices.its,
@@ -152,7 +152,7 @@ export const aboutContentByLang: Record<SupportedLang, AboutContent> = {
     clients: {
       title: 'Empresas que han confiado en AGSIT.',
       copy:
-        'Una muestra editable de clientes y organizaciones con las que hemos colaborado. Los bloques reaccionan al avance del scroll con gravedad, rebote e inercia.',
+        'Una muestra de clientes y organizaciones con las que hemos colaborado.',
     },
     alliance: {
       titleLabel: 'Proceso probado. Resultados reales.',
@@ -177,7 +177,7 @@ export const aboutContentByLang: Record<SupportedLang, AboutContent> = {
         'AGSIT works across the strategic and tactical areas every organization needs to operate correctly, grow sustainably and maximize profitability.',
       scroll: 'Keep scrolling >>>',
     },
-    serviceLinkLabel: 'View services',
+    serviceLinkLabel: 'View more services',
     services: [
       {
         ...commonServices.its,
@@ -230,7 +230,7 @@ export const aboutContentByLang: Record<SupportedLang, AboutContent> = {
     clients: {
       title: 'Companies that have trusted AGSIT.',
       copy:
-        'An editable sample of clients and organizations we have worked with. The blocks react to scroll progress with gravity, bounce and inertia.',
+        'A sample of clients and organizations we have worked with.',
     },
     alliance: {
       titleLabel: 'Proven process. Real results.',

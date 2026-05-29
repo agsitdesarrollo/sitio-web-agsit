@@ -77,6 +77,60 @@
   box-shadow: 0 22px 58px rgba(8, 21, 43, 0.08);
 }
 
+/* ── Desktop: toda la sección en un solo viewport ──────────────────── */
+@media (min-width: 901px) {
+  .final-contact-section {
+    min-height: 100svh;
+    display: flex;
+    align-items: center;
+    padding: clamp(48px, 5vw, 72px) clamp(20px, 6vw, 92px);
+  }
+
+  .final-contact-content {
+    gap: clamp(20px, 2.8vw, 36px);
+    width: min(1180px, 100%);
+  }
+
+  .final-contact-heading h2 {
+    font-size: clamp(2.2rem, 3.8vw, 4rem);
+    line-height: 1.02;
+  }
+
+  .final-contact-heading p:last-child {
+    margin-top: clamp(10px, 1.2vw, 16px);
+    font-size: clamp(0.9rem, 1vw, 1rem);
+    line-height: 1.55;
+  }
+
+  .final-contact-grid {
+    gap: clamp(16px, 2.5vw, 32px);
+  }
+
+  .final-contact-grid .contact-form {
+    padding: clamp(16px, 2vw, 24px);
+  }
+
+  /* Campos más compactos en desktop para que todo quepa en pantalla */
+  .final-contact-grid .contact-form input,
+  .final-contact-grid .contact-form textarea {
+    padding: 10px 14px;
+    font-size: 0.9rem;
+  }
+
+  .final-contact-grid .contact-form textarea {
+    min-height: 72px;
+  }
+
+  .final-contact-grid .contact-form {
+    gap: 10px;
+  }
+
+  .final-contact-grid .contact-submit {
+    min-height: 44px;
+    font-size: 0.78rem;
+  }
+}
+
 @media (max-width: 900px) {
   .final-contact-grid {
     grid-template-columns: 1fr;

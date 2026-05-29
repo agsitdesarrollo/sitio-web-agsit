@@ -72,7 +72,7 @@ const { content } = Astro.props;
         <p>{content.clients.copy}</p>
       </div>
       <div class="about-clients-stage js-about-clients-stage">
-        <ClientsPhysicsCanvas items={clientLogos} client:visible />
+        <ClientsPhysicsCanvas items={clientLogos} client:idle />
       </div>
     </article>
 
@@ -90,21 +90,33 @@ const { content } = Astro.props;
         <div class="about-transition-logo js-about-transition-logo" aria-hidden="true">
           <Image class="about-transition-logo-image" src={logoImage} alt="" loading="lazy" draggable="false" />
         </div>
-        <div class="about-alliance-orbit" aria-hidden="true">
+        <div class="about-alliance-triangle-wrap" aria-hidden="true">
           <span class="about-alliance-metric about-alliance-metric-scope js-about-alliance-metric">
             {content.alliance.metrics.scope}
           </span>
-          <span class="about-alliance-metric about-alliance-metric-cost js-about-alliance-metric">
-            {content.alliance.metrics.cost}
-          </span>
-          <span class="about-alliance-metric about-alliance-metric-time js-about-alliance-metric">
-            {content.alliance.metrics.time}
-          </span>
+          <div class="about-alliance-triangle-spacer"></div>
+          <div class="about-alliance-triangle-bottom">
+            <span class="about-alliance-metric about-alliance-metric-cost js-about-alliance-metric pl-9">
+              {content.alliance.metrics.cost}
+            </span>
+            <span class="about-alliance-metric about-alliance-metric-time js-about-alliance-metric max-sm:pr-8">
+              {content.alliance.metrics.time}
+            </span>
+          </div>
         </div>
         <button class="about-alliance-cta js-about-alliance-cta" type="button" data-contact-trigger>
           {content.alliance.cta}
         </button>
       </div>
     </article>
+  </div>
+  <div class="about-timeline-nav js-about-timeline" aria-hidden="true">
+    <div class="about-timeline-line js-about-timeline-line"></div>
+    <div class="about-timeline-progress js-about-timeline-progress"></div>
+    {content.services.map((_, i) => (
+      <div class="about-timeline-stop js-about-timeline-stop">
+        <span class="about-timeline-number">{i + 1}</span>
+      </div>
+    ))}
   </div>
 </section>

@@ -40,12 +40,12 @@ function ScrollExperienceController() {
       const getHeroScrollEnd = () => (isMobile ? 105 : isCompact ? 105 : 220);
       const getMobileServicesScrollEnd = () => (isMobile ? 275 : 560);
       const getAboutScrollMultiplier = () => (isMobile ? 12.2 : isTablet ? 14.3 : 12.9);
-      const getVideoStoryScrollEnd = () => (isMobile ? 360 : isCompact ? 980 : 1100);
+      const getVideoStoryScrollEnd = () => (isMobile ? 250 : isCompact ? 780 : 880);
       const getAboutIntroHold = () => (isMobile ? 0.56 : 0.38);
       const getAboutServiceHold = () => (isMobile ? 0.58 : 0.42);
       const getAboutServiceStep = () => (isMobile ? 1.88 : 1.72);
       const getConsultLogoBottomY = () => getViewportHeight() - (isMobile ? 42 : isTablet ? 44 : 40);
-      const getConsultLogoTravelScale = () => (isMobile ? 0.58 : isTablet ? 0.66 : 0.68);
+      const getConsultLogoTravelScale = () => (isMobile ? 0.58 : isTablet ? 0.66 : 0.30);
       const getConsultLogoStartScale = () => (isMobile ? 0.26 : isTablet ? 0.34 : 0.46);
       const getElementRect = (selector: string) => document.querySelector<HTMLElement>(selector)?.getBoundingClientRect();
       const getServicesPersonTargetRect = () => {
@@ -87,7 +87,7 @@ function ScrollExperienceController() {
         const cta = getElementRect('.services-advice-cta');
 
         if (isCompact && cta) {
-          return cta.bottom + (isMobile ? 30 : 38);
+          return isMobile ? cta.bottom + 30 : getViewportHeight() + 34;
         }
 
         return getViewportHeight() - 128;
@@ -101,7 +101,7 @@ function ScrollExperienceController() {
         }
 
         if (isCompact) {
-          return cta.bottom + (isMobile ? 30 : 38);
+          return isMobile ? cta.bottom + 30 : fallback;
         }
 
         return cta.bottom + 70;
@@ -201,6 +201,7 @@ function ScrollExperienceController() {
       setIfFound('.js-about-alliance-copy', { autoAlpha: 0, y: 24 });
       setIfFound('.js-about-alliance-metric', { autoAlpha: 0, y: 22, scale: 0.96 });
       setIfFound('.js-about-alliance-cta', { autoAlpha: 0, y: 16, pointerEvents: 'none' });
+      setIfFound('.js-about-timeline', { autoAlpha: 0 });
       setIfFound('.js-about-fill-word .about-word-fill', { clipPath: 'inset(0 100% 0 0)' });
       setIfFound('.js-about-emphasis-underline', { '--underline-scale': 0 });
       setIfFound('.js-about-emphasis-highlight', { '--highlight-scale': 0 });
@@ -563,7 +564,7 @@ function ScrollExperienceController() {
         if (isCompact && compactServicesScrollTrigger) {
           const serviceProgress = compactServicesScrollTrigger.progress;
 
-          if (compactServicesScrollTrigger.isActive && serviceProgress < compactServicesLogoStartProgress) {
+          if (compactServicesScrollTrigger.isActive && (isTablet || serviceProgress < compactServicesLogoStartProgress)) {
             gsap.set('.js-scroll-consult-logo', {
               autoAlpha: 0,
               pointerEvents: 'none',
@@ -580,6 +581,7 @@ function ScrollExperienceController() {
             Boolean(servicesCta) && servicesCta!.bottom > 0 && servicesCta!.top < getViewportHeight();
 
           if (
+            !isTablet &&
             serviceProgress >= compactServicesLogoStartProgress &&
             aboutTop > endY &&
             (compactServicesScrollTrigger.isActive || isServicesCtaVisible)
@@ -663,9 +665,20 @@ function ScrollExperienceController() {
 
       window.addEventListener('scroll', updateConsultLogoBridge, { passive: true });
       gsap.ticker.add(updateConsultLogoBridge);
+
+      const consultTooltipEl = document.querySelector<HTMLElement>('.js-scroll-consult-logo .scroll-consult-logo-tooltip');
+      const consultLogoEl = document.querySelector<HTMLElement>('.js-scroll-consult-logo');
+      const syncTooltipScale = () => {
+        if (!consultLogoEl || !consultTooltipEl) return;
+        const s = Number(gsap.getProperty(consultLogoEl, 'scaleX')) || 1;
+        if (s > 0) gsap.set(consultTooltipEl, { scale: 0.68 / s, transformOrigin: '50% 100%' });
+      };
+      gsap.ticker.add(syncTooltipScale);
+
       cleanupBridgeScroll = () => {
         window.removeEventListener('scroll', updateConsultLogoBridge);
         gsap.ticker.remove(updateConsultLogoBridge);
+        gsap.ticker.remove(syncTooltipScale);
       };
       updateConsultLogoBridge();
 
@@ -851,8 +864,40 @@ function ScrollExperienceController() {
         const alliancesPanelIndex = aboutPanels.findIndex((panel) => panel.classList.contains('about-panel-alliances'));
         let nextPanelAt = 0.98;
 
-        servicePanelIndexes.forEach(({ panel, index }) => {
+        const timelineStops = gsap.utils.toArray<HTMLElement>('.js-about-timeline-stop');
+        const timelineLine = document.querySelector<HTMLElement>('.js-about-timeline-line');
+        const timelineProgress = document.querySelector<HTMLElement>('.js-about-timeline-progress');
+        const tlStart = isMobile ? 16 : isTablet ? 11 : 7.5;
+        const tlStep = isMobile ? 11 : isTablet ? 12 : 13.5;
+        const tlMaxLeft = isMobile ? 74 : isTablet ? 78 : 80;
+
+        if (timelineStops.length > 0) {
+          gsap.set(timelineStops, { autoAlpha: 0 });
+          timelineStops.forEach((stop, i) => {
+            gsap.set(stop, { left: `${Math.min(tlStart + i * tlStep, tlMaxLeft)}%`, xPercent: -50 });
+          });
+          const lastLeft = Math.min(tlStart + (timelineStops.length - 1) * tlStep, tlMaxLeft);
+          if (timelineLine) gsap.set(timelineLine, { left: `${tlStart}%`, right: `${100 - lastLeft}%` });
+          if (timelineProgress) gsap.set(timelineProgress, { left: `${tlStart}%`, right: `${100 - tlStart}%` });
+        }
+
+        servicePanelIndexes.forEach(({ panel, index }, serviceOrder) => {
           moveToPanel(index, nextPanelAt);
+
+          if (serviceOrder === 0) {
+            aboutTimeline.to('.js-about-timeline', { autoAlpha: 1, duration: 0.2, ease: 'power2.out' }, nextPanelAt + 0.5);
+            if (timelineStops.length > 1) {
+              aboutTimeline.to(timelineStops.slice(1), { autoAlpha: 1, duration: 0.001 }, nextPanelAt + 0.5);
+            }
+          } else {
+            aboutTimeline.to(timelineStops[serviceOrder - 1], { autoAlpha: 1, duration: 0.22, ease: 'power2.out' }, nextPanelAt + 0.08);
+            aboutTimeline.to(timelineStops[serviceOrder], { autoAlpha: 0, duration: 0.001 }, nextPanelAt + 0.5);
+            const currentLeft = Math.min(tlStart + serviceOrder * tlStep, tlMaxLeft);
+            if (timelineProgress) {
+              aboutTimeline.to(timelineProgress, { right: `${100 - currentLeft}%`, duration: 0.58, ease: 'power1.inOut' }, nextPanelAt + 0.04);
+            }
+          }
+
           aboutTimeline.call(
             () => document.querySelector('.js-scroll-consult-logo')?.classList.add('is-tooltip-visible'),
             [],
@@ -864,7 +909,6 @@ function ScrollExperienceController() {
               autoAlpha: 1,
               pointerEvents: 'auto',
               left: () => {
-                const serviceOrder = servicePanelIndexes.findIndex((item) => item.index === index);
                 const start = isMobile ? 16 : isTablet ? 11 : 7.5;
                 const step = isMobile ? 11 : isTablet ? 12 : 13.5;
                 const maxLeft = isMobile ? 74 : isTablet ? 78 : 80;
@@ -877,8 +921,15 @@ function ScrollExperienceController() {
             },
             nextPanelAt + 0.04,
           );
+
           revealServiceCards(panel, nextPanelAt + 0.34);
           animatePanelEmphasis(panel, nextPanelAt + 1.1);
+
+          if (serviceOrder === servicePanelIndexes.length - 1) {
+            aboutTimeline.to(timelineStops[serviceOrder], { autoAlpha: 1, duration: 0.001 }, nextPanelAt + getAboutServiceStep() - 0.2);
+            aboutTimeline.to('.js-about-timeline', { autoAlpha: 0, duration: 0.18, ease: 'power1.in' }, nextPanelAt + getAboutServiceStep());
+          }
+
           aboutTimeline.to({}, { duration: getAboutServiceHold() });
           nextPanelAt += getAboutServiceStep();
         });
@@ -1025,19 +1076,19 @@ function ScrollExperienceController() {
       });
 
       videoStoryTimeline
-        .to({}, { duration: 0.1 })
-        .call(() => hydrateVideo(document.querySelector<HTMLVideoElement>('.js-video-story-frame video')), [], 0.08)
+        .to({}, { duration: 0.04 })
+        .call(() => hydrateVideo(document.querySelector<HTMLVideoElement>('.js-video-story-frame video')), [], 0.02)
         .to(
           '.js-video-story-frame',
           {
             autoAlpha: 1,
             top: 0,
             ease: 'none',
-            duration: 0.36,
+            duration: 0.18,
           },
         );
 
-      videoStoryTimeline.to({}, { duration: 0.2 });
+      videoStoryTimeline.to({}, { duration: 0.06 });
 
       videoStoryTimeline
         .to('.js-video-story-frame', {
@@ -1047,7 +1098,7 @@ function ScrollExperienceController() {
           borderRadius: isMobile ? 10 : 14,
           boxShadow: '0 28px 60px rgba(8, 21, 43, 0.2)',
           ease: 'none',
-          duration: 1.25,
+          duration: 0.72,
         })
         .to(
           '.js-video-story-stage',
@@ -1061,8 +1112,11 @@ function ScrollExperienceController() {
 
       const videoLineStart = videoStoryTimeline.duration() + 0.22;
 
+      const lineStep = isMobile ? 0.92 : 0.72;
+      const lineFadeStart = isMobile ? 0.58 : 0.46;
+
       gsap.utils.toArray<HTMLElement>('.js-video-story-line').forEach((line, index) => {
-        const startAt = videoLineStart + index * 0.62;
+        const startAt = videoLineStart + index * lineStep;
         videoStoryTimeline
           .to(
             line,
@@ -1080,7 +1134,7 @@ function ScrollExperienceController() {
               duration: 0.24,
               ease: 'power1.inOut',
             },
-            startAt + 0.38,
+            startAt + lineFadeStart,
           );
       });
     }, root);

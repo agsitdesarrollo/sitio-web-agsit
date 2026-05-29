@@ -14,7 +14,7 @@ export const heroContentByLang: Record<SupportedLang, HeroContent> = {
     titleLabel: 'Decisiones que definen el futuro de tu empresa',
     lineStart: 'Decisiones que',
     emphasis: 'definen el futuro',
-    lineEnd: 'de su empresa',
+    lineEnd: 'de tu empresa',
     support:
       'Acompañamos a organizaciones con estrategia, claridad y resultados en los momentos que más importan.',
     cta: 'Conversemos sobre tu empresa',

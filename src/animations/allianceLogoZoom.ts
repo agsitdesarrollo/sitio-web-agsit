@@ -1,5 +1,8 @@
 const DARK_BACKGROUND = '#020712';
 
+const getNavHeight = () =>
+  parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--nav-h')) || 0;
+
 type AllianceLogoZoomConfig = {
   timeline: gsap.core.Timeline;
   startAt: number;
@@ -55,6 +58,10 @@ export function initAllianceLogoZoom({
     {
       autoAlpha: 0,
       scale: 1,
+      xPercent: -50,
+      yPercent: -50,
+      left: '50%',
+      top: () => (window.innerHeight - getNavHeight()) / 2,
     },
     startAt,
   );
@@ -65,7 +72,7 @@ export function initAllianceLogoZoom({
       autoAlpha: 1,
       pointerEvents: 'none',
       left: '50%',
-      top: '50%',
+      top: () => (window.innerHeight + getNavHeight()) / 2,
       scale: 1,
       duration: 0.72,
       ease: 'power2.inOut',

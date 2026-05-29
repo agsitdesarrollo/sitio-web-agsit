@@ -15,8 +15,10 @@ export default defineConfig({
   redirects: {
     '/es': '/',
   },
-
   vite: {
     plugins: [tailwindcss()]
+  },
+  devToolbar: {
+    enabled: false
   }
 });
