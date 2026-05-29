@@ -6,7 +6,6 @@ import FinalContactSection from '../../components/final-contact/FinalContactSect
 import Footer from '../../components/footer/Footer.astro';
 import HeroSection from '../../components/hero/HeroSection.astro';
 import Header from '../../components/navigation/Header.astro';
-import ScrollExperienceController from '../../components/scroll/ScrollExperienceController';
 import ServicesSection from '../../components/services/ServicesSection.astro';
 import VideoStorySection from '../../components/video-story/VideoStorySection.astro';
 import SiteLayout from '../../layouts/SiteLayout.astro';
@@ -78,6 +77,10 @@ const alternates = [
     </main>
     <Footer copy={footerCopy} services={servicesContent.services} />
     <ContactDrawer copy={contactCopy} />
+    <script>
+      import { initScrollExperience } from '../../components/scroll/scrollExperienceController';
+      initScrollExperience();
+    </script>
     <script define:vars={{ closeMenuLabel: t('nav.closeMenu'), openMenuLabel: t('nav.openMenu') }}>
       const nav = document.querySelector('.site-nav nav');
       const toggle = document.querySelector('.menu-toggle');
@@ -150,6 +153,5 @@ const alternates = [
       window.addEventListener('agsit:open-contact', () => setContactOpen(true));
       window.addEventListener('agsit:close-contact', () => setContactOpen(false));
     </script>
-    <ScrollExperienceController client:load />
   </div>
 </SiteLayout>

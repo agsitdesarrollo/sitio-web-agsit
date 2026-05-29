@@ -3,7 +3,6 @@ import { Image } from 'astro:assets';
 import type { AboutContent } from '../../data/about';
 import { clientLogos } from '../../data/about';
 import logoImage from '../../assets/images/logo-asit.webp';
-import ClientsPhysicsCanvas from './ClientsPhysicsCanvas';
 
 type Props = {
   content: AboutContent;
@@ -72,7 +71,7 @@ const { content } = Astro.props;
         <p>{content.clients.copy}</p>
       </div>
       <div class="about-clients-stage js-about-clients-stage">
-        <ClientsPhysicsCanvas items={clientLogos} client:idle />
+        <canvas class="about-clients-canvas" aria-hidden="true" data-items={JSON.stringify(clientLogos)} />
       </div>
     </article>
 
@@ -120,3 +119,21 @@ const { content } = Astro.props;
     ))}
   </div>
 </section>
+
+<script>
+  import { initClientsPhysicsCanvas } from './clientsPhysicsCanvas';
+  import type { ClientLogo } from '../../data/about';
+
+  const initWhenIdle = () => {
+    const canvas = document.querySelector<HTMLCanvasElement>('.about-clients-canvas');
+    if (!canvas) return;
+    const items = JSON.parse(canvas.dataset.items ?? '[]') as ClientLogo[];
+    initClientsPhysicsCanvas(canvas, items);
+  };
+
+  if ('requestIdleCallback' in window) {
+    requestIdleCallback(initWhenIdle, { timeout: 2000 });
+  } else {
+    setTimeout(initWhenIdle, 200);
+  }
+</script>
