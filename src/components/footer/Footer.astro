@@ -7,9 +7,12 @@ import logoImage from '../../assets/images/logo-asit.webp';
 type Props = {
   copy: FooterCopy;
   services: ServiceItem[];
+  homeHref?: string;
+  servicesHref?: string;
+  contactHref?: string;
 };
 
-const { copy, services } = Astro.props;
+const { copy, services, homeHref = '#inicio', servicesHref = '#servicios', contactHref = '#contacto' } = Astro.props;
 ---
 
 <footer class="site-footer">
@@ -20,16 +23,16 @@ const { copy, services } = Astro.props;
 
   <div>
     <h4>{copy.menuTitle}</h4>
-    <a href="#inicio">{copy.nav.home}</a>
-    <a href="#servicios">{copy.nav.services}</a>
-    <a href="#contacto">{copy.nav.contact}</a>
+    <a href={homeHref}>{copy.nav.home}</a>
+    <a href={servicesHref}>{copy.nav.services}</a>
+    <a href={contactHref}>{copy.nav.contact}</a>
   </div>
 
   <div>
     <h4>{copy.servicesTitle}</h4>
     {
       services.map((service) => (
-        <span>{service.title}</span>
+        service.href ? <a href={service.href}>{service.title}</a> : <span>{service.title}</span>
       ))
     }
   </div>

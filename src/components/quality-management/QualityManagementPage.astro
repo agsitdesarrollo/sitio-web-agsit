@@ -1,0 +1,123 @@
+---
+import ContactDirectCard from '../contact/ContactDirectCard.astro';
+import ContactForm from '../contact/ContactForm.astro';
+import ServicePageAnimations from '../service-animation/ServicePageAnimations.astro';
+import type { ContactCopy } from '../../data/contact';
+import type { QualityManagementContent } from '../../data/qualityManagement';
+
+type Props = {
+  content: QualityManagementContent;
+  contactCopy: ContactCopy;
+};
+
+const { content, contactCopy } = Astro.props;
+---
+
+<main class="quality-page">
+  <section class="quality-hero" aria-labelledby="quality-hero-title">
+    <div class="quality-hero-copy">
+      <p class="quality-eyebrow">{content.hero.eyebrow}</p>
+      <h1 id="quality-hero-title">{content.hero.title}</h1>
+      <p>{content.hero.copy}</p>
+      <div class="quality-hero-actions">
+        <button type="button" data-contact-trigger>{content.hero.primaryCta}</button>
+        <a href="#sistema">{content.hero.secondaryCta}</a>
+      </div>
+    </div>
+
+    <div class="quality-seal" aria-hidden="true">
+      <div class="quality-seal-header">
+        <span>QM</span>
+        <span>360°</span>
+      </div>
+      <div class="quality-seal-mark">
+        <span></span>
+      </div>
+      <div class="quality-seal-signals">
+        {content.hero.signals.map((signal) => <span>{signal}</span>)}
+      </div>
+    </div>
+  </section>
+
+  <section class="quality-areas" aria-labelledby="quality-areas-title">
+    <div class="quality-section-heading">
+      <p class="quality-eyebrow">{content.areas.eyebrow}</p>
+      <h2 id="quality-areas-title">{content.areas.title}</h2>
+      <p>{content.areas.copy}</p>
+    </div>
+
+    <div class="quality-area-grid">
+      {
+        content.areas.items.map((item) => (
+          <article>
+            <span>{item.code}</span>
+            <h3>{item.title}</h3>
+            <p>{item.copy}</p>
+          </article>
+        ))
+      }
+    </div>
+  </section>
+
+  <section id="sistema" class="quality-system" aria-labelledby="quality-system-title">
+    <div class="quality-system-copy">
+      <p class="quality-eyebrow">{content.system.eyebrow}</p>
+      <h2 id="quality-system-title">{content.system.title}</h2>
+      <p>{content.system.copy}</p>
+    </div>
+
+    <div class="quality-system-grid">
+      {
+        content.system.items.map((item) => (
+          <article>
+            <span>{item.label}</span>
+            <h3>{item.title}</h3>
+            <p>{item.copy}</p>
+          </article>
+        ))
+      }
+    </div>
+  </section>
+
+  <section class="quality-certification" aria-labelledby="quality-certification-title">
+    <div class="quality-certification-copy">
+      <h2 id="quality-certification-title">{content.certification.title}</h2>
+      <p>{content.certification.copy}</p>
+    </div>
+
+    <div class="quality-certification-steps">
+      {
+        content.certification.steps.map((step) => (
+          <article>
+            <span>{step.label}</span>
+            <h3>{step.title}</h3>
+            <p>{step.copy}</p>
+          </article>
+        ))
+      }
+    </div>
+  </section>
+
+  <section class="quality-outcomes" aria-labelledby="quality-outcomes-title">
+    <h2 id="quality-outcomes-title">{content.outcomes.title}</h2>
+    <ul>
+      {content.outcomes.items.map((item) => <li>{item}</li>)}
+    </ul>
+  </section>
+
+  <section class="quality-contact" aria-labelledby="quality-contact-title">
+    <div class="quality-contact-heading">
+      <p class="quality-eyebrow">{content.cta.eyebrow}</p>
+      <h2 id="quality-contact-title">{content.cta.title}</h2>
+      <p>{content.cta.copy}</p>
+    </div>
+    <div class="quality-contact-grid">
+      <ContactDirectCard copy={contactCopy.direct} />
+      <div class="quality-contact-form">
+        <ContactForm copy={contactCopy.form} />
+      </div>
+    </div>
+  </section>
+
+  <ServicePageAnimations />
+</main>

@@ -4,6 +4,14 @@
 @import "../components/hero/Hero.css";
 @import "../components/services/Services.css";
 @import "../components/about/AboutHorizontal.css";
+@import "../components/technology-solutions/TechnologySolutions.css";
+@import "../components/technology-solutions-v2/TechnologySolutionsV2.css";
+@import "../components/process-management/ProcessManagement.css";
+@import "../components/project-direction/ProjectDirection.css";
+@import "../components/quality-management/QualityManagement.css";
+@import "../components/crm-administration/CrmAdministration.css";
+@import "../components/digital-marketing/DigitalMarketing.css";
+@import "../components/service-animation/ServicePageAnimations.css";
 @import "../components/video-story/VideoStory.css";
 @import "../components/final-contact/FinalContact.css";
 @import "../components/footer/Footer.css";

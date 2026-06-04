@@ -56,9 +56,17 @@ const { content } = Astro.props;
                   <span>{tag}</span>
                 ))}
               </div>
-              <p class="about-service-link">
-                {content.serviceLinkLabel} {service.code} →
-              </p>
+              {
+                service.href ? (
+                  <a class="about-service-link" href={service.href}>
+                    {content.serviceLinkLabel} {service.code} →
+                  </a>
+                ) : (
+                  <p class="about-service-link">
+                    {content.serviceLinkLabel} {service.code} →
+                  </p>
+                )
+              }
             </div>
           </article>
         </article>

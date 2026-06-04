@@ -1,0 +1,150 @@
+---
+import ContactDirectCard from '../contact/ContactDirectCard.astro';
+import ContactForm from '../contact/ContactForm.astro';
+import ServicePageAnimations from '../service-animation/ServicePageAnimations.astro';
+import type { ContactCopy } from '../../data/contact';
+import type { TechnologySolutionsContent } from '../../data/technologySolutions';
+
+type Props = {
+  content: TechnologySolutionsContent;
+  contactCopy: ContactCopy;
+};
+
+const { content, contactCopy } = Astro.props;
+---
+
+<main class="technology-page">
+  <section class="technology-hero" aria-labelledby="technology-hero-title">
+    <div class="technology-hero-media" aria-hidden="true"></div>
+    <div class="technology-hero-content">
+      <p class="technology-eyebrow">{content.hero.eyebrow}</p>
+      <h1 id="technology-hero-title">{content.hero.title}</h1>
+      <p>{content.hero.copy}</p>
+      <div class="technology-hero-actions">
+        <button type="button" data-contact-trigger>{content.hero.primaryCta}</button>
+        <a href="#alcance">{content.hero.secondaryCta}</a>
+      </div>
+    </div>
+    <div class="technology-hero-stats" aria-label="Alcance principal del servicio">
+      {
+        content.hero.stats.map((stat) => (
+          <article>
+            <strong>{stat.title}</strong>
+            <span>{stat.copy}</span>
+          </article>
+        ))
+      }
+    </div>
+  </section>
+
+  <section id="alcance" class="technology-suite" aria-labelledby="technology-suite-title">
+    <div class="technology-section-heading">
+      <p class="technology-eyebrow">{content.suite.eyebrow}</p>
+      <h2 id="technology-suite-title">{content.suite.title}</h2>
+      <p>{content.suite.copy}</p>
+    </div>
+    <div class="technology-feature-grid">
+      {
+        content.suite.features.map((feature) => (
+          <article class="technology-feature">
+            <span aria-hidden="true">
+              <svg viewBox="0 0 24 24">
+                <path d="M4 6h16M4 12h16M4 18h10" />
+              </svg>
+            </span>
+            <h3>{feature.title}</h3>
+            <p>{feature.copy}</p>
+          </article>
+        ))
+      }
+    </div>
+  </section>
+
+  <section class="technology-cloud" aria-labelledby="technology-cloud-title">
+    <div class="technology-cloud-heading">
+      <div class="technology-cloud-copy">
+        <p class="technology-eyebrow">{content.cloud.eyebrow}</p>
+        <h2 id="technology-cloud-title">{content.cloud.title}</h2>
+        <p>{content.cloud.copy}</p>
+      </div>
+      <div class="technology-cloud-signal" aria-hidden="true">
+        <span>SAAS</span>
+        <span>PAAS</span>
+        <span>IAAS</span>
+      </div>
+    </div>
+
+    <div class="technology-cloud-blueprint">
+      <div class="technology-cloud-orbit" aria-hidden="true">
+        <span class="cloud-orbit-ring"></span>
+        <span class="cloud-orbit-core">Cloud</span>
+        <span class="cloud-node cloud-node-saas">SaaS</span>
+        <span class="cloud-node cloud-node-paas">PaaS</span>
+        <span class="cloud-node cloud-node-iaas">IaaS</span>
+      </div>
+
+      <ul class="technology-capability-list">
+        {
+          content.cloud.capabilities.map((capability, index) => (
+            <li>
+              <span>{String(index + 1).padStart(2, '0')}</span>
+              <strong>{capability}</strong>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <section class="technology-process" aria-labelledby="technology-process-title">
+    <div class="technology-section-heading">
+      <p class="technology-eyebrow">{content.process.eyebrow}</p>
+      <h2 id="technology-process-title">{content.process.title}</h2>
+    </div>
+    <div class="technology-process-steps">
+      {
+        content.process.steps.map((step) => (
+          <article>
+            <span>{step.label}</span>
+            <h3>{step.title}</h3>
+            <p>{step.copy}</p>
+          </article>
+        ))
+      }
+    </div>
+  </section>
+
+  <section class="technology-assurance" aria-labelledby="technology-assurance-title">
+    <div class="technology-assurance-copy">
+      <h2 id="technology-assurance-title">{content.assurance.title}</h2>
+      <p>{content.assurance.copy}</p>
+    </div>
+    <div class="technology-assurance-items">
+      {
+        content.assurance.items.map((item) => (
+          <article>
+            <h3>{item.title}</h3>
+            <p>{item.copy}</p>
+          </article>
+        ))
+      }
+    </div>
+  </section>
+
+  <section class="technology-final-cta" aria-labelledby="technology-cta-title">
+    <div class="technology-final-heading">
+      <p class="technology-eyebrow">{content.cta.eyebrow}</p>
+      <h2 id="technology-cta-title">{content.cta.title}</h2>
+      <p>{content.cta.copy}</p>
+    </div>
+
+    <div class="technology-contact-grid">
+      <ContactDirectCard copy={contactCopy.direct} />
+      <div class="technology-contact-form">
+        <ContactForm copy={contactCopy.form} />
+      </div>
+    </div>
+  </section>
+
+  <ServicePageAnimations />
+</main>

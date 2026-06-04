@@ -2,6 +2,7 @@ import type { SupportedLang } from '../i18n/ui';
 
 export type ServiceItem = {
   title: string;
+  href?: string;
 };
 
 export type ServicePoint = {
@@ -26,12 +27,12 @@ export const servicesContentByLang: Record<SupportedLang, ServicesContent> = {
     introSubtitle: 'Una consultoría real, no una promesa de papel',
     cta: 'Agenda una asesoría sin costo',
     services: [
+      { title: 'Soluciones Tecnológicas', href: '/soluciones-tecnologicas/' },
       { title: 'Planeación Estratégica' },
-      { title: 'Dirección de Proyectos' },
-      { title: 'Soluciones Tecnológicas' },
-      { title: 'Administración de Procesos' },
-      { title: 'Gestión de Calidad' },
-      { title: 'Mercadotecnia Digital' },
+      { title: 'Dirección de Proyectos', href: '/direccion-de-proyectos/' },
+      { title: 'Administración de Procesos', href: '/administracion-de-procesos/' },
+      { title: 'Gestión de Calidad', href: '/gestion-de-calidad/' },
+      { title: 'Mercadotecnia Digital', href: '/mercadotecnia-digital/' },
     ],
     servicePoints: [
       {
@@ -73,12 +74,12 @@ export const servicesContentByLang: Record<SupportedLang, ServicesContent> = {
     introSubtitle: 'Real consulting, not a paper promise',
     cta: 'Schedule a free consultation',
     services: [
+      { title: 'Technology Solutions', href: '/en/technology-solutions/' },
       { title: 'Strategic Planning' },
-      { title: 'Project Management' },
-      { title: 'Technology Solutions' },
-      { title: 'Process Management' },
-      { title: 'Quality Management' },
-      { title: 'Digital Marketing' },
+      { title: 'Project Management', href: '/en/project-management/' },
+      { title: 'Process Management', href: '/en/process-management/' },
+      { title: 'Quality Management', href: '/en/quality-management/' },
+      { title: 'Digital Marketing', href: '/en/digital-marketing/' },
     ],
     servicePoints: [
       {

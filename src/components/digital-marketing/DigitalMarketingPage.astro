@@ -1,0 +1,172 @@
+---
+import ContactDirectCard from '../contact/ContactDirectCard.astro';
+import ContactForm from '../contact/ContactForm.astro';
+import ServicePageAnimations from '../service-animation/ServicePageAnimations.astro';
+import type { ContactCopy } from '../../data/contact';
+import type { DigitalMarketingContent } from '../../data/digitalMarketing';
+
+type Props = {
+  content: DigitalMarketingContent;
+  contactCopy: ContactCopy;
+};
+
+const { content, contactCopy } = Astro.props;
+---
+
+<main class="digital-page">
+  <section class="digital-hero" aria-labelledby="digital-hero-title">
+    <div class="digital-hero-copy">
+      <p class="digital-eyebrow">{content.hero.eyebrow}</p>
+      <h1 id="digital-hero-title">{content.hero.title}</h1>
+      <p>{content.hero.copy}</p>
+      <div class="digital-hero-actions">
+        <button type="button" data-contact-trigger>{content.hero.primaryCta}</button>
+        <a href="#historia">{content.hero.secondaryCta}</a>
+      </div>
+    </div>
+
+    <div class="digital-command" aria-hidden="true">
+      <div class="digital-command-header">
+        <span>AGSIT</span>
+        <span>Growth board</span>
+      </div>
+      <div class="digital-command-funnel">
+        {content.hero.signals.map((signal, index) => <span class={`digital-signal digital-signal-${index + 1}`}>{signal}</span>)}
+      </div>
+      <div class="digital-command-metrics">
+        {
+          content.hero.metrics.map((metric) => (
+            <article>
+              <strong>{metric.value}</strong>
+              <span>{metric.label}</span>
+            </article>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <section id="historia" class="digital-story" aria-labelledby="digital-story-title">
+    <div class="digital-section-heading">
+      <p class="digital-eyebrow">{content.story.eyebrow}</p>
+      <h2 id="digital-story-title">{content.story.title}</h2>
+      <p>{content.story.copy}</p>
+    </div>
+
+    <div class="digital-story-grid">
+      {
+        content.story.columns.map((column) => (
+          <article>
+            <span>{column.label}</span>
+            <h3>{column.title}</h3>
+            <ul>
+              {column.points.map((point) => <li>{point}</li>)}
+            </ul>
+          </article>
+        ))
+      }
+    </div>
+  </section>
+
+  <section class="digital-services" aria-labelledby="digital-services-title">
+    <div class="digital-section-heading">
+      <p class="digital-eyebrow">{content.services.eyebrow}</p>
+      <h2 id="digital-services-title">{content.services.title}</h2>
+      <p>{content.services.copy}</p>
+    </div>
+
+    <div class="digital-service-grid">
+      {
+        content.services.items.map((item) => (
+          <article>
+            <span>{item.code}</span>
+            <h3>{item.title}</h3>
+            <p>{item.copy}</p>
+          </article>
+        ))
+      }
+    </div>
+  </section>
+
+  <section class="digital-method" aria-labelledby="digital-method-title">
+    <div class="digital-method-copy">
+      <h2 id="digital-method-title">{content.method.title}</h2>
+      <p>{content.method.copy}</p>
+    </div>
+    <div class="digital-method-steps">
+      {
+        content.method.steps.map((step) => (
+          <article>
+            <span>{step.label}</span>
+            <h3>{step.title}</h3>
+            <p>{step.copy}</p>
+          </article>
+        ))
+      }
+    </div>
+  </section>
+
+  <section class="digital-lifecycle" aria-labelledby="digital-lifecycle-title">
+    <div class="digital-lifecycle-copy">
+      <p class="digital-eyebrow">{content.lifecycle.eyebrow}</p>
+      <h2 id="digital-lifecycle-title">{content.lifecycle.title}</h2>
+      <p>{content.lifecycle.copy}</p>
+    </div>
+    <div class="digital-lifecycle-grid">
+      {
+        content.lifecycle.stages.map((stage) => (
+          <article>
+            <span>{stage.stage}</span>
+            <h3>{stage.title}</h3>
+            <p>{stage.copy}</p>
+          </article>
+        ))
+      }
+    </div>
+  </section>
+
+  <section class="digital-case" aria-labelledby="digital-case-title">
+    <div class="digital-case-copy">
+      <p class="digital-eyebrow">{content.caseStudy.eyebrow}</p>
+      <h2 id="digital-case-title">{content.caseStudy.title}</h2>
+      <p>{content.caseStudy.copy}</p>
+    </div>
+    <div class="digital-case-grid">
+      <article>
+        <span>{content.caseStudy.beforeTitle}</span>
+        <ul>
+          {content.caseStudy.before.map((item) => <li>{item}</li>)}
+        </ul>
+      </article>
+      <article>
+        <span>{content.caseStudy.afterTitle}</span>
+        <ul>
+          {content.caseStudy.after.map((item) => <li>{item}</li>)}
+        </ul>
+      </article>
+    </div>
+  </section>
+
+  <section class="digital-outcomes" aria-labelledby="digital-outcomes-title">
+    <h2 id="digital-outcomes-title">{content.outcomes.title}</h2>
+    <ul>
+      {content.outcomes.items.map((item) => <li>{item}</li>)}
+    </ul>
+  </section>
+
+  <section class="digital-contact" aria-labelledby="digital-contact-title">
+    <div class="digital-contact-heading">
+      <p class="digital-eyebrow">{content.cta.eyebrow}</p>
+      <h2 id="digital-contact-title">{content.cta.title}</h2>
+      <p>{content.cta.copy}</p>
+    </div>
+    <div class="digital-contact-grid">
+      <ContactDirectCard copy={contactCopy.direct} />
+      <div class="digital-contact-form">
+        <ContactForm copy={contactCopy.form} />
+      </div>
+    </div>
+  </section>
+
+  <ServicePageAnimations />
+</main>

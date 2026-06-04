@@ -1,0 +1,47 @@
+---
+import ContactDrawer from '../components/contact/ContactDrawer.astro';
+import DigitalMarketingPage from '../components/digital-marketing/DigitalMarketingPage.astro';
+import Footer from '../components/footer/Footer.astro';
+import Header from '../components/navigation/Header.astro';
+import PageShellScripts from '../components/navigation/PageShellScripts.astro';
+import { getContactCopy } from '../data/contact';
+import { getDigitalMarketingContent } from '../data/digitalMarketing';
+import { getFooterCopy } from '../data/footer';
+import { getServicesContent } from '../data/services';
+import SiteLayout from '../layouts/SiteLayout.astro';
+import { useTranslations } from '../i18n/utils';
+
+const lang = 'es';
+const content = getDigitalMarketingContent(lang);
+const contactCopy = getContactCopy(lang);
+const footerCopy = getFooterCopy(lang);
+const servicesContent = getServicesContent(lang);
+const t = useTranslations(lang);
+---
+
+<SiteLayout
+  title={content.metadata.title}
+  description={content.metadata.description}
+  canonicalUrl={content.metadata.canonicalUrl}
+  htmlLang={content.metadata.htmlLang}
+  locale={content.metadata.locale}
+  alternates={[
+    { lang: 'es-MX', href: content.metadata.canonicalUrl },
+    { lang: 'en', href: 'https://agsit.com.mx/en/digital-marketing/' },
+    { lang: 'x-default', href: content.metadata.canonicalUrl },
+  ]}
+>
+  <div class="app-shell">
+    <Header
+      lang={lang}
+      homeHref="/#inicio"
+      servicesHref="/#servicios"
+      contactHref="/#contacto"
+      alternateHref="/en/digital-marketing/"
+    />
+    <DigitalMarketingPage content={content} contactCopy={contactCopy} />
+    <Footer copy={footerCopy} services={servicesContent.services} homeHref="/#inicio" servicesHref="/#servicios" contactHref="/#contacto" />
+    <ContactDrawer copy={contactCopy} />
+    <PageShellScripts openMenuLabel={t('nav.openMenu')} closeMenuLabel={t('nav.closeMenu')} />
+  </div>
+</SiteLayout>

@@ -283,6 +283,7 @@
 }
 
 .about-service-link {
+  display: inline-flex;
   margin: clamp(12px, 1.8vh, 20px) 0 0;
   text-align: left;
   color: #287ca1;
@@ -291,6 +292,18 @@
   font-weight: 800;
   letter-spacing: 0.16em;
   text-transform: uppercase;
+}
+
+a.about-service-link {
+  transition:
+    color 180ms ease,
+    transform 180ms ease;
+}
+
+a.about-service-link:hover,
+a.about-service-link:focus-visible {
+  color: #253f6c;
+  transform: translateX(4px);
 }
 
 .about-panel-alliances {

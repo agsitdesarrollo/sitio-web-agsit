@@ -6,15 +6,19 @@ import { getAlternateLangPath, useTranslations } from '../../i18n/utils';
 
 type Props = {
   lang: SupportedLang;
+  homeHref?: string;
+  servicesHref?: string;
+  contactHref?: string;
+  alternateHref?: string;
 };
 
-const { lang } = Astro.props;
+const { lang, homeHref = '#inicio', servicesHref = '#servicios', contactHref = '#contacto', alternateHref } = Astro.props;
 const t = useTranslations(lang);
-const alternateLangPath = getAlternateLangPath(lang);
+const alternateLangPath = alternateHref ?? getAlternateLangPath(lang);
 ---
 
 <header class="site-nav">
-  <a class="brand" href="#inicio" aria-label={t('nav.brandLabel')} data-nav-close>
+  <a class="brand" href={homeHref} aria-label={t('nav.brandLabel')} data-nav-close>
     <Image src={logoImage} alt="AGSIT" loading="eager" fetchpriority="high" />
   </a>
   <button
@@ -29,9 +33,9 @@ const alternateLangPath = getAlternateLangPath(lang);
     <span></span>
   </button>
   <nav id="main-navigation">
-    <a href="#inicio" data-nav-close>{t('nav.home')}</a>
-    <a href="#servicios" data-nav-close>{t('nav.services')}</a>
-    <a href="#contacto" data-nav-close>{t('nav.contact')}</a>
+    <a href={homeHref} data-nav-close>{t('nav.home')}</a>
+    <a href={servicesHref} data-nav-close>{t('nav.services')}</a>
+    <a href={contactHref} data-nav-close>{t('nav.contact')}</a>
     <a class="language-switch" href={alternateLangPath} aria-label={t('language.switchLabel')} data-nav-close>
       {t('language.switchText')}
     </a>

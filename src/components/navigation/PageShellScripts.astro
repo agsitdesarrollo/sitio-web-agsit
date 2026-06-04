@@ -1,0 +1,81 @@
+---
+type Props = {
+  openMenuLabel: string;
+  closeMenuLabel: string;
+};
+
+const { openMenuLabel, closeMenuLabel } = Astro.props;
+---
+
+<script define:vars={{ openMenuLabel, closeMenuLabel }}>
+  const nav = document.querySelector('.site-nav nav');
+  const toggle = document.querySelector('.menu-toggle');
+  const drawer = document.querySelector('.contact-drawer');
+  const openButtons = Array.from(document.querySelectorAll('[data-contact-trigger]'));
+  const closeButtons = Array.from(document.querySelectorAll('[data-contact-close]'));
+  const navLinks = Array.from(document.querySelectorAll('[data-nav-close]'));
+  const forms = Array.from(document.querySelectorAll('[data-contact-form]'));
+  let contactScrollY = 0;
+  let isContactOpen = false;
+
+  const setMenuOpen = (isOpen) => {
+    nav?.classList.toggle('is-open', isOpen);
+    toggle?.classList.toggle('is-open', isOpen);
+    toggle?.setAttribute('aria-expanded', String(isOpen));
+    toggle?.setAttribute('aria-label', isOpen ? closeMenuLabel : openMenuLabel);
+  };
+
+  const lockBodyScroll = () => {
+    contactScrollY = window.scrollY || document.documentElement.scrollTop || 0;
+    document.body.style.position = 'fixed';
+    document.body.style.top = `-${contactScrollY}px`;
+    document.body.style.left = '0';
+    document.body.style.right = '0';
+    document.body.style.width = '100%';
+    document.body.classList.add('drawer-open');
+  };
+
+  const unlockBodyScroll = () => {
+    document.body.classList.remove('drawer-open');
+    document.body.style.position = '';
+    document.body.style.top = '';
+    document.body.style.left = '';
+    document.body.style.right = '';
+    document.body.style.width = '';
+    window.scrollTo(0, contactScrollY);
+  };
+
+  const setContactOpen = (isOpen) => {
+    if (!drawer || isOpen === isContactOpen) {
+      return;
+    }
+
+    isContactOpen = isOpen;
+    drawer?.classList.toggle('is-open', isOpen);
+    drawer?.setAttribute('aria-hidden', String(!isOpen));
+
+    if (isOpen) {
+      lockBodyScroll();
+    } else {
+      unlockBodyScroll();
+    }
+  };
+
+  toggle?.addEventListener('click', () => setMenuOpen(!nav?.classList.contains('is-open')));
+  navLinks.forEach((link) => link.addEventListener('click', () => setMenuOpen(false)));
+  openButtons.forEach((button) =>
+    button.addEventListener('click', () => {
+      setMenuOpen(false);
+      setContactOpen(true);
+    }),
+  );
+  closeButtons.forEach((button) => button.addEventListener('click', () => setContactOpen(false)));
+  forms.forEach((form) => form.addEventListener('submit', (event) => event.preventDefault()));
+  window.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape') {
+      setContactOpen(false);
+    }
+  });
+  window.addEventListener('agsit:open-contact', () => setContactOpen(true));
+  window.addEventListener('agsit:close-contact', () => setContactOpen(false));
+</script>

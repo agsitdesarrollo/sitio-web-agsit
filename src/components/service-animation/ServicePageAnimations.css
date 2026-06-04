@@ -1,0 +1,214 @@
+[data-service-reveal] {
+  opacity: 1;
+  transform: none;
+}
+
+[data-service-animations-ready] [data-service-reveal] {
+  opacity: 0;
+  transform: translate3d(0, 28px, 0);
+  transition:
+    opacity 620ms ease,
+    transform 760ms cubic-bezier(0.16, 1, 0.3, 1),
+    border-color 180ms ease,
+    box-shadow 180ms ease,
+    color 180ms ease,
+    background-color 180ms ease;
+  transition-delay: var(--service-reveal-delay, 0ms);
+  will-change: opacity, transform;
+}
+
+[data-service-animations-ready] [data-service-reveal].is-visible {
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
+}
+
+[data-service-animations-ready] [class*="-hero"] [data-service-reveal] {
+  transform: translate3d(0, 18px, 0);
+}
+
+[data-service-animations-ready] [class*="-map"][data-service-reveal],
+[data-service-animations-ready] [class*="-board"][data-service-reveal],
+[data-service-animations-ready] [class*="-seal"][data-service-reveal],
+[data-service-animations-ready] [class*="-orbit"][data-service-reveal],
+[data-service-animations-ready] [class*="-hub"][data-service-reveal],
+[data-service-animations-ready] [class*="-video-panel"][data-service-reveal] {
+  transform: translate3d(0, 24px, 0) scale(0.98);
+}
+
+[data-service-animations-ready] [class*="-map"][data-service-reveal].is-visible,
+[data-service-animations-ready] [class*="-board"][data-service-reveal].is-visible,
+[data-service-animations-ready] [class*="-seal"][data-service-reveal].is-visible,
+[data-service-animations-ready] [class*="-orbit"][data-service-reveal].is-visible,
+[data-service-animations-ready] [class*="-hub"][data-service-reveal].is-visible,
+[data-service-animations-ready] [class*="-video-panel"][data-service-reveal].is-visible {
+  transform: translate3d(0, 0, 0) scale(1);
+}
+
+.technology-page .technology-hero-media,
+.technology-page .technology-cloud-orbit,
+.process-page .process-map,
+.project-page .project-board,
+.quality-page .quality-seal,
+.crm-page .crm-hub,
+.digital-page .digital-command {
+  transform-origin: center;
+  animation: service-visual-breathe 8s ease-in-out infinite;
+}
+
+.technology-page .technology-hero-stats article,
+.technology-page .technology-feature,
+.technology-page .technology-process-steps article,
+.technology-page .technology-assurance-items article,
+.process-page .process-pillar,
+.process-page .process-flow-steps article,
+.process-page .process-metric-grid article,
+.project-page .project-service-grid article,
+.project-page .project-metrics article,
+.project-page .project-roadmap-steps article,
+.quality-page .quality-area-grid article,
+.quality-page .quality-system-grid article,
+.quality-page .quality-certification-steps article,
+.crm-page .crm-contrast-grid article,
+.crm-page .crm-module-grid article,
+.crm-page .crm-workflow-steps article,
+.crm-page .crm-ai-grid article,
+.digital-page .digital-story-grid article,
+.digital-page .digital-service-grid article,
+.digital-page .digital-method-steps article,
+.digital-page .digital-lifecycle-grid article,
+.digital-page .digital-case-grid article {
+  transition:
+    transform 220ms ease,
+    border-color 220ms ease,
+    box-shadow 220ms ease;
+}
+
+.technology-page .technology-feature:hover,
+.technology-page .technology-process-steps article:hover,
+.technology-page .technology-assurance-items article:hover,
+.process-page .process-pillar:hover,
+.process-page .process-flow-steps article:hover,
+.process-page .process-metric-grid article:hover,
+.project-page .project-service-grid article:hover,
+.project-page .project-metrics article:hover,
+.project-page .project-roadmap-steps article:hover,
+.quality-page .quality-area-grid article:hover,
+.quality-page .quality-system-grid article:hover,
+.quality-page .quality-certification-steps article:hover,
+.crm-page .crm-contrast-grid article:hover,
+.crm-page .crm-module-grid article:hover,
+.crm-page .crm-workflow-steps article:hover,
+.crm-page .crm-ai-grid article:hover,
+.digital-page .digital-story-grid article:hover,
+.digital-page .digital-service-grid article:hover,
+.digital-page .digital-method-steps article:hover,
+.digital-page .digital-lifecycle-grid article:hover,
+.digital-page .digital-case-grid article:hover {
+  transform: translateY(-4px);
+  border-color: rgba(40, 124, 161, 0.28);
+  box-shadow: 0 28px 68px rgba(8, 21, 43, 0.1);
+}
+
+.process-page .process-map svg path {
+  stroke-dasharray: 720;
+  stroke-dashoffset: 720;
+  animation: service-line-draw 1800ms ease forwards 420ms;
+}
+
+.process-page .process-node,
+.project-page .project-signal,
+.quality-page .quality-seal-signals span,
+.technology-page .cloud-node,
+.crm-page .crm-signal,
+.digital-page .digital-signal {
+  animation: service-node-float 6.5s ease-in-out infinite;
+}
+
+.process-page .process-node:nth-of-type(2),
+.project-page .project-signal:nth-child(2),
+.quality-page .quality-seal-signals span:nth-child(2),
+.technology-page .cloud-node:nth-of-type(3),
+.crm-page .crm-signal:nth-child(2),
+.digital-page .digital-signal:nth-child(2) {
+  animation-delay: 600ms;
+}
+
+.process-page .process-node:nth-of-type(3),
+.project-page .project-signal:nth-child(3),
+.quality-page .quality-seal-signals span:nth-child(3),
+.technology-page .cloud-node:nth-of-type(4),
+.crm-page .crm-signal:nth-child(3),
+.digital-page .digital-signal:nth-child(3) {
+  animation-delay: 1100ms;
+}
+
+.quality-page .quality-seal-mark span {
+  animation: service-check-mark 1200ms cubic-bezier(0.16, 1, 0.3, 1) both 420ms;
+}
+
+@keyframes service-visual-breathe {
+  0%,
+  100% {
+    filter: saturate(1);
+  }
+
+  50% {
+    filter: saturate(1.12);
+  }
+}
+
+@keyframes service-node-float {
+  0%,
+  100% {
+    translate: 0 0;
+  }
+
+  50% {
+    translate: 0 -6px;
+  }
+}
+
+@keyframes service-line-draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes service-check-mark {
+  0% {
+    opacity: 0;
+    scale: 0.82;
+  }
+
+  100% {
+    opacity: 1;
+    scale: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-service-animations-ready] [data-service-reveal],
+  [data-service-animations-ready] [data-service-reveal].is-visible {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+
+  .technology-page .technology-hero-media,
+  .technology-page .technology-cloud-orbit,
+  .process-page .process-map,
+  .project-page .project-board,
+  .quality-page .quality-seal,
+  .crm-page .crm-hub,
+  .digital-page .digital-command,
+  .process-page .process-map svg path,
+  .process-page .process-node,
+  .project-page .project-signal,
+  .quality-page .quality-seal-signals span,
+  .quality-page .quality-seal-mark span,
+  .technology-page .cloud-node,
+  .crm-page .crm-signal,
+  .digital-page .digital-signal {
+    animation: none;
+  }
+}

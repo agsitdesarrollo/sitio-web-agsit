@@ -1,0 +1,124 @@
+---
+import ContactDirectCard from '../contact/ContactDirectCard.astro';
+import ContactForm from '../contact/ContactForm.astro';
+import ServicePageAnimations from '../service-animation/ServicePageAnimations.astro';
+import type { ContactCopy } from '../../data/contact';
+import type { ProjectDirectionContent } from '../../data/projectDirection';
+
+type Props = {
+  content: ProjectDirectionContent;
+  contactCopy: ContactCopy;
+};
+
+const { content, contactCopy } = Astro.props;
+---
+
+<main class="project-page">
+  <section class="project-hero" aria-labelledby="project-hero-title">
+    <div class="project-hero-copy">
+      <p class="project-eyebrow">{content.hero.eyebrow}</p>
+      <h1 id="project-hero-title">{content.hero.title}</h1>
+      <p>{content.hero.copy}</p>
+      <div class="project-hero-actions">
+        <button type="button" data-contact-trigger>{content.hero.primaryCta}</button>
+        <a href="#enfoque">{content.hero.secondaryCta}</a>
+      </div>
+    </div>
+
+    <div class="project-board" aria-hidden="true">
+      <div class="project-board-top">
+        <span>PMO</span>
+        <span>PORTFOLIO</span>
+      </div>
+      <div class="project-board-track">
+        {content.hero.signals.map((signal, index) => <span class={`project-signal project-signal-${index + 1}`}>{signal}</span>)}
+      </div>
+      <div class="project-board-base">
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
+    </div>
+  </section>
+
+  <section id="enfoque" class="project-services" aria-labelledby="project-services-title">
+    <div class="project-section-heading">
+      <p class="project-eyebrow">{content.services.eyebrow}</p>
+      <h2 id="project-services-title">{content.services.title}</h2>
+      <p>{content.services.copy}</p>
+    </div>
+
+    <div class="project-service-grid">
+      {
+        content.services.items.map((item) => (
+          <article>
+            <span>{item.code}</span>
+            <h3>{item.title}</h3>
+            <p>{item.copy}</p>
+          </article>
+        ))
+      }
+    </div>
+  </section>
+
+  <section class="project-governance" aria-labelledby="project-governance-title">
+    <div class="project-governance-copy">
+      <p class="project-eyebrow">{content.governance.eyebrow}</p>
+      <h2 id="project-governance-title">{content.governance.title}</h2>
+      <p>{content.governance.copy}</p>
+    </div>
+    <div class="project-metrics">
+      {
+        content.governance.metrics.map((metric) => (
+          <article>
+            <strong>{metric.value}</strong>
+            <h3>{metric.label}</h3>
+            <p>{metric.copy}</p>
+          </article>
+        ))
+      }
+    </div>
+  </section>
+
+  <section class="project-roadmap" aria-labelledby="project-roadmap-title">
+    <div class="project-roadmap-copy">
+      <h2 id="project-roadmap-title">{content.roadmap.title}</h2>
+      <p>{content.roadmap.copy}</p>
+    </div>
+
+    <div class="project-roadmap-steps">
+      {
+        content.roadmap.stages.map((stage) => (
+          <article>
+            <span>{stage.label}</span>
+            <h3>{stage.title}</h3>
+            <p>{stage.copy}</p>
+          </article>
+        ))
+      }
+    </div>
+  </section>
+
+  <section class="project-outcomes" aria-labelledby="project-outcomes-title">
+    <h2 id="project-outcomes-title">{content.outcomes.title}</h2>
+    <ul>
+      {content.outcomes.items.map((item) => <li>{item}</li>)}
+    </ul>
+  </section>
+
+  <section class="project-contact" aria-labelledby="project-contact-title">
+    <div class="project-contact-heading">
+      <p class="project-eyebrow">{content.cta.eyebrow}</p>
+      <h2 id="project-contact-title">{content.cta.title}</h2>
+      <p>{content.cta.copy}</p>
+    </div>
+    <div class="project-contact-grid">
+      <ContactDirectCard copy={contactCopy.direct} />
+      <div class="project-contact-form">
+        <ContactForm copy={contactCopy.form} />
+      </div>
+    </div>
+  </section>
+
+  <ServicePageAnimations />
+</main>

@@ -14,6 +14,7 @@ export type AboutService = {
   tags: string[];
   image: string;
   alt: string;
+  href?: string;
 };
 
 export type ClientLogo = {
@@ -108,6 +109,7 @@ export const aboutContentByLang: Record<SupportedLang, AboutContent> = {
           'Arquitectura, software, infraestructura, inteligencia artificial y ciberseguridad para acelerar la transformación digital.',
         tags: ['ITIL', 'Cloud', 'Desarrollo de software', 'IA & Big Data'],
         alt: 'Visual de soluciones tecnológicas',
+        href: '/soluciones-tecnologicas/',
       },
       {
         ...commonServices.bpm,
@@ -116,13 +118,15 @@ export const aboutContentByLang: Record<SupportedLang, AboutContent> = {
           'Análisis, documentación y optimización de procesos para mejorar eficiencia, control operativo y rentabilidad.',
         tags: ['AS-IS / TO-BE', 'BPMS Automation', 'KPIs operativos', 'Auditoría'],
         alt: 'Visual de administración de procesos',
+        href: '/administracion-de-procesos/',
       },
       {
         ...commonServices.dm,
         title: 'Mercadotecnia Digital',
-        description: 'Estrategias digitales integrales para generar demanda, posicionamiento, conversión y resultados medibles.',
-        tags: ['SEO & SEM', 'Social Media', 'E-commerce', 'Analytics'],
+        description: 'CRM, automatización comercial, campañas, analítica y colaboración para conectar clientes, equipo y resultados.',
+        tags: ['CRM', 'Marketing automation', 'Ventas', 'Analytics'],
         alt: 'Visual de mercadotecnia digital',
+        href: '/administracion-crm/',
       },
       {
         ...commonServices.pm,
@@ -131,6 +135,7 @@ export const aboutContentByLang: Record<SupportedLang, AboutContent> = {
           'Gestión profesional de proyectos, PMOs y metodologías ágiles o waterfall para cumplir tiempos y presupuesto.',
         tags: ['PMO', 'Scrum & Agile', 'OPM3', 'PMP'],
         alt: 'Visual de dirección de proyectos',
+        href: '/direccion-de-proyectos/',
       },
       {
         ...commonServices.qm,
@@ -139,6 +144,7 @@ export const aboutContentByLang: Record<SupportedLang, AboutContent> = {
           'Sistemas de calidad, mejora continua, auditorías y modelos de madurez para elevar estándares operativos.',
         tags: ['ISO 9001', 'CMMI', 'Mejora continua', 'Auditorías'],
         alt: 'Visual de gestión de calidad',
+        href: '/gestion-de-calidad/',
       },
       {
         ...commonServices.spm,
@@ -186,6 +192,7 @@ export const aboutContentByLang: Record<SupportedLang, AboutContent> = {
           'Architecture, software, infrastructure, artificial intelligence and cybersecurity to accelerate digital transformation.',
         tags: ['ITIL', 'Cloud', 'Software development', 'AI & Big Data'],
         alt: 'Technology solutions visual',
+        href: '/en/technology-solutions/',
       },
       {
         ...commonServices.bpm,
@@ -194,13 +201,15 @@ export const aboutContentByLang: Record<SupportedLang, AboutContent> = {
           'Process analysis, documentation and optimization to improve efficiency, operational control and profitability.',
         tags: ['AS-IS / TO-BE', 'BPMS Automation', 'Operational KPIs', 'Auditing'],
         alt: 'Process management visual',
+        href: '/en/process-management/',
       },
       {
         ...commonServices.dm,
         title: 'Digital Marketing',
-        description: 'Integrated digital strategies to generate demand, positioning, conversion and measurable results.',
-        tags: ['SEO & SEM', 'Social Media', 'E-commerce', 'Analytics'],
+        description: 'CRM, commercial automation, campaigns, analytics and collaboration to connect clients, teams and results.',
+        tags: ['CRM', 'Marketing automation', 'Sales', 'Analytics'],
         alt: 'Digital marketing visual',
+        href: '/en/crm-administration/',
       },
       {
         ...commonServices.pm,
@@ -209,6 +218,7 @@ export const aboutContentByLang: Record<SupportedLang, AboutContent> = {
           'Professional project management, PMOs and agile or waterfall methodologies to meet timelines and budgets.',
         tags: ['PMO', 'Scrum & Agile', 'OPM3', 'PMP'],
         alt: 'Project management visual',
+        href: '/en/project-management/',
       },
       {
         ...commonServices.qm,
@@ -217,6 +227,7 @@ export const aboutContentByLang: Record<SupportedLang, AboutContent> = {
           'Quality systems, continuous improvement, audits and maturity models to raise operational standards.',
         tags: ['ISO 9001', 'CMMI', 'Continuous improvement', 'Audits'],
         alt: 'Quality management visual',
+        href: '/en/quality-management/',
       },
       {
         ...commonServices.spm,

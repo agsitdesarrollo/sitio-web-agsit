@@ -1,0 +1,143 @@
+---
+import ContactDirectCard from '../contact/ContactDirectCard.astro';
+import ContactForm from '../contact/ContactForm.astro';
+import ServicePageAnimations from '../service-animation/ServicePageAnimations.astro';
+import type { ContactCopy } from '../../data/contact';
+import type { CrmAdministrationContent } from '../../data/crmAdministration';
+
+type Props = {
+  content: CrmAdministrationContent;
+  contactCopy: ContactCopy;
+};
+
+const { content, contactCopy } = Astro.props;
+---
+
+<main class="crm-page">
+  <section class="crm-hero" aria-labelledby="crm-hero-title">
+    <div class="crm-hero-copy">
+      <p class="crm-eyebrow">{content.hero.eyebrow}</p>
+      <h1 id="crm-hero-title">{content.hero.title}</h1>
+      <p>{content.hero.copy}</p>
+      <div class="crm-hero-actions">
+        <button type="button" data-contact-trigger>{content.hero.primaryCta}</button>
+        <a href="#plataforma">{content.hero.secondaryCta}</a>
+      </div>
+    </div>
+
+    <div class="crm-hub" aria-hidden="true">
+      <div class="crm-hub-top">
+        <span>CRM</span>
+        <span>360</span>
+      </div>
+      <div class="crm-hub-core">
+        <span>Clientes</span>
+      </div>
+      <div class="crm-hub-signals">
+        {content.hero.signals.map((signal, index) => <span class={`crm-signal crm-signal-${index + 1}`}>{signal}</span>)}
+      </div>
+    </div>
+  </section>
+
+  <section class="crm-contrast" aria-labelledby="crm-contrast-title">
+    <div class="crm-section-heading">
+      <p class="crm-eyebrow">{content.contrast.eyebrow}</p>
+      <h2 id="crm-contrast-title">{content.contrast.title}</h2>
+    </div>
+    <div class="crm-contrast-grid">
+      <article>
+        <span>Fragmentado</span>
+        <ul>
+          {content.contrast.before.map((item) => <li>{item}</li>)}
+        </ul>
+      </article>
+      <article>
+        <span>Conectado</span>
+        <ul>
+          {content.contrast.after.map((item) => <li>{item}</li>)}
+        </ul>
+      </article>
+    </div>
+  </section>
+
+  <section id="plataforma" class="crm-modules" aria-labelledby="crm-modules-title">
+    <div class="crm-section-heading">
+      <p class="crm-eyebrow">{content.modules.eyebrow}</p>
+      <h2 id="crm-modules-title">{content.modules.title}</h2>
+      <p>{content.modules.copy}</p>
+    </div>
+
+    <div class="crm-module-grid">
+      {
+        content.modules.items.map((item) => (
+          <article>
+            <span>{item.code}</span>
+            <h3>{item.title}</h3>
+            <p>{item.copy}</p>
+          </article>
+        ))
+      }
+    </div>
+  </section>
+
+  <section class="crm-workflows" aria-labelledby="crm-workflows-title">
+    <div class="crm-workflows-copy">
+      <h2 id="crm-workflows-title">{content.workflows.title}</h2>
+      <p>{content.workflows.copy}</p>
+    </div>
+    <div class="crm-workflow-steps">
+      {
+        content.workflows.items.map((item) => (
+          <article>
+            <span>{item.label}</span>
+            <h3>{item.title}</h3>
+            <p>{item.copy}</p>
+          </article>
+        ))
+      }
+    </div>
+  </section>
+
+  <section class="crm-ai" aria-labelledby="crm-ai-title">
+    <div class="crm-ai-copy">
+      <p class="crm-eyebrow">{content.ai.eyebrow}</p>
+      <h2 id="crm-ai-title">{content.ai.title}</h2>
+      <p>{content.ai.copy}</p>
+    </div>
+    <div class="crm-ai-grid">
+      {
+        content.ai.capabilities.map((capability) => (
+          <article>
+            <h3>{capability.title}</h3>
+            <ul>
+              {capability.points.map((point) => <li>{point}</li>)}
+            </ul>
+          </article>
+        ))
+      }
+    </div>
+  </section>
+
+  <section class="crm-outcomes" aria-labelledby="crm-outcomes-title">
+    <h2 id="crm-outcomes-title">{content.outcomes.title}</h2>
+    <ul>
+      {content.outcomes.items.map((item) => <li>{item}</li>)}
+    </ul>
+  </section>
+
+  <section class="crm-contact" aria-labelledby="crm-contact-title">
+    <div class="crm-contact-heading">
+      <p class="crm-eyebrow">{content.cta.eyebrow}</p>
+      <h2 id="crm-contact-title">{content.cta.title}</h2>
+      <p>{content.cta.copy}</p>
+    </div>
+    <div class="crm-contact-grid">
+      <ContactDirectCard copy={contactCopy.direct} />
+      <div class="crm-contact-form">
+        <ContactForm copy={contactCopy.form} />
+      </div>
+    </div>
+  </section>
+
+  <ServicePageAnimations />
+</main>
