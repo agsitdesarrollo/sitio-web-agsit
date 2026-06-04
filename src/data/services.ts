@@ -29,9 +29,9 @@ export const servicesContentByLang: Record<SupportedLang, ServicesContent> = {
     services: [
       { title: 'Soluciones Tecnológicas', href: '/soluciones-tecnologicas/' },
       { title: 'Planeación Estratégica' },
-      { title: 'Dirección de Proyectos', href: '/direccion-de-proyectos/' },
-      { title: 'Administración de Procesos', href: '/administracion-de-procesos/' },
-      { title: 'Gestión de Calidad', href: '/gestion-de-calidad/' },
+      { title: 'Dirección de Proyectos' },
+      { title: 'Administración de Procesos' },
+      { title: 'Gestión de Calidad' },
       { title: 'Mercadotecnia Digital', href: '/mercadotecnia-digital/' },
     ],
     servicePoints: [
@@ -76,9 +76,9 @@ export const servicesContentByLang: Record<SupportedLang, ServicesContent> = {
     services: [
       { title: 'Technology Solutions', href: '/en/technology-solutions/' },
       { title: 'Strategic Planning' },
-      { title: 'Project Management', href: '/en/project-management/' },
-      { title: 'Process Management', href: '/en/process-management/' },
-      { title: 'Quality Management', href: '/en/quality-management/' },
+      { title: 'Project Management' },
+      { title: 'Process Management' },
+      { title: 'Quality Management' },
       { title: 'Digital Marketing', href: '/en/digital-marketing/' },
     ],
     servicePoints: [

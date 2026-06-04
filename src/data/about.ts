@@ -118,7 +118,6 @@ export const aboutContentByLang: Record<SupportedLang, AboutContent> = {
           'Análisis, documentación y optimización de procesos para mejorar eficiencia, control operativo y rentabilidad.',
         tags: ['AS-IS / TO-BE', 'BPMS Automation', 'KPIs operativos', 'Auditoría'],
         alt: 'Visual de administración de procesos',
-        href: '/administracion-de-procesos/',
       },
       {
         ...commonServices.dm,
@@ -126,7 +125,7 @@ export const aboutContentByLang: Record<SupportedLang, AboutContent> = {
         description: 'CRM, automatización comercial, campañas, analítica y colaboración para conectar clientes, equipo y resultados.',
         tags: ['CRM', 'Marketing automation', 'Ventas', 'Analytics'],
         alt: 'Visual de mercadotecnia digital',
-        href: '/administracion-crm/',
+        href: '/mercadotecnia-digital/',
       },
       {
         ...commonServices.pm,
@@ -135,7 +134,6 @@ export const aboutContentByLang: Record<SupportedLang, AboutContent> = {
           'Gestión profesional de proyectos, PMOs y metodologías ágiles o waterfall para cumplir tiempos y presupuesto.',
         tags: ['PMO', 'Scrum & Agile', 'OPM3', 'PMP'],
         alt: 'Visual de dirección de proyectos',
-        href: '/direccion-de-proyectos/',
       },
       {
         ...commonServices.qm,
@@ -144,7 +142,6 @@ export const aboutContentByLang: Record<SupportedLang, AboutContent> = {
           'Sistemas de calidad, mejora continua, auditorías y modelos de madurez para elevar estándares operativos.',
         tags: ['ISO 9001', 'CMMI', 'Mejora continua', 'Auditorías'],
         alt: 'Visual de gestión de calidad',
-        href: '/gestion-de-calidad/',
       },
       {
         ...commonServices.spm,
@@ -201,7 +198,6 @@ export const aboutContentByLang: Record<SupportedLang, AboutContent> = {
           'Process analysis, documentation and optimization to improve efficiency, operational control and profitability.',
         tags: ['AS-IS / TO-BE', 'BPMS Automation', 'Operational KPIs', 'Auditing'],
         alt: 'Process management visual',
-        href: '/en/process-management/',
       },
       {
         ...commonServices.dm,
@@ -209,7 +205,7 @@ export const aboutContentByLang: Record<SupportedLang, AboutContent> = {
         description: 'CRM, commercial automation, campaigns, analytics and collaboration to connect clients, teams and results.',
         tags: ['CRM', 'Marketing automation', 'Sales', 'Analytics'],
         alt: 'Digital marketing visual',
-        href: '/en/crm-administration/',
+        href: '/en/digital-marketing/',
       },
       {
         ...commonServices.pm,
@@ -218,7 +214,6 @@ export const aboutContentByLang: Record<SupportedLang, AboutContent> = {
           'Professional project management, PMOs and agile or waterfall methodologies to meet timelines and budgets.',
         tags: ['PMO', 'Scrum & Agile', 'OPM3', 'PMP'],
         alt: 'Project management visual',
-        href: '/en/project-management/',
       },
       {
         ...commonServices.qm,
@@ -227,7 +222,6 @@ export const aboutContentByLang: Record<SupportedLang, AboutContent> = {
           'Quality systems, continuous improvement, audits and maturity models to raise operational standards.',
         tags: ['ISO 9001', 'CMMI', 'Continuous improvement', 'Audits'],
         alt: 'Quality management visual',
-        href: '/en/quality-management/',
       },
       {
         ...commonServices.spm,
