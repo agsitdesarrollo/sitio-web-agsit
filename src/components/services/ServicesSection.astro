@@ -42,8 +42,6 @@ const iconPath = (icon: ServicePoint['icon']) => {
     <Image src={personImage} alt="" loading="lazy" />
   </div>
 
-  <button class="services-advice-cta" type="button" data-contact-trigger>{content.cta}</button>
-
   <div class="services-cards-layer">
     {
       content.servicePoints.map((service, index) => (
@@ -69,4 +67,6 @@ const iconPath = (icon: ServicePoint['icon']) => {
       ))
     }
   </div>
+
+  <button class="services-advice-cta" type="button" data-contact-trigger>{content.cta}</button>
 </section>

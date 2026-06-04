@@ -88,7 +88,7 @@ export const technologySolutionsByLang: Record<SupportedLang, TechnologySolution
           title: 'Entendemos el punto de fricción',
           copy:
             'Levantamos procesos, sistemas actuales, requerimientos técnicos y funcionales, dependencias, riesgos y brechas de operación.',
-          outcome: 'Claridad de alcance antes de invertir.',
+          outcome: 'Alcance y riesgos definidos desde el inicio.',
         },
         {
           label: 'Priorizar',
@@ -203,7 +203,7 @@ export const technologySolutionsByLang: Record<SupportedLang, TechnologySolution
           title: 'We understand the friction point',
           copy:
             'We map processes, current systems, technical and functional requirements, dependencies, operational risks and gaps.',
-          outcome: 'Clear scope before investing.',
+          outcome: 'Scope and risks defined from the start.',
         },
         {
           label: 'Prioritize',

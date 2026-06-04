@@ -62,27 +62,35 @@ const { content, contactCopy } = Astro.props;
   </section>
 
   <section id="capacidades" class="technology-capabilities" aria-labelledby="technology-capabilities-title">
-    <div class="technology-capabilities-intro">
-      <p class="technology-eyebrow">{content.capabilities.eyebrow}</p>
-      <h2 id="technology-capabilities-title">{content.capabilities.title}</h2>
-      <p>{content.capabilities.copy}</p>
-    </div>
+    <div class="technology-capabilities-stage">
+      <div class="technology-capabilities-panel technology-capabilities-panel-intro">
+        <div class="technology-capabilities-intro">
+          <p class="technology-eyebrow js-technology-capabilities-intro-fade">{content.capabilities.eyebrow}</p>
+          <h2 id="technology-capabilities-title" class="js-technology-capabilities-intro-fade">
+            {content.capabilities.title}
+          </h2>
+          <p class="js-technology-capabilities-intro-fade">{content.capabilities.copy}</p>
+        </div>
+      </div>
 
-    <div class="technology-capability-grid">
-      {
-        content.capabilities.items.map((item) => (
-          <article class="technology-capability">
-            <div>
-              <span>{item.code}</span>
-              <h3>{item.title}</h3>
-              <p>{item.copy}</p>
-            </div>
-            <ul>
-              {item.services.map((service) => <li>{service}</li>)}
-            </ul>
-          </article>
-        ))
-      }
+      <div class="technology-capabilities-panel technology-capabilities-panel-grid">
+        <div class="technology-capability-grid">
+          {
+            content.capabilities.items.map((item) => (
+              <article class="technology-capability">
+                <div>
+                  <span>{item.code}</span>
+                  <h3>{item.title}</h3>
+                  <p>{item.copy}</p>
+                </div>
+                <ul>
+                  {item.services.map((service) => <li>{service}</li>)}
+                </ul>
+              </article>
+            ))
+          }
+        </div>
+      </div>
     </div>
   </section>
 
@@ -103,6 +111,218 @@ const { content, contactCopy } = Astro.props;
 </main>
 
 <script>
+  import gsap from 'gsap';
+  import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+  gsap.registerPlugin(ScrollTrigger);
+
+  const getTechnologyNavOffset = () => {
+    const nav = document.querySelector('.site-nav, .site-header, header');
+
+    return nav instanceof HTMLElement ? Math.round(nav.getBoundingClientRect().height) : 0;
+  };
+
+  const getTechnologyViewportHeight = () => {
+    const stableViewportHeight = Number.parseFloat(
+      getComputedStyle(document.documentElement).getPropertyValue('--app-stable-vh'),
+    );
+
+    return Number.isFinite(stableViewportHeight) && stableViewportHeight > 0
+      ? stableViewportHeight
+      : window.innerHeight;
+  };
+
+  const setupTechnologyMethodScroll = () => {
+    const root = document.querySelector('.technology-page');
+
+    if (!root || root.hasAttribute('data-technology-method-ready')) return;
+
+    const method = root.querySelector('.technology-method');
+    const steps = gsap.utils.toArray<HTMLElement>('.technology-method-step', method);
+
+    if (!(method instanceof HTMLElement) || steps.length === 0) return;
+
+    root.setAttribute('data-technology-method-ready', 'true');
+
+    const matchMedia = gsap.matchMedia();
+    const getSequenceEnd = (multiplier: number) => `+=${Math.round(getTechnologyViewportHeight() * multiplier)}`;
+    const getPinStart = () => `top top+=${getTechnologyNavOffset()}`;
+
+    matchMedia.add('(prefers-reduced-motion: no-preference) and (min-width: 680px)', () => {
+      method.classList.add('is-scroll-sequence');
+      gsap.set(steps, { autoAlpha: 0, y: 56 });
+
+      const timeline = gsap.timeline({
+        defaults: { ease: 'none' },
+        scrollTrigger: {
+          id: 'technology-method-sequence-desktop',
+          trigger: method,
+          start: getPinStart,
+          end: () => getSequenceEnd(steps.length * 0.72),
+          pin: true,
+          pinSpacing: true,
+          scrub: 0.65,
+          anticipatePin: 1,
+          invalidateOnRefresh: true,
+        },
+      });
+
+      steps.forEach((step) => {
+        timeline
+          .to(step, { autoAlpha: 1, y: 0, duration: 1, ease: 'power2.out' })
+          .to({}, { duration: 0.22 });
+      });
+
+      return () => {
+        timeline.kill();
+        method.classList.remove('is-scroll-sequence');
+        gsap.set(steps, { clearProps: 'all' });
+      };
+    });
+
+    matchMedia.add('(prefers-reduced-motion: no-preference) and (max-width: 679px)', () => {
+      method.classList.add('is-scroll-sequence', 'is-mobile-sequence');
+      gsap.set(steps, { autoAlpha: 0, y: 46 });
+
+      const timeline = gsap.timeline({
+        defaults: { ease: 'none' },
+        scrollTrigger: {
+          id: 'technology-method-sequence-mobile',
+          trigger: method,
+          start: getPinStart,
+          end: () => getSequenceEnd(steps.length * 0.86),
+          pin: true,
+          pinSpacing: true,
+          scrub: 0.7,
+          anticipatePin: 1,
+          invalidateOnRefresh: true,
+        },
+      });
+
+      timeline.to(steps[0], { autoAlpha: 1, y: 0, duration: 0.78, ease: 'power2.out' }).to({}, { duration: 0.34 });
+
+      steps.slice(1).forEach((step, index) => {
+        const previousStep = steps[index];
+        const isLastStep = index === steps.length - 2;
+        const label = `technology-step-${index + 2}`;
+
+        timeline
+          .add(label)
+          .to(previousStep, { autoAlpha: 0, y: -22, duration: 0.5, ease: 'power1.in' }, label)
+          .fromTo(step, { autoAlpha: 0, y: 46 }, { autoAlpha: 1, y: 0, duration: 0.78, ease: 'power2.out' }, label)
+          .to({}, { duration: isLastStep ? 0.62 : 0.32 });
+      });
+
+      return () => {
+        timeline.kill();
+        method.classList.remove('is-scroll-sequence', 'is-mobile-sequence');
+        gsap.set(steps, { clearProps: 'all' });
+      };
+    });
+
+    window.addEventListener('agsit:viewport-change', () => ScrollTrigger.refresh());
+  };
+
+  const setupTechnologyCapabilitiesScroll = () => {
+    const root = document.querySelector('.technology-page');
+
+    if (!root || root.hasAttribute('data-technology-capabilities-ready')) return;
+
+    const capabilities = root.querySelector('.technology-capabilities');
+    const stage = root.querySelector('.technology-capabilities-stage');
+    const intro = root.querySelector('.technology-capabilities-intro');
+    const introItems = gsap.utils.toArray<HTMLElement>('.js-technology-capabilities-intro-fade', capabilities);
+    const cards = gsap.utils.toArray<HTMLElement>('.technology-capability', capabilities);
+
+    if (!(capabilities instanceof HTMLElement) || !(stage instanceof HTMLElement) || cards.length === 0) return;
+
+    root.setAttribute('data-technology-capabilities-ready', 'true');
+
+    const matchMedia = gsap.matchMedia();
+    const getDesktopSequenceEnd = () => `+=${Math.round(getTechnologyViewportHeight() * (cards.length * 0.68 + 2.25))}`;
+    const getPinStart = () => `top top+=${getTechnologyNavOffset()}`;
+
+    matchMedia.add('(prefers-reduced-motion: no-preference) and (min-width: 680px)', () => {
+      capabilities.classList.add('is-horizontal-sequence');
+      gsap.set(stage, { xPercent: 0 });
+      gsap.set(introItems, { autoAlpha: 0, y: 18 });
+      gsap.set(cards, { autoAlpha: 0, y: 38, scale: 0.96 });
+
+      const timeline = gsap.timeline({
+        defaults: { ease: 'none' },
+        scrollTrigger: {
+          id: 'technology-capabilities-sequence',
+          trigger: capabilities,
+          start: getPinStart,
+          end: getDesktopSequenceEnd,
+          pin: true,
+          pinSpacing: true,
+          scrub: 0.75,
+          anticipatePin: 1,
+          invalidateOnRefresh: true,
+        },
+      });
+
+      timeline
+        .to(introItems, { autoAlpha: 1, y: 0, duration: 0.38, ease: 'power2.out', stagger: 0.08 }, 0.34)
+        .to({}, { duration: 0.7 })
+        .to(stage, { xPercent: -50, duration: 1, ease: 'power1.inOut' }, 1.45);
+
+      cards.forEach((card, index) => {
+        timeline.to(
+          card,
+          { autoAlpha: 1, y: 0, scale: 1, duration: 0.1, ease: 'power2.out' },
+          2.68 + index * 0.08,
+        );
+      });
+
+      timeline.to({}, { duration: 1.6 });
+
+      return () => {
+        timeline.kill();
+        capabilities.classList.remove('is-horizontal-sequence');
+        gsap.set(stage, { clearProps: 'all' });
+        gsap.set(introItems, { clearProps: 'all' });
+        gsap.set(cards, { clearProps: 'all' });
+      };
+    });
+
+    matchMedia.add('(prefers-reduced-motion: no-preference) and (max-width: 679px)', () => {
+      capabilities.classList.add('is-mobile-card-sequence');
+      gsap.set(introItems, { autoAlpha: 0, y: 18 });
+      gsap.set(cards, { autoAlpha: 0, y: 34, scale: 0.98 });
+
+      const introTimeline = gsap.timeline({
+        scrollTrigger: {
+          id: 'technology-capabilities-letters-mobile',
+          trigger: intro,
+          start: 'top 72%',
+          toggleActions: 'play none none reverse',
+        },
+      });
+
+      introTimeline.to(introItems, { autoAlpha: 1, y: 0, duration: 0.38, ease: 'power2.out', stagger: 0.08 });
+
+      const triggers = cards.map((card) =>
+        ScrollTrigger.create({
+          trigger: card,
+          start: 'top 82%',
+          end: 'bottom 18%',
+          onEnter: () => gsap.to(card, { autoAlpha: 1, y: 0, scale: 1, duration: 0.58, ease: 'power2.out' }),
+          onEnterBack: () => gsap.to(card, { autoAlpha: 1, y: 0, scale: 1, duration: 0.4, ease: 'power2.out' }),
+        }),
+      );
+
+      return () => {
+        introTimeline.kill();
+        triggers.forEach((trigger) => trigger.kill());
+        capabilities.classList.remove('is-mobile-card-sequence');
+        gsap.set(introItems, { clearProps: 'all' });
+        gsap.set(cards, { clearProps: 'all' });
+      };
+    });
+  };
+
   const setupTechnologyReveal = () => {
     const root = document.querySelector('.technology-page');
 
@@ -113,7 +333,7 @@ const { content, contactCopy } = Astro.props;
     const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     const items = Array.from(
       root.querySelectorAll(
-        '.technology-hero-content, .technology-section-heading, .technology-method-step, .technology-capabilities-intro, .technology-capability, .technology-contact-heading, .technology-contact-grid',
+        '.technology-hero-content, .technology-section-heading, .technology-contact-heading, .technology-contact-grid',
       ),
     ).filter((item) => item instanceof HTMLElement);
 
@@ -145,9 +365,15 @@ const { content, contactCopy } = Astro.props;
     items.forEach((item) => observer.observe(item));
   };
 
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', setupTechnologyReveal, { once: true });
-  } else {
+  const setupTechnologyPage = () => {
+    setupTechnologyMethodScroll();
+    setupTechnologyCapabilitiesScroll();
     setupTechnologyReveal();
+  };
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', setupTechnologyPage, { once: true });
+  } else {
+    setupTechnologyPage();
   }
 </script>

@@ -86,7 +86,7 @@ export function initScrollExperience(): (() => void) | undefined {
       const cta = getElementRect('.services-advice-cta');
 
       if (isCompact && cta) {
-        return isMobile ? cta.bottom + 30 : getViewportHeight() + 34;
+        return isMobile ? Math.min(cta.bottom + 12, getViewportHeight() - 18) : getViewportHeight() + 34;
       }
 
       return getViewportHeight() - 128;
@@ -100,7 +100,7 @@ export function initScrollExperience(): (() => void) | undefined {
       }
 
       if (isCompact) {
-        return isMobile ? cta.bottom + 30 : fallback;
+        return isMobile ? Math.min(cta.bottom + 12, getViewportHeight() - 18) : fallback;
       }
 
       return cta.bottom + 70;

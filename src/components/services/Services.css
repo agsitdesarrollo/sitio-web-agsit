@@ -365,8 +365,8 @@
   }
 
   .services-person {
-    width: min(250px, 64vw, 32svh);
-    margin-top: clamp(14px, 2.4svh, 24px);
+    width: min(238px, 60vw, 29svh);
+    margin-top: clamp(10px, 2svh, 18px);
   }
 
   .services-person img {
@@ -376,7 +376,7 @@
   .services-advice-cta {
     width: min(420px, calc(100vw - 44px));
     min-height: 54px;
-    margin-top: clamp(16px, 2.4svh, 24px);
+    margin-top: clamp(8px, 1.4svh, 12px);
     padding: 0 20px;
     align-items: center;
     justify-content: center;
@@ -388,8 +388,8 @@
 
   .services-cards-layer {
     width: min(420px, 100%);
-    min-height: clamp(174px, 27svh, 228px);
-    margin-top: clamp(22px, 3.5svh, 34px);
+    min-height: clamp(132px, 21svh, 180px);
+    margin-top: clamp(10px, 1.8svh, 16px);
   }
 
   .service-card {
@@ -441,19 +441,19 @@
   }
 
   .services-person {
-    width: min(210px, 58vw);
-    margin-top: 10px;
+    width: min(190px, 54vw);
+    margin-top: 8px;
   }
 
   .services-advice-cta {
     min-height: 50px;
-    margin-top: 14px;
+    margin-top: 8px;
     font-size: 0.66rem;
   }
 
   .services-cards-layer {
-    margin-top: 24px;
-    min-height: 168px;
+    margin-top: 10px;
+    min-height: clamp(124px, 20svh, 140px);
   }
 
   .service-card-copy p {
