@@ -55,13 +55,13 @@ const commonServices = {
     number: '01',
     code: 'ITS',
     label: 'Information Technologies Solutions',
-    image: '/assets/servicios.webm',
+    image: '/assets/soluciones-tecnologicas.mp4',
   },
   bpm: {
     number: '02',
     code: 'BPM',
     label: 'Business Process Management',
-    image: '/assets/servicios.webm',
+    image: '/assets/BPM.mp4',
   },
   dm: {
     number: '03',
