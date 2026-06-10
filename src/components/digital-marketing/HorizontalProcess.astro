@@ -1,0 +1,63 @@
+---
+import type { MarketingProcessStation } from '../../data/digitalMarketing';
+
+type Props = {
+  eyebrow: string;
+  title: string;
+  copy: string;
+  stations: MarketingProcessStation[];
+};
+
+const { eyebrow, title, copy, stations } = Astro.props;
+---
+
+<section class="marketing-process js-marketing-process" aria-labelledby="marketing-process-title">
+  <div class="marketing-process-pin js-process-pin">
+    <div class="marketing-process-intro js-marketing-reveal">
+      <p class="digital-eyebrow">{eyebrow}</p>
+      <h2 id="marketing-process-title">{title}</h2>
+      <p>{copy}</p>
+    </div>
+
+    <div class="marketing-process-viewport">
+      <div class="marketing-process-track js-process-track">
+        {
+          stations.map((station, index) => (
+            <article class={`process-station process-station-${station.visual} js-process-station js-marketing-reveal`}>
+              <div class="process-station-copy">
+                <span class="process-station-index">{String(index + 1).padStart(2, '0')}</span>
+                <p class="process-service">{station.service}</p>
+                <h3>{station.headline}</h3>
+                <h4>{station.title}</h4>
+                <p>{station.copy}</p>
+              </div>
+              <div class="process-station-visual" aria-hidden="true">
+                <div class="process-visual-frame">
+                  <span class="process-metric">{station.metric}</span>
+                  <div class="process-visual-lines">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                  </div>
+                  <div class="process-visual-primary">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                  </div>
+                  <div class="process-visual-flow">
+                    <i></i>
+                    <i></i>
+                    <i></i>
+                    <i></i>
+                    <i></i>
+                  </div>
+                </div>
+              </div>
+            </article>
+          ))
+        }
+      </div>
+    </div>
+  </div>
+</section>

@@ -1,0 +1,26 @@
+---
+import type { MarketingScene } from '../../data/digitalMarketing';
+import DigitalMarketVisual from './DigitalMarketVisual.astro';
+
+type Props = {
+  scenes: MarketingScene[];
+};
+
+const { scenes } = Astro.props;
+---
+
+<section class="marketing-story js-marketing-story" aria-label="Marketing Digital AGSIT">
+  {scenes.map((scene, index) => (
+    <article
+      id={scene.id}
+      class:list={['marketing-story-scene js-story-scene', `marketing-story-scene-${scene.visual}`, { 'js-story-trigger-cta': index === 2 }]}
+    >
+      <div class="story-copy js-story-copy">
+        <p class="digital-eyebrow">{scene.eyebrow}</p>
+        {index === 0 ? <h1>{scene.title}</h1> : <h2>{scene.title}</h2>}
+        <p>{scene.copy}</p>
+      </div>
+      <DigitalMarketVisual variant={scene.visual} terms={scene.terms} kpis={scene.kpis} />
+    </article>
+  ))}
+</section>

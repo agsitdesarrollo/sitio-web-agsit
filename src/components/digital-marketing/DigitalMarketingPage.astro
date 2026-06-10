@@ -1,9 +1,12 @@
 ---
 import ContactDirectCard from '../contact/ContactDirectCard.astro';
 import ContactForm from '../contact/ContactForm.astro';
-import ServicePageAnimations from '../service-animation/ServicePageAnimations.astro';
 import type { ContactCopy } from '../../data/contact';
 import type { DigitalMarketingContent } from '../../data/digitalMarketing';
+import FloatingCTA from './FloatingCTA.astro';
+import HorizontalProcess from './HorizontalProcess.astro';
+import MarketingStory from './MarketingStory.astro';
+import MetricDashboard from './MetricDashboard.astro';
 
 type Props = {
   content: DigitalMarketingContent;
@@ -13,73 +16,39 @@ type Props = {
 const { content, contactCopy } = Astro.props;
 ---
 
-<main class="digital-page">
-  <section class="digital-hero" aria-labelledby="digital-hero-title">
-    <div class="digital-hero-copy">
-      <p class="digital-eyebrow">{content.hero.eyebrow}</p>
-      <h1 id="digital-hero-title">{content.hero.title}</h1>
-      <p>{content.hero.copy}</p>
-      <div class="digital-hero-actions">
-        <button type="button" data-contact-trigger>{content.hero.primaryCta}</button>
-        <a href="#historia">{content.hero.secondaryCta}</a>
-      </div>
-    </div>
+<main class="digital-page js-digital-page">
+  <FloatingCTA label={content.floatingCta.label} href="#marketing-contact" />
 
-    <div class="digital-command" aria-hidden="true">
-      <div class="digital-command-header">
-        <span>AGSIT</span>
-        <span>Growth board</span>
-      </div>
-      <div class="digital-command-funnel">
-        {content.hero.signals.map((signal, index) => <span class={`digital-signal digital-signal-${index + 1}`}>{signal}</span>)}
-      </div>
-      <div class="digital-command-metrics">
-        {
-          content.hero.metrics.map((metric) => (
-            <article>
-              <strong>{metric.value}</strong>
-              <span>{metric.label}</span>
-            </article>
-          ))
-        }
-      </div>
+  <MarketingStory scenes={content.scenes} />
+
+  <HorizontalProcess
+    eyebrow={content.process.eyebrow}
+    title={content.process.title}
+    copy={content.process.copy}
+    stations={content.process.stations}
+  />
+
+  <section class="marketing-results" aria-labelledby="marketing-results-title">
+    <div class="marketing-results-copy js-marketing-reveal">
+      <p class="digital-eyebrow">{content.results.eyebrow}</p>
+      <h2 id="marketing-results-title">{content.results.title}</h2>
+      <p>{content.results.copy}</p>
+    </div>
+    <div class="marketing-results-panel js-marketing-reveal">
+      <MetricDashboard metrics={content.results.metrics} />
     </div>
   </section>
 
-  <section id="historia" class="digital-story" aria-labelledby="digital-story-title">
-    <div class="digital-section-heading">
-      <p class="digital-eyebrow">{content.story.eyebrow}</p>
-      <h2 id="digital-story-title">{content.story.title}</h2>
-      <p>{content.story.copy}</p>
+  <section class="marketing-capabilities" aria-labelledby="marketing-capabilities-title">
+    <div class="marketing-capabilities-heading js-marketing-reveal">
+      <p class="digital-eyebrow">{content.capabilities.eyebrow}</p>
+      <h2 id="marketing-capabilities-title">{content.capabilities.title}</h2>
+      <p>{content.capabilities.copy}</p>
     </div>
-
-    <div class="digital-story-grid">
+    <div class="marketing-capability-grid">
       {
-        content.story.columns.map((column) => (
-          <article>
-            <span>{column.label}</span>
-            <h3>{column.title}</h3>
-            <ul>
-              {column.points.map((point) => <li>{point}</li>)}
-            </ul>
-          </article>
-        ))
-      }
-    </div>
-  </section>
-
-  <section class="digital-services" aria-labelledby="digital-services-title">
-    <div class="digital-section-heading">
-      <p class="digital-eyebrow">{content.services.eyebrow}</p>
-      <h2 id="digital-services-title">{content.services.title}</h2>
-      <p>{content.services.copy}</p>
-    </div>
-
-    <div class="digital-service-grid">
-      {
-        content.services.items.map((item) => (
-          <article>
-            <span>{item.code}</span>
+        content.capabilities.items.map((item) => (
+          <article class="marketing-capability js-marketing-reveal">
             <h3>{item.title}</h3>
             <p>{item.copy}</p>
           </article>
@@ -88,85 +57,245 @@ const { content, contactCopy } = Astro.props;
     </div>
   </section>
 
-  <section class="digital-method" aria-labelledby="digital-method-title">
-    <div class="digital-method-copy">
-      <h2 id="digital-method-title">{content.method.title}</h2>
-      <p>{content.method.copy}</p>
-    </div>
-    <div class="digital-method-steps">
-      {
-        content.method.steps.map((step) => (
-          <article>
-            <span>{step.label}</span>
-            <h3>{step.title}</h3>
-            <p>{step.copy}</p>
-          </article>
-        ))
-      }
-    </div>
-  </section>
-
-  <section class="digital-lifecycle" aria-labelledby="digital-lifecycle-title">
-    <div class="digital-lifecycle-copy">
-      <p class="digital-eyebrow">{content.lifecycle.eyebrow}</p>
-      <h2 id="digital-lifecycle-title">{content.lifecycle.title}</h2>
-      <p>{content.lifecycle.copy}</p>
-    </div>
-    <div class="digital-lifecycle-grid">
-      {
-        content.lifecycle.stages.map((stage) => (
-          <article>
-            <span>{stage.stage}</span>
-            <h3>{stage.title}</h3>
-            <p>{stage.copy}</p>
-          </article>
-        ))
-      }
-    </div>
-  </section>
-
-  <section class="digital-case" aria-labelledby="digital-case-title">
-    <div class="digital-case-copy">
-      <p class="digital-eyebrow">{content.caseStudy.eyebrow}</p>
-      <h2 id="digital-case-title">{content.caseStudy.title}</h2>
-      <p>{content.caseStudy.copy}</p>
-    </div>
-    <div class="digital-case-grid">
-      <article>
-        <span>{content.caseStudy.beforeTitle}</span>
-        <ul>
-          {content.caseStudy.before.map((item) => <li>{item}</li>)}
-        </ul>
-      </article>
-      <article>
-        <span>{content.caseStudy.afterTitle}</span>
-        <ul>
-          {content.caseStudy.after.map((item) => <li>{item}</li>)}
-        </ul>
-      </article>
-    </div>
-  </section>
-
-  <section class="digital-outcomes" aria-labelledby="digital-outcomes-title">
-    <h2 id="digital-outcomes-title">{content.outcomes.title}</h2>
-    <ul>
-      {content.outcomes.items.map((item) => <li>{item}</li>)}
-    </ul>
-  </section>
-
-  <section class="digital-contact" aria-labelledby="digital-contact-title">
-    <div class="digital-contact-heading">
+  <section id="marketing-contact" class="marketing-contact" aria-labelledby="marketing-contact-title">
+    <div class="marketing-contact-heading js-marketing-reveal">
       <p class="digital-eyebrow">{content.cta.eyebrow}</p>
-      <h2 id="digital-contact-title">{content.cta.title}</h2>
+      <h2 id="marketing-contact-title">{content.cta.title}</h2>
       <p>{content.cta.copy}</p>
     </div>
-    <div class="digital-contact-grid">
+    <div class="marketing-contact-grid">
       <ContactDirectCard copy={contactCopy.direct} />
-      <div class="digital-contact-form">
+      <div class="marketing-contact-form">
         <ContactForm copy={contactCopy.form} />
       </div>
     </div>
   </section>
-
-  <ServicePageAnimations />
 </main>
+
+<script>
+  import gsap from 'gsap';
+  import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+  gsap.registerPlugin(ScrollTrigger);
+
+  const initDigitalMarketingStory = () => {
+    const root = document.querySelector<HTMLElement>('.js-digital-page');
+
+    if (!root || root.dataset.marketingStoryReady === 'true') {
+      return;
+    }
+
+    root.dataset.marketingStoryReady = 'true';
+
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const revealItems = gsap.utils.toArray<HTMLElement>('.js-marketing-reveal', root);
+    const storyCopies = gsap.utils.toArray<HTMLElement>('.js-story-copy', root);
+    const floatingCta = root.querySelector<HTMLElement>('.js-marketing-floating-cta');
+
+    if (reduceMotion) {
+      root.classList.add('is-reduced-motion');
+      revealItems.forEach((item) => item.classList.add('is-visible'));
+      storyCopies.forEach((item) => item.classList.add('is-visible'));
+      floatingCta?.classList.add('is-visible');
+      return;
+    }
+
+    const getNavHeight = () => document.querySelector<HTMLElement>('.site-nav')?.getBoundingClientRect().height ?? 0;
+    const getPinnedStart = () => `top top+=${getNavHeight()}`;
+    const context = gsap.context(() => {
+      ScrollTrigger.config({ ignoreMobileResize: true });
+
+      gsap.set(revealItems, { autoAlpha: 0, y: 24 });
+
+      gsap.utils.toArray<HTMLElement>('.js-story-scene', root).forEach((scene) => {
+        const copyItems = scene.querySelectorAll<HTMLElement>('.js-story-copy > *');
+        const nodes = scene.querySelectorAll<HTMLElement>('.js-market-node');
+        const terms = scene.querySelectorAll<HTMLElement>('.market-term');
+        const lines = scene.querySelectorAll<SVGPathElement>('.network-line');
+        const cards = scene.querySelectorAll<HTMLElement>('.noise-card, .metric-dashboard-grid article');
+
+        gsap.set(copyItems, { autoAlpha: 0, y: 28 });
+        gsap.set(nodes, { scale: 0.72, autoAlpha: 0 });
+        if (terms.length) {
+          gsap.set(terms, { autoAlpha: 0, y: 16 });
+        }
+        if (cards.length) {
+          gsap.set(cards, { autoAlpha: 0, y: 18 });
+        }
+
+        // Story scenes keep one protagonist visual while the surrounding signal field transforms.
+        const sceneTimeline = gsap.timeline({
+          scrollTrigger: {
+            trigger: scene,
+            start: () => `top 72%`,
+            end: () => `bottom 42%`,
+            scrub: 0.8,
+            invalidateOnRefresh: true,
+          },
+        });
+
+        sceneTimeline
+          .to(copyItems, { autoAlpha: 1, y: 0, duration: 0.34, stagger: 0.06, ease: 'power2.out' }, 0.04)
+          .to(lines, { strokeDashoffset: 0, duration: 0.72, stagger: 0.08, ease: 'none' }, 0)
+          .to(nodes, { autoAlpha: 1, scale: 1, duration: 0.38, stagger: 0.05, ease: 'power2.out' }, 0.08);
+
+        if (terms.length) {
+          sceneTimeline.to(terms, { autoAlpha: 1, y: 0, duration: 0.34, stagger: 0.04, ease: 'power2.out' }, 0.18);
+        }
+
+        if (cards.length) {
+          sceneTimeline.to(cards, { autoAlpha: 1, y: 0, duration: 0.34, stagger: 0.06, ease: 'power2.out' }, 0.22);
+        }
+
+        gsap.to(scene.querySelectorAll<HTMLElement>('.js-digital-visual'), {
+          yPercent: -5,
+          ease: 'none',
+          scrollTrigger: {
+            trigger: scene,
+            start: 'top bottom',
+            end: 'bottom top',
+            scrub: true,
+          },
+        });
+      });
+
+      ScrollTrigger.batch(gsap.utils.toArray<HTMLElement>('.js-marketing-reveal', root), {
+        start: 'top 82%',
+        once: true,
+        onEnter: (batch) => {
+          gsap.to(batch, {
+            autoAlpha: 1,
+            y: 0,
+            duration: 0.58,
+            stagger: 0.08,
+            ease: 'power2.out',
+            overwrite: true,
+          });
+        },
+      });
+
+      const process = root.querySelector<HTMLElement>('.js-marketing-process');
+      const processPin = root.querySelector<HTMLElement>('.js-process-pin');
+      const processTrack = root.querySelector<HTMLElement>('.js-process-track');
+      const processStations = gsap.utils.toArray<HTMLElement>('.js-process-station', root);
+      const matchMedia = gsap.matchMedia();
+
+      matchMedia.add('(min-width: 901px)', () => {
+        if (!process || !processPin || !processTrack || processStations.length < 2) {
+          return undefined;
+        }
+
+        gsap.set(processStations, { autoAlpha: 0.42, scale: 0.94 });
+
+        // Desktop uses vertical scroll to drive a pinned horizontal process.
+        const horizontalTween = gsap.to(processTrack, {
+          x: () => -(processTrack.scrollWidth - processPin.clientWidth),
+          ease: 'none',
+          scrollTrigger: {
+            trigger: process,
+            start: getPinnedStart,
+            end: () => `+=${Math.max(window.innerHeight * 2.9, processStations.length * 520)}`,
+            scrub: 1,
+            pin: processPin,
+            anticipatePin: 1,
+            invalidateOnRefresh: true,
+          },
+        });
+
+        processStations.forEach((station) => {
+          gsap.to(station, {
+            autoAlpha: 1,
+            scale: 1,
+            ease: 'none',
+            scrollTrigger: {
+              trigger: station,
+              containerAnimation: horizontalTween,
+              start: 'left 72%',
+              end: 'right 42%',
+              scrub: true,
+            },
+          });
+
+          gsap.fromTo(
+            station.querySelectorAll<HTMLElement>('.process-visual-primary span, .process-visual-flow i'),
+            { autoAlpha: 0, y: 18 },
+            {
+              autoAlpha: 1,
+              y: 0,
+              stagger: 0.04,
+              ease: 'power2.out',
+              scrollTrigger: {
+                trigger: station,
+                containerAnimation: horizontalTween,
+                start: 'left 64%',
+                end: 'center center',
+                scrub: 0.6,
+              },
+            },
+          );
+        });
+
+        return () => {
+          gsap.set(processTrack, { clearProps: 'transform' });
+          gsap.set(processStations, { clearProps: 'opacity,visibility,transform' });
+        };
+      });
+
+      matchMedia.add('(max-width: 900px)', () => {
+        processStations.forEach((station) => {
+          gsap.fromTo(
+            station,
+            { autoAlpha: 0, y: 30 },
+            {
+              autoAlpha: 1,
+              y: 0,
+              duration: 0.58,
+              ease: 'power2.out',
+              scrollTrigger: {
+                trigger: station,
+                start: 'top 82%',
+                once: true,
+              },
+            },
+          );
+        });
+
+        return undefined;
+      });
+
+      if (floatingCta) {
+        ScrollTrigger.create({
+          trigger: '.js-story-trigger-cta',
+          start: 'top 70%',
+          onEnter: () => floatingCta.classList.add('is-visible'),
+          onLeaveBack: () => floatingCta.classList.remove('is-visible'),
+        });
+
+        ScrollTrigger.create({
+          trigger: '#marketing-contact',
+          start: 'top 78%',
+          onEnter: () => floatingCta.classList.remove('is-visible'),
+          onLeaveBack: () => floatingCta.classList.add('is-visible'),
+        });
+      }
+
+      const refresh = () => ScrollTrigger.refresh();
+      window.addEventListener('agsit:viewport-change', refresh, { passive: true });
+      window.addEventListener('orientationchange', refresh, { passive: true });
+
+      return () => {
+        window.removeEventListener('agsit:viewport-change', refresh);
+        window.removeEventListener('orientationchange', refresh);
+        matchMedia.revert();
+      };
+    }, root);
+
+    window.addEventListener('pagehide', () => context.revert(), { once: true });
+  };
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initDigitalMarketingStory, { once: true });
+  } else {
+    initDigitalMarketingStory();
+  }
+</script>
