@@ -1,0 +1,611 @@
+---
+import ContactDirectCard from '../contact/ContactDirectCard.astro';
+import ContactForm from '../contact/ContactForm.astro';
+import type { ContactCopy } from '../../data/contact';
+import type { DigitalMarketingV2Content, StoryInlineVisual } from '../../data/digitalMarketingV2';
+
+type Props = {
+  content: DigitalMarketingV2Content;
+  contactCopy: ContactCopy;
+};
+
+const { content, contactCopy } = Astro.props;
+
+const assetByVisual: Record<StoryInlineVisual, string> = {
+  eye: '/assets/storytelling-v2/eye.svg',
+  flower: '/assets/storytelling-v2/flower.svg',
+  heart: '/assets/storytelling-v2/heart.svg',
+};
+---
+
+<main class="dm-v2-page js-dm-v2-page">
+  <section class="dm-v2-hero" aria-labelledby="dm-v2-title">
+    <img class="dm-v2-hero-circle js-dm-v2-hero-circle" src="/assets/storytelling-v2/sage-circle.svg" alt="" />
+    <div class="dm-v2-hero-title">
+      <p class="dm-v2-eyebrow">{content.hero.eyebrow}</p>
+      <h1 id="dm-v2-title">
+        <span class="dm-v2-title-primary js-dm-v2-title-primary">{content.hero.primary}</span>
+        <span class="dm-v2-title-secondary js-dm-v2-title-secondary">{content.hero.secondary}</span>
+      </h1>
+      <img class="dm-v2-hero-book js-dm-v2-hero-book" src="/assets/storytelling-v2/book.svg" alt="" />
+      <img class="dm-v2-hero-hourglass js-dm-v2-hero-hourglass" src="/assets/storytelling-v2/yellow-hourglass.svg" alt="" />
+      <svg class="dm-v2-hero-line dm-v2-hero-line-top js-dm-v2-line-top" viewBox="0 0 240 86" aria-hidden="true" focusable="false">
+        <path d="M230 5 C176 28 118 20 92 47 C80 60 139 44 210 35 C238 32 232 55 154 80" />
+      </svg>
+      <svg class="dm-v2-hero-line dm-v2-hero-line-bottom js-dm-v2-line-bottom" viewBox="0 0 720 118" aria-hidden="true" focusable="false">
+        <path d="M8 106 C166 8 278 22 265 92 C262 110 401 19 506 38 C555 47 548 83 614 78 C650 75 685 66 712 60" />
+      </svg>
+    </div>
+  </section>
+
+  <section class="dm-v2-eye-wrapper">
+    <section class="dm-v2-sticky-wrap" aria-hidden="true">
+      <div class="dm-v2-sticky-trigger js-dm-v2-eye-trigger">
+        <div class="dm-v2-sticky-track">
+          <div class="dm-v2-sticky-element">
+            <img class="dm-v2-sticky-circle js-dm-v2-sticky-circle" src="/assets/storytelling-v2/sage-circle.svg" alt="" />
+            <img class="dm-v2-sticky-eye js-dm-v2-sticky-eye" src="/assets/storytelling-v2/eye.svg" alt="" />
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <article class="dm-v2-pin-section dm-v2-pin-one js-dm-v2-pin-one" aria-label={content.narrative[0].ariaLabel}>
+      <img
+        class="dm-v2-eye-origin js-dm-v2-flip1-origin"
+        data-flip-id="dm-eye"
+        src="/assets/storytelling-v2/eye.svg"
+        alt=""
+        aria-hidden="true"
+      />
+      <p class="dm-v2-large-copy js-dm-v2-words js-dm-v2-words-one" data-dm-v2-split aria-label={content.narrative[0].ariaLabel}>
+        {
+          content.narrative[0].segments.map((segment) => (
+            <>
+              {segment.text}
+              {segment.accent && <span class="dm-v2-serif">{segment.accent}</span>}
+              {
+                segment.visual && (
+                  <span class:list={['dm-v2-inline-visual', `dm-v2-inline-${segment.visual}`]} aria-hidden="true">
+                    <img
+                      class={segment.visual === 'eye' ? 'js-dm-v2-flip1-target' : 'js-dm-v2-inline-flower'}
+                      data-flip-id={segment.visual === 'eye' ? 'dm-eye' : undefined}
+                      src={assetByVisual[segment.visual]}
+                      alt=""
+                    />
+                  </span>
+                )
+              }
+            </>
+          ))
+        }
+      </p>
+    </article>
+  </section>
+
+  <section class="dm-v2-pin-section dm-v2-pin-two js-dm-v2-pin-two" aria-label={content.narrative[1].ariaLabel}>
+    <div class="dm-v2-flower-origin-wrap" aria-hidden="true">
+      <p class="dm-v2-large-copy">
+        {
+          content.narrative[0].segments.map((segment) => (
+            <>
+              {segment.text}
+              {segment.accent && <span class="dm-v2-serif">{segment.accent}</span>}
+              {
+                segment.visual && (
+                  <span class:list={['dm-v2-inline-visual', `dm-v2-inline-${segment.visual}`]}>
+                    <img
+                      class={segment.visual === 'flower' ? 'dm-v2-flower-origin js-dm-v2-flip2-origin' : ''}
+                      data-flip-id={segment.visual === 'flower' ? 'dm-flower' : undefined}
+                      src={assetByVisual[segment.visual]}
+                      alt=""
+                    />
+                  </span>
+                )
+              }
+            </>
+          ))
+        }
+      </p>
+    </div>
+    <div class="dm-v2-second-copy">
+      <p class="dm-v2-large-copy js-dm-v2-words js-dm-v2-words-two" data-dm-v2-split aria-label={content.narrative[1].ariaLabel}>
+        {
+          content.narrative[1].segments.map((segment) => (
+            <>
+              {segment.text}
+              {segment.accent && <span class="dm-v2-serif">{segment.accent}</span>}
+              {
+                segment.visual && (
+                  <span class:list={['dm-v2-inline-visual', `dm-v2-inline-${segment.visual}`]} aria-hidden="true">
+                    <img class={segment.visual === 'heart' ? 'js-dm-v2-heart' : ''} src={assetByVisual[segment.visual]} alt="" />
+                  </span>
+                )
+              }
+            </>
+          ))
+        }
+      </p>
+    </div>
+    <div class="dm-v2-second-visual" aria-hidden="true">
+      <div class="dm-v2-flower-target">
+        <div class="dm-v2-second-glass-wrap">
+          <img class="dm-v2-second-glass js-dm-v2-side-glass" src="/assets/storytelling-v2/magnifying_glass.svg" alt="" />
+        </div>
+        <img
+          class="dm-v2-second-flower js-dm-v2-flip2-target"
+          data-flip-id="dm-flower"
+          src="/assets/storytelling-v2/flower.svg"
+          alt=""
+        />
+      </div>
+    </div>
+  </section>
+
+  <section class="dm-v2-transition js-dm-v2-transition" aria-labelledby="dm-v2-services-title">
+    <h2 id="dm-v2-services-title">
+      <span class="js-dm-v2-transition-left">{content.transitionTitle.first}</span>
+      <span class="js-dm-v2-transition-right">{content.transitionTitle.second}</span>
+    </h2>
+  </section>
+
+  <section class="dm-v2-card-section" aria-label={content.cards.ariaLabel}>
+    <ul class="dm-v2-card-stack">
+      {
+        content.cards.items.map((card, index) => (
+          <li
+            class:list={['dm-v2-card', `dm-v2-card-${card.theme}`, 'js-dm-v2-card']}
+            style={`--card-top: ${40 + index * 20}px; --card-mb: ${100 - index * 20}px`}
+          >
+            <div class="dm-v2-card-copy">
+              <p class="dm-v2-card-eyebrow">{card.eyebrow}</p>
+              <h3>{card.title}</h3>
+              <p>{card.copy}</p>
+            </div>
+            <div class="dm-v2-card-visual" aria-hidden="true">
+              <img src={assetByVisual[card.visual]} alt="" />
+              <div class="dm-v2-card-dashboard">
+                <i></i>
+                <i></i>
+                <i></i>
+                <strong>{String(index + 1).padStart(2, '0')}</strong>
+              </div>
+            </div>
+          </li>
+        ))
+      }
+    </ul>
+  </section>
+
+  <section id="marketing-v2-contact" class="dm-v2-contact" aria-labelledby="marketing-v2-contact-title">
+    <div class="dm-v2-contact-heading js-dm-v2-footer-title">
+      <p class="dm-v2-eyebrow">{content.cta.eyebrow}</p>
+      <h2 id="marketing-v2-contact-title">{content.cta.title}</h2>
+      <p>{content.cta.copy}</p>
+    </div>
+    <div class="dm-v2-contact-grid js-dm-v2-footer-button">
+      <ContactDirectCard copy={contactCopy.direct} />
+      <div class="dm-v2-contact-form">
+        <ContactForm copy={contactCopy.form} />
+      </div>
+    </div>
+  </section>
+</main>
+
+<script>
+  import gsap from 'gsap';
+  import { Flip } from 'gsap/Flip';
+  import { ScrollTrigger } from 'gsap/ScrollTrigger';
+  import Lenis from 'lenis';
+
+  gsap.registerPlugin(Flip, ScrollTrigger);
+
+  const CIRCLE_OPACITY = 0.32;
+
+  const splitWords = (element: HTMLElement) => {
+    if (element.dataset.wordsReady === 'true') {
+      return;
+    }
+
+    element.dataset.wordsReady = 'true';
+
+    const visit = (node: ChildNode) => {
+      if (node.nodeType === Node.TEXT_NODE) {
+        const text = node.textContent ?? '';
+        const fragment = document.createDocumentFragment();
+        text.split(/(\s+)/).forEach((part) => {
+          if (!part) {
+            return;
+          }
+          if (/^\s+$/.test(part)) {
+            fragment.appendChild(document.createTextNode(part));
+            return;
+          }
+          const span = document.createElement('span');
+          span.className = 'dm-v2-word';
+          span.textContent = part;
+          fragment.appendChild(span);
+        });
+        node.parentNode?.replaceChild(fragment, node);
+        return;
+      }
+
+      if (!(node instanceof HTMLElement) || node.classList.contains('dm-v2-inline-visual')) {
+        return;
+      }
+
+      Array.from(node.childNodes).forEach(visit);
+    };
+
+    Array.from(element.childNodes).forEach(visit);
+  };
+
+  const initDigitalMarketingV2 = () => {
+    const root = document.querySelector<HTMLElement>('.js-dm-v2-page');
+
+    if (!root || root.dataset.storytellingReady === 'true') {
+      return;
+    }
+
+    root.dataset.storytellingReady = 'true';
+
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const wordBlocks = gsap.utils.toArray<HTMLElement>('.js-dm-v2-words', root);
+
+    wordBlocks.forEach(splitWords);
+
+    if (reduceMotion) {
+      root.classList.add('is-reduced-motion');
+      return;
+    }
+
+    // Smooth scrolling with Lenis (only on this page)
+    const lenis = new Lenis({
+      duration: 1.2,
+      easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+    });
+    let rafId = 0;
+    const raf = (time: number) => {
+      lenis.raf(time);
+      ScrollTrigger.update();
+      rafId = requestAnimationFrame(raf);
+    };
+    rafId = requestAnimationFrame(raf);
+
+    const navHeight = () => document.querySelector<HTMLElement>('.site-nav')?.getBoundingClientRect().height ?? 0;
+
+    const context = gsap.context(() => {
+      ScrollTrigger.config({ ignoreMobileResize: true });
+
+      // The hero circle is absolute (40% of the section) and the sticky one is
+      // fixed (40% of the viewport) — the scrollbar makes those widths differ,
+      // so the handoff needs the exact rendered width in px.
+      const heroCircleEl = root.querySelector<HTMLElement>('.js-dm-v2-hero-circle');
+      const stickyCircleEl = root.querySelector<HTMLElement>('.js-dm-v2-sticky-circle');
+      const syncStickyCircle = () => {
+        if (heroCircleEl && stickyCircleEl) {
+          gsap.set(stickyCircleEl, { width: heroCircleEl.offsetWidth, minWidth: 0 });
+        }
+      };
+      syncStickyCircle();
+
+      // ─── HERO ENTRANCE (mirrors the reference page-load timeline) ───
+      gsap.set('.js-dm-v2-hero-circle', { x: 0, y: 0, xPercent: -50, yPercent: -50, scale: 3, transformOrigin: '50% 50%' });
+      gsap.set('.js-dm-v2-title-primary', { y: '-21vw' });
+      gsap.set('.js-dm-v2-title-secondary', { y: '12vw' });
+      gsap.set('.js-dm-v2-hero-hourglass', { scale: 0, transformOrigin: '50% 50%' });
+      gsap.set('.js-dm-v2-hero-book', { scale: 0, transformOrigin: '50% 50%' });
+
+      const lineTop = root.querySelector<SVGPathElement>('.js-dm-v2-line-top path');
+      const lineBottom = root.querySelector<SVGPathElement>('.js-dm-v2-line-bottom path');
+      [lineTop, lineBottom].forEach((path) => {
+        if (path) {
+          const len = path.getTotalLength();
+          gsap.set(path, { strokeDasharray: len, strokeDashoffset: len });
+        }
+      });
+
+      const heroTimeline = gsap.timeline();
+      heroTimeline.to('.js-dm-v2-hero-circle', { scale: 1, duration: 0.7, ease: 'power2.inOut' }, 0);
+      heroTimeline.to('.js-dm-v2-title-primary', { y: 0, duration: 0.7, ease: 'power2.inOut' }, 0.5);
+      heroTimeline.to('.js-dm-v2-title-secondary', { y: 0, duration: 0.7, ease: 'power2.inOut' }, 0.7);
+      heroTimeline.to('.js-dm-v2-hero-hourglass', { scale: 1, duration: 0.7, ease: 'power4.inOut' }, 0.9);
+      heroTimeline.to('.js-dm-v2-hero-book', { scale: 1, duration: 0.5, ease: 'power4.out' }, 1.1);
+      if (lineTop) {
+        heroTimeline.to(lineTop, { strokeDashoffset: 0, duration: 0.5, ease: 'none' }, 1.2);
+      }
+      if (lineBottom) {
+        heroTimeline.to(lineBottom, { strokeDashoffset: 0, duration: 0.8, ease: 'power2.inOut' }, 1.3);
+      }
+
+      // ─── PINNED PARAGRAPHS (word reveal, flower growth, glass, heart zoom) ───
+      gsap.set('.js-dm-v2-side-glass', { xPercent: 160, opacity: 0 });
+
+      const sectionTimeline1 = gsap.timeline();
+      sectionTimeline1.from('.js-dm-v2-words-one .dm-v2-word', {
+        opacity: 0.2,
+        duration: 0.3,
+        ease: 'power1.out',
+        stagger: { each: 0.4 },
+      });
+      sectionTimeline1.fromTo('.js-dm-v2-inline-flower', { scale: 0 }, { scale: 1, duration: 10, ease: 'power1.out' });
+
+      ScrollTrigger.create({
+        trigger: '.js-dm-v2-pin-one',
+        start: () => `top top+=${navHeight()}`,
+        end: 'bottom top',
+        pin: true,
+        animation: sectionTimeline1,
+        scrub: 0.5,
+        invalidateOnRefresh: true,
+      });
+
+      const sectionTimeline2 = gsap.timeline();
+      sectionTimeline2.fromTo(
+        '.js-dm-v2-side-glass',
+        { xPercent: 160, opacity: 0 },
+        { xPercent: 0, opacity: 1, duration: 5, ease: 'power1.out' }
+      );
+      sectionTimeline2.from(
+        '.js-dm-v2-words-two .dm-v2-word',
+        {
+          opacity: 0.2,
+          duration: 0.3,
+          ease: 'power1.out',
+          stagger: { each: 0.4 },
+        },
+        '>-50%'
+      );
+
+      gsap.matchMedia().add('(min-width: 901px)', () => {
+        const heart = root.querySelector<HTMLImageElement>('.js-dm-v2-heart');
+        if (heart && heart.clientWidth > 0 && heart.clientHeight > 0) {
+          const scaleX = window.innerWidth / heart.clientWidth;
+          const scaleY = window.innerHeight / heart.clientHeight;
+          const scale = Math.max(scaleX, scaleY);
+
+          sectionTimeline2.to(
+            heart,
+            { scale: scale * 2.5, x: 200, duration: 8, ease: 'power1.out', force3D: false },
+            '>+=3'
+          );
+          sectionTimeline2.to('.js-dm-v2-pin-two', { overflow: 'hidden', duration: 0.1 }, '<');
+        }
+      });
+
+      ScrollTrigger.create({
+        trigger: '.js-dm-v2-pin-two',
+        start: () => `top top+=${navHeight()}`,
+        end: 'bottom top',
+        pin: true,
+        animation: sectionTimeline2,
+        scrub: 0.5,
+        invalidateOnRefresh: true,
+      });
+
+      // ─── STICKY EYE SEQUENCE (circle shrinks, eye grows and blinks) ───
+      gsap.matchMedia().add('(min-width: 901px)', () => {
+        gsap.set('.js-dm-v2-sticky-circle', { x: 0, y: 0, xPercent: -50, yPercent: -50, scale: 1 });
+        gsap.set('.js-dm-v2-sticky-eye', { x: 0, y: 0, xPercent: -50, yPercent: -50, scale: 0 });
+
+        ScrollTrigger.create({
+          trigger: '.js-dm-v2-eye-trigger',
+          start: 'top 99%',
+          end: 'bottom top',
+          onEnter: () => {
+            gsap.set('.js-dm-v2-hero-circle', { display: 'none' });
+            gsap.set('.js-dm-v2-sticky-circle', { display: 'block', opacity: CIRCLE_OPACITY });
+          },
+          onLeave: () => {
+            gsap.killTweensOf('.js-dm-v2-sticky-circle', 'opacity');
+            gsap.to('.js-dm-v2-sticky-circle', { opacity: 0, duration: 0.5 });
+          },
+          onLeaveBack: () => {
+            gsap.killTweensOf('.js-dm-v2-sticky-circle', 'opacity');
+            gsap.set('.js-dm-v2-sticky-circle', { display: 'none' });
+            gsap.set('.js-dm-v2-hero-circle', { display: 'block' });
+          },
+          onEnterBack: () => {
+            gsap.killTweensOf('.js-dm-v2-sticky-circle', 'opacity');
+            gsap.set('.js-dm-v2-hero-circle', { display: 'none' });
+            gsap.set('.js-dm-v2-sticky-circle', { display: 'block', opacity: CIRCLE_OPACITY });
+          },
+        });
+
+        // Keyframe positions mirror the reference IX2 percentages
+        const eyeTimeline = gsap.timeline({
+          scrollTrigger: {
+            trigger: '.js-dm-v2-eye-trigger',
+            start: 'top top',
+            end: 'bottom top',
+            scrub: 0.9,
+          },
+        });
+        eyeTimeline.to('.js-dm-v2-sticky-circle', { scale: 0.5, ease: 'none', duration: 0.35 }, 0);
+        eyeTimeline.to('.js-dm-v2-sticky-eye', { scale: 1, ease: 'none', duration: 0.35 }, 0.17);
+        eyeTimeline.to('.js-dm-v2-sticky-eye', { scaleY: 0, ease: 'none', duration: 0.06 }, 0.54);
+        eyeTimeline.to('.js-dm-v2-sticky-eye', { scaleY: 1, ease: 'none', duration: 0.03 }, 0.67);
+        eyeTimeline.to({}, { duration: 0.3 }, 0.7);
+      });
+
+      // ─── SCROLL FLIPS (eye flies into paragraph 1, flower flies to the side visual) ───
+      const flipDefs = [
+        {
+          origin: '.js-dm-v2-flip1-origin',
+          target: '.js-dm-v2-flip1-target',
+          trigger: '.js-dm-v2-pin-one',
+          endTrigger: '.js-dm-v2-words-one',
+        },
+        {
+          origin: '.js-dm-v2-flip2-origin',
+          target: '.js-dm-v2-flip2-target',
+          trigger: '.js-dm-v2-pin-two',
+          endTrigger: '.js-dm-v2-words-two',
+        },
+      ];
+
+      let flipTimelines: gsap.core.Timeline[] = [];
+
+      const createFlipTimelines = () => {
+        flipTimelines.forEach((timeline) => timeline.kill());
+        flipTimelines = [];
+        gsap.set(['.js-dm-v2-flip1-target', '.js-dm-v2-flip2-target'], { clearProps: 'transform,width,height' });
+
+        if (!window.matchMedia('(min-width: 901px)').matches) {
+          return;
+        }
+
+        flipDefs.forEach((def) => {
+          const origin = root.querySelector<HTMLElement>(def.origin);
+          const target = root.querySelector<HTMLElement>(def.target);
+          if (!origin || !target) {
+            return;
+          }
+
+          const state = Flip.getState(origin);
+          const timeline = gsap.timeline({
+            scrollTrigger: {
+              trigger: def.trigger,
+              endTrigger: def.endTrigger,
+              start: 'top bottom',
+              end: 'center center',
+              scrub: true,
+            },
+          });
+          timeline.add(Flip.from(state, { targets: target }));
+          flipTimelines.push(timeline);
+        });
+      };
+
+      createFlipTimelines();
+
+      let resizeTimer = 0;
+      const onResize = () => {
+        window.clearTimeout(resizeTimer);
+        resizeTimer = window.setTimeout(() => {
+          syncStickyCircle();
+          createFlipTimelines();
+          ScrollTrigger.refresh();
+        }, 250);
+      };
+      window.addEventListener('resize', onResize);
+
+      // ─── FLIP HAND-OFFS (must run after the flips snapshot their targets) ───
+      gsap.matchMedia().add('(min-width: 901px)', () => {
+        gsap.set('.js-dm-v2-flip1-target', { opacity: 0 });
+        gsap.set('.js-dm-v2-flip2-target', { opacity: 0 });
+
+        ScrollTrigger.create({
+          trigger: '.js-dm-v2-pin-one',
+          start: 'top bottom',
+          onEnter: () => {
+            gsap.set('.js-dm-v2-flip1-target', { opacity: 1 });
+            gsap.set('.js-dm-v2-sticky-eye', { opacity: 0 });
+          },
+          onLeaveBack: () => {
+            gsap.set('.js-dm-v2-flip1-target', { opacity: 0 });
+            gsap.set('.js-dm-v2-sticky-eye', { opacity: 1 });
+          },
+        });
+
+        ScrollTrigger.create({
+          trigger: '.js-dm-v2-pin-two',
+          start: 'top bottom',
+          onEnter: () => {
+            gsap.set('.js-dm-v2-flip2-target', { opacity: 1 });
+            gsap.set('.js-dm-v2-inline-flower', { display: 'none' });
+          },
+          onLeaveBack: () => {
+            gsap.set('.js-dm-v2-flip2-target', { opacity: 0 });
+            gsap.set('.js-dm-v2-inline-flower', { display: 'block' });
+          },
+        });
+      });
+
+      // ─── TRANSITION CRISS-CROSS ───
+      const transitionTimeline = gsap
+        .timeline()
+        .from('.js-dm-v2-transition-left', { x: '-13em' })
+        .from('.js-dm-v2-transition-right', { x: '13em' }, '<');
+
+      ScrollTrigger.create({
+        trigger: '.js-dm-v2-transition',
+        start: () => `top top+=${navHeight()}`,
+        end: 'bottom top',
+        pin: true,
+        scrub: true,
+        invalidateOnRefresh: true,
+        animation: transitionTimeline,
+      });
+
+      // ─── STACKING CARDS (desktop only) ───
+      gsap.matchMedia().add('(min-width: 901px)', () => {
+        gsap.utils.toArray<HTMLElement>('.js-dm-v2-card', root).forEach((card, index) => {
+          gsap
+            .timeline({
+              scrollTrigger: {
+                trigger: card,
+                start: 'center center',
+                end: 'center top',
+                scrub: true,
+              },
+            })
+            .to(card, {
+              scale: 0.8 + index * 0.04,
+              transformOrigin: 'center top',
+              duration: 10,
+              ease: 'power1.out',
+            });
+        });
+      });
+
+      // ─── CONTACT SLIDE-UP ───
+      gsap.set('.js-dm-v2-footer-title', { opacity: 0, y: 100 });
+      gsap.set('.js-dm-v2-footer-button', { opacity: 0, y: 100 });
+
+      gsap.to('.js-dm-v2-footer-title', {
+        opacity: 1,
+        y: 0,
+        duration: 1,
+        ease: 'power4.out',
+        scrollTrigger: { trigger: '.js-dm-v2-footer-title', start: 'top 90%' },
+      });
+
+      gsap.to('.js-dm-v2-footer-button', {
+        opacity: 1,
+        y: 0,
+        duration: 1,
+        ease: 'power4.out',
+        scrollTrigger: { trigger: '.js-dm-v2-footer-button', start: 'top 80%' },
+      });
+
+      const refresh = () => {
+        syncStickyCircle();
+        ScrollTrigger.refresh();
+      };
+      window.addEventListener('agsit:viewport-change', refresh, { passive: true });
+
+      return () => {
+        window.removeEventListener('agsit:viewport-change', refresh);
+        window.removeEventListener('resize', onResize);
+        window.clearTimeout(resizeTimer);
+      };
+    }, root);
+
+    window.addEventListener(
+      'pagehide',
+      () => {
+        cancelAnimationFrame(rafId);
+        lenis.destroy();
+        context.revert();
+      },
+      { once: true }
+    );
+  };
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initDigitalMarketingV2, { once: true });
+  } else {
+    initDigitalMarketingV2();
+  }
+</script>
