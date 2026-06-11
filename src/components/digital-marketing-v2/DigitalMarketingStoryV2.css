@@ -118,7 +118,6 @@ html.lenis body {
 .dm-v2-hero-hourglass {
   position: absolute;
   z-index: 4;
-  filter: hue-rotate(165deg) saturate(1.15);
 }
 
 .dm-v2-hero-book {
@@ -132,10 +131,10 @@ html.lenis body {
 .dm-v2-hero-hourglass {
   right: 2%;
   top: -13%;
-  width: 17vw;
-  max-width: 330px;
-  min-width: 145px;
-  filter: hue-rotate(138deg) saturate(1.55);
+  width: 13vw;
+  max-width: 250px;
+  min-width: 120px;
+  opacity: 0.9;
 }
 
 .dm-v2-hero-line {
@@ -224,7 +223,6 @@ html.lenis body {
   width: 25vw;
   max-width: 460px;
   min-width: 190px;
-  filter: hue-rotate(160deg) saturate(1.45) brightness(1.1);
 }
 
 .dm-v2-eye-origin {
@@ -286,7 +284,6 @@ html.lenis body {
   height: 100%;
   object-fit: contain;
   display: block;
-  filter: hue-rotate(160deg) saturate(1.35) brightness(1.1);
 }
 
 .dm-v2-inline-flower,
@@ -299,9 +296,6 @@ html.lenis body {
   z-index: 8;
 }
 
-.dm-v2-inline-heart img {
-  filter: brightness(0) invert(1);
-}
 
 .dm-v2-pin-two {
   grid-template-columns: minmax(0, 0.64fr) minmax(250px, 0.36fr);
@@ -365,7 +359,6 @@ html.lenis body {
 .dm-v2-second-glass {
   width: 100%;
   display: block;
-  filter: hue-rotate(158deg) saturate(1.35);
 }
 
 .dm-v2-second-flower {
@@ -373,7 +366,6 @@ html.lenis body {
   inset: 0;
   width: 100%;
   height: 100%;
-  filter: hue-rotate(158deg) saturate(1.35);
 }
 
 .dm-v2-transition {
@@ -493,8 +485,7 @@ html.lenis body {
   width: min(46vw, 520px);
   max-height: 82%;
   object-fit: contain;
-  opacity: 0.22;
-  filter: hue-rotate(160deg) saturate(1.35);
+  opacity: 0.2;
 }
 
 .dm-v2-card-dashboard {

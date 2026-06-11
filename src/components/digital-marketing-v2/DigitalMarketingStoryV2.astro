@@ -12,9 +12,9 @@ type Props = {
 const { content, contactCopy } = Astro.props;
 
 const assetByVisual: Record<StoryInlineVisual, string> = {
-  eye: '/assets/storytelling-v2/eye.svg',
-  flower: '/assets/storytelling-v2/flower.svg',
-  heart: '/assets/storytelling-v2/heart.svg',
+  eye: '/assets/storytelling-v2/brand-eye.svg',
+  flower: '/assets/storytelling-v2/brand-target.svg',
+  heart: '/assets/storytelling-v2/brand-pulse.svg',
 };
 ---
 
@@ -27,8 +27,8 @@ const assetByVisual: Record<StoryInlineVisual, string> = {
         <span class="dm-v2-title-primary js-dm-v2-title-primary">{content.hero.primary}</span>
         <span class="dm-v2-title-secondary js-dm-v2-title-secondary">{content.hero.secondary}</span>
       </h1>
-      <img class="dm-v2-hero-book js-dm-v2-hero-book" src="/assets/storytelling-v2/book.svg" alt="" />
-      <img class="dm-v2-hero-hourglass js-dm-v2-hero-hourglass" src="/assets/storytelling-v2/yellow-hourglass.svg" alt="" />
+      <img class="dm-v2-hero-book js-dm-v2-hero-book" src="/assets/storytelling-v2/brand-chart.svg" alt="" />
+      <img class="dm-v2-hero-hourglass js-dm-v2-hero-hourglass" src="/assets/storytelling-v2/brand-data-dots.svg" alt="" />
       <svg class="dm-v2-hero-line dm-v2-hero-line-top js-dm-v2-line-top" viewBox="0 0 240 86" aria-hidden="true" focusable="false">
         <path d="M230 5 C176 28 118 20 92 47 C80 60 139 44 210 35 C238 32 232 55 154 80" />
       </svg>
@@ -44,7 +44,7 @@ const assetByVisual: Record<StoryInlineVisual, string> = {
         <div class="dm-v2-sticky-track">
           <div class="dm-v2-sticky-element">
             <img class="dm-v2-sticky-circle js-dm-v2-sticky-circle" src="/assets/storytelling-v2/sage-circle.svg" alt="" />
-            <img class="dm-v2-sticky-eye js-dm-v2-sticky-eye" src="/assets/storytelling-v2/eye.svg" alt="" />
+            <img class="dm-v2-sticky-eye js-dm-v2-sticky-eye" src="/assets/storytelling-v2/brand-eye.svg" alt="" />
           </div>
         </div>
       </div>
@@ -54,7 +54,7 @@ const assetByVisual: Record<StoryInlineVisual, string> = {
       <img
         class="dm-v2-eye-origin js-dm-v2-flip1-origin"
         data-flip-id="dm-eye"
-        src="/assets/storytelling-v2/eye.svg"
+        src="/assets/storytelling-v2/brand-eye.svg"
         alt=""
         aria-hidden="true"
       />
@@ -130,12 +130,12 @@ const assetByVisual: Record<StoryInlineVisual, string> = {
     <div class="dm-v2-second-visual" aria-hidden="true">
       <div class="dm-v2-flower-target">
         <div class="dm-v2-second-glass-wrap">
-          <img class="dm-v2-second-glass js-dm-v2-side-glass" src="/assets/storytelling-v2/magnifying_glass.svg" alt="" />
+          <img class="dm-v2-second-glass js-dm-v2-side-glass" src="/assets/storytelling-v2/brand-magnifier.svg" alt="" />
         </div>
         <img
           class="dm-v2-second-flower js-dm-v2-flip2-target"
           data-flip-id="dm-flower"
-          src="/assets/storytelling-v2/flower.svg"
+          src="/assets/storytelling-v2/brand-target.svg"
           alt=""
         />
       </div>
@@ -491,34 +491,36 @@ const assetByVisual: Record<StoryInlineVisual, string> = {
       window.addEventListener('resize', onResize);
 
       // ─── FLIP HAND-OFFS (must run after the flips snapshot their targets) ───
+      // Re-applied on every ScrollTrigger refresh: the Flip tweens restore their
+      // style snapshot (taken before these sets) when a refresh reverts them,
+      // which would otherwise wipe the inline opacity of the targets.
       gsap.matchMedia().add('(min-width: 901px)', () => {
-        gsap.set('.js-dm-v2-flip1-target', { opacity: 0 });
-        gsap.set('.js-dm-v2-flip2-target', { opacity: 0 });
+        const applyEyeHandoff = (entered: boolean) => {
+          gsap.set('.js-dm-v2-flip1-target', { opacity: entered ? 1 : 0 });
+          gsap.set('.js-dm-v2-sticky-eye', { opacity: entered ? 0 : 1 });
+        };
+        const applyFlowerHandoff = (entered: boolean) => {
+          gsap.set('.js-dm-v2-flip2-target', { opacity: entered ? 1 : 0 });
+          gsap.set('.js-dm-v2-inline-flower', { display: entered ? 'none' : 'block' });
+        };
+
+        applyEyeHandoff(false);
+        applyFlowerHandoff(false);
 
         ScrollTrigger.create({
           trigger: '.js-dm-v2-pin-one',
           start: 'top bottom',
-          onEnter: () => {
-            gsap.set('.js-dm-v2-flip1-target', { opacity: 1 });
-            gsap.set('.js-dm-v2-sticky-eye', { opacity: 0 });
-          },
-          onLeaveBack: () => {
-            gsap.set('.js-dm-v2-flip1-target', { opacity: 0 });
-            gsap.set('.js-dm-v2-sticky-eye', { opacity: 1 });
-          },
+          onEnter: () => applyEyeHandoff(true),
+          onLeaveBack: () => applyEyeHandoff(false),
+          onRefresh: (self) => applyEyeHandoff(self.scroll() >= self.start),
         });
 
         ScrollTrigger.create({
           trigger: '.js-dm-v2-pin-two',
           start: 'top bottom',
-          onEnter: () => {
-            gsap.set('.js-dm-v2-flip2-target', { opacity: 1 });
-            gsap.set('.js-dm-v2-inline-flower', { display: 'none' });
-          },
-          onLeaveBack: () => {
-            gsap.set('.js-dm-v2-flip2-target', { opacity: 0 });
-            gsap.set('.js-dm-v2-inline-flower', { display: 'block' });
-          },
+          onEnter: () => applyFlowerHandoff(true),
+          onLeaveBack: () => applyFlowerHandoff(false),
+          onRefresh: (self) => applyFlowerHandoff(self.scroll() >= self.start),
         });
       });
 
