@@ -1,0 +1,262 @@
+---
+import ContactDirectCard from '../contact/ContactDirectCard.astro';
+import ContactForm from '../contact/ContactForm.astro';
+import ServicePageAnimations from '../service-animation/ServicePageAnimations.astro';
+import type { ContactCopy } from '../../data/contact';
+import type { ITManagementGovernanceContent } from '../../data/itManagementGovernance';
+
+type Props = {
+  content: ITManagementGovernanceContent;
+  contactCopy: ContactCopy;
+};
+
+const { content, contactCopy } = Astro.props;
+---
+
+<main class="itg-page">
+  <section class="itg-hero" aria-labelledby="itg-hero-title">
+    <video class="itg-hero-video" aria-hidden="true" autoplay muted loop playsinline preload="metadata">
+      <source src="/assets/binary-wave-bg.webm" type="video/webm" />
+      <source src="/assets/binary-wave-bg.mp4" type="video/mp4" />
+    </video>
+
+    <div class="itg-hero-content">
+      <p class="itg-eyebrow">{content.hero.eyebrow}</p>
+      <h1 id="itg-hero-title">{content.hero.title}</h1>
+      <p>{content.hero.copy}</p>
+      <div class="itg-actions">
+        <button type="button" data-contact-trigger>{content.hero.primaryCta}</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="itg-method" aria-labelledby="itg-method-title">
+    <div class="itg-section-heading">
+      <p class="itg-eyebrow">{content.challenges.eyebrow}</p>
+      <h2 id="itg-method-title">{content.challenges.title}</h2>
+      <p>{content.challenges.copy}</p>
+    </div>
+
+    <div class="itg-method-map" data-no-reveal>
+      <div class="itg-method-path" aria-hidden="true">
+        <span></span>
+        <span></span>
+      </div>
+      {content.challenges.items.map((item, index) => (
+        <article class={`itg-method-step itg-method-step-${index + 1}`}>
+          <span class="itg-step-index">{String(index + 1).padStart(2, '0')}</span>
+          <div class="itg-step-node" aria-hidden="true">
+            <span></span>
+          </div>
+          <p class="itg-step-label">{item.label}</p>
+          <h3>{item.title}</h3>
+          <p>{item.copy}</p>
+        </article>
+      ))}
+    </div>
+  </section>
+
+  <section id="servicios-incluidos" class="itg-services" aria-labelledby="itg-services-title">
+    <div class="itg-section-heading">
+      <p class="itg-eyebrow">{content.services.eyebrow}</p>
+      <h2 id="itg-services-title">{content.services.title}</h2>
+      <p>{content.services.copy}</p>
+    </div>
+
+    <div class="itg-service-grid">
+      {content.services.items.map((item) => (
+        <article class="itg-service-card">
+          <div>
+            <span class="itg-service-code">{item.code}</span>
+            <h3>{item.title}</h3>
+            <p>{item.copy}</p>
+          </div>
+        </article>
+      ))}
+    </div>
+  </section>
+
+  <section class="itg-benefits" aria-labelledby="itg-benefits-title">
+    <div class="itg-section-heading">
+      <p class="itg-eyebrow">{content.benefits.eyebrow}</p>
+      <h2 id="itg-benefits-title">{content.benefits.title}</h2>
+      <p>{content.benefits.copy}</p>
+    </div>
+
+    <div class="itg-benefit-grid">
+      {content.benefits.items.map((benefit) => (
+        <article class="itg-benefit-card">
+          <span>{benefit.value}</span>
+          <h3>{benefit.title}</h3>
+          <p>{benefit.copy}</p>
+        </article>
+      ))}
+    </div>
+  </section>
+
+  <section class="itg-approach" aria-labelledby="itg-approach-title">
+    <div class="itg-section-heading">
+      <p class="itg-eyebrow">{content.approach.eyebrow}</p>
+      <h2 id="itg-approach-title">{content.approach.title}</h2>
+      <p>{content.approach.copy}</p>
+    </div>
+
+    <div class="itg-approach-map">
+      <div class="itg-approach-path" aria-hidden="true"></div>
+      {content.approach.steps.map((step, index) => (
+        <article class={`itg-approach-step itg-approach-step-${index + 1}`}>
+          <span class="itg-step-index">{step.label}</span>
+          <div class="itg-step-node" aria-hidden="true">
+            <span></span>
+          </div>
+          <h3>{step.title}</h3>
+          <p>{step.copy}</p>
+        </article>
+      ))}
+    </div>
+  </section>
+
+  <section id="contacto" class="itg-contact" aria-labelledby="itg-contact-title">
+    <div class="itg-contact-heading">
+      <p class="itg-eyebrow">{content.cta.eyebrow}</p>
+      <h2 id="itg-contact-title">{content.cta.title}</h2>
+      <p>{content.cta.copy}</p>
+      <button type="button" data-contact-trigger>{content.cta.primaryCta}</button>
+    </div>
+    <div class="itg-contact-grid">
+      <ContactDirectCard copy={contactCopy.direct} />
+      <div class="itg-contact-form">
+        <ContactForm copy={contactCopy.form} />
+      </div>
+    </div>
+  </section>
+
+  <ServicePageAnimations />
+</main>
+
+<script>
+  import gsap from 'gsap';
+  import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+  gsap.registerPlugin(ScrollTrigger);
+
+  const getITGNavOffset = () => {
+    const nav = document.querySelector('.site-nav, .site-header, header');
+    return nav instanceof HTMLElement ? Math.round(nav.getBoundingClientRect().height) : 0;
+  };
+
+  const getITGViewportHeight = () => {
+    const stableVh = Number.parseFloat(
+      getComputedStyle(document.documentElement).getPropertyValue('--app-stable-vh'),
+    );
+    return Number.isFinite(stableVh) && stableVh > 0 ? stableVh : window.innerHeight;
+  };
+
+  const setupITGMethodScroll = () => {
+    const root = document.querySelector('.itg-page');
+    if (!root || root.hasAttribute('data-itg-method-ready')) return;
+
+    const method = root.querySelector('.itg-method');
+    const steps = gsap.utils.toArray<HTMLElement>('.itg-method-step', method);
+
+    if (!(method instanceof HTMLElement) || steps.length === 0) return;
+
+    root.setAttribute('data-itg-method-ready', 'true');
+
+    const matchMedia = gsap.matchMedia();
+    const getSequenceEnd = (multiplier: number) =>
+      `+=${Math.round(getITGViewportHeight() * multiplier)}`;
+    const getPinStart = () => `top top+=${getITGNavOffset()}`;
+
+    matchMedia.add('(prefers-reduced-motion: no-preference) and (min-width: 680px)', () => {
+      method.classList.add('is-scroll-sequence');
+      gsap.set(steps, { autoAlpha: 0, y: 56 });
+
+      const timeline = gsap.timeline({
+        defaults: { ease: 'none' },
+        scrollTrigger: {
+          id: 'itg-method-sequence-desktop',
+          trigger: method,
+          start: getPinStart,
+          end: () => getSequenceEnd(steps.length * 0.72),
+          pin: true,
+          pinSpacing: true,
+          scrub: 0.65,
+          anticipatePin: 1,
+          invalidateOnRefresh: true,
+        },
+      });
+
+      steps.forEach((step) => {
+        timeline
+          .to(step, { autoAlpha: 1, y: 0, duration: 1, ease: 'power2.out' })
+          .to({}, { duration: 0.22 });
+      });
+
+      return () => {
+        timeline.kill();
+        method.classList.remove('is-scroll-sequence');
+        gsap.set(steps, { clearProps: 'all' });
+      };
+    });
+
+    matchMedia.add('(prefers-reduced-motion: no-preference) and (max-width: 679px)', () => {
+      method.classList.add('is-scroll-sequence', 'is-mobile-sequence');
+      gsap.set(steps, { autoAlpha: 0, y: 46 });
+
+      const timeline = gsap.timeline({
+        defaults: { ease: 'none' },
+        scrollTrigger: {
+          id: 'itg-method-sequence-mobile',
+          trigger: method,
+          start: getPinStart,
+          end: () => getSequenceEnd(steps.length * 0.86),
+          pin: true,
+          pinSpacing: true,
+          scrub: 0.7,
+          anticipatePin: 1,
+          invalidateOnRefresh: true,
+        },
+      });
+
+      timeline
+        .to(steps[0], { autoAlpha: 1, y: 0, duration: 0.78, ease: 'power2.out' })
+        .to({}, { duration: 0.34 });
+
+      steps.slice(1).forEach((step, index) => {
+        const previousStep = steps[index];
+        const isLastStep = index === steps.length - 2;
+        const label = `itg-step-${index + 2}`;
+
+        timeline
+          .add(label)
+          .to(previousStep, { autoAlpha: 0, y: -22, duration: 0.5, ease: 'power1.in' }, label)
+          .fromTo(
+            step,
+            { autoAlpha: 0, y: 46 },
+            { autoAlpha: 1, y: 0, duration: 0.78, ease: 'power2.out' },
+            label,
+          )
+          .to({}, { duration: isLastStep ? 0.62 : 0.32 });
+      });
+
+      return () => {
+        timeline.kill();
+        method.classList.remove('is-scroll-sequence', 'is-mobile-sequence');
+        gsap.set(steps, { clearProps: 'all' });
+      };
+    });
+
+    window.addEventListener('agsit:viewport-change', () => ScrollTrigger.refresh());
+  };
+
+  const setupITGPage = () => {
+    setupITGMethodScroll();
+  };
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', setupITGPage, { once: true });
+  } else {
+    setupITGPage();
+  }
+</script>

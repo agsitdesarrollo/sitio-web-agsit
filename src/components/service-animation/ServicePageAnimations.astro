@@ -1,6 +1,8 @@
 <script>
   const setupServicePageAnimations = () => {
-    const root = document.querySelector('.technology-page, .process-page, .project-page, .quality-page, .crm-page, .digital-page');
+    const root = document.querySelector(
+      '.technology-page, .itg-page, .process-page, .project-page, .quality-page, .crm-page, .digital-page',
+    );
 
     if (!root || root.hasAttribute('data-service-animations-ready')) return;
 
@@ -26,7 +28,7 @@
     ];
 
     const revealItems = Array.from(root.querySelectorAll(revealSelectors.join(','))).filter((item) => {
-      return item instanceof HTMLElement && !item.closest('[data-contact-drawer]');
+      return item instanceof HTMLElement && !item.closest('[data-contact-drawer]') && !item.closest('[data-no-reveal]');
     });
 
     revealItems.forEach((item, index) => {

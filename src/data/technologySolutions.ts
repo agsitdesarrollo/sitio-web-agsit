@@ -136,7 +136,7 @@ export const technologySolutionsByLang: Record<SupportedLang, TechnologySolution
           copy:
             'Ordenamos la operación tecnológica con prácticas de control, soporte y mejora continua para equipos de TI.',
           cta: 'Ver servicios',
-          href: '#',
+          href: '/soluciones-tecnologicas/gestion-gobierno-ti/',
         },
         {
           code: 'AUTO',
@@ -284,7 +284,7 @@ export const technologySolutionsByLang: Record<SupportedLang, TechnologySolution
           copy:
             'We structure technology operations with control, support and continuous improvement practices for IT teams.',
           cta: 'View services',
-          href: '#',
+          href: '/en/technology-solutions/it-management-governance/',
         },
         {
           code: 'AUTO',

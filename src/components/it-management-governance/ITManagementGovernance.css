@@ -1,0 +1,989 @@
+.itg-page {
+  --itg-ink: #020712;
+  --itg-navy: #08152b;
+  --itg-blue: #253f6c;
+  --itg-accent: #287ca1;
+  --itg-cyan: #41c8f6;
+  --itg-cyan-soft: #8be2ff;
+  --itg-paper: #f6fafe;
+  --itg-line: rgba(37, 63, 108, 0.14);
+  --itg-muted-light: rgba(180, 197, 219, 0.82);
+  --itg-muted-dark: rgba(65, 64, 66, 0.78);
+  --itg-title-xl: clamp(2.35rem, 11vw, 4.95rem);
+  --itg-title-lg: clamp(2.05rem, 9vw, 4rem);
+  --itg-title-md: clamp(1.42rem, 6vw, 2rem);
+  --itg-body: clamp(0.94rem, 3.7vw, 1.05rem);
+  --itg-small: clamp(0.68rem, 2.8vw, 0.78rem);
+  background: var(--itg-paper);
+  color: var(--itg-ink);
+  overflow: hidden;
+}
+
+/* ==================== SHARED ==================== */
+
+.itg-hero,
+.itg-method,
+.itg-services,
+.itg-benefits,
+.itg-approach,
+.itg-contact {
+  position: relative;
+  scroll-margin-top: calc(var(--nav-h) + 18px);
+  padding: clamp(54px, 11vw, 112px) clamp(18px, 6vw, 92px);
+}
+
+.itg-page h1,
+.itg-page h2,
+.itg-page h3,
+.itg-page p {
+  margin: 0;
+}
+
+.itg-page h1,
+.itg-page h2,
+.itg-page h3,
+.itg-page p,
+.itg-page a,
+.itg-page button,
+.itg-page span,
+.itg-page strong {
+  overflow-wrap: anywhere;
+}
+
+.itg-page h1,
+.itg-page h2 {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-weight: 300;
+  letter-spacing: 0;
+  text-wrap: balance;
+}
+
+.itg-page h1 {
+  font-size: var(--itg-title-xl);
+  line-height: 0.98;
+}
+
+.itg-page h2 {
+  font-size: var(--itg-title-lg);
+  line-height: 1.02;
+}
+
+.itg-page h3 {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: var(--itg-title-md);
+  font-weight: 400;
+  line-height: 1.06;
+  letter-spacing: 0;
+}
+
+.itg-page p {
+  font-family: 'Inter', 'Segoe UI', Tahoma, sans-serif;
+  font-size: var(--itg-body);
+  font-weight: 500;
+  line-height: 1.62;
+}
+
+.itg-eyebrow {
+  margin: 0 0 12px;
+  font-family: 'Inter', 'Segoe UI', Tahoma, sans-serif;
+  font-size: var(--itg-small);
+  font-weight: 900;
+  letter-spacing: 0.18em;
+  line-height: 1.45;
+  text-transform: uppercase;
+}
+
+.itg-section-heading {
+  width: min(980px, 100%);
+}
+
+.itg-section-heading > p:not(.itg-eyebrow) {
+  max-width: 760px;
+  margin: 16px 0 0;
+}
+
+/* Shared step elements (method + approach) */
+
+.itg-step-index {
+  font-family: 'Inter', 'Segoe UI', Tahoma, sans-serif;
+  font-size: 0.76rem;
+  font-weight: 900;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.itg-step-node {
+  width: 58px;
+  height: 58px;
+  margin-top: 18px;
+  border: 1px solid rgba(65, 200, 246, 0.48);
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: rgba(65, 200, 246, 0.08);
+}
+
+.itg-step-node > span {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--itg-cyan);
+  box-shadow: 0 0 26px rgba(65, 200, 246, 0.8);
+}
+
+.itg-step-label {
+  margin: 18px 0 0;
+  color: var(--itg-cyan);
+  font-family: 'Inter', 'Segoe UI', Tahoma, sans-serif;
+  font-size: 0.72rem;
+  font-weight: 900;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+/* ==================== HERO ==================== */
+
+.itg-hero {
+  min-height: calc(var(--app-stable-vh, 100svh) - var(--nav-h));
+  display: grid;
+  place-items: center;
+  gap: 28px;
+  isolation: isolate;
+  background: linear-gradient(135deg, #020712 0%, #061228 48%, #020712 100%);
+  overflow: hidden;
+}
+
+.itg-hero::before,
+.itg-hero::after {
+  content: '';
+  position: absolute;
+  pointer-events: none;
+}
+
+.itg-hero::before {
+  inset: 0;
+  z-index: -1;
+  background:
+    radial-gradient(circle at 50% 26%, rgba(65, 200, 246, 0.18), transparent 38%),
+    linear-gradient(180deg, rgba(2, 7, 18, 0.38), rgba(2, 7, 18, 0.9) 72%, #020712 100%);
+}
+
+.itg-hero::after {
+  inset: auto 0 0;
+  z-index: -1;
+  height: 160px;
+  background: linear-gradient(180deg, transparent, #020712);
+}
+
+.itg-hero-video {
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  opacity: 0.82;
+  filter: saturate(1.05) contrast(1.08);
+  pointer-events: none;
+}
+
+.itg-hero-content {
+  width: min(920px, 100%);
+  padding-top: clamp(20px, 8vh, 84px);
+  text-align: center;
+}
+
+.itg-hero .itg-eyebrow {
+  color: var(--itg-cyan-soft);
+}
+
+.itg-hero h1 {
+  max-width: 900px;
+  color: #ffffff;
+}
+
+.itg-hero-content > p:not(.itg-eyebrow) {
+  max-width: 760px;
+  margin: 16px auto 0;
+  color: var(--itg-muted-light);
+}
+
+.itg-actions {
+  margin-top: 24px;
+  display: grid;
+  gap: 10px;
+  justify-content: center;
+}
+
+.itg-actions button {
+  min-height: 48px;
+  border: 1px solid rgba(65, 200, 246, 0.74);
+  border-radius: 999px;
+  padding: 0 22px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--itg-cyan);
+  color: var(--itg-navy);
+  font-family: 'Inter', 'Segoe UI', Tahoma, sans-serif;
+  font-size: var(--itg-small);
+  font-weight: 900;
+  letter-spacing: 0.1em;
+  text-align: center;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition:
+    background-color 180ms ease,
+    border-color 180ms ease,
+    color 180ms ease,
+    transform 180ms ease;
+}
+
+.itg-actions button:hover,
+.itg-actions button:focus-visible {
+  background: #ffffff;
+  border-color: #ffffff;
+  transform: translateY(-2px);
+}
+
+/* ==================== METHOD (Challenges) ==================== */
+
+.itg-method {
+  background:
+    linear-gradient(180deg, #020712 0%, #071227 100%),
+    linear-gradient(90deg, rgba(65, 200, 246, 0.08) 1px, transparent 1px);
+}
+
+.itg-method .itg-eyebrow {
+  color: var(--itg-cyan-soft);
+}
+
+.itg-method h2 {
+  color: #ffffff;
+}
+
+.itg-method .itg-section-heading > p:not(.itg-eyebrow) {
+  color: var(--itg-muted-light);
+}
+
+.itg-method.is-scroll-sequence {
+  min-height: calc(var(--app-stable-vh, 100svh) - var(--nav-h));
+  display: grid;
+  align-content: center;
+}
+
+.itg-method.is-scroll-sequence .itg-method-map {
+  isolation: isolate;
+}
+
+.itg-method.is-scroll-sequence .itg-method-step {
+  will-change: transform, opacity;
+}
+
+.itg-method-map {
+  position: relative;
+  width: min(1120px, 100%);
+  margin: clamp(30px, 6vw, 64px) auto 0;
+  display: grid;
+  gap: 14px;
+}
+
+.itg-method-path {
+  display: none;
+}
+
+.itg-method-step {
+  position: relative;
+  min-height: 250px;
+  padding: 22px;
+  border: 1px solid rgba(139, 226, 255, 0.18);
+  border-radius: 8px;
+  background:
+    linear-gradient(180deg, rgba(8, 21, 43, 0.92), rgba(2, 7, 18, 0.96)),
+    repeating-linear-gradient(135deg, rgba(65, 200, 246, 0.08) 0 1px, transparent 1px 16px);
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.22);
+  overflow: hidden;
+}
+
+.itg-method-step::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-top: 1px solid rgba(139, 226, 255, 0.26);
+  pointer-events: none;
+}
+
+.itg-method-step .itg-step-index {
+  color: rgba(139, 226, 255, 0.38);
+}
+
+.itg-method-step h3 {
+  margin: 9px 0 0;
+  color: #ffffff;
+}
+
+.itg-method-step p:not(.itg-step-label) {
+  margin: 12px 0 0;
+  color: rgba(214, 230, 252, 0.76);
+  font-size: 0.93rem;
+  line-height: 1.58;
+}
+
+/* ==================== SERVICES ==================== */
+
+.itg-services {
+  background: linear-gradient(180deg, #f6fafe 0%, #ffffff 54%, #edf6fb 100%);
+  color: var(--itg-navy);
+}
+
+.itg-services .itg-eyebrow {
+  color: var(--itg-accent);
+}
+
+.itg-services h2 {
+  color: var(--itg-blue);
+}
+
+.itg-services .itg-section-heading > p:not(.itg-eyebrow) {
+  color: var(--itg-muted-dark);
+}
+
+.itg-service-grid {
+  width: min(1180px, 100%);
+  margin: clamp(30px, 5vw, 58px) auto 0;
+  display: grid;
+  grid-template-columns: 1fr;
+  border-top: 1px solid rgba(37, 63, 108, 0.15);
+  border-left: 1px solid rgba(37, 63, 108, 0.15);
+}
+
+.itg-service-card {
+  min-height: 310px;
+  padding: 22px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  border-right: 1px solid rgba(37, 63, 108, 0.15);
+  border-bottom: 1px solid rgba(37, 63, 108, 0.15);
+  background: rgba(255, 255, 255, 0.88);
+  text-align: center;
+  transition:
+    transform 220ms ease,
+    border-color 220ms ease,
+    box-shadow 220ms ease;
+}
+
+.itg-service-code {
+  width: 50px;
+  height: 34px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  background: var(--itg-blue);
+  color: #ffffff;
+  font-family: 'Inter', 'Segoe UI', Tahoma, sans-serif;
+  font-size: 0.66rem;
+  font-weight: 900;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  margin-inline: auto;
+}
+
+.itg-service-card h3 {
+  margin-top: 18px;
+  color: var(--itg-blue);
+}
+
+.itg-service-card p {
+  margin: 12px 0 0;
+  color: var(--itg-muted-dark);
+  font-size: 0.94rem;
+  line-height: 1.58;
+}
+
+/* ==================== BENEFITS ==================== */
+
+.itg-benefits {
+  background:
+    linear-gradient(180deg, #f6fafe 0%, #ffffff 100%),
+    linear-gradient(90deg, rgba(37, 63, 108, 0.06) 1px, transparent 1px);
+  background-size: auto, 72px 72px;
+  color: var(--itg-navy);
+}
+
+.itg-benefits .itg-eyebrow {
+  color: var(--itg-accent);
+}
+
+.itg-benefits h2 {
+  color: var(--itg-blue);
+}
+
+.itg-benefits .itg-section-heading > p:not(.itg-eyebrow) {
+  color: var(--itg-muted-dark);
+}
+
+.itg-benefit-grid {
+  width: min(1120px, 100%);
+  margin: clamp(30px, 5vw, 58px) auto 0;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 14px;
+}
+
+.itg-benefit-card {
+  min-height: 220px;
+  padding: clamp(20px, 4vw, 28px);
+  border: 1px solid rgba(37, 63, 108, 0.13);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 22px 58px rgba(8, 21, 43, 0.08);
+  transition:
+    transform 220ms ease,
+    border-color 220ms ease,
+    box-shadow 220ms ease;
+}
+
+.itg-benefit-card > span {
+  display: inline-flex;
+  color: var(--itg-accent);
+  font-family: 'Inter', 'Segoe UI', Tahoma, sans-serif;
+  font-size: 0.76rem;
+  font-weight: 900;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.itg-benefit-card h3 {
+  margin-top: 18px;
+  color: var(--itg-blue);
+}
+
+.itg-benefit-card p {
+  margin: 12px 0 0;
+  color: var(--itg-muted-dark);
+  font-size: 0.94rem;
+  line-height: 1.58;
+}
+
+/* ==================== APPROACH ==================== */
+
+.itg-approach {
+  background:
+    linear-gradient(180deg, #f6fafe 0%, #ffffff 100%),
+    linear-gradient(90deg, rgba(37, 63, 108, 0.06) 1px, transparent 1px);
+  background-size: auto, 72px 72px;
+  color: var(--itg-navy);
+}
+
+.itg-approach .itg-eyebrow {
+  color: var(--itg-accent);
+}
+
+.itg-approach h2 {
+  color: var(--itg-blue);
+}
+
+.itg-approach .itg-section-heading > p:not(.itg-eyebrow) {
+  color: var(--itg-muted-dark);
+}
+
+.itg-approach-map {
+  position: relative;
+  width: min(1180px, 100%);
+  margin: clamp(30px, 5vw, 58px) auto 0;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+}
+
+.itg-approach-path {
+  display: none;
+}
+
+.itg-approach-step {
+  position: relative;
+  min-height: 250px;
+  padding: clamp(20px, 2.3vw, 28px);
+  border: 1px solid rgba(37, 63, 108, 0.14);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 22px 58px rgba(8, 21, 43, 0.06);
+  transition:
+    transform 220ms ease,
+    border-color 220ms ease,
+    box-shadow 220ms ease;
+}
+
+.itg-approach-step .itg-step-index {
+  color: rgba(37, 63, 108, 0.38);
+}
+
+.itg-approach-step .itg-step-node {
+  border-color: rgba(40, 124, 161, 0.32);
+  background: rgba(40, 124, 161, 0.06);
+}
+
+.itg-approach-step .itg-step-node > span {
+  background: var(--itg-accent);
+  box-shadow: 0 0 14px rgba(40, 124, 161, 0.5);
+}
+
+.itg-approach-step h3 {
+  margin-top: 18px;
+  color: var(--itg-blue);
+}
+
+.itg-approach-step p {
+  margin-top: 12px;
+  color: var(--itg-muted-dark);
+  font-size: clamp(0.86rem, 0.92vw, 0.94rem);
+  line-height: 1.54;
+}
+
+/* ==================== CONTACT ==================== */
+
+.itg-contact {
+  display: grid;
+  gap: 30px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(246, 250, 253, 0.98)),
+    linear-gradient(90deg, rgba(65, 200, 246, 0.08) 1px, transparent 1px);
+  background-size: auto, 72px 72px;
+  color: var(--itg-navy);
+}
+
+.itg-contact .itg-eyebrow {
+  color: var(--itg-accent);
+}
+
+.itg-contact h2 {
+  color: var(--itg-blue);
+}
+
+.itg-contact-heading > p:not(.itg-eyebrow) {
+  max-width: 660px;
+  margin: 16px 0 0;
+  color: var(--itg-muted-dark);
+}
+
+.itg-contact-heading button {
+  margin-top: 24px;
+  min-height: 48px;
+  border: 1px solid rgba(65, 200, 246, 0.74);
+  border-radius: 999px;
+  padding: 0 22px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--itg-cyan);
+  color: var(--itg-navy);
+  font-family: 'Inter', 'Segoe UI', Tahoma, sans-serif;
+  font-size: var(--itg-small);
+  font-weight: 900;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition:
+    background-color 180ms ease,
+    border-color 180ms ease,
+    transform 180ms ease;
+}
+
+.itg-contact-heading button:hover,
+.itg-contact-heading button:focus-visible {
+  background: #ffffff;
+  border-color: var(--itg-blue);
+  transform: translateY(-2px);
+}
+
+.itg-contact-grid {
+  display: grid;
+  gap: 16px;
+  align-items: start;
+}
+
+.itg-contact-grid .contact-direct-card {
+  border-radius: 8px;
+  box-shadow: 0 22px 58px rgba(8, 21, 43, 0.14);
+}
+
+.itg-contact-form {
+  padding: 16px;
+  border: 1px solid rgba(37, 63, 108, 0.12);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 22px 58px rgba(8, 21, 43, 0.08);
+}
+
+.itg-contact-form .contact-form {
+  grid-template-columns: 1fr;
+}
+
+.itg-contact-form .contact-form input,
+.itg-contact-form .contact-form textarea {
+  border-radius: 8px;
+}
+
+.itg-contact-form .contact-submit {
+  min-height: 48px;
+  transition:
+    background-color 180ms ease,
+    transform 180ms ease;
+}
+
+.itg-contact-form .contact-submit:hover,
+.itg-contact-form .contact-submit:focus-visible {
+  background: var(--itg-accent);
+  transform: translateY(-2px);
+}
+
+/* ==================== RESPONSIVE ==================== */
+
+@media (min-width: 480px) {
+  .itg-benefit-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 680px) {
+  .itg-actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .itg-method-map {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .itg-service-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .itg-approach-map {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .itg-contact-form {
+    padding: clamp(20px, 3vw, 30px);
+  }
+
+  .itg-contact-form .contact-form {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 679px) {
+  .itg-method.is-mobile-sequence {
+    padding-block: clamp(28px, 7vw, 44px);
+  }
+
+  .itg-method.is-mobile-sequence .itg-section-heading {
+    margin-inline: auto;
+    text-align: center;
+  }
+
+  .itg-method.is-mobile-sequence .itg-section-heading h2 {
+    font-size: clamp(1.78rem, 8vw, 2.52rem);
+  }
+
+  .itg-method.is-mobile-sequence .itg-section-heading > p:not(.itg-eyebrow) {
+    margin-inline: auto;
+    font-size: clamp(0.88rem, 3.5vw, 0.98rem);
+  }
+
+  .itg-method.is-mobile-sequence .itg-method-map {
+    min-height: clamp(292px, 42vh, 360px);
+    margin-top: clamp(18px, 5vw, 26px);
+    display: block;
+  }
+
+  .itg-method.is-mobile-sequence .itg-method-path {
+    display: none;
+  }
+
+  .itg-method.is-mobile-sequence .itg-method-step {
+    position: absolute;
+    inset: 0;
+    min-height: auto;
+    padding: clamp(16px, 5vw, 22px);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+  }
+
+  .itg-method.is-mobile-sequence .itg-step-node {
+    width: 42px;
+    height: 42px;
+    margin-top: 12px;
+  }
+
+  .itg-method.is-mobile-sequence .itg-step-node > span {
+    width: 14px;
+    height: 14px;
+  }
+
+  .itg-method.is-mobile-sequence .itg-step-label {
+    margin-top: 12px;
+  }
+
+  .itg-method.is-mobile-sequence .itg-method-step h3 {
+    font-size: clamp(1.28rem, 5.5vw, 1.68rem);
+  }
+
+  .itg-method.is-mobile-sequence .itg-method-step p:not(.itg-step-label) {
+    font-size: 0.86rem;
+    line-height: 1.46;
+  }
+}
+
+@media (min-width: 1080px) {
+  .itg-page {
+    --itg-title-xl: clamp(4.35rem, 5.2vw, 6.75rem);
+    --itg-title-lg: clamp(3rem, 3.85vw, 5rem);
+    --itg-title-md: clamp(1.6rem, 1.75vw, 2.15rem);
+    --itg-body: clamp(0.98rem, 1vw, 1.08rem);
+    --itg-small: clamp(0.68rem, 0.74vw, 0.78rem);
+  }
+
+  .itg-hero-content {
+    padding-top: 0;
+    margin-inline: auto;
+  }
+
+  .itg-section-heading {
+    margin-inline: auto;
+    text-align: center;
+  }
+
+  .itg-section-heading > p:not(.itg-eyebrow) {
+    margin-inline: auto;
+  }
+
+  .itg-method.is-scroll-sequence {
+    padding-block: clamp(24px, 3.2vh, 38px);
+  }
+
+  .itg-method.is-scroll-sequence .itg-section-heading h2 {
+    font-size: clamp(2.45rem, 3vw, 3.8rem);
+  }
+
+  .itg-method.is-scroll-sequence .itg-section-heading > p:not(.itg-eyebrow) {
+    max-width: 720px;
+    margin-top: 12px;
+    line-height: 1.45;
+  }
+
+  .itg-method.is-scroll-sequence .itg-method-map {
+    margin-top: clamp(18px, 2.4vw, 30px);
+  }
+
+  .itg-method-map {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 0;
+  }
+
+  .itg-method-path {
+    position: absolute;
+    left: 10%;
+    right: 10%;
+    top: 72px;
+    display: block;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(65, 200, 246, 0.46), transparent);
+  }
+
+  .itg-method-path span {
+    position: absolute;
+    top: -3px;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--itg-cyan);
+    box-shadow: 0 0 22px rgba(65, 200, 246, 0.8);
+    animation: itg-path-pulse 4.8s ease-in-out infinite;
+  }
+
+  .itg-method-path span:first-child {
+    left: 25%;
+  }
+
+  .itg-method-path span:last-child {
+    left: 70%;
+    animation-delay: 1.2s;
+  }
+
+  .itg-method-step {
+    min-height: clamp(300px, 35vh, 340px);
+    padding: clamp(14px, 1.25vw, 18px);
+    border-radius: 0;
+  }
+
+  .itg-method.is-scroll-sequence .itg-step-node {
+    width: 42px;
+    height: 42px;
+    margin-top: 12px;
+  }
+
+  .itg-method.is-scroll-sequence .itg-step-node > span {
+    width: 13px;
+    height: 13px;
+  }
+
+  .itg-method.is-scroll-sequence .itg-step-label {
+    margin-top: 12px;
+    font-size: 0.68rem;
+  }
+
+  .itg-method.is-scroll-sequence .itg-method-step h3 {
+    font-size: clamp(1.34rem, 1.36vw, 1.72rem);
+    line-height: 1.04;
+  }
+
+  .itg-method.is-scroll-sequence .itg-method-step p:not(.itg-step-label) {
+    margin-top: 10px;
+    font-size: 0.84rem;
+    line-height: 1.44;
+  }
+
+  .itg-method-step + .itg-method-step {
+    border-left: 0;
+  }
+
+  .itg-method-step-2,
+  .itg-method-step-4 {
+    margin-top: clamp(20px, 2.2vw, 30px);
+  }
+
+  .itg-service-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .itg-benefit-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .itg-approach-map {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+
+  .itg-approach-path {
+    position: absolute;
+    left: 10%;
+    right: 10%;
+    top: 72px;
+    display: block;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(40, 124, 161, 0.32), transparent);
+  }
+
+  .itg-approach-step {
+    min-height: clamp(240px, 28vh, 300px);
+    padding: clamp(14px, 1.25vw, 18px);
+  }
+
+  .itg-approach-step h3 {
+    font-size: clamp(1.34rem, 1.36vw, 1.72rem);
+    line-height: 1.04;
+  }
+
+  .itg-approach-step p {
+    font-size: 0.84rem;
+    line-height: 1.44;
+  }
+
+  .itg-contact {
+    grid-template-columns: minmax(0, 0.68fr) minmax(0, 1fr);
+    gap: clamp(34px, 5vw, 72px);
+  }
+
+  .itg-contact-heading {
+    position: sticky;
+    top: calc(var(--nav-h) + 32px);
+  }
+
+  .itg-contact-grid {
+    grid-template-columns: minmax(230px, 0.42fr) minmax(0, 1fr);
+    gap: clamp(16px, 2.2vw, 28px);
+  }
+}
+
+@media (max-width: 420px) {
+  .itg-hero,
+  .itg-method,
+  .itg-services,
+  .itg-benefits,
+  .itg-approach,
+  .itg-contact {
+    padding-inline: 16px;
+  }
+
+  .itg-hero {
+    min-height: auto;
+    padding-top: 40px;
+  }
+
+  .itg-page h1 {
+    line-height: 1.01;
+  }
+
+  .itg-hero-content > p:not(.itg-eyebrow),
+  .itg-section-heading > p:not(.itg-eyebrow),
+  .itg-contact-heading > p:not(.itg-eyebrow) {
+    line-height: 1.5;
+  }
+
+  .itg-method-step,
+  .itg-service-card,
+  .itg-benefit-card,
+  .itg-approach-step {
+    min-height: auto;
+  }
+
+  .itg-contact-form {
+    padding: 14px;
+  }
+}
+
+@keyframes itg-path-pulse {
+  0%,
+  100% {
+    transform: translateX(-16px);
+    opacity: 0;
+  }
+
+  45%,
+  55% {
+    opacity: 1;
+  }
+
+  100% {
+    transform: translateX(56px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .itg-method-path span {
+    animation: none;
+  }
+
+  .itg-method.is-scroll-sequence {
+    min-height: auto;
+    display: block;
+  }
+
+  .itg-method.is-scroll-sequence .itg-method-step {
+    will-change: auto;
+  }
+
+  .itg-actions button:hover,
+  .itg-contact-heading button:hover,
+  .itg-contact-form .contact-submit:hover {
+    transform: none;
+  }
+}
