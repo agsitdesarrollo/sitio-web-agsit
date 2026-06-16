@@ -33,6 +33,8 @@ export type DigitalMarketingV2Content = {
     eyebrow: string;
     primary: string;
     secondary: string;
+    copy: string;
+    cta: string;
   };
   narrative: StoryNarrative[];
   transitionTitle: {
@@ -62,8 +64,10 @@ export const digitalMarketingV2ByLang: Record<SupportedLang, DigitalMarketingV2C
     },
     hero: {
       eyebrow: 'Marketing Digital AGSIT',
-      primary: 'Marketing',
-      secondary: 'Digital',
+      primary: 'Tu crecimiento digital,',
+      secondary: 'diseñado con datos.',
+      copy: 'Diseñamos campañas, contenido y analítica que trabajan como un solo sistema para hacer crecer tu negocio.',
+      cta: 'Hablemos de tu proyecto',
     },
     narrative: [
       {
@@ -160,8 +164,10 @@ export const digitalMarketingV2ByLang: Record<SupportedLang, DigitalMarketingV2C
     },
     hero: {
       eyebrow: 'AGSIT Digital Marketing',
-      primary: 'Digital',
-      secondary: 'Marketing',
+      primary: 'Your digital growth,',
+      secondary: 'designed with data.',
+      copy: 'We design campaigns, content and analytics that work as one system to grow your business.',
+      cta: "Let's talk about your project",
     },
     narrative: [
       {

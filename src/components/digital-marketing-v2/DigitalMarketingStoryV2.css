@@ -1,18 +1,22 @@
 .dm-v2-page {
   --dm-v2-ink: #0d1522;
+  --dm-v2-ink-deep: #020712;
   --dm-v2-blue: #253f6c;
   --dm-v2-blue-deep: #08152b;
   --dm-v2-accent: #287ca1;
   --dm-v2-cyan: #41c8f6;
+  --dm-v2-cyan-soft: #8be2ff;
   --dm-v2-green: #2f8f72;
   --dm-v2-warm: #c58a2a;
   --dm-v2-paper: #f8fbff;
   --dm-v2-white: #ffffff;
   --dm-v2-line: rgba(37, 63, 108, 0.14);
   --dm-v2-shadow: 0 28px 72px rgba(8, 21, 43, 0.14);
+  --dm-v2-body: clamp(0.94rem, 3.7vw, 1.05rem);
+  --dm-v2-small: clamp(0.68rem, 2.8vw, 0.78rem);
   position: relative;
   overflow: clip;
-  background: var(--dm-v2-blue-deep);
+  background: var(--dm-v2-ink-deep);
   color: var(--dm-v2-white);
 }
 
@@ -32,10 +36,10 @@ html.lenis body {
 .dm-v2-card-eyebrow {
   color: var(--dm-v2-cyan);
   font-family: 'Inter', 'Segoe UI', Tahoma, sans-serif;
-  font-size: clamp(0.68rem, 0.78vw, 0.78rem);
-  font-weight: 850;
-  letter-spacing: 0.2em;
-  line-height: 1.4;
+  font-size: var(--dm-v2-small);
+  font-weight: 900;
+  letter-spacing: 0.18em;
+  line-height: 1.45;
   text-transform: uppercase;
 }
 
@@ -47,8 +51,9 @@ html.lenis body {
   place-items: center;
   overflow: hidden;
   background:
-    linear-gradient(180deg, rgba(8, 21, 43, 0.96), rgba(13, 21, 34, 0.92)),
-    repeating-linear-gradient(90deg, rgba(65, 200, 246, 0.08) 0 1px, transparent 1px 86px);
+    radial-gradient(circle at 50% 30%, rgba(65, 200, 246, 0.16), transparent 40%),
+    repeating-linear-gradient(90deg, rgba(65, 200, 246, 0.03) 0 1px, transparent 1px 86px),
+    linear-gradient(135deg, #020712 0%, #061228 48%, #020712 100%);
 }
 
 .dm-v2-hero-circle {
@@ -57,84 +62,85 @@ html.lenis body {
   top: calc(50% - var(--nav-h) / 2);
   width: 40%;
   min-width: 360px;
-  opacity: 0.32;
+  opacity: 0.5;
   transform: translate(-50%, -50%);
-  filter: hue-rotate(166deg) saturate(1.35) brightness(0.88);
 }
 
 .dm-v2-hero-title {
   position: relative;
   z-index: 2;
-  width: 75vw;
-  max-width: 1900px;
-  height: clamp(240px, 23vw, 460px);
+  width: min(880px, 100%);
+  display: grid;
+  justify-items: center;
+  text-align: center;
 }
 
 .dm-v2-hero-title .dm-v2-eyebrow {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  overflow: hidden;
-  clip: rect(0 0 0 0);
-  white-space: nowrap;
+  margin-bottom: 14px;
+  color: var(--dm-v2-cyan-soft);
 }
 
 .dm-v2-hero h1 {
-  position: absolute;
-  inset: 0;
   color: #f2f8ff;
-  font-weight: 400;
+  font-weight: 300;
+  text-wrap: balance;
 }
 
 .dm-v2-title-primary,
 .dm-v2-title-secondary {
-  position: absolute;
   display: block;
-  letter-spacing: 0;
-  will-change: transform;
-}
-
-.dm-v2-title-primary {
-  left: 10%;
-  top: 0;
   color: #f2f8ff;
   font-family: 'Cormorant Garamond', Georgia, serif;
-  font-size: clamp(68px, 11.2vw, 13rem);
-  font-weight: 600;
-  line-height: clamp(68px, 11.2vw, 13rem);
+  font-size: clamp(2.8rem, 5.6vw, 5.6rem);
+  font-weight: 300;
+  letter-spacing: 0;
+  line-height: 1.02;
+  will-change: transform, opacity;
 }
 
 .dm-v2-title-secondary {
-  right: 30%;
-  bottom: 0;
-  color: #f2f8ff;
-  font-family: 'Cormorant Garamond', Georgia, serif;
-  font-size: clamp(54px, 9.4vw, 11rem);
-  font-weight: 600;
-  line-height: clamp(54px, 9.4vw, 11rem);
+  color: var(--dm-v2-cyan-soft);
+  font-style: italic;
 }
 
-.dm-v2-hero-book,
-.dm-v2-hero-hourglass {
-  position: absolute;
-  z-index: 4;
+.dm-v2-hero-copy {
+  max-width: 640px;
+  margin-top: 16px;
+  color: rgba(180, 197, 219, 0.78);
+  font-family: 'Inter', 'Segoe UI', Tahoma, sans-serif;
+  font-size: var(--dm-v2-body);
+  font-weight: 500;
+  line-height: 1.62;
 }
 
-.dm-v2-hero-book {
-  left: 0;
-  bottom: 3%;
-  width: 9.5vw;
-  max-width: 170px;
-  min-width: 96px;
+.dm-v2-hero-cta {
+  min-height: 48px;
+  margin-top: 24px;
+  padding: 0 26px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(65, 200, 246, 0.74);
+  border-radius: 999px;
+  background: var(--dm-v2-cyan);
+  color: var(--dm-v2-blue-deep);
+  font-family: 'Inter', 'Segoe UI', Tahoma, sans-serif;
+  font-size: var(--dm-v2-small);
+  font-weight: 900;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition:
+    background-color 180ms ease,
+    border-color 180ms ease,
+    transform 180ms ease;
 }
 
-.dm-v2-hero-hourglass {
-  right: 2%;
-  top: -13%;
-  width: 13vw;
-  max-width: 250px;
-  min-width: 120px;
-  opacity: 0.9;
+.dm-v2-hero-cta:hover,
+.dm-v2-hero-cta:focus-visible {
+  background: #ffffff;
+  border-color: #ffffff;
+  transform: translateY(-2px);
 }
 
 .dm-v2-hero-line {
@@ -147,36 +153,24 @@ html.lenis body {
 
 .dm-v2-hero-line path {
   fill: none;
-  stroke: #41c8f6;
-  stroke-width: 8;
+  stroke: #287ca1;
+  stroke-width: 3;
   stroke-linecap: round;
   stroke-linejoin: round;
 }
 
-.dm-v2-hero-line-top {
-  width: 13vw;
-  min-width: 155px;
-  right: -1%;
-  top: -11%;
-}
-
 .dm-v2-hero-line-bottom {
-  width: 62vw;
-  min-width: 540px;
-  right: 0;
-  bottom: -34%;
-}
-
-.dm-v2-hero-line-bottom path {
-  stroke: #287ca1;
-  stroke-width: 5;
+  left: 50%;
+  bottom: clamp(28px, 6vh, 64px);
+  width: min(60vw, 900px);
+  transform: translateX(-50%);
 }
 
 .dm-v2-eye-wrapper {
   position: relative;
   background:
-    linear-gradient(180deg, #08152b, #0d1522),
-    repeating-linear-gradient(90deg, rgba(65, 200, 246, 0.07) 0 1px, transparent 1px 90px);
+    repeating-linear-gradient(90deg, rgba(65, 200, 246, 0.03) 0 1px, transparent 1px 90px),
+    linear-gradient(180deg, #020712, #061228);
 }
 
 .dm-v2-sticky-wrap {
@@ -211,9 +205,8 @@ html.lenis body {
   width: 40%;
   min-width: 360px;
   z-index: 0;
-  opacity: 0.32;
+  opacity: 0.5;
   transform: translate(-50%, -50%);
-  filter: hue-rotate(166deg) saturate(1.35) brightness(0.88);
 }
 
 .dm-v2-sticky-eye {
@@ -251,11 +244,11 @@ html.lenis body {
   width: 80vw;
   margin-inline: auto;
   color: #f2f8ff;
-  font-family: 'Inter', 'Segoe UI', Tahoma, sans-serif;
-  font-size: clamp(3.5rem, 5vw, 7.4rem);
-  font-weight: 400;
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: clamp(3.2rem, 4.6vw, 6rem);
+  font-weight: 300;
   letter-spacing: 0;
-  line-height: 1.1;
+  line-height: 1.05;
   text-wrap: balance;
 }
 
@@ -267,7 +260,8 @@ html.lenis body {
 .dm-v2-serif {
   color: var(--dm-v2-cyan);
   font-family: 'Cormorant Garamond', Georgia, serif;
-  font-weight: 500;
+  font-style: italic;
+  font-weight: 400;
 }
 
 .dm-v2-inline-visual {
@@ -276,7 +270,7 @@ html.lenis body {
   height: 0.84em;
   margin: 0 0.14em;
   display: inline-block;
-  vertical-align: -0.08em;
+  vertical-align: -0.06em;
 }
 
 .dm-v2-inline-visual img {
@@ -302,8 +296,8 @@ html.lenis body {
   gap: clamp(24px, 5vw, 80px);
   overflow: visible;
   background:
-    linear-gradient(180deg, #0d1522, #08152b),
-    repeating-linear-gradient(90deg, rgba(65, 200, 246, 0.07) 0 1px, transparent 1px 90px);
+    repeating-linear-gradient(90deg, rgba(65, 200, 246, 0.03) 0 1px, transparent 1px 90px),
+    linear-gradient(180deg, #061228, #020712);
 }
 
 .dm-v2-flower-origin-wrap {
@@ -323,7 +317,7 @@ html.lenis body {
 
 .dm-v2-pin-two .dm-v2-second-copy .dm-v2-large-copy {
   width: auto;
-  font-size: clamp(2.45rem, 4.5vw, 5.45rem);
+  font-size: clamp(2.3rem, 4.1vw, 5rem);
 }
 
 .dm-v2-second-copy {
@@ -626,10 +620,6 @@ html.lenis body {
 }
 
 @media (max-width: 1100px) {
-  .dm-v2-hero-title {
-    height: clamp(200px, 32vw, 320px);
-  }
-
   .dm-v2-pin-two,
   .dm-v2-contact {
     grid-template-columns: 1fr;
@@ -667,6 +657,7 @@ html.lenis body {
   .dm-v2-pin-two .dm-v2-second-copy .dm-v2-large-copy {
     width: min(720px, 100%);
     font-size: clamp(2.25rem, 9vw, 4.2rem);
+    font-weight: 400;
     line-height: 1.08;
   }
 
@@ -698,44 +689,15 @@ html.lenis body {
     padding-inline: 18px;
   }
 
-  .dm-v2-hero-title {
-    width: 92vw;
-    height: 52vw;
-    min-height: 225px;
-  }
-
-  .dm-v2-hero-title .dm-v2-eyebrow {
-    top: -36px;
-  }
-
-  .dm-v2-title-primary {
-    left: 0;
-    font-size: clamp(2.5rem, 13.5vw, 4.6rem);
-    line-height: clamp(2.5rem, 13.5vw, 4.6rem);
-  }
-
+  .dm-v2-title-primary,
   .dm-v2-title-secondary {
-    right: 8%;
-    font-size: clamp(2.3rem, 12.5vw, 4.3rem);
-    line-height: clamp(2.3rem, 12.5vw, 4.3rem);
-  }
-
-  .dm-v2-hero-book {
-    bottom: -15%;
-  }
-
-  .dm-v2-hero-hourglass {
-    right: 0;
-    top: 5%;
-  }
-
-  .dm-v2-hero-line-top {
-    display: none;
+    font-size: clamp(2.1rem, 9.5vw, 3rem);
+    line-height: 1.06;
   }
 
   .dm-v2-hero-line-bottom {
-    right: -8%;
-    bottom: -40%;
+    width: 84vw;
+    bottom: 24px;
   }
 
   .dm-v2-large-copy,
