@@ -16,7 +16,14 @@ export type TechnologyCapability = {
   code: string;
   title: string;
   copy: string;
-  services: string[];
+  cta: string;
+  href: string;
+};
+
+export type TechnologyBenefit = {
+  value: string;
+  title: string;
+  copy: string;
 };
 
 export type TechnologySolutionsContent = {
@@ -29,10 +36,9 @@ export type TechnologySolutionsContent = {
   };
   hero: {
     eyebrow: string;
-    title: string;
+    title: [string, string];
     copy: string;
     primaryCta: string;
-    secondaryCta: string;
     metrics: TechnologyMetric[];
   };
   method: {
@@ -46,6 +52,12 @@ export type TechnologySolutionsContent = {
     title: string;
     copy: string;
     items: TechnologyCapability[];
+  };
+  benefits: {
+    eyebrow: string;
+    title: string;
+    copy: string;
+    items: TechnologyBenefit[];
   };
   contact: {
     eyebrow: string;
@@ -66,11 +78,10 @@ export const technologySolutionsByLang: Record<SupportedLang, TechnologySolution
     },
     hero: {
       eyebrow: 'Soluciones tecnológicas ITS 360°',
-      title: 'Tecnología que corrige fricciones, conecta procesos y acelera decisiones.',
+      title: ['Tecnología que impulsa', 'tu crecimiento'],
       copy:
         'Diagnosticamos, diseñamos e implementamos soluciones tecnológicas alineadas a la operación real del negocio: software, infraestructura, nube, datos, testing y sistemas corporativos con trazabilidad de punta a punta.',
       primaryCta: 'Solicitar diagnóstico',
-      secondaryCta: 'Ver capacidades',
       metrics: [
         { value: '01', label: 'Menos reprocesos por fallas, sistemas aislados y requisitos poco claros.' },
         { value: '02', label: 'Mayor control sobre datos, infraestructura, calidad y continuidad operativa.' },
@@ -114,52 +125,86 @@ export const technologySolutionsByLang: Record<SupportedLang, TechnologySolution
       ],
     },
     capabilities: {
-      eyebrow: 'Capacidades tecnológicas',
-      title: 'Servicios agrupados para resolver problemas completos, no tareas aisladas.',
+      eyebrow: 'Catálogo de servicios',
+      title: 'Explora nuestras soluciones tecnológicas',
       copy:
-        'Integramos la línea de Soluciones Tecnológicas de AGSIT en pilares ejecutivos que cubren diagnóstico, construcción, operación y evolución.',
+        'Agrupamos los servicios por objetivo operativo para que identifiques con rapidez qué frente tecnológico necesita tu empresa.',
       items: [
         {
-          code: 'AUD',
-          title: 'Auditoría y requerimientos',
+          code: 'GTI',
+          title: 'Gestión y Gobierno TI',
           copy:
-            'Convertimos necesidades dispersas en criterios técnicos, funcionales y de control para tomar decisiones con evidencia.',
-          services: ['Auditoría de software', 'Requerimientos técnicos y funcionales', 'Documentación y trazabilidad'],
+            'Ordenamos la operación tecnológica con prácticas de control, soporte y mejora continua para equipos de TI.',
+          cta: 'Ver servicios',
+          href: '#',
+        },
+        {
+          code: 'AUTO',
+          title: 'Automatización y Optimización',
+          copy:
+            'Detectamos fricciones operativas y diseñamos soluciones que reducen trabajo manual, errores y tiempos de ciclo.',
+          cta: 'Ver servicios',
+          href: '#',
         },
         {
           code: 'DEV',
-          title: 'Software y aplicaciones',
+          title: 'Desarrollo de Software',
           copy:
-            'Diseñamos soluciones a la medida para digitalizar procesos, conectar usuarios y reducir trabajo manual.',
-          services: ['Diseño de soluciones tecnológicas', 'Desarrollo de software', 'Apps móviles'],
-        },
-        {
-          code: 'QA',
-          title: 'Automatización y testing',
-          copy:
-            'Validamos calidad antes de escalar y automatizamos flujos críticos para sostener eficiencia operativa.',
-          services: ['Testing funcional', 'Pruebas de desarrollo', 'Automatización de procesos'],
+            'Construimos aplicaciones alineadas a la operación real del negocio, con validación funcional antes de escalar.',
+          cta: 'Ver servicios',
+          href: '#',
         },
         {
           code: 'OPS',
           title: 'Infraestructura y nube',
           copy:
-            'Administramos bases técnicas que permiten continuidad, seguridad, escalabilidad y operación estable.',
-          services: ['Servidores', 'Infraestructura cloud', 'Servicios administrados'],
+            'Diseñamos bases tecnológicas estables para operar, integrar y crecer con continuidad en entornos locales o nube.',
+          cta: 'Ver servicios',
+          href: '#',
         },
         {
-          code: 'ERP',
-          title: 'Sistemas corporativos',
+          code: 'DATA',
+          title: 'Datos e Inteligencia Empresarial',
           copy:
-            'Implementamos e integramos plataformas empresariales para ordenar información, procesos y responsabilidades.',
-          services: ['ERPs', 'Sistemas corporativos', 'Integraciones operativas'],
+            'Conectamos datos y sistemas para convertir información dispersa en control, trazabilidad y decisiones oportunas.',
+          cta: 'Ver servicios',
+          href: '#',
         },
         {
-          code: 'GOV',
-          title: 'Soporte, datos y metodologías',
+          code: 'INN',
+          title: 'Innovación Tecnológica',
           copy:
-            'Dejamos capacidades instaladas para operar, medir, mantener y evolucionar la solución dentro del negocio.',
-          services: ['Soporte técnico', 'Bases de datos', 'Capacitación en metodologías'],
+            'Aterrizamos tecnologías emergentes en casos de uso viables para modernizar procesos y habilitar nuevos modelos.',
+          cta: 'Ver servicios',
+          href: '#',
+        },
+      ],
+    },
+    benefits: {
+      eyebrow: 'Beneficios para tu negocio',
+      title: 'Resultados que generan valor para tu organización',
+      copy:
+        'Traducimos tecnología en mejoras visibles para la operación: más control, menos fricción y mayor capacidad para crecer.',
+      items: [
+        {
+          value: '01',
+          title: 'Productividad',
+          copy: 'Equipos con procesos más claros, menos retrabajo y herramientas conectadas a su operación diaria.',
+        },
+        {
+          value: '02',
+          title: 'Reducción de costos',
+          copy: 'Menos fallas, tareas manuales y dependencias técnicas que elevan el costo operativo.',
+        },
+        {
+          value: '03',
+          title: 'Continuidad operativa',
+          copy: 'Infraestructura, soporte y documentación para sostener la operación sin interrupciones innecesarias.',
+        },
+        {
+          value: '04',
+          title: 'Escalabilidad y seguridad',
+          copy: 'Soluciones preparadas para crecer con controles, datos protegidos y decisiones técnicas sostenibles.',
         },
       ],
     },
@@ -181,11 +226,10 @@ export const technologySolutionsByLang: Record<SupportedLang, TechnologySolution
     },
     hero: {
       eyebrow: 'ITS 360° technology solutions',
-      title: 'Technology that removes friction, connects operations and accelerates decisions.',
+      title: ['Technology that powers', 'your growth'],
       copy:
         'We diagnose, design and implement technology solutions aligned with real business operations: software, infrastructure, cloud, data, testing and corporate systems with end-to-end traceability.',
       primaryCta: 'Request assessment',
-      secondaryCta: 'View capabilities',
       metrics: [
         { value: '01', label: 'Less rework caused by failures, disconnected systems and unclear requirements.' },
         { value: '02', label: 'More control over data, infrastructure, quality and business continuity.' },
@@ -229,52 +273,86 @@ export const technologySolutionsByLang: Record<SupportedLang, TechnologySolution
       ],
     },
     capabilities: {
-      eyebrow: 'Technology capabilities',
-      title: 'Services grouped to solve complete problems, not isolated tasks.',
+      eyebrow: 'Service catalog',
+      title: 'Explore our technology solutions',
       copy:
-        'We organize AGSIT Technology Solutions into executive pillars that cover diagnosis, build, operation and evolution.',
+        'We group services by operational goal so you can quickly identify which technology front your company needs.',
       items: [
         {
-          code: 'AUD',
-          title: 'Audit and requirements',
+          code: 'ITG',
+          title: 'IT Management and Governance',
           copy:
-            'We turn scattered needs into technical, functional and control criteria so decisions are based on evidence.',
-          services: ['Software audit', 'Technical and functional requirements', 'Documentation and traceability'],
+            'We structure technology operations with control, support and continuous improvement practices for IT teams.',
+          cta: 'View services',
+          href: '#',
+        },
+        {
+          code: 'AUTO',
+          title: 'Automation and Optimization',
+          copy:
+            'We identify operational friction and design solutions that reduce manual work, errors and cycle times.',
+          cta: 'View services',
+          href: '#',
         },
         {
           code: 'DEV',
-          title: 'Software and applications',
+          title: 'Software Development',
           copy:
-            'We design custom solutions to digitize processes, connect users and reduce manual work.',
-          services: ['Technology solution design', 'Software development', 'Mobile applications'],
-        },
-        {
-          code: 'QA',
-          title: 'Automation and testing',
-          copy:
-            'We validate quality before scaling and automate critical workflows to sustain operational efficiency.',
-          services: ['Functional testing', 'Development testing', 'Process automation'],
+            'We build applications aligned with real business operations, with functional validation before scaling.',
+          cta: 'View services',
+          href: '#',
         },
         {
           code: 'OPS',
-          title: 'Infrastructure and cloud',
+          title: 'Infrastructure and Cloud',
           copy:
-            'We manage the technical foundations that enable continuity, security, scalability and stable operation.',
-          services: ['Servers', 'Cloud infrastructure', 'Managed services'],
+            'We design stable technology foundations to operate, integrate and grow with continuity on-premise or in cloud environments.',
+          cta: 'View services',
+          href: '#',
         },
         {
-          code: 'ERP',
-          title: 'Corporate systems',
+          code: 'DATA',
+          title: 'Data and Business Intelligence',
           copy:
-            'We implement and integrate enterprise platforms to organize information, processes and responsibilities.',
-          services: ['ERP systems', 'Corporate systems', 'Operational integrations'],
+            'We connect data and systems to turn scattered information into control, traceability and timely decisions.',
+          cta: 'View services',
+          href: '#',
         },
         {
-          code: 'GOV',
-          title: 'Support, data and methods',
+          code: 'INN',
+          title: 'Technology Innovation',
           copy:
-            'We install capabilities to operate, measure, maintain and evolve the solution inside the business.',
-          services: ['Technical support', 'Databases', 'Development methodology training'],
+            'We bring emerging technologies into viable use cases to modernize processes and enable new operating models.',
+          cta: 'View services',
+          href: '#',
+        },
+      ],
+    },
+    benefits: {
+      eyebrow: 'Business benefits',
+      title: 'Outcomes that create value for your organization',
+      copy:
+        'We translate technology into visible operational improvements: more control, less friction and greater capacity to grow.',
+      items: [
+        {
+          value: '01',
+          title: 'Productivity',
+          copy: 'Teams work with clearer processes, less rework and tools connected to daily operations.',
+        },
+        {
+          value: '02',
+          title: 'Cost reduction',
+          copy: 'Fewer failures, manual tasks and technical dependencies that increase operational cost.',
+        },
+        {
+          value: '03',
+          title: 'Operational continuity',
+          copy: 'Infrastructure, support and documentation to sustain operations without unnecessary interruptions.',
+        },
+        {
+          value: '04',
+          title: 'Scalability and security',
+          copy: 'Solutions prepared to grow with controls, protected data and sustainable technical decisions.',
         },
       ],
     },

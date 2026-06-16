@@ -14,19 +14,19 @@ const { content, contactCopy } = Astro.props;
 
 <main class="technology-page">
   <section class="technology-hero" aria-labelledby="technology-hero-title">
-    <div class="technology-data-scene" aria-hidden="true">
-      <span class="technology-data-plane technology-data-plane-a"></span>
-      <span class="technology-data-plane technology-data-plane-b"></span>
-      <span class="technology-scan-line"></span>
-    </div>
+    <video class="technology-hero-video" aria-hidden="true" autoplay muted loop playsinline preload="metadata">
+      <source src="/assets/binary-wave-bg.webm" type="video/webm" />
+      <source src="/assets/binary-wave-bg.mp4" type="video/mp4" />
+    </video>
 
     <div class="technology-hero-content">
       <p class="technology-eyebrow">{content.hero.eyebrow}</p>
-      <h1 id="technology-hero-title">{content.hero.title}</h1>
+      <h1 id="technology-hero-title">
+        {content.hero.title.map((line) => <span>{line}</span>)}
+      </h1>
       <p>{content.hero.copy}</p>
       <div class="technology-actions">
         <button type="button" data-contact-trigger>{content.hero.primaryCta}</button>
-        <a href="#capacidades">{content.hero.secondaryCta}</a>
       </div>
     </div>
 
@@ -79,18 +79,39 @@ const { content, contactCopy } = Astro.props;
             content.capabilities.items.map((item) => (
               <article class="technology-capability">
                 <div>
-                  <span>{item.code}</span>
+                  <span class="technology-capability-code">{item.code}</span>
                   <h3>{item.title}</h3>
                   <p>{item.copy}</p>
                 </div>
-                <ul>
-                  {item.services.map((service) => <li>{service}</li>)}
-                </ul>
+                <a class="technology-capability-link" href={item.href}>
+                  <span class="technology-capability-link-text">{item.cta}</span>
+                  <span class="technology-capability-arrow" aria-hidden="true"></span>
+                </a>
               </article>
             ))
           }
         </div>
       </div>
+    </div>
+  </section>
+
+  <section id="beneficios-negocio" class="technology-benefits" aria-labelledby="technology-benefits-title">
+    <div class="technology-section-heading">
+      <p class="technology-eyebrow">{content.benefits.eyebrow}</p>
+      <h2 id="technology-benefits-title">{content.benefits.title}</h2>
+      <p>{content.benefits.copy}</p>
+    </div>
+
+    <div class="technology-benefit-grid">
+      {
+        content.benefits.items.map((benefit) => (
+          <article class="technology-benefit-card">
+            <span>{benefit.value}</span>
+            <h3>{benefit.title}</h3>
+            <p>{benefit.copy}</p>
+          </article>
+        ))
+      }
     </div>
   </section>
 
@@ -333,7 +354,7 @@ const { content, contactCopy } = Astro.props;
     const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     const items = Array.from(
       root.querySelectorAll(
-        '.technology-hero-content, .technology-section-heading, .technology-contact-heading, .technology-contact-grid',
+        '.technology-hero-content, .technology-section-heading, .technology-benefit-grid, .technology-contact-heading, .technology-contact-grid',
       ),
     ).filter((item) => item instanceof HTMLElement);
 
