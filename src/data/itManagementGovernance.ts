@@ -10,6 +10,7 @@ export type ITGService = {
   code: string;
   title: string;
   copy: string;
+  activities: string[];
 };
 
 export type ITGBenefit = {
@@ -50,6 +51,7 @@ export type ITManagementGovernanceContent = {
     eyebrow: string;
     title: string;
     copy: string;
+    activitiesLabel: string;
     items: ITGService[];
   };
   benefits: {
@@ -124,26 +126,51 @@ export const itManagementGovernanceByLang: Record<SupportedLang, ITManagementGov
       title: 'Gobierno tecnológico con alcance práctico',
       copy:
         'Agrupamos los servicios clave para instalar control, soporte y seguridad sin llenar a tu equipo de complejidad innecesaria.',
+      activitiesLabel: 'Actividades clave',
       items: [
         {
           code: 'ITIL',
           title: 'Implementación de ITIL',
           copy: 'Estructuramos procesos de servicio, incidentes, cambios, niveles de atención y mejora continua con buenas prácticas.',
+          activities: [
+            'Mapeo de procesos de servicio e incidentes',
+            'Definición de niveles de atención y SLAs',
+            'Gestión de cambios estructurada',
+            'Documentación de responsables y mejora continua',
+          ],
         },
         {
           code: 'AUD',
           title: 'Auditoría Tecnológica',
           copy: 'Evaluamos sistemas, infraestructura, riesgos, controles, documentación y brechas que afectan la continuidad.',
+          activities: [
+            'Revisión de sistemas, redes e infraestructura',
+            'Evaluación de controles y documentación existente',
+            'Identificación y priorización de brechas',
+            'Entrega de diagnóstico con ruta de mejora',
+          ],
         },
         {
           code: 'SUP',
           title: 'Administración de Soporte Técnico',
           copy: 'Ordenamos la mesa de ayuda, flujos de escalamiento, tiempos de respuesta, evidencias y seguimiento de casos.',
+          activities: [
+            'Estructuración de mesa de ayuda',
+            'Diseño de flujos de escalamiento',
+            'Medición de tiempos de respuesta',
+            'Seguimiento y cierre documentado de casos',
+          ],
         },
         {
           code: 'SEC',
           title: 'Ciberseguridad y Protección de Datos',
           copy: 'Fortalecemos accesos, políticas, protección de información y controles preventivos para reducir exposición.',
+          activities: [
+            'Inventario y gestión de accesos',
+            'Diseño de políticas de seguridad',
+            'Controles preventivos de datos e infraestructura',
+            'Revisión de activos y exposición crítica',
+          ],
         },
       ],
     },
@@ -194,7 +221,7 @@ export const itManagementGovernanceByLang: Record<SupportedLang, ITManagementGov
       ],
     },
     cta: {
-      eyebrow: 'Atencion consultiva especializada',
+      eyebrow: 'Atencion especializada',
       title: 'Fortalece la gestión tecnológica de tu empresa',
       copy:
         'Cuéntanos qué parte de tu operación de TI necesita más control. Revisaremos tu contexto y propondremos un siguiente paso claro.',
@@ -252,26 +279,51 @@ export const itManagementGovernanceByLang: Record<SupportedLang, ITManagementGov
       title: 'Technology governance with practical scope',
       copy:
         'We group key services to install control, support and security without adding unnecessary complexity to your team.',
+      activitiesLabel: 'Key activities',
       items: [
         {
           code: 'ITIL',
           title: 'ITIL Implementation',
           copy: 'We structure service processes, incidents, changes, support levels and continuous improvement with best practices.',
+          activities: [
+            'Service and incident process mapping',
+            'Support level and SLA definition',
+            'Structured change management',
+            'Ownership documentation and continuous improvement',
+          ],
         },
         {
           code: 'AUD',
           title: 'Technology Audit',
           copy: 'We assess systems, infrastructure, risks, controls, documentation and gaps that affect continuity.',
+          activities: [
+            'Systems, network and infrastructure review',
+            'Controls and documentation evaluation',
+            'Gap identification and prioritization',
+            'Diagnostic and improvement roadmap delivery',
+          ],
         },
         {
           code: 'SUP',
           title: 'Technical Support Administration',
           copy: 'We organize the help desk, escalation flows, response times, evidence and case follow-up.',
+          activities: [
+            'Help desk structure and setup',
+            'Escalation flow design',
+            'Response time measurement',
+            'Documented case tracking and closure',
+          ],
         },
         {
           code: 'SEC',
           title: 'Cybersecurity and Data Protection',
           copy: 'We strengthen access, policies, information protection and preventive controls to reduce exposure.',
+          activities: [
+            'Access inventory and management',
+            'Security policy design',
+            'Preventive data and infrastructure controls',
+            'Critical asset and exposure review',
+          ],
         },
       ],
     },
@@ -322,7 +374,7 @@ export const itManagementGovernanceByLang: Record<SupportedLang, ITManagementGov
       ],
     },
     cta: {
-      eyebrow: 'Specialized consultative support',
+      eyebrow: 'Specialized support',
       title: 'Strengthen your company technology management',
       copy:
         'Tell us which part of your IT operation needs more control. We will review your context and propose a clear next step.',

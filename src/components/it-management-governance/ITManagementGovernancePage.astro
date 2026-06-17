@@ -1,6 +1,5 @@
 ---
-import ContactDirectCard from '../contact/ContactDirectCard.astro';
-import ContactForm from '../contact/ContactForm.astro';
+import ServiceContactSection from '../contact/ServiceContactSection.astro';
 import ServicePageAnimations from '../service-animation/ServicePageAnimations.astro';
 import type { ContactCopy } from '../../data/contact';
 import type { ITManagementGovernanceContent } from '../../data/itManagementGovernance';
@@ -65,11 +64,21 @@ const { content, contactCopy } = Astro.props;
 
     <div class="itg-service-grid">
       {content.services.items.map((item) => (
-        <article class="itg-service-card">
-          <div>
-            <span class="itg-service-code">{item.code}</span>
-            <h3>{item.title}</h3>
-            <p>{item.copy}</p>
+        <article class="itg-service-card" tabindex="0" aria-label={item.title}>
+          <div class="itg-service-card-inner">
+            <div class="itg-service-card-front">
+              <span class="itg-service-code">{item.code}</span>
+              <h3>{item.title}</h3>
+              <p>{item.copy}</p>
+            </div>
+            <div class="itg-service-card-back" aria-hidden="true">
+              <p class="itg-service-back-label">{content.services.activitiesLabel}</p>
+              <ul class="itg-service-activities">
+                {item.activities.map((activity) => (
+                  <li>{activity}</li>
+                ))}
+              </ul>
+            </div>
           </div>
         </article>
       ))}
@@ -116,20 +125,13 @@ const { content, contactCopy } = Astro.props;
     </div>
   </section>
 
-  <section id="contacto" class="itg-contact" aria-labelledby="itg-contact-title">
-    <div class="itg-contact-heading">
-      <p class="itg-eyebrow">{content.cta.eyebrow}</p>
-      <h2 id="itg-contact-title">{content.cta.title}</h2>
-      <p>{content.cta.copy}</p>
-      <button type="button" data-contact-trigger>{content.cta.primaryCta}</button>
-    </div>
-    <div class="itg-contact-grid">
-      <ContactDirectCard copy={contactCopy.direct} />
-      <div class="itg-contact-form">
-        <ContactForm copy={contactCopy.form} />
-      </div>
-    </div>
-  </section>
+  <ServiceContactSection
+    id="contacto"
+    eyebrow={content.cta.eyebrow}
+    title={content.cta.title}
+    copy={content.cta.copy}
+    contactCopy={contactCopy}
+  />
 
   <ServicePageAnimations />
 </main>
@@ -250,8 +252,29 @@ const { content, contactCopy } = Astro.props;
     window.addEventListener('agsit:viewport-change', () => ScrollTrigger.refresh());
   };
 
+  const setupITGFlipCards = () => {
+    const cards = document.querySelectorAll<HTMLElement>('.itg-service-card');
+    if (cards.length === 0) return;
+
+    const isTouch = window.matchMedia('(hover: none)').matches;
+
+    cards.forEach((card) => {
+      if (isTouch) {
+        card.addEventListener('click', () => card.classList.toggle('is-flipped'));
+      }
+      card.addEventListener('keydown', (e: KeyboardEvent) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          card.classList.toggle('is-flipped');
+        }
+      });
+    });
+  };
+
+
   const setupITGPage = () => {
     setupITGMethodScroll();
+    setupITGFlipCards();
   };
 
   if (document.readyState === 'loading') {

@@ -1,6 +1,7 @@
 @import "tailwindcss";
 @import "../components/navigation/Header.css";
 @import "../components/contact/ContactDrawer.css";
+@import "../components/contact/ServiceContactSection.css";
 @import "../components/hero/Hero.css";
 @import "../components/services/Services.css";
 @import "../components/about/AboutHorizontal.css";
