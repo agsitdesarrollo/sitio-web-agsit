@@ -83,7 +83,7 @@
   line-height: 1.62;
 }
 
-.itg-eyebrow {
+.itg-page .itg-eyebrow {
   margin: 0 0 12px;
   font-family: 'Inter', 'Segoe UI', Tahoma, sans-serif;
   font-size: var(--itg-small);
