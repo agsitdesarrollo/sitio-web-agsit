@@ -1,6 +1,5 @@
 ---
-import ContactDirectCard from '../contact/ContactDirectCard.astro';
-import ContactForm from '../contact/ContactForm.astro';
+import ServiceContactSection from '../contact/ServiceContactSection.astro';
 import type { ContactCopy } from '../../data/contact';
 import type { TechnologySolutionsContent } from '../../data/technologySolutions';
 
@@ -115,20 +114,13 @@ const { content, contactCopy } = Astro.props;
     </div>
   </section>
 
-  <section id="contacto" class="technology-contact" aria-labelledby="technology-contact-title">
-    <div class="technology-contact-heading">
-      <p class="technology-eyebrow">{content.contact.eyebrow}</p>
-      <h2 id="technology-contact-title">{content.contact.title}</h2>
-      <p>{content.contact.copy}</p>
-    </div>
-
-    <div class="technology-contact-grid">
-      <ContactDirectCard copy={contactCopy.direct} />
-      <div class="technology-contact-form">
-        <ContactForm copy={contactCopy.form} />
-      </div>
-    </div>
-  </section>
+  <ServiceContactSection
+    id="contacto"
+    eyebrow={content.contact.eyebrow}
+    title={content.contact.title}
+    copy={content.contact.copy}
+    contactCopy={contactCopy}
+  />
 </main>
 
 <script>
@@ -354,7 +346,7 @@ const { content, contactCopy } = Astro.props;
     const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     const items = Array.from(
       root.querySelectorAll(
-        '.technology-hero-content, .technology-section-heading, .technology-benefit-grid, .technology-contact-heading, .technology-contact-grid',
+        '.technology-hero-content, .technology-section-heading, .technology-benefit-grid, .svc-contact-heading, .svc-contact-grid',
       ),
     ).filter((item) => item instanceof HTMLElement);
 

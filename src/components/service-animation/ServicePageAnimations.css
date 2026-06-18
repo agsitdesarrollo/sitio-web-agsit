@@ -78,7 +78,17 @@
 .digital-page .digital-service-grid article,
 .digital-page .digital-method-steps article,
 .digital-page .digital-lifecycle-grid article,
-.digital-page .digital-case-grid article {
+.digital-page .digital-case-grid article,
+.auto-page .auto-benefit-card,
+.auto-page .auto-approach-step,
+.dev-page .dev-benefit-card,
+.dev-page .dev-approach-step,
+.ops-page .ops-benefit-card,
+.ops-page .ops-approach-step,
+.data-page .data-benefit-card,
+.data-page .data-approach-step,
+.inn-page .inn-benefit-card,
+.inn-page .inn-approach-step {
   transition:
     transform 220ms ease,
     border-color 220ms ease,
@@ -107,7 +117,17 @@
 .digital-page .digital-service-grid article:hover,
 .digital-page .digital-method-steps article:hover,
 .digital-page .digital-lifecycle-grid article:hover,
-.digital-page .digital-case-grid article:hover {
+.digital-page .digital-case-grid article:hover,
+.auto-page .auto-benefit-card:hover,
+.auto-page .auto-approach-step:hover,
+.dev-page .dev-benefit-card:hover,
+.dev-page .dev-approach-step:hover,
+.ops-page .ops-benefit-card:hover,
+.ops-page .ops-approach-step:hover,
+.data-page .data-benefit-card:hover,
+.data-page .data-approach-step:hover,
+.inn-page .inn-benefit-card:hover,
+.inn-page .inn-approach-step:hover {
   transform: translateY(-4px);
   border-color: rgba(40, 124, 161, 0.28);
   box-shadow: 0 28px 68px rgba(8, 21, 43, 0.1);

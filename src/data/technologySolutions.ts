@@ -144,39 +144,7 @@ export const technologySolutionsByLang: Record<SupportedLang, TechnologySolution
           copy:
             'Detectamos fricciones operativas y diseñamos soluciones que reducen trabajo manual, errores y tiempos de ciclo.',
           cta: 'Ver servicios',
-          href: '#',
-        },
-        {
-          code: 'DEV',
-          title: 'Desarrollo de Software',
-          copy:
-            'Construimos aplicaciones alineadas a la operación real del negocio, con validación funcional antes de escalar.',
-          cta: 'Ver servicios',
-          href: '#',
-        },
-        {
-          code: 'OPS',
-          title: 'Infraestructura y nube',
-          copy:
-            'Diseñamos bases tecnológicas estables para operar, integrar y crecer con continuidad en entornos locales o nube.',
-          cta: 'Ver servicios',
-          href: '#',
-        },
-        {
-          code: 'DATA',
-          title: 'Datos e Inteligencia Empresarial',
-          copy:
-            'Conectamos datos y sistemas para convertir información dispersa en control, trazabilidad y decisiones oportunas.',
-          cta: 'Ver servicios',
-          href: '#',
-        },
-        {
-          code: 'INN',
-          title: 'Innovación Tecnológica',
-          copy:
-            'Aterrizamos tecnologías emergentes en casos de uso viables para modernizar procesos y habilitar nuevos modelos.',
-          cta: 'Ver servicios',
-          href: '#',
+          href: '/soluciones-tecnologicas/automatizacion-y-optimizacion/',
         },
       ],
     },
@@ -292,39 +260,7 @@ export const technologySolutionsByLang: Record<SupportedLang, TechnologySolution
           copy:
             'We identify operational friction and design solutions that reduce manual work, errors and cycle times.',
           cta: 'View services',
-          href: '#',
-        },
-        {
-          code: 'DEV',
-          title: 'Software Development',
-          copy:
-            'We build applications aligned with real business operations, with functional validation before scaling.',
-          cta: 'View services',
-          href: '#',
-        },
-        {
-          code: 'OPS',
-          title: 'Infrastructure and Cloud',
-          copy:
-            'We design stable technology foundations to operate, integrate and grow with continuity on-premise or in cloud environments.',
-          cta: 'View services',
-          href: '#',
-        },
-        {
-          code: 'DATA',
-          title: 'Data and Business Intelligence',
-          copy:
-            'We connect data and systems to turn scattered information into control, traceability and timely decisions.',
-          cta: 'View services',
-          href: '#',
-        },
-        {
-          code: 'INN',
-          title: 'Technology Innovation',
-          copy:
-            'We bring emerging technologies into viable use cases to modernize processes and enable new operating models.',
-          cta: 'View services',
-          href: '#',
+          href: '/en/technology-solutions/automation-and-optimization/',
         },
       ],
     },
