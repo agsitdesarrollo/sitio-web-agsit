@@ -82,10 +82,12 @@ const { content, contactCopy } = Astro.props;
                   <h3>{item.title}</h3>
                   <p>{item.copy}</p>
                 </div>
-                <a class="technology-capability-link" href={item.href}>
-                  <span class="technology-capability-link-text">{item.cta}</span>
-                  <span class="technology-capability-arrow" aria-hidden="true"></span>
-                </a>
+                {item.href && (
+                  <a class="technology-capability-link" href={item.href}>
+                    <span class="technology-capability-link-text">{item.cta}</span>
+                    <span class="technology-capability-arrow" aria-hidden="true"></span>
+                  </a>
+                )}
               </article>
             ))
           }

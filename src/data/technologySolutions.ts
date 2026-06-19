@@ -16,8 +16,8 @@ export type TechnologyCapability = {
   code: string;
   title: string;
   copy: string;
-  cta: string;
-  href: string;
+  cta?: string;
+  href?: string;
 };
 
 export type TechnologyBenefit = {
@@ -146,6 +146,30 @@ export const technologySolutionsByLang: Record<SupportedLang, TechnologySolution
           cta: 'Ver servicios',
           href: '/soluciones-tecnologicas/automatizacion-y-optimizacion/',
         },
+        {
+          code: 'DEV',
+          title: 'Desarrollo de Software',
+          copy:
+            'Construimos aplicaciones alineadas a la operación real del negocio, con validación funcional antes de escalar.',
+        },
+        {
+          code: 'OPS',
+          title: 'Infraestructura y nube',
+          copy:
+            'Diseñamos bases tecnológicas estables para operar, integrar y crecer con continuidad en entornos locales o nube.',
+        },
+        {
+          code: 'DATA',
+          title: 'Datos e Inteligencia Empresarial',
+          copy:
+            'Conectamos datos y sistemas para convertir información dispersa en control, trazabilidad y decisiones oportunas.',
+        },
+        {
+          code: 'INN',
+          title: 'Innovación Tecnológica',
+          copy:
+            'Aterrizamos tecnologías emergentes en casos de uso viables para modernizar procesos y habilitar nuevos modelos.',
+        },
       ],
     },
     benefits: {
@@ -261,6 +285,30 @@ export const technologySolutionsByLang: Record<SupportedLang, TechnologySolution
             'We identify operational friction and design solutions that reduce manual work, errors and cycle times.',
           cta: 'View services',
           href: '/en/technology-solutions/automation-and-optimization/',
+        },
+        {
+          code: 'DEV',
+          title: 'Software Development',
+          copy:
+            'We build applications aligned with real business operations, with functional validation before scaling.',
+        },
+        {
+          code: 'OPS',
+          title: 'Infrastructure and Cloud',
+          copy:
+            'We design stable technology foundations to operate, integrate and grow with continuity on-premise or in cloud environments.',
+        },
+        {
+          code: 'DATA',
+          title: 'Data and Business Intelligence',
+          copy:
+            'We connect data and systems to turn scattered information into control, traceability and timely decisions.',
+        },
+        {
+          code: 'INN',
+          title: 'Technology Innovation',
+          copy:
+            'We bring emerging technologies into viable use cases to modernize processes and enable new operating models.',
         },
       ],
     },
