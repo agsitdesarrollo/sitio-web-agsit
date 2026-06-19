@@ -1,0 +1,279 @@
+---
+import ServiceContactSection from '../contact/ServiceContactSection.astro';
+import ServicePageAnimations from '../service-animation/ServicePageAnimations.astro';
+import type { ContactCopy } from '../../data/contact';
+import type { SoftwareDevelopmentContent } from '../../data/softwareDevelopment';
+
+type Props = {
+  content: SoftwareDevelopmentContent;
+  contactCopy: ContactCopy;
+};
+
+const { content, contactCopy } = Astro.props;
+---
+
+<main class="dev-page">
+  <section class="dev-hero" aria-labelledby="dev-hero-title">
+    <video class="dev-hero-video" aria-hidden="true" autoplay muted loop playsinline preload="metadata">
+      <source src="/assets/binary-wave-bg.webm" type="video/webm" />
+      <source src="/assets/binary-wave-bg.mp4" type="video/mp4" />
+    </video>
+
+    <div class="dev-hero-content">
+      <p class="dev-eyebrow">{content.hero.eyebrow}</p>
+      <h1 id="dev-hero-title">{content.hero.title}</h1>
+      <p>{content.hero.copy}</p>
+      <div class="dev-actions">
+        <button type="button" data-contact-trigger>{content.hero.primaryCta}</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="dev-method" aria-labelledby="dev-method-title">
+    <div class="dev-section-heading">
+      <p class="dev-eyebrow">{content.challenges.eyebrow}</p>
+      <h2 id="dev-method-title">{content.challenges.title}</h2>
+      <p>{content.challenges.copy}</p>
+    </div>
+
+    <div class="dev-method-map" data-no-reveal>
+      <div class="dev-method-path" aria-hidden="true">
+        <span></span>
+        <span></span>
+      </div>
+      {content.challenges.items.map((item, index) => (
+        <article class={`dev-method-step dev-method-step-${index + 1}`}>
+          <span class="dev-step-index">{String(index + 1).padStart(2, '0')}</span>
+          <div class="dev-step-node" aria-hidden="true">
+            <span></span>
+          </div>
+          <p class="dev-step-label">{item.label}</p>
+          <h3>{item.title}</h3>
+          <p>{item.copy}</p>
+        </article>
+      ))}
+    </div>
+  </section>
+
+  <section id="servicios-incluidos" class="dev-services" aria-labelledby="dev-services-title">
+    <div class="dev-section-heading">
+      <p class="dev-eyebrow">{content.services.eyebrow}</p>
+      <h2 id="dev-services-title">{content.services.title}</h2>
+      <p>{content.services.copy}</p>
+    </div>
+
+    <div class="dev-service-grid">
+      {content.services.items.map((item) => (
+        <article class="dev-service-card" tabindex="0" aria-label={item.title}>
+          <div class="dev-service-card-inner">
+            <div class="dev-service-card-front">
+              <span class="dev-service-code">{item.code}</span>
+              <h3>{item.title}</h3>
+              <p>{item.copy}</p>
+            </div>
+            <div class="dev-service-card-back" aria-hidden="true">
+              <p class="dev-service-back-label">{content.services.activitiesLabel}</p>
+              <ul class="dev-service-activities">
+                {item.activities.map((activity) => <li>{activity}</li>)}
+              </ul>
+            </div>
+          </div>
+        </article>
+      ))}
+    </div>
+  </section>
+
+  <section class="dev-benefits" aria-labelledby="dev-benefits-title">
+    <div class="dev-section-heading">
+      <p class="dev-eyebrow">{content.benefits.eyebrow}</p>
+      <h2 id="dev-benefits-title">{content.benefits.title}</h2>
+      <p>{content.benefits.copy}</p>
+    </div>
+
+    <div class="dev-benefit-grid">
+      {content.benefits.items.map((benefit) => (
+        <article class="dev-benefit-card">
+          <span>{benefit.value}</span>
+          <h3>{benefit.title}</h3>
+          <p>{benefit.copy}</p>
+        </article>
+      ))}
+    </div>
+  </section>
+
+  <section class="dev-approach" aria-labelledby="dev-approach-title">
+    <div class="dev-section-heading">
+      <p class="dev-eyebrow">{content.approach.eyebrow}</p>
+      <h2 id="dev-approach-title">{content.approach.title}</h2>
+      <p>{content.approach.copy}</p>
+    </div>
+
+    <div class="dev-approach-map">
+      <div class="dev-approach-path" aria-hidden="true"></div>
+      {content.approach.steps.map((step, index) => (
+        <article class={`dev-approach-step dev-approach-step-${index + 1}`}>
+          <span class="dev-step-index">{step.label}</span>
+          <div class="dev-step-node" aria-hidden="true">
+            <span></span>
+          </div>
+          <h3>{step.title}</h3>
+          <p>{step.copy}</p>
+        </article>
+      ))}
+    </div>
+  </section>
+
+  <ServiceContactSection
+    id="contacto"
+    eyebrow={content.cta.eyebrow}
+    title={content.cta.title}
+    copy={content.cta.copy}
+    contactCopy={contactCopy}
+  />
+
+  <ServicePageAnimations />
+</main>
+
+<script>
+  import gsap from 'gsap';
+  import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+  gsap.registerPlugin(ScrollTrigger);
+
+  const getDevNavOffset = () => {
+    const nav = document.querySelector('.site-nav, .site-header, header');
+    return nav instanceof HTMLElement ? Math.round(nav.getBoundingClientRect().height) : 0;
+  };
+
+  const getDevViewportHeight = () => {
+    const stableVh = Number.parseFloat(
+      getComputedStyle(document.documentElement).getPropertyValue('--app-stable-vh'),
+    );
+    return Number.isFinite(stableVh) && stableVh > 0 ? stableVh : window.innerHeight;
+  };
+
+  const setupDevMethodScroll = () => {
+    const root = document.querySelector('.dev-page');
+    if (!root || root.hasAttribute('data-dev-method-ready')) return;
+
+    const method = root.querySelector('.dev-method');
+    const steps = gsap.utils.toArray<HTMLElement>('.dev-method-step', method);
+
+    if (!(method instanceof HTMLElement) || steps.length === 0) return;
+
+    root.setAttribute('data-dev-method-ready', 'true');
+
+    const matchMedia = gsap.matchMedia();
+    const getSequenceEnd = (multiplier: number) =>
+      `+=${Math.round(getDevViewportHeight() * multiplier)}`;
+    const getPinStart = () => `top top+=${getDevNavOffset()}`;
+
+    matchMedia.add('(prefers-reduced-motion: no-preference) and (min-width: 680px)', () => {
+      method.classList.add('is-scroll-sequence');
+      gsap.set(steps, { autoAlpha: 0, y: 56 });
+
+      const timeline = gsap.timeline({
+        defaults: { ease: 'none' },
+        scrollTrigger: {
+          id: 'dev-method-sequence-desktop',
+          trigger: method,
+          start: getPinStart,
+          end: () => getSequenceEnd(steps.length * 0.72),
+          pin: true,
+          pinSpacing: true,
+          scrub: 0.65,
+          anticipatePin: 1,
+          invalidateOnRefresh: true,
+        },
+      });
+
+      steps.forEach((step) => {
+        timeline
+          .to(step, { autoAlpha: 1, y: 0, duration: 1, ease: 'power2.out' })
+          .to({}, { duration: 0.22 });
+      });
+
+      return () => {
+        timeline.kill();
+        method.classList.remove('is-scroll-sequence');
+        gsap.set(steps, { clearProps: 'all' });
+      };
+    });
+
+    matchMedia.add('(prefers-reduced-motion: no-preference) and (max-width: 679px)', () => {
+      method.classList.add('is-scroll-sequence', 'is-mobile-sequence');
+      gsap.set(steps, { autoAlpha: 0, y: 46 });
+
+      const timeline = gsap.timeline({
+        defaults: { ease: 'none' },
+        scrollTrigger: {
+          id: 'dev-method-sequence-mobile',
+          trigger: method,
+          start: getPinStart,
+          end: () => getSequenceEnd(steps.length * 0.86),
+          pin: true,
+          pinSpacing: true,
+          scrub: 0.7,
+          anticipatePin: 1,
+          invalidateOnRefresh: true,
+        },
+      });
+
+      timeline
+        .to(steps[0], { autoAlpha: 1, y: 0, duration: 0.78, ease: 'power2.out' })
+        .to({}, { duration: 0.34 });
+
+      steps.slice(1).forEach((step, index) => {
+        const previousStep = steps[index];
+        const isLastStep = index === steps.length - 2;
+        const label = `dev-step-${index + 2}`;
+
+        timeline
+          .add(label)
+          .to(previousStep, { autoAlpha: 0, y: -22, duration: 0.5, ease: 'power1.in' }, label)
+          .fromTo(
+            step,
+            { autoAlpha: 0, y: 46 },
+            { autoAlpha: 1, y: 0, duration: 0.78, ease: 'power2.out' },
+            label,
+          )
+          .to({}, { duration: isLastStep ? 0.62 : 0.32 });
+      });
+
+      return () => {
+        timeline.kill();
+        method.classList.remove('is-scroll-sequence', 'is-mobile-sequence');
+        gsap.set(steps, { clearProps: 'all' });
+      };
+    });
+
+    window.addEventListener('agsit:viewport-change', () => ScrollTrigger.refresh());
+  };
+
+  const setupDevFlipCards = () => {
+    const cards = document.querySelectorAll<HTMLElement>('.dev-service-card');
+    if (cards.length === 0) return;
+    const isTouch = window.matchMedia('(hover: none)').matches;
+    cards.forEach((card) => {
+      if (isTouch) {
+        card.addEventListener('click', () => card.classList.toggle('is-flipped'));
+      }
+      card.addEventListener('keydown', (e: KeyboardEvent) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          card.classList.toggle('is-flipped');
+        }
+      });
+    });
+  };
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => {
+      setupDevFlipCards();
+      setupDevMethodScroll();
+    }, { once: true });
+  } else {
+    setupDevFlipCards();
+    setupDevMethodScroll();
+  }
+</script>

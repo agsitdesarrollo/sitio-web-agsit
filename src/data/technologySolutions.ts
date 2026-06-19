@@ -151,6 +151,8 @@ export const technologySolutionsByLang: Record<SupportedLang, TechnologySolution
           title: 'Desarrollo de Software',
           copy:
             'Construimos aplicaciones alineadas a la operación real del negocio, con validación funcional antes de escalar.',
+          cta: 'Ver servicios',
+          href: '/soluciones-tecnologicas/desarrollo-de-software/',
         },
         {
           code: 'OPS',
@@ -291,6 +293,8 @@ export const technologySolutionsByLang: Record<SupportedLang, TechnologySolution
           title: 'Software Development',
           copy:
             'We build applications aligned with real business operations, with functional validation before scaling.',
+          cta: 'View services',
+          href: '/en/technology-solutions/software-development/',
         },
         {
           code: 'OPS',
