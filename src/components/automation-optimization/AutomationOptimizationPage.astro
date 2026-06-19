@@ -62,7 +62,7 @@ const { content, contactCopy } = Astro.props;
       <p>{content.services.copy}</p>
     </div>
 
-    <div class="auto-service-grid">
+    <div class="auto-service-grid" data-no-reveal>
       {content.services.items.map((item) => (
         <article class="auto-service-card" tabindex="0" aria-label={item.title}>
           <div class="auto-service-card-inner">
