@@ -15,6 +15,9 @@
 @import "../components/digital-marketing/DigitalMarketing.css";
 @import "../components/automation-optimization/AutomationOptimization.css";
 @import "../components/software-development/SoftwareDevelopment.css";
+@import "../components/infrastructure-cloud/InfrastructureCloud.css";
+@import "../components/data-business-intelligence/DataBusinessIntelligence.css";
+@import "../components/technological-innovation/TechnologicalInnovation.css";
 @import "../components/service-animation/ServicePageAnimations.css";
 @import "../components/video-story/VideoStory.css";
 @import "../components/final-contact/FinalContact.css";

@@ -159,6 +159,8 @@ export const technologySolutionsByLang: Record<SupportedLang, TechnologySolution
           title: 'Infraestructura y nube',
           copy:
             'Diseñamos bases tecnológicas estables para operar, integrar y crecer con continuidad en entornos locales o nube.',
+          cta: 'Ver servicios',
+          href: '/soluciones-tecnologicas/infraestructura-y-nube/',
         },
         {
           code: 'DATA',
@@ -301,6 +303,8 @@ export const technologySolutionsByLang: Record<SupportedLang, TechnologySolution
           title: 'Infrastructure and Cloud',
           copy:
             'We design stable technology foundations to operate, integrate and grow with continuity on-premise or in cloud environments.',
+          cta: 'View services',
+          href: '/en/technology-solutions/infrastructure-and-cloud/',
         },
         {
           code: 'DATA',
