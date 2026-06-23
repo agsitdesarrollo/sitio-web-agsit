@@ -61,7 +61,7 @@ const commonServices = {
     number: '02',
     code: 'BPM',
     label: 'Business Process Management',
-    image: '/assets/BPM.webm',
+    image: '/assets/BPM (1) (1) (1).mp4',
   },
   dm: {
     number: '03',
