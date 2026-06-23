@@ -14,6 +14,7 @@ export function initScrollExperience(): (() => void) | undefined {
   let cleanupBridgeScroll: (() => void) | undefined;
   let cleanupViewportRefresh: (() => void) | undefined;
   let cleanupServicesAnchorNavigation: (() => void) | undefined;
+  let cleanupAboutServiceVideoPlayback: (() => void) | undefined;
 
   const context = gsap.context(() => {
     window.scrollTo(0, 0);
@@ -153,6 +154,28 @@ export function initScrollExperience(): (() => void) | undefined {
     const hydrateVideos = (videos: Iterable<HTMLVideoElement>) => {
       Array.from(videos).forEach(hydrateVideo);
     };
+    const getAboutServiceVideos = () =>
+      Array.from(document.querySelectorAll<HTMLVideoElement>('.js-about-service-visual video'));
+    const pauseAboutServiceVideos = (activeVideos: Iterable<HTMLVideoElement> = []) => {
+      const activeSet = new Set(activeVideos);
+
+      getAboutServiceVideos().forEach((video) => {
+        if (!activeSet.has(video)) {
+          video.pause();
+        }
+      });
+    };
+    let activeAboutServicePanel: HTMLElement | undefined;
+    const activateAboutServiceVideos = (videos: Iterable<HTMLVideoElement>, panel?: HTMLElement) => {
+      const activeVideos = Array.from(videos);
+
+      activeAboutServicePanel = panel;
+      pauseAboutServiceVideos(activeVideos);
+      hydrateVideos(activeVideos);
+    };
+
+    cleanupAboutServiceVideoPlayback = () => pauseAboutServiceVideos();
+
     gsap.set('.js-floating-person', { y: 0, yPercent: -5, scale: 1.08, autoAlpha: 1 });
     gsap.set('.js-services-person', { autoAlpha: 0 });
     gsap.set('.js-video-story-stage', { backgroundColor: '#020712' });
@@ -685,6 +708,24 @@ export function initScrollExperience(): (() => void) | undefined {
     const aboutTrack = document.querySelector<HTMLElement>('.js-about-track');
 
     if (aboutTrack && aboutPanels.length > 1) {
+      const servicePanelIndexes = aboutPanels
+        .map((panel, index) => ({ panel, index }))
+        .filter(({ panel }) => panel.classList.contains('about-panel-services'));
+      const clientsPanelIndex = aboutPanels.findIndex((panel) => panel.classList.contains('about-panel-clients'));
+      const alliancesPanelIndex = aboutPanels.findIndex((panel) => panel.classList.contains('about-panel-alliances'));
+      let aboutVideoSyncRaf = 0;
+
+      function requestAboutServiceVideoSync() {
+        if (aboutVideoSyncRaf) {
+          return;
+        }
+
+        aboutVideoSyncRaf = requestAnimationFrame(() => {
+          aboutVideoSyncRaf = 0;
+          syncAboutServiceVideos();
+        });
+      }
+
       const aboutTimeline = gsap.timeline({
         scrollTrigger: {
           trigger: '.js-about-horizontal',
@@ -693,6 +734,15 @@ export function initScrollExperience(): (() => void) | undefined {
           scrub: true,
           pin: true,
           anticipatePin: 1,
+          onUpdate: () => requestAboutServiceVideoSync(),
+          onLeave: () => {
+            activeAboutServicePanel = undefined;
+            pauseAboutServiceVideos();
+          },
+          onLeaveBack: () => {
+            activeAboutServicePanel = undefined;
+            pauseAboutServiceVideos();
+          },
         },
       });
 
@@ -802,11 +852,10 @@ export function initScrollExperience(): (() => void) | undefined {
         const cards = panel.querySelectorAll<HTMLElement>('.js-about-service-card');
         const visuals = panel.querySelectorAll<HTMLElement>('.js-about-service-visual');
         const videos = panel.querySelectorAll<HTMLElement>('.js-about-service-visual video');
-        const serviceVideos = panel.querySelectorAll<HTMLVideoElement>('.js-about-service-visual video');
         const bodies = panel.querySelectorAll<HTMLElement>('.js-about-service-body');
         const bodyItems = panel.querySelectorAll<HTMLElement>('.js-about-service-body > *');
 
-        aboutTimeline.call(() => hydrateVideos(serviceVideos), [], at);
+        aboutTimeline.call(() => requestAboutServiceVideoSync(), [], at);
 
         aboutTimeline
           .to(
@@ -878,12 +927,39 @@ export function initScrollExperience(): (() => void) | undefined {
         0.34,
       );
       aboutTimeline.to({}, { duration: getAboutIntroHold() });
-      const servicePanelIndexes = aboutPanels
-        .map((panel, index) => ({ panel, index }))
-        .filter(({ panel }) => panel.classList.contains('about-panel-services'));
-      const clientsPanelIndex = aboutPanels.findIndex((panel) => panel.classList.contains('about-panel-clients'));
-      const alliancesPanelIndex = aboutPanels.findIndex((panel) => panel.classList.contains('about-panel-alliances'));
       let nextPanelAt = 0.98;
+
+      function syncAboutServiceVideos() {
+        if (!aboutTimeline.scrollTrigger?.isActive) {
+          activeAboutServicePanel = undefined;
+          pauseAboutServiceVideos();
+          return;
+        }
+
+        const viewportCenterX = window.innerWidth / 2;
+        const activePanel = servicePanelIndexes
+          .map(({ panel }) => {
+            const rect = panel.getBoundingClientRect();
+            const centerDistance = Math.abs(rect.left + rect.width / 2 - viewportCenterX);
+
+            return { panel, rect, centerDistance };
+          })
+          .filter(({ rect }) => rect.left < window.innerWidth && rect.right > 0)
+          .sort((a, b) => a.centerDistance - b.centerDistance)[0]?.panel;
+
+        if (!activePanel) {
+          activeAboutServicePanel = undefined;
+          pauseAboutServiceVideos();
+          return;
+        }
+
+        const activeVideos = Array.from(activePanel.querySelectorAll<HTMLVideoElement>('.js-about-service-visual video'));
+        const needsPlaybackRefresh = activeVideos.some((video) => video.paused);
+
+        if (activePanel !== activeAboutServicePanel || needsPlaybackRefresh) {
+          activateAboutServiceVideos(activeVideos, activePanel);
+        }
+      }
 
       const timelineStops = gsap.utils.toArray<HTMLElement>('.js-about-timeline-stop');
       const timelineLine = document.querySelector<HTMLElement>('.js-about-timeline-line');
@@ -960,6 +1036,14 @@ export function initScrollExperience(): (() => void) | undefined {
       }
 
       moveToPanel(clientsPanelIndex, nextPanelAt);
+      aboutTimeline.call(
+        () => {
+          activeAboutServicePanel = undefined;
+          pauseAboutServiceVideos();
+        },
+        [],
+        nextPanelAt + 0.08,
+      );
       aboutTimeline.call(
         () => document.querySelector('.js-scroll-consult-logo')?.classList.add('is-tooltip-visible'),
         [],
@@ -1163,6 +1247,7 @@ export function initScrollExperience(): (() => void) | undefined {
     cleanupBridgeScroll?.();
     cleanupViewportRefresh?.();
     cleanupServicesAnchorNavigation?.();
+    cleanupAboutServiceVideoPlayback?.();
     context.revert();
   };
 }
