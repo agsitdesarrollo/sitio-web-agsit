@@ -167,6 +167,8 @@ export const technologySolutionsByLang: Record<SupportedLang, TechnologySolution
           title: 'Datos e Inteligencia Empresarial',
           copy:
             'Conectamos datos y sistemas para convertir información dispersa en control, trazabilidad y decisiones oportunas.',
+          cta: 'Ver servicios',
+          href: '/soluciones-tecnologicas/datos-e-inteligencia-empresarial/',
         },
         {
           code: 'INN',
@@ -311,6 +313,8 @@ export const technologySolutionsByLang: Record<SupportedLang, TechnologySolution
           title: 'Data and Business Intelligence',
           copy:
             'We connect data and systems to turn scattered information into control, traceability and timely decisions.',
+          cta: 'View services',
+          href: '/en/technology-solutions/data-and-business-intelligence/',
         },
         {
           code: 'INN',
