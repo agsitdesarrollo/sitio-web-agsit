@@ -1,6 +1,5 @@
 ---
-import ContactDirectCard from '../contact/ContactDirectCard.astro';
-import ContactForm from '../contact/ContactForm.astro';
+import ServiceContactSection from '../contact/ServiceContactSection.astro';
 import type { ContactCopy } from '../../data/contact';
 import type { DigitalMarketingContent } from '../../data/digitalMarketing';
 import FloatingCTA from './FloatingCTA.astro';
@@ -57,19 +56,14 @@ const { content, contactCopy } = Astro.props;
     </div>
   </section>
 
-  <section id="marketing-contact" class="marketing-contact" aria-labelledby="marketing-contact-title">
-    <div class="marketing-contact-heading js-marketing-reveal">
-      <p class="digital-eyebrow">{content.cta.eyebrow}</p>
-      <h2 id="marketing-contact-title">{content.cta.title}</h2>
-      <p>{content.cta.copy}</p>
-    </div>
-    <div class="marketing-contact-grid">
-      <ContactDirectCard copy={contactCopy.direct} />
-      <div class="marketing-contact-form">
-        <ContactForm copy={contactCopy.form} />
-      </div>
-    </div>
-  </section>
+  <ServiceContactSection
+    id="marketing-contact"
+    eyebrow={content.cta.eyebrow}
+    title={content.cta.title}
+    copy={content.cta.copy}
+    contactCopy={contactCopy}
+    headingClass="js-marketing-reveal"
+  />
 </main>
 
 <script>
