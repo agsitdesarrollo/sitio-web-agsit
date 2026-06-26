@@ -1,6 +1,5 @@
 ---
-import ContactDirectCard from '../contact/ContactDirectCard.astro';
-import ContactForm from '../contact/ContactForm.astro';
+import ServiceContactSection from '../contact/ServiceContactSection.astro';
 import ServicePageAnimations from '../service-animation/ServicePageAnimations.astro';
 import type { ContactCopy } from '../../data/contact';
 import type { CrmAdministrationContent } from '../../data/crmAdministration';
@@ -125,19 +124,13 @@ const { content, contactCopy } = Astro.props;
     </ul>
   </section>
 
-  <section class="crm-contact" aria-labelledby="crm-contact-title">
-    <div class="crm-contact-heading">
-      <p class="crm-eyebrow">{content.cta.eyebrow}</p>
-      <h2 id="crm-contact-title">{content.cta.title}</h2>
-      <p>{content.cta.copy}</p>
-    </div>
-    <div class="crm-contact-grid">
-      <ContactDirectCard copy={contactCopy.direct} />
-      <div class="crm-contact-form">
-        <ContactForm copy={contactCopy.form} />
-      </div>
-    </div>
-  </section>
+  <ServiceContactSection
+    id="contacto"
+    eyebrow={content.cta.eyebrow}
+    title={content.cta.title}
+    copy={content.cta.copy}
+    contactCopy={contactCopy}
+  />
 
   <ServicePageAnimations />
 </main>

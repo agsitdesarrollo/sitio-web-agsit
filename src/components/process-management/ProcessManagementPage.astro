@@ -1,6 +1,5 @@
 ---
-import ContactDirectCard from '../contact/ContactDirectCard.astro';
-import ContactForm from '../contact/ContactForm.astro';
+import ServiceContactSection from '../contact/ServiceContactSection.astro';
 import ServicePageAnimations from '../service-animation/ServicePageAnimations.astro';
 import type { ContactCopy } from '../../data/contact';
 import type { ProcessManagementContent } from '../../data/processManagement';
@@ -118,19 +117,13 @@ const { content, contactCopy } = Astro.props;
     </ul>
   </section>
 
-  <section class="process-contact" aria-labelledby="process-contact-title">
-    <div class="process-contact-heading">
-      <p class="process-eyebrow">{content.cta.eyebrow}</p>
-      <h2 id="process-contact-title">{content.cta.title}</h2>
-      <p>{content.cta.copy}</p>
-    </div>
-    <div class="process-contact-grid">
-      <ContactDirectCard copy={contactCopy.direct} />
-      <div class="process-contact-form">
-        <ContactForm copy={contactCopy.form} />
-      </div>
-    </div>
-  </section>
+  <ServiceContactSection
+    id="contacto"
+    eyebrow={content.cta.eyebrow}
+    title={content.cta.title}
+    copy={content.cta.copy}
+    contactCopy={contactCopy}
+  />
 
   <ServicePageAnimations />
 </main>
