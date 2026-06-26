@@ -82,7 +82,7 @@ const commonServices = {
     image: '/assets/servicios.webm',
   },
   spm: {
-    number: '06',
+    number: '05',
     code: 'SPM',
     label: 'Strategic Planning & Management',
     image: '/assets/servicios.webm',
@@ -94,7 +94,7 @@ export const aboutContentByLang: Record<SupportedLang, AboutContent> = {
     sectionLabel: 'Quiénes somos',
     overview: {
       kicker: 'Somos una consultoría integral para empresas.',
-      title: 'Seis áreas clave.',
+      title: 'Cinco áreas clave.',
       titleAccent: 'Una sola visión.',
       copy:
         'AGSIT interviene en las áreas estratégicas y tácticas que toda organización necesita para funcionar correctamente, crecer de forma sostenida y maximizar su rentabilidad.',
@@ -136,14 +136,6 @@ export const aboutContentByLang: Record<SupportedLang, AboutContent> = {
         alt: 'Visual de dirección de proyectos',
       },
       {
-        ...commonServices.qm,
-        title: 'Gestión de Calidad',
-        description:
-          'Sistemas de calidad, mejora continua, auditorías y modelos de madurez para elevar estándares operativos.',
-        tags: ['ISO 9001', 'CMMI', 'Mejora continua', 'Auditorías'],
-        alt: 'Visual de gestión de calidad',
-      },
-      {
         ...commonServices.spm,
         title: 'Planeación Estratégica',
         description:
@@ -161,7 +153,7 @@ export const aboutContentByLang: Record<SupportedLang, AboutContent> = {
       titleLabel: 'Proceso probado. Resultados reales.',
       titleLines: ['Proceso probado.', 'Resultados reales.'],
       copy:
-        'Integramos las seis áreas clave para equilibrar alcance, costo y tiempo con una visión completa de crecimiento empresarial.',
+        'Integramos las cinco áreas clave para equilibrar alcance, costo y tiempo con una visión completa de crecimiento empresarial.',
       metrics: {
         scope: 'Alcance',
         cost: 'Costo',
@@ -174,7 +166,7 @@ export const aboutContentByLang: Record<SupportedLang, AboutContent> = {
     sectionLabel: 'About AGSIT',
     overview: {
       kicker: 'We are an integrated consulting firm for businesses.',
-      title: 'Six key areas.',
+      title: 'Five key areas.',
       titleAccent: 'One clear vision.',
       copy:
         'AGSIT works across the strategic and tactical areas every organization needs to operate correctly, grow sustainably and maximize profitability.',
@@ -216,14 +208,6 @@ export const aboutContentByLang: Record<SupportedLang, AboutContent> = {
         alt: 'Project management visual',
       },
       {
-        ...commonServices.qm,
-        title: 'Quality Management',
-        description:
-          'Quality systems, continuous improvement, audits and maturity models to raise operational standards.',
-        tags: ['ISO 9001', 'CMMI', 'Continuous improvement', 'Audits'],
-        alt: 'Quality management visual',
-      },
-      {
         ...commonServices.spm,
         title: 'Strategic Planning',
         description:
@@ -241,7 +225,7 @@ export const aboutContentByLang: Record<SupportedLang, AboutContent> = {
       titleLabel: 'Proven process. Real results.',
       titleLines: ['Proven process.', 'Real results.'],
       copy:
-        'We integrate the six key areas to balance scope, cost and time with a complete view of business growth.',
+        'We integrate the five key areas to balance scope, cost and time with a complete view of business growth.',
       metrics: {
         scope: 'Scope',
         cost: 'Cost',

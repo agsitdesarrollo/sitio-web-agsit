@@ -1,6 +1,5 @@
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { initAllianceLogoZoom } from '../../animations/allianceLogoZoom';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -39,11 +38,7 @@ export function initScrollExperience(): (() => void) | undefined {
     const getVideoStoryInset = () => (isMobile ? 22 : isTablet ? 24 : isCompact ? 28 : 34);
     const getHeroScrollEnd = () => (isMobile ? 105 : isCompact ? 105 : 220);
     const getMobileServicesScrollEnd = () => (isMobile ? 275 : 560);
-    const getAboutScrollMultiplier = () => (isMobile ? 12.2 : isTablet ? 14.3 : 12.9);
     const getVideoStoryScrollEnd = () => (isMobile ? 250 : isCompact ? 780 : 880);
-    const getAboutIntroHold = () => (isMobile ? 0.56 : 0.38);
-    const getAboutServiceHold = () => (isMobile ? 0.58 : 0.42);
-    const getAboutServiceStep = () => (isMobile ? 1.88 : 1.72);
     const getConsultLogoBottomY = () => getViewportHeight() - (isMobile ? 42 : isTablet ? 44 : 40);
     const getConsultLogoTravelScale = () => (isMobile ? 0.58 : isTablet ? 0.66 : 0.30);
     const getConsultLogoStartScale = () => (isMobile ? 0.26 : isTablet ? 0.34 : 0.46);
@@ -151,9 +146,6 @@ export function initScrollExperience(): (() => void) | undefined {
         video.play().catch(() => undefined);
       }
     };
-    const hydrateVideos = (videos: Iterable<HTMLVideoElement>) => {
-      Array.from(videos).forEach(hydrateVideo);
-    };
     const getAboutServiceVideos = () =>
       Array.from(document.querySelectorAll<HTMLVideoElement>('.js-about-service-visual video'));
     const pauseAboutServiceVideos = (activeVideos: Iterable<HTMLVideoElement> = []) => {
@@ -165,15 +157,6 @@ export function initScrollExperience(): (() => void) | undefined {
         }
       });
     };
-    let activeAboutServicePanel: HTMLElement | undefined;
-    const activateAboutServiceVideos = (videos: Iterable<HTMLVideoElement>, panel?: HTMLElement) => {
-      const activeVideos = Array.from(videos);
-
-      activeAboutServicePanel = panel;
-      pauseAboutServiceVideos(activeVideos);
-      hydrateVideos(activeVideos);
-    };
-
     cleanupAboutServiceVideoPlayback = () => pauseAboutServiceVideos();
 
     gsap.set('.js-floating-person', { y: 0, yPercent: -5, scale: 1.08, autoAlpha: 1 });
@@ -190,12 +173,6 @@ export function initScrollExperience(): (() => void) | undefined {
     });
     gsap.set('.js-hero-copy', { autoAlpha: 1, y: 0 });
     gsap.set('.js-title-fill-letter', { clipPath: 'inset(0 100% 0 0)' });
-    gsap.set('.js-about-intro-fade', { autoAlpha: 0, y: 18 });
-    gsap.set('.js-about-service-card', { autoAlpha: 0, y: 24 });
-    gsap.set('.js-about-service-visual', { autoAlpha: 1, clipPath: 'inset(0 0 0% 0)' });
-    gsap.set('.js-about-service-visual video', { scale: 1.06, xPercent: 2, yPercent: 0 });
-    gsap.set('.js-about-service-body', { autoAlpha: 1 });
-    gsap.set('.js-about-service-body > *', { autoAlpha: 0, y: 18 });
     setIfFound('.js-scroll-consult-logo', {
       autoAlpha: 0,
       pointerEvents: 'none',
@@ -223,15 +200,6 @@ export function initScrollExperience(): (() => void) | undefined {
     setIfFound('.js-about-alliance-copy', { autoAlpha: 0, y: 24 });
     setIfFound('.js-about-alliance-metric', { autoAlpha: 0, y: 22, scale: 0.96 });
     setIfFound('.js-about-alliance-cta', { autoAlpha: 0, y: 16, pointerEvents: 'none' });
-    setIfFound('.js-about-timeline', { autoAlpha: 0 });
-    setIfFound('.js-about-fill-word .about-word-fill', { clipPath: 'inset(0 100% 0 0)' });
-    setIfFound('.js-about-emphasis-underline', { '--underline-scale': 0 });
-    setIfFound('.js-about-emphasis-highlight', { '--highlight-scale': 0 });
-    setIfFound('.js-about-emphasis-scale', { scale: 1 });
-    setIfFound('.js-about-emphasis-glow .about-word-fill', {
-      color: '#08152b',
-      textShadow: '0 0 0 rgba(65, 200, 246, 0)',
-    });
 
     let viewportRefreshFrame = 0;
     let viewportRefreshTimeout = 0;
@@ -578,7 +546,7 @@ export function initScrollExperience(): (() => void) | undefined {
     }
 
     const updateConsultLogoBridge = () => {
-      const about = document.querySelector<HTMLElement>('.js-about-horizontal');
+      const about = document.querySelector<HTMLElement>('.js-about-snap');
       const aboutTop = about?.getBoundingClientRect().top ?? getViewportHeight();
       const startY = getViewportHeight() * (isMobile ? 1.18 : isTablet ? 1.06 : 0.72);
       const endY = getNavHeight() + (isMobile ? 44 : isTablet ? 52 : 58);
@@ -655,19 +623,17 @@ export function initScrollExperience(): (() => void) | undefined {
       }
 
       if (aboutTop <= endY) {
-        const trackX = Number(gsap.getProperty('.js-about-track', 'x')) || 0;
-
-        if (Math.abs(trackX) < 1) {
-          gsap.set('.js-scroll-consult-logo', {
-            autoAlpha: 1,
-            pointerEvents: 'auto',
-            left: '50%',
-            top: getConsultLogoBottomY,
-            scale: getConsultLogoTravelScale,
-          });
-          document.querySelector('.js-scroll-consult-logo')?.classList.add('is-tooltip-visible');
+        if (about?.dataset.aboutState === 'active' || about?.dataset.aboutState === 'done') {
+          return;
         }
-
+        gsap.set('.js-scroll-consult-logo', {
+          autoAlpha: 1,
+          pointerEvents: 'auto',
+          left: '50%',
+          top: getConsultLogoBottomY,
+          scale: getConsultLogoTravelScale,
+        });
+        document.querySelector('.js-scroll-consult-logo')?.classList.add('is-tooltip-visible');
         return;
       }
 
@@ -704,469 +670,15 @@ export function initScrollExperience(): (() => void) | undefined {
     };
     updateConsultLogoBridge();
 
-    const aboutPanels = gsap.utils.toArray<HTMLElement>('.js-about-horizontal .about-panel');
-    const aboutTrack = document.querySelector<HTMLElement>('.js-about-track');
+    const navigateToServices = (event: Event) => {
+      event.preventDefault();
+      document.querySelector('#servicios')?.scrollIntoView({ behavior: 'smooth' });
+    };
+    window.addEventListener('agsit:navigate-services', navigateToServices);
+    cleanupServicesAnchorNavigation = () => {
+      window.removeEventListener('agsit:navigate-services', navigateToServices);
+    };
 
-    if (aboutTrack && aboutPanels.length > 1) {
-      const servicePanelIndexes = aboutPanels
-        .map((panel, index) => ({ panel, index }))
-        .filter(({ panel }) => panel.classList.contains('about-panel-services'));
-      const clientsPanelIndex = aboutPanels.findIndex((panel) => panel.classList.contains('about-panel-clients'));
-      const alliancesPanelIndex = aboutPanels.findIndex((panel) => panel.classList.contains('about-panel-alliances'));
-      let aboutVideoSyncRaf = 0;
-
-      function requestAboutServiceVideoSync() {
-        if (aboutVideoSyncRaf) {
-          return;
-        }
-
-        aboutVideoSyncRaf = requestAnimationFrame(() => {
-          aboutVideoSyncRaf = 0;
-          syncAboutServiceVideos();
-        });
-      }
-
-      const aboutTimeline = gsap.timeline({
-        scrollTrigger: {
-          trigger: '.js-about-horizontal',
-          start: getPinnedSectionStart,
-          end: () => `+=${window.innerWidth * getAboutScrollMultiplier()}`,
-          scrub: true,
-          pin: true,
-          anticipatePin: 1,
-          onUpdate: () => requestAboutServiceVideoSync(),
-          onLeave: () => {
-            activeAboutServicePanel = undefined;
-            pauseAboutServiceVideos();
-          },
-          onLeaveBack: () => {
-            activeAboutServicePanel = undefined;
-            pauseAboutServiceVideos();
-          },
-        },
-      });
-
-      const navigateToServices = (event: Event) => {
-        event.preventDefault();
-        aboutTimeline.scrollTrigger?.refresh();
-
-        const trigger = aboutTimeline.scrollTrigger;
-
-        if (!trigger) {
-          return;
-        }
-
-        const revealProgress = gsap.utils.clamp(0, 1, 0.76 / Math.max(aboutTimeline.duration(), 1));
-        const targetY = trigger.start + (trigger.end - trigger.start) * revealProgress;
-
-        window.scrollTo({ top: targetY, left: 0, behavior: 'auto' });
-        requestAnimationFrame(() => ScrollTrigger.update());
-      };
-
-      window.addEventListener('agsit:navigate-services', navigateToServices);
-      cleanupServicesAnchorNavigation = () => {
-        window.removeEventListener('agsit:navigate-services', navigateToServices);
-      };
-
-      const animatePanelEmphasis = (panel: HTMLElement, at: number) => {
-        const underlines = panel.querySelectorAll<HTMLElement>('.js-about-emphasis-underline');
-        const glows = panel.querySelectorAll<HTMLElement>('.js-about-emphasis-glow .about-word-fill');
-        const scales = panel.querySelectorAll<HTMLElement>('.js-about-emphasis-scale');
-        const highlights = panel.querySelectorAll<HTMLElement>('.js-about-emphasis-highlight');
-
-        if (underlines.length) {
-          aboutTimeline.to(
-            underlines,
-            {
-              '--underline-scale': 1,
-              duration: 0.34,
-              ease: 'power2.out',
-              stagger: 0.08,
-            },
-            at,
-          );
-        }
-
-        if (glows.length) {
-          aboutTimeline.to(
-            glows,
-            {
-              color: '#41c8f6',
-              textShadow: '0 0 18px rgba(65, 200, 246, 0.42)',
-              duration: 0.42,
-              ease: 'power2.out',
-            },
-            at + 0.06,
-          );
-        }
-
-        if (scales.length) {
-          aboutTimeline
-            .to(
-              scales,
-              {
-                scale: 1.02,
-                duration: 0.28,
-                ease: 'power2.out',
-              },
-              at + 0.08,
-            )
-            .to(
-              scales,
-              {
-                scale: 1,
-                duration: 0.32,
-                ease: 'power2.inOut',
-              },
-              at + 0.42,
-            );
-        }
-
-        if (highlights.length) {
-          aboutTimeline.to(
-            highlights,
-            {
-              '--highlight-scale': 1,
-              duration: 0.36,
-              ease: 'power2.out',
-              stagger: 0.08,
-            },
-            at + 0.12,
-          );
-        }
-      };
-
-      const moveToPanel = (index: number, at: number) => {
-        aboutTimeline.to(
-          aboutTrack,
-          {
-            x: () => -window.innerWidth * index,
-            duration: 0.5,
-            ease: 'power2.inOut',
-          },
-          at,
-        );
-      };
-
-      const revealServiceCards = (panel: HTMLElement, at: number) => {
-        const cards = panel.querySelectorAll<HTMLElement>('.js-about-service-card');
-        const visuals = panel.querySelectorAll<HTMLElement>('.js-about-service-visual');
-        const videos = panel.querySelectorAll<HTMLElement>('.js-about-service-visual video');
-        const bodies = panel.querySelectorAll<HTMLElement>('.js-about-service-body');
-        const bodyItems = panel.querySelectorAll<HTMLElement>('.js-about-service-body > *');
-
-        aboutTimeline.call(() => requestAboutServiceVideoSync(), [], at);
-
-        aboutTimeline
-          .to(
-            cards,
-            {
-              autoAlpha: 1,
-              y: 0,
-              duration: 0.18,
-              ease: 'power1.out',
-              stagger: 0.08,
-            },
-            at,
-          )
-          .to(
-            visuals,
-            {
-              autoAlpha: 1,
-              clipPath: 'inset(0 0 0% 0)',
-              duration: 0.34,
-              ease: 'power1.out',
-              stagger: 0.12,
-            },
-            at,
-          )
-          .to(
-            videos,
-            {
-              scale: 1,
-              xPercent: 0,
-              yPercent: 0,
-              duration: 1.05,
-              ease: 'power3.out',
-              stagger: 0.12,
-            },
-            at,
-          )
-          .to(
-            bodies,
-            {
-              autoAlpha: 1,
-              duration: 0.52,
-              ease: 'power2.out',
-              stagger: 0.12,
-            },
-            at + 0.18,
-          )
-          .to(
-            bodyItems,
-            {
-              autoAlpha: 1,
-              y: 0,
-              duration: 0.52,
-              ease: 'power3.out',
-              stagger: 0.07,
-            },
-            at + 0.24,
-          );
-      };
-
-      aboutTimeline.to(
-        aboutPanels[0].querySelectorAll<HTMLElement>('.js-about-intro-fade'),
-        {
-          autoAlpha: 1,
-          y: 0,
-          duration: 0.38,
-          ease: 'power2.out',
-          stagger: 0.08,
-        },
-        0.34,
-      );
-      aboutTimeline.to({}, { duration: getAboutIntroHold() });
-      let nextPanelAt = 0.98;
-
-      function syncAboutServiceVideos() {
-        if (!aboutTimeline.scrollTrigger?.isActive) {
-          activeAboutServicePanel = undefined;
-          pauseAboutServiceVideos();
-          return;
-        }
-
-        const viewportCenterX = window.innerWidth / 2;
-        const activePanel = servicePanelIndexes
-          .map(({ panel }) => {
-            const rect = panel.getBoundingClientRect();
-            const centerDistance = Math.abs(rect.left + rect.width / 2 - viewportCenterX);
-
-            return { panel, rect, centerDistance };
-          })
-          .filter(({ rect }) => rect.left < window.innerWidth && rect.right > 0)
-          .sort((a, b) => a.centerDistance - b.centerDistance)[0]?.panel;
-
-        if (!activePanel) {
-          activeAboutServicePanel = undefined;
-          pauseAboutServiceVideos();
-          return;
-        }
-
-        const activeVideos = Array.from(activePanel.querySelectorAll<HTMLVideoElement>('.js-about-service-visual video'));
-        const needsPlaybackRefresh = activeVideos.some((video) => video.paused);
-
-        if (activePanel !== activeAboutServicePanel || needsPlaybackRefresh) {
-          activateAboutServiceVideos(activeVideos, activePanel);
-        }
-      }
-
-      const timelineStops = gsap.utils.toArray<HTMLElement>('.js-about-timeline-stop');
-      const timelineLine = document.querySelector<HTMLElement>('.js-about-timeline-line');
-      const timelineProgress = document.querySelector<HTMLElement>('.js-about-timeline-progress');
-      const tlStart = isMobile ? 16 : isTablet ? 11 : 7.5;
-      const tlStep = isMobile ? 11 : isTablet ? 12 : 13.5;
-      const tlMaxLeft = isMobile ? 74 : isTablet ? 78 : 80;
-
-      if (timelineStops.length > 0) {
-        gsap.set(timelineStops, { autoAlpha: 0 });
-        timelineStops.forEach((stop, i) => {
-          gsap.set(stop, { left: `${Math.min(tlStart + i * tlStep, tlMaxLeft)}%`, xPercent: -50 });
-        });
-        const lastLeft = Math.min(tlStart + (timelineStops.length - 1) * tlStep, tlMaxLeft);
-        if (timelineLine) gsap.set(timelineLine, { left: `${tlStart}%`, right: `${100 - lastLeft}%` });
-        if (timelineProgress) gsap.set(timelineProgress, { left: `${tlStart}%`, right: `${100 - tlStart}%` });
-      }
-
-      servicePanelIndexes.forEach(({ panel, index }, serviceOrder) => {
-        moveToPanel(index, nextPanelAt);
-
-        if (serviceOrder === 0) {
-          aboutTimeline.to('.js-about-timeline', { autoAlpha: 1, duration: 0.2, ease: 'power2.out' }, nextPanelAt + 0.5);
-          if (timelineStops.length > 1) {
-            aboutTimeline.to(timelineStops.slice(1), { autoAlpha: 1, duration: 0.001 }, nextPanelAt + 0.5);
-          }
-        } else {
-          aboutTimeline.to(timelineStops[serviceOrder - 1], { autoAlpha: 1, duration: 0.22, ease: 'power2.out' }, nextPanelAt + 0.08);
-          aboutTimeline.to(timelineStops[serviceOrder], { autoAlpha: 0, duration: 0.001 }, nextPanelAt + 0.5);
-          const currentLeft = Math.min(tlStart + serviceOrder * tlStep, tlMaxLeft);
-          if (timelineProgress) {
-            aboutTimeline.to(timelineProgress, { right: `${100 - currentLeft}%`, duration: 0.58, ease: 'power1.inOut' }, nextPanelAt + 0.04);
-          }
-        }
-
-        aboutTimeline.call(
-          () => document.querySelector('.js-scroll-consult-logo')?.classList.add('is-tooltip-visible'),
-          [],
-          nextPanelAt + 0.02,
-        );
-        aboutTimeline.to(
-          '.js-scroll-consult-logo',
-          {
-            autoAlpha: 1,
-            pointerEvents: 'auto',
-            left: () => {
-              const start = isMobile ? 16 : isTablet ? 11 : 7.5;
-              const step = isMobile ? 11 : isTablet ? 12 : 13.5;
-              const maxLeft = isMobile ? 74 : isTablet ? 78 : 80;
-              return `${Math.min(start + Math.max(serviceOrder, 0) * step, maxLeft)}%`;
-            },
-            top: getConsultLogoBottomY,
-            scale: getConsultLogoTravelScale,
-            duration: 0.58,
-            ease: 'power1.inOut',
-          },
-          nextPanelAt + 0.04,
-        );
-
-        revealServiceCards(panel, nextPanelAt + 0.34);
-        animatePanelEmphasis(panel, nextPanelAt + 1.1);
-
-        if (serviceOrder === servicePanelIndexes.length - 1) {
-          aboutTimeline.to(timelineStops[serviceOrder], { autoAlpha: 1, duration: 0.001 }, nextPanelAt + getAboutServiceStep() - 0.2);
-          aboutTimeline.to('.js-about-timeline', { autoAlpha: 0, duration: 0.18, ease: 'power1.in' }, nextPanelAt + getAboutServiceStep());
-        }
-
-        aboutTimeline.to({}, { duration: getAboutServiceHold() });
-        nextPanelAt += getAboutServiceStep();
-      });
-
-      if (clientsPanelIndex < 0 || alliancesPanelIndex < 0) {
-        return;
-      }
-
-      moveToPanel(clientsPanelIndex, nextPanelAt);
-      aboutTimeline.call(
-        () => {
-          activeAboutServicePanel = undefined;
-          pauseAboutServiceVideos();
-        },
-        [],
-        nextPanelAt + 0.08,
-      );
-      aboutTimeline.call(
-        () => document.querySelector('.js-scroll-consult-logo')?.classList.add('is-tooltip-visible'),
-        [],
-        nextPanelAt + 0.02,
-      );
-      aboutTimeline.to(
-        '.js-scroll-consult-logo',
-        {
-          autoAlpha: 1,
-          pointerEvents: 'auto',
-          left: () => (isMobile ? '72%' : isTablet ? '78%' : '82%'),
-          top: getConsultLogoBottomY,
-          duration: 0.5,
-          ease: 'power1.inOut',
-        },
-        nextPanelAt + 0.04,
-      );
-      aboutTimeline.call(
-        () => {
-          document
-            .querySelector('.js-about-clients-stage')
-            ?.dispatchEvent(new CustomEvent('agsit-clients-drop', { detail: { impulse: 44 } }));
-        },
-        [],
-        nextPanelAt + 0.34,
-      );
-      aboutTimeline.to(
-        aboutPanels[clientsPanelIndex].querySelectorAll<HTMLElement>('.js-about-clients-copy'),
-        {
-          autoAlpha: 1,
-          y: 0,
-          duration: 0.52,
-          ease: 'power2.out',
-        },
-        nextPanelAt + 0.44,
-      );
-      aboutTimeline.to(
-        aboutPanels[clientsPanelIndex].querySelectorAll<HTMLElement>('.js-about-clients-stage'),
-        {
-          autoAlpha: 1,
-          y: 0,
-          scale: 1,
-          duration: 0.62,
-          ease: 'power2.out',
-        },
-        nextPanelAt + 0.54,
-      );
-      aboutTimeline.call(
-        () => {
-          document
-            .querySelector('.js-about-clients-stage')
-            ?.dispatchEvent(new CustomEvent('agsit-clients-drop', { detail: { impulse: -58 } }));
-        },
-        [],
-        nextPanelAt + 1.14,
-      );
-      aboutTimeline.call(
-        () => {
-          document
-            .querySelector('.js-about-clients-stage')
-            ?.dispatchEvent(new CustomEvent('agsit-clients-drop', { detail: { impulse: 52 } }));
-        },
-        [],
-        nextPanelAt + 1.74,
-      );
-      aboutTimeline.call(
-        () => {
-          document
-            .querySelector('.js-about-clients-stage')
-            ?.dispatchEvent(new CustomEvent('agsit-clients-drop', { detail: { impulse: -34 } }));
-        },
-        [],
-        nextPanelAt + 2.3,
-      );
-      aboutTimeline.to({}, { duration: 0.62 });
-
-      nextPanelAt += 2.96;
-      moveToPanel(alliancesPanelIndex, nextPanelAt);
-      const alliancePanel = aboutPanels[alliancesPanelIndex];
-      const allianceCopy = alliancePanel.querySelectorAll<HTMLElement>('.js-about-alliance-copy');
-      const allianceCta = alliancePanel.querySelectorAll<HTMLElement>('.js-about-alliance-cta');
-      const allianceMetrics = Array.from(alliancePanel.querySelectorAll<HTMLElement>('.js-about-alliance-metric'));
-      const floatingLogo = document.querySelector<HTMLElement>('.js-scroll-consult-logo');
-      const transitionLogo = alliancePanel.querySelector<HTMLElement>('.js-about-transition-logo');
-      const transitionVeil = alliancePanel.querySelector<HTMLElement>('.js-about-transition-veil');
-
-      aboutTimeline.to(
-        allianceCopy,
-        {
-          autoAlpha: 1,
-          y: 0,
-          duration: 0.56,
-          ease: 'power3.out',
-        },
-        nextPanelAt + 0.96,
-      );
-      aboutTimeline.to(
-        allianceCta,
-        {
-          autoAlpha: 1,
-          y: 0,
-          pointerEvents: 'auto',
-          duration: 0.42,
-          ease: 'power2.out',
-        },
-        nextPanelAt + 1.34,
-      );
-
-      if (floatingLogo && transitionLogo && transitionVeil) {
-        const zoomDuration = initAllianceLogoZoom({
-          timeline: aboutTimeline,
-          startAt: nextPanelAt + 0.18,
-          panelEl: alliancePanel,
-          floatingLogoEl: floatingLogo,
-          transitionLogoEl: transitionLogo,
-          veilEl: transitionVeil,
-          metricsEls: allianceMetrics,
-          contentEls: [...Array.from(allianceCopy), ...Array.from(allianceCta)],
-        });
-
-        aboutTimeline.to({}, { duration: zoomDuration }, nextPanelAt);
-      }
-    }
 
     const videoStoryTimeline = gsap.timeline({
       scrollTrigger: {

@@ -9,29 +9,41 @@ type Props = {
 };
 
 const { content } = Astro.props;
+
+// side per service index (0-based): even = texto-right/video-left, odd = texto-left/video-right
+const serviceSides = content.services.map((_, i) => (i % 2 === 0 ? 'text-right' : 'text-left'));
 ---
 
-<section id="servicios" class="about-horizontal-section js-about-horizontal" aria-label={content.sectionLabel}>
-  <div class="about-horizontal-track js-about-track">
-    <article class="about-panel about-panel-question about-panel-overview">
+<section
+  id="servicios"
+  class="about-snap-section js-about-snap"
+  aria-label={content.sectionLabel}
+>
+  <div class="about-snap-stage">
+
+    <!-- Slide 0: Intro -->
+    <div class="about-snap-slide about-snap-slide--intro is-active" data-slide="0">
       <div class="about-overview">
-        <p class="about-overview-kicker js-about-intro-fade">{content.overview.kicker}</p>
-        <h2 class="about-overview-title js-about-intro-fade">
+        <p class="about-overview-kicker">{content.overview.kicker}</p>
+        <h2 class="about-overview-title">
           {content.overview.title}
           <span>{content.overview.titleAccent}</span>
         </h2>
-        <p class="about-overview-copy js-about-intro-fade">
-          {content.overview.copy}
-        </p>
-        <p class="about-overview-scroll js-about-intro-fade">{content.overview.scroll}</p>
+        <p class="about-overview-copy">{content.overview.copy}</p>
+        <p class="about-overview-scroll">{content.overview.scroll}</p>
       </div>
-    </article>
+    </div>
 
+    <!-- Slides 1-5: Services -->
     {
-      content.services.map((service) => (
-        <article class="about-panel about-panel-services">
-          <article class="about-service-story js-about-service-card">
-            <div class="about-service-image-frame js-about-service-visual" aria-label={service.alt}>
+      content.services.map((service, i) => (
+        <div class="about-snap-slide about-snap-slide--service" data-slide={i + 1}>
+          <article
+            class="about-service-story js-about-service-card"
+            data-side={serviceSides[i]}
+            aria-label={service.alt}
+          >
+            <div class="about-service-image-frame js-about-service-visual">
               <video
                 data-src={service.image}
                 poster="/assets/fondo-ventana.webp"
@@ -40,14 +52,12 @@ const { content } = Astro.props;
                 loop
                 playsinline
                 preload="none"
-              ></video>
+              />
             </div>
             <div class="about-service-body js-about-service-body">
-              <p class="about-service-number" aria-hidden="true">
-                {service.number}
-              </p>
+              <p class="about-service-number" aria-hidden="true">{service.number}</p>
               <p class="about-service-code">
-                {service.code} - {service.label}
+                {service.code} – {service.label}
               </p>
               <h3>{service.title}</h3>
               <p class="about-service-description">{service.description}</p>
@@ -56,46 +66,62 @@ const { content } = Astro.props;
                   <span>{tag}</span>
                 ))}
               </div>
-              {
-                service.href ? (
-                  <a class="about-service-link" href={service.href}>
-                    {content.serviceLinkLabel} {service.code} →
-                  </a>
-                ) : (
-                  <p class="about-service-link">
-                    {content.serviceLinkLabel} {service.code} →
-                  </p>
-                )
-              }
+              {service.href ? (
+                <a class="about-service-link" href={service.href}>
+                  {content.serviceLinkLabel} {service.code} →
+                </a>
+              ) : (
+                <p class="about-service-link">
+                  {content.serviceLinkLabel} {service.code} →
+                </p>
+              )}
             </div>
           </article>
-        </article>
+        </div>
       ))
     }
 
-    <article class="about-panel about-panel-clients">
+    <!-- Slide 6: Clients -->
+    <div class="about-snap-slide about-snap-slide--clients" data-slide="6">
       <div class="about-clients-copy js-about-clients-copy">
         <h2>{content.clients.title}</h2>
         <p>{content.clients.copy}</p>
       </div>
       <div class="about-clients-stage js-about-clients-stage">
-        <canvas class="about-clients-canvas" aria-hidden="true" data-items={JSON.stringify(clientLogos)} />
+        <canvas
+          class="about-clients-canvas"
+          aria-hidden="true"
+          data-items={JSON.stringify(clientLogos)}
+        />
       </div>
-    </article>
+    </div>
 
-    <article class="about-panel about-panel-alliances">
+    <!-- Slide 7: Alliance -->
+    <div class="about-snap-slide about-snap-slide--alliance" data-slide="7">
       <div class="about-transition-veil js-about-transition-veil" aria-hidden="true"></div>
       <div class="about-alliance-layout">
         <div class="about-alliance-copy js-about-alliance-copy">
-          <h2 class="about-alliance-title" aria-label={content.alliance.titleLabel}>
+          <h2
+            class="about-alliance-title"
+            aria-label={content.alliance.titleLabel}
+          >
             {content.alliance.titleLines.map((line) => (
               <span class="about-alliance-title-line">{line}</span>
             ))}
           </h2>
           <p>{content.alliance.copy}</p>
         </div>
-        <div class="about-transition-logo js-about-transition-logo" aria-hidden="true">
-          <Image class="about-transition-logo-image" src={logoImage} alt="" loading="lazy" draggable="false" />
+        <div
+          class="about-transition-logo js-about-transition-logo"
+          aria-hidden="true"
+        >
+          <Image
+            class="about-transition-logo-image"
+            src={logoImage}
+            alt=""
+            loading="lazy"
+            draggable="false"
+          />
         </div>
         <div class="about-alliance-triangle-wrap" aria-hidden="true">
           <span class="about-alliance-metric about-alliance-metric-scope js-about-alliance-metric">
@@ -111,37 +137,450 @@ const { content } = Astro.props;
             </span>
           </div>
         </div>
-        <button class="about-alliance-cta js-about-alliance-cta" type="button" data-contact-trigger>
+        <button
+          class="about-alliance-cta js-about-alliance-cta"
+          type="button"
+          data-contact-trigger
+        >
           {content.alliance.cta}
         </button>
       </div>
-    </article>
-  </div>
-  <div class="about-timeline-nav js-about-timeline" aria-hidden="true">
-    <div class="about-timeline-line js-about-timeline-line"></div>
-    <div class="about-timeline-progress js-about-timeline-progress"></div>
-    {content.services.map((_, i) => (
-      <div class="about-timeline-stop js-about-timeline-stop">
-        <span class="about-timeline-number">{i + 1}</span>
-      </div>
-    ))}
+    </div>
+
+  </div><!-- /about-snap-stage -->
+
+  <!-- Bottom bar: always visible -->
+  <div class="about-snap-bar js-about-snap-bar" aria-hidden="true">
+    <div class="about-snap-bar-dots-wrap">
+      <div class="about-snap-bar-line"></div>
+      <div class="about-snap-bar-progress js-bar-progress"></div>
+      {
+        content.services.map((_, i) => (
+          <div class="about-snap-dot js-about-snap-dot" data-dot={i}>
+            <span class="about-snap-dot-number">{i + 1}</span>
+          </div>
+        ))
+      }
+    </div>
+    <button class="about-snap-bar-cta" type="button" data-contact-trigger>
+      {content.alliance.cta}
+    </button>
   </div>
 </section>
 
 <script>
+  import gsap from 'gsap';
+  import { initAllianceLogoZoom } from '../../animations/allianceLogoZoom';
   import { initClientsPhysicsCanvas } from './clientsPhysicsCanvas';
   import type { ClientLogo } from '../../data/about';
 
-  const initWhenIdle = () => {
+  // ── Physics canvas ────────────────────────────────────────────────────────
+  const initClientsIdle = () => {
     const canvas = document.querySelector<HTMLCanvasElement>('.about-clients-canvas');
     if (!canvas) return;
     const items = JSON.parse(canvas.dataset.items ?? '[]') as ClientLogo[];
     initClientsPhysicsCanvas(canvas, items);
   };
-
   if ('requestIdleCallback' in window) {
-    requestIdleCallback(initWhenIdle, { timeout: 2000 });
+    requestIdleCallback(initClientsIdle, { timeout: 2000 });
   } else {
-    setTimeout(initWhenIdle, 200);
+    setTimeout(initClientsIdle, 200);
   }
+
+  // ── Constants ─────────────────────────────────────────────────────────────
+  const TOTAL_SLIDES = 8;
+  const ANIM_MS = 900;
+  const WHEEL_THRESHOLD = 12;
+  const TOUCH_THRESHOLD = 48;
+
+  // Forward direction for each transition i → i+1
+  //   right: current exits left,  next enters from right
+  //   down:  current exits up,    next enters from below
+  //   left:  current exits right, next enters from left
+  const FORWARD_DIR = ['right', 'down', 'right', 'down', 'left', 'right', 'right'] as const;
+
+  // % left for each service dot inside the dots-wrap
+  const DOT_LEFTS = [7.5, 21, 34.5, 48, 61.5];
+  // % left for clients/alliance logo position (relative to viewport)
+  const CLIENTS_LOGO_PCT_MOBILE = 72;
+  const CLIENTS_LOGO_PCT_TABLET = 78;
+  const CLIENTS_LOGO_PCT_DESKTOP = 82;
+
+  // ── DOM ───────────────────────────────────────────────────────────────────
+  const section = document.querySelector<HTMLElement>('.js-about-snap');
+  if (!section) throw new Error('AboutSnap: section not found');
+
+  const slides = Array.from(section.querySelectorAll<HTMLElement>('.about-snap-slide'));
+  const dots   = Array.from(section.querySelectorAll<HTMLElement>('.js-about-snap-dot'));
+  const bar    = section.querySelector<HTMLElement>('.js-about-snap-bar');
+  const progressEl = section.querySelector<HTMLElement>('.js-bar-progress');
+
+  if (slides.length !== TOTAL_SLIDES) {
+    throw new Error(`AboutSnap: expected ${TOTAL_SLIDES} slides, got ${slides.length}`);
+  }
+
+  // ── State ─────────────────────────────────────────────────────────────────
+  let current = 0;
+  let isAnimating = false;
+  let isActive = false;
+  let allianceDone = false;
+  let alliancePlayed = false;
+  let clientsDropped = false;
+  let touchStartY = 0;
+
+  // ── Breakpoints ───────────────────────────────────────────────────────────
+  const isMobile = () => window.matchMedia('(max-width: 767px)').matches;
+  const isTablet = () => window.matchMedia('(min-width: 768px) and (max-width: 1024px)').matches;
+  const getNavH  = () => document.querySelector<HTMLElement>('.site-nav')?.getBoundingClientRect().height ?? 0;
+
+  // ── Logo helpers ──────────────────────────────────────────────────────────
+  const getLogoScale = () => (isMobile() ? 0.58 : isTablet() ? 0.66 : 0.30);
+
+  const positionLogo = (slideIdx: number, animate: boolean) => {
+    const logo = document.querySelector<HTMLElement>('.js-scroll-consult-logo');
+    if (!logo) return;
+
+    if (!bar) return;
+    const barRect = bar.getBoundingClientRect();
+    const centerY = barRect.top + barRect.height / 2;
+    let centerX: number;
+
+    if (slideIdx === 0) {
+      centerX = window.innerWidth / 2;
+    } else if (slideIdx >= 1 && slideIdx <= 5) {
+      const dotsWrap = section.querySelector<HTMLElement>('.about-snap-bar-dots-wrap');
+      const wrapRect  = dotsWrap?.getBoundingClientRect();
+      if (wrapRect) {
+        centerX = wrapRect.left + wrapRect.width * DOT_LEFTS[slideIdx - 1] / 100;
+      } else {
+        centerX = window.innerWidth * DOT_LEFTS[slideIdx - 1] / 100;
+      }
+    } else {
+      // Clients + Alliance: far-right logo zone
+      const pct = isMobile()
+        ? CLIENTS_LOGO_PCT_MOBILE
+        : isTablet()
+          ? CLIENTS_LOGO_PCT_TABLET
+          : CLIENTS_LOGO_PCT_DESKTOP;
+      centerX = window.innerWidth * pct / 100;
+    }
+
+    if (animate) {
+      gsap.to(logo, { left: centerX, top: centerY, duration: 0.58, ease: 'power1.inOut' });
+    } else {
+      gsap.set(logo, {
+        left: centerX,
+        top: centerY,
+        scale: getLogoScale(),
+        autoAlpha: 1,
+        pointerEvents: 'auto',
+      });
+      logo.classList.add('is-tooltip-visible');
+    }
+  };
+
+  const updateDots = (slideIdx: number) => {
+    dots.forEach((dot, i) => {
+      const serviceIdx = i + 1; // service slides are 1-5
+      dot.classList.toggle('is-active', slideIdx === serviceIdx);
+      dot.classList.toggle('is-passed', slideIdx > serviceIdx || slideIdx >= 6);
+    });
+
+    if (progressEl) {
+      let rightPct = 100 - DOT_LEFTS[0]; // 92.5 — zero progress
+      if (slideIdx >= 2 && slideIdx <= 5) {
+        rightPct = 100 - DOT_LEFTS[slideIdx - 1];
+      } else if (slideIdx >= 6) {
+        rightPct = 100 - DOT_LEFTS[4];
+      }
+      progressEl.style.right = `${rightPct}%`;
+    }
+  };
+
+  // ── Video hydration ───────────────────────────────────────────────────────
+  const hydrateSlide = (slide: HTMLElement) => {
+    slide.querySelectorAll<HTMLVideoElement>('video[data-src]').forEach((v) => {
+      if (v.dataset.src && !v.currentSrc) {
+        v.src = v.dataset.src;
+        v.load();
+      }
+      v.play().catch(() => {});
+    });
+  };
+
+  const pauseSlide = (slide: HTMLElement) => {
+    slide.querySelectorAll<HTMLVideoElement>('video').forEach((v) => v.pause());
+  };
+
+  // ── Clients physics drops ─────────────────────────────────────────────────
+  const dispatchClientsDrops = () => {
+    if (clientsDropped) return;
+    clientsDropped = true;
+    const stage = section.querySelector<HTMLElement>('.js-about-clients-stage');
+    const fire = (impulse: number, delay: number) =>
+      setTimeout(
+        () => stage?.dispatchEvent(new CustomEvent('agsit-clients-drop', { detail: { impulse } })),
+        delay,
+      );
+    fire(44, 120);
+    fire(-58, 1500);
+    fire(52, 2200);
+    fire(-34, 2900);
+  };
+
+  // ── Alliance animation ────────────────────────────────────────────────────
+  const playAllianceZoom = () => {
+    if (alliancePlayed) return;
+    alliancePlayed = true;
+
+    const allianceSlide   = slides[7];
+    const floatingLogo    = document.querySelector<HTMLElement>('.js-scroll-consult-logo');
+    const transitionLogo  = allianceSlide.querySelector<HTMLElement>('.js-about-transition-logo');
+    const transitionVeil  = allianceSlide.querySelector<HTMLElement>('.js-about-transition-veil');
+    const metricsEls      = Array.from(allianceSlide.querySelectorAll<HTMLElement>('.js-about-alliance-metric'));
+    const allianceCopy    = Array.from(allianceSlide.querySelectorAll<HTMLElement>('.js-about-alliance-copy'));
+    const allianceCta     = Array.from(allianceSlide.querySelectorAll<HTMLElement>('.js-about-alliance-cta'));
+
+    if (!floatingLogo || !transitionLogo || !transitionVeil) return;
+
+    const tl = gsap.timeline({
+      onComplete: () => {
+        allianceDone = true;
+        // Auto-deactivate so the very next scroll naturally moves to VideoStory
+        deactivate('forward');
+      },
+    });
+
+    initAllianceLogoZoom({
+      timeline: tl,
+      startAt: 0,
+      panelEl: allianceSlide,
+      floatingLogoEl: floatingLogo,
+      transitionLogoEl: transitionLogo,
+      veilEl: transitionVeil,
+      metricsEls,
+      contentEls: [...allianceCopy, ...allianceCta],
+    });
+  };
+
+  // ── On slide arrival ──────────────────────────────────────────────────────
+  const onSlideArrival = (slideIdx: number, animate: boolean) => {
+    updateDots(slideIdx);
+    positionLogo(slideIdx, animate);
+
+    if (slideIdx === 6) {
+      // Reveal clients content (initially hidden by scroll controller)
+      gsap.to(section.querySelectorAll('.js-about-clients-copy'), {
+        autoAlpha: 1, y: 0, duration: 0.52, ease: 'power2.out',
+      });
+      gsap.to(section.querySelectorAll('.js-about-clients-stage'), {
+        autoAlpha: 1, y: 0, scale: 1, duration: 0.62, ease: 'power2.out', delay: 0.1,
+      });
+      clientsDropped = false; // allow re-drop on re-entry
+      dispatchClientsDrops();
+    }
+
+    if (slideIdx === 7) {
+      const allianceSlide = slides[7];
+      if (alliancePlayed) {
+        // Re-entry: reset state so zoom can replay cleanly
+        gsap.set(allianceSlide.querySelector('.js-about-transition-veil'),  { autoAlpha: 0 });
+        gsap.set(allianceSlide.querySelector('.js-about-transition-logo'),  {
+          autoAlpha: 0, scale: 0.68, x: 0, y: 0, xPercent: -50, yPercent: -50, rotate: 0,
+        });
+        gsap.set(allianceSlide.querySelectorAll('.js-about-alliance-copy'),   { autoAlpha: 0, y: 24 });
+        gsap.set(allianceSlide.querySelectorAll('.js-about-alliance-metric'), { autoAlpha: 0, y: 22, scale: 0.96 });
+        gsap.set(allianceSlide.querySelectorAll('.js-about-alliance-cta'),    { autoAlpha: 0, y: 16, pointerEvents: 'none' });
+        alliancePlayed = false;
+        allianceDone   = false;
+      }
+      // 1. Reveal alliance content — zoom will then use it as "before" state and hide it
+      gsap.to(allianceSlide.querySelectorAll('.js-about-alliance-copy'), {
+        autoAlpha: 1, y: 0, duration: 0.7, ease: 'power2.out', delay: 0.15,
+      });
+      gsap.to(allianceSlide.querySelectorAll('.js-about-alliance-metric'), {
+        autoAlpha: 1, y: 0, scale: 1, duration: 0.5, ease: 'power3.out', stagger: 0.08, delay: 0.4,
+      });
+      gsap.to(allianceSlide.querySelectorAll('.js-about-alliance-cta'), {
+        autoAlpha: 1, y: 0, pointerEvents: 'auto', duration: 0.5, ease: 'power2.out', delay: 0.6,
+      });
+      // 2. Play zoom after content has been visible — zoom handles the exit transition to VideoStory
+      setTimeout(playAllianceZoom, 1500);
+    }
+
+    // Hydrate incoming video
+    hydrateSlide(slides[slideIdx]);
+  };
+
+  // ── Navigation ────────────────────────────────────────────────────────────
+  const navigate = (delta: number) => {
+    if (isAnimating) return;
+
+    const target = current + (delta > 0 ? 1 : -1);
+
+    // Exit backward from intro
+    if (target < 0) {
+      deactivate('backward');
+      return;
+    }
+
+    // Lock navigation while Alliance zoom is playing (can't navigate while veil transition runs)
+    if (current === 7 && alliancePlayed && !allianceDone) return;
+
+    // Exit forward from Alliance (only after zoom is done — but zoom auto-deactivates)
+    if (target >= TOTAL_SLIDES) {
+      if (allianceDone) deactivate('forward');
+      return;
+    }
+
+    const isForward     = delta > 0;
+    const dirIdx        = isForward ? current : target;
+    const dir           = FORWARD_DIR[dirIdx];
+
+    let exitX = '0%', exitY = '0%';
+    let enterX = '0%', enterY = '0%';
+
+    if (dir === 'right') {
+      exitX  = isForward ? '-100%' : '100%';
+      enterX = isForward ? '100%'  : '-100%';
+    } else if (dir === 'left') {
+      exitX  = isForward ? '100%'  : '-100%';
+      enterX = isForward ? '-100%' : '100%';
+    } else {
+      // 'down'
+      exitY  = isForward ? '-100%' : '100%';
+      enterY = isForward ? '100%'  : '-100%';
+    }
+
+    const currentEl = slides[current];
+    const targetEl  = slides[target];
+
+    // Position incoming slide instantly (no transition)
+    targetEl.style.transition = 'none';
+    targetEl.style.transform  = `translate(${enterX}, ${enterY})`;
+    targetEl.style.visibility = 'visible';
+
+    // Force reflow so the instant positioning takes effect
+    targetEl.getBoundingClientRect();
+
+    const tx = 'transform 900ms cubic-bezier(0.76, 0, 0.24, 1)';
+    currentEl.style.transition = tx;
+    targetEl.style.transition  = tx;
+
+    currentEl.style.transform = `translate(${exitX}, ${exitY})`;
+    targetEl.style.transform  = 'translate(0%, 0%)';
+
+    isAnimating = true;
+
+    setTimeout(() => {
+      currentEl.style.visibility = 'hidden';
+      pauseSlide(currentEl);
+      const prev = current;
+      current = target;
+      isAnimating = false;
+
+      onSlideArrival(current, true);
+
+      // Mark active on DOM for CSS hooks
+      slides[prev].classList.remove('is-active');
+      slides[current].classList.add('is-active');
+    }, ANIM_MS);
+  };
+
+  // ── Activation / deactivation ─────────────────────────────────────────────
+  const activate = () => {
+    if (isActive) return;
+    isActive = true;
+    section.dataset.aboutState = 'active';
+
+    // Scroll the page so the section sits exactly at nav bottom
+    const navH = getNavH();
+    const rect = section.getBoundingClientRect();
+    if (Math.abs(rect.top - navH) > 2) {
+      window.scrollTo({ top: window.scrollY + rect.top - navH });
+    }
+
+    onSlideArrival(current, false);
+  };
+
+  const deactivate = (reason: 'backward' | 'forward') => {
+    if (!isActive) return;
+    isActive = false;
+
+    if (reason === 'forward') {
+      section.dataset.aboutState = 'done';
+      gsap.set('.js-scroll-consult-logo', { autoAlpha: 0, pointerEvents: 'none' });
+    } else {
+      // Reset so bridge takes over when scrolling back up
+      delete section.dataset.aboutState;
+      // Reset slide state to 0 for next entry
+      if (current !== 0) {
+        slides[current].style.visibility = 'hidden';
+        slides[current].style.transform  = 'translate(0%, 0%)';
+        slides[current].classList.remove('is-active');
+        slides[0].style.visibility = 'visible';
+        slides[0].style.transform  = 'translate(0%, 0%)';
+        slides[0].classList.add('is-active');
+        current = 0;
+        allianceDone   = false;
+        alliancePlayed = false;
+        clientsDropped = false;
+        updateDots(0);
+      }
+    }
+  };
+
+  // ── Scroll-based activation check ────────────────────────────────────────
+  const checkActivation = () => {
+    if (isActive || isAnimating) return;
+    const navH = getNavH();
+    const rect = section.getBoundingClientRect();
+    if (Math.abs(rect.top - navH) <= 2) activate();
+  };
+
+  window.addEventListener('scroll', checkActivation, { passive: true });
+
+  // ── Wheel handler ─────────────────────────────────────────────────────────
+  const onWheel = (e: WheelEvent) => {
+    if (!isActive) return;
+    e.preventDefault();
+    if (Math.abs(e.deltaY) < WHEEL_THRESHOLD) return;
+    navigate(Math.sign(e.deltaY));
+  };
+
+  // ── Touch handlers ────────────────────────────────────────────────────────
+  const onTouchStart = (e: TouchEvent) => {
+    if (!isActive) return;
+    touchStartY = e.touches[0].clientY;
+  };
+
+  const onTouchMove = (e: TouchEvent) => {
+    if (!isActive) return;
+    e.preventDefault();
+  };
+
+  const onTouchEnd = (e: TouchEvent) => {
+    if (!isActive) return;
+    const dy = touchStartY - e.changedTouches[0].clientY;
+    if (Math.abs(dy) < TOUCH_THRESHOLD) return;
+    navigate(Math.sign(dy));
+  };
+
+  section.addEventListener('wheel',      onWheel,      { passive: false });
+  section.addEventListener('touchstart', onTouchStart, { passive: true });
+  section.addEventListener('touchmove',  onTouchMove,  { passive: false });
+  section.addEventListener('touchend',   onTouchEnd,   { passive: true });
+
+  // ── Initial slide state ───────────────────────────────────────────────────
+  slides.forEach((slide, i) => {
+    slide.style.transition = 'none';
+    slide.style.transform  = 'translate(0%, 0%)';
+    if (i === 0) {
+      slide.style.visibility = 'visible';
+      slide.classList.add('is-active');
+    } else {
+      slide.style.visibility = 'hidden';
+    }
+  });
+  updateDots(0);
 </script>
