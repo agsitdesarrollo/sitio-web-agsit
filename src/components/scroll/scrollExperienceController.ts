@@ -547,6 +547,10 @@ export function initScrollExperience(): (() => void) | undefined {
 
     const updateConsultLogoBridge = () => {
       const about = document.querySelector<HTMLElement>('.js-about-snap');
+      if (about?.dataset.aboutState === 'active') {
+        return;
+      }
+
       const aboutTop = about?.getBoundingClientRect().top ?? getViewportHeight();
       const startY = getViewportHeight() * (isMobile ? 1.18 : isTablet ? 1.06 : 0.72);
       const endY = getNavHeight() + (isMobile ? 44 : isTablet ? 52 : 58);
@@ -657,6 +661,7 @@ export function initScrollExperience(): (() => void) | undefined {
     const consultTooltipEl = document.querySelector<HTMLElement>('.js-scroll-consult-logo .scroll-consult-logo-tooltip');
     const consultLogoEl = document.querySelector<HTMLElement>('.js-scroll-consult-logo');
     const syncTooltipScale = () => {
+      if (document.querySelector<HTMLElement>('.js-about-snap')?.dataset.aboutState === 'active') return;
       if (!consultLogoEl || !consultTooltipEl) return;
       const s = Number(gsap.getProperty(consultLogoEl, 'scaleX')) || 1;
       if (s > 0) gsap.set(consultTooltipEl, { scale: 0.68 / s, transformOrigin: '50% 100%' });

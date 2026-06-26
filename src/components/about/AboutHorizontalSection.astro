@@ -47,11 +47,10 @@ const serviceSides = content.services.map((_, i) => (i % 2 === 0 ? 'text-right' 
               <video
                 data-src={service.image}
                 poster="/assets/fondo-ventana.webp"
-                autoplay
                 muted
                 loop
                 playsinline
-                preload="none"
+                preload="metadata"
               />
             </div>
             <div class="about-service-body js-about-service-body">
@@ -190,27 +189,36 @@ const serviceSides = content.services.map((_, i) => (i % 2 === 0 ? 'text-right' 
   const WHEEL_THRESHOLD = 12;
   const TOUCH_THRESHOLD = 48;
 
-  // Forward direction for each transition i → i+1
-  //   right: current exits left,  next enters from right
-  //   down:  current exits up,    next enters from below
-  //   left:  current exits right, next enters from left
-  const FORWARD_DIR = ['right', 'down', 'right', 'down', 'left', 'right', 'right'] as const;
-
   // % left for each service dot inside the dots-wrap
   const DOT_LEFTS = [7.5, 21, 34.5, 48, 61.5];
   // % left for clients/alliance logo position (relative to viewport)
   const CLIENTS_LOGO_PCT_MOBILE = 72;
   const CLIENTS_LOGO_PCT_TABLET = 78;
   const CLIENTS_LOGO_PCT_DESKTOP = 82;
+  const SLIDE_POSITIONS = [
+    { x: 0, y: 0 },
+    { x: 1, y: 0 },
+    { x: 1, y: 1 },
+    { x: 2, y: 1 },
+    { x: 2, y: 2 },
+    { x: 1, y: 2 },
+    { x: 2, y: 2 },
+    { x: 3, y: 2 },
+  ] as const;
 
   // ── DOM ───────────────────────────────────────────────────────────────────
   const section = document.querySelector<HTMLElement>('.js-about-snap');
   if (!section) throw new Error('AboutSnap: section not found');
 
+  const stage = section.querySelector<HTMLElement>('.about-snap-stage');
   const slides = Array.from(section.querySelectorAll<HTMLElement>('.about-snap-slide'));
   const dots   = Array.from(section.querySelectorAll<HTMLElement>('.js-about-snap-dot'));
   const bar    = section.querySelector<HTMLElement>('.js-about-snap-bar');
   const progressEl = section.querySelector<HTMLElement>('.js-bar-progress');
+
+  if (!stage) {
+    throw new Error('AboutSnap: stage not found');
+  }
 
   if (slides.length !== TOTAL_SLIDES) {
     throw new Error(`AboutSnap: expected ${TOTAL_SLIDES} slides, got ${slides.length}`);
@@ -313,18 +321,34 @@ const serviceSides = content.services.map((_, i) => (i % 2 === 0 ? 'text-right' 
   };
 
   // ── Video hydration ───────────────────────────────────────────────────────
-  const hydrateSlide = (slide: HTMLElement) => {
+  const loadSlideVideos = (slide: HTMLElement, shouldPlay: boolean) => {
     slide.querySelectorAll<HTMLVideoElement>('video[data-src]').forEach((v) => {
       if (v.dataset.src && !v.currentSrc) {
         v.src = v.dataset.src;
         v.load();
       }
-      v.play().catch(() => {});
+      if (shouldPlay) {
+        v.play().catch(() => {});
+      } else {
+        v.pause();
+      }
     });
+  };
+
+  const hydrateSlide = (slide: HTMLElement) => loadSlideVideos(slide, true);
+
+  const preloadSlide = (slide: HTMLElement | undefined) => {
+    if (!slide) return;
+    loadSlideVideos(slide, false);
   };
 
   const pauseSlide = (slide: HTMLElement) => {
     slide.querySelectorAll<HTMLVideoElement>('video').forEach((v) => v.pause());
+  };
+
+  const renderStage = (slideIdx: number) => {
+    const position = SLIDE_POSITIONS[slideIdx];
+    stage.style.transform = `translate3d(${-position.x * 100}%, ${-position.y * 100}%, 0)`;
   };
 
   // ── Clients physics drops ─────────────────────────────────────────────────
@@ -424,8 +448,9 @@ const serviceSides = content.services.map((_, i) => (i % 2 === 0 ? 'text-right' 
       setTimeout(playAllianceZoom, 1500);
     }
 
-    // Hydrate incoming video
+    // Hydrate incoming video and warm the next slide before it enters.
     hydrateSlide(slides[slideIdx]);
+    preloadSlide(slides[slideIdx + 1]);
   };
 
   // ── Navigation ────────────────────────────────────────────────────────────
@@ -449,47 +474,25 @@ const serviceSides = content.services.map((_, i) => (i % 2 === 0 ? 'text-right' 
       return;
     }
 
-    const isForward     = delta > 0;
-    const dirIdx        = isForward ? current : target;
-    const dir           = FORWARD_DIR[dirIdx];
-
-    let exitX = '0%', exitY = '0%';
-    let enterX = '0%', enterY = '0%';
-
-    if (dir === 'right') {
-      exitX  = isForward ? '-100%' : '100%';
-      enterX = isForward ? '100%'  : '-100%';
-    } else if (dir === 'left') {
-      exitX  = isForward ? '100%'  : '-100%';
-      enterX = isForward ? '-100%' : '100%';
-    } else {
-      // 'down'
-      exitY  = isForward ? '-100%' : '100%';
-      enterY = isForward ? '100%'  : '-100%';
-    }
-
     const currentEl = slides[current];
     const targetEl  = slides[target];
 
-    // Position incoming slide instantly (no transition)
-    targetEl.style.transition = 'none';
-    targetEl.style.transform  = `translate(${enterX}, ${enterY})`;
+    hydrateSlide(targetEl);
+    preloadSlide(slides[target + 1]);
+
     targetEl.style.visibility = 'visible';
+    targetEl.style.zIndex = '3';
+    currentEl.style.zIndex = '2';
 
-    // Force reflow so the instant positioning takes effect
-    targetEl.getBoundingClientRect();
-
-    const tx = 'transform 900ms cubic-bezier(0.76, 0, 0.24, 1)';
-    currentEl.style.transition = tx;
-    targetEl.style.transition  = tx;
-
-    currentEl.style.transform = `translate(${exitX}, ${exitY})`;
-    targetEl.style.transform  = 'translate(0%, 0%)';
+    stage.style.transition = 'transform 900ms cubic-bezier(0.76, 0, 0.24, 1)';
+    renderStage(target);
 
     isAnimating = true;
 
     setTimeout(() => {
       currentEl.style.visibility = 'hidden';
+      currentEl.style.zIndex = '1';
+      targetEl.style.zIndex = '2';
       pauseSlide(currentEl);
       const prev = current;
       current = target;
@@ -543,11 +546,13 @@ const serviceSides = content.services.map((_, i) => (i % 2 === 0 ? 'text-right' 
       // Reset slide state to 0 for next entry
       if (current !== 0) {
         slides[current].style.visibility = 'hidden';
-        slides[current].style.transform  = 'translate(0%, 0%)';
+        slides[current].style.zIndex = '1';
         slides[current].classList.remove('is-active');
         slides[0].style.visibility = 'visible';
-        slides[0].style.transform  = 'translate(0%, 0%)';
+        slides[0].style.zIndex = '2';
         slides[0].classList.add('is-active');
+        stage.style.transition = 'none';
+        renderStage(0);
         current = 0;
         allianceDone   = false;
         alliancePlayed = false;
@@ -612,9 +617,11 @@ const serviceSides = content.services.map((_, i) => (i % 2 === 0 ? 'text-right' 
   window.addEventListener('touchend',   onTouchEnd,   { passive: true });
 
   // ── Initial slide state ───────────────────────────────────────────────────
+  stage.style.transition = 'none';
   slides.forEach((slide, i) => {
-    slide.style.transition = 'none';
-    slide.style.transform  = 'translate(0%, 0%)';
+    const position = SLIDE_POSITIONS[i];
+    slide.style.transform = `translate3d(${position.x * 100}%, ${position.y * 100}%, 0)`;
+    slide.style.zIndex = i === 0 ? '2' : '1';
     if (i === 0) {
       slide.style.visibility = 'visible';
       slide.classList.add('is-active');
@@ -622,5 +629,7 @@ const serviceSides = content.services.map((_, i) => (i % 2 === 0 ? 'text-right' 
       slide.style.visibility = 'hidden';
     }
   });
+  renderStage(0);
   updateDots(0);
+  preloadSlide(slides[1]);
 </script>

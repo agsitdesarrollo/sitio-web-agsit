@@ -55,37 +55,37 @@ const commonServices = {
     number: '01',
     code: 'ITS',
     label: 'Information Technologies Solutions',
-    image: '/assets/soluciones-tecnologicas.webm',
+    image: '/assets/soluciones-tecnologicas.mp4',
   },
   bpm: {
     number: '02',
     code: 'BPM',
     label: 'Business Process Management',
-    image: '/assets/BPM (1) (1) (1).mp4',
+    image: '/assets/BPM.mp4',
   },
   dm: {
     number: '03',
     code: 'DM',
     label: 'Digital Marketing',
-    image: '/assets/servicios.webm',
+    image: '/assets/servicios.mp4',
   },
   pm: {
     number: '04',
     code: 'PM',
     label: 'Project Management',
-    image: '/assets/servicios.webm',
+    image: '/assets/servicios.mp4',
   },
   qm: {
     number: '05',
     code: 'QM',
     label: 'Quality Management',
-    image: '/assets/servicios.webm',
+    image: '/assets/servicios.mp4',
   },
   spm: {
     number: '05',
     code: 'SPM',
     label: 'Strategic Planning & Management',
-    image: '/assets/servicios.webm',
+    image: '/assets/servicios.mp4',
   },
 } as const;
 
