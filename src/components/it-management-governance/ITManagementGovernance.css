@@ -149,7 +149,7 @@
   place-items: center;
   gap: 28px;
   isolation: isolate;
-  background: linear-gradient(150deg, #040b17 0%, #0b2145 52%, #030d1d 100%);
+  background: linear-gradient(150deg, #071a33 0%, #12395f 52%, #061425 100%);
   overflow: hidden;
 }
 
@@ -164,16 +164,16 @@
   inset: 0;
   z-index: -1;
   background:
-    radial-gradient(ellipse at 50% 20%, rgba(65, 200, 246, 0.26), transparent 52%),
-    radial-gradient(ellipse at 18% 70%, rgba(40, 124, 161, 0.14), transparent 42%),
-    linear-gradient(180deg, rgba(4, 11, 23, 0.28), rgba(4, 11, 23, 0.88) 72%, #030d1d 100%);
+    radial-gradient(ellipse at 50% 20%, rgba(139, 226, 255, 0.2), transparent 52%),
+    radial-gradient(ellipse at 18% 70%, rgba(40, 124, 161, 0.12), transparent 42%),
+    linear-gradient(180deg, rgba(7, 26, 51, 0.24), rgba(6, 20, 37, 0.86) 72%, #061425 100%);
 }
 
 .itg-hero::after {
   inset: auto 0 0;
   z-index: -1;
   height: 160px;
-  background: linear-gradient(180deg, transparent, #030d1d);
+  background: linear-gradient(180deg, transparent, #061425);
 }
 
 .itg-hero-video {
@@ -252,7 +252,7 @@
 
 .itg-method {
   background:
-    linear-gradient(180deg, #020712 0%, #071227 100%),
+    linear-gradient(180deg, #061425 0%, #0f2d4d 52%, #081c33 100%),
     linear-gradient(90deg, rgba(65, 200, 246, 0.08) 1px, transparent 1px);
 }
 
