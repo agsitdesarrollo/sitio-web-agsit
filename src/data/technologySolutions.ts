@@ -175,6 +175,8 @@ export const technologySolutionsByLang: Record<SupportedLang, TechnologySolution
           title: 'Innovación Tecnológica',
           copy:
             'Aterrizamos tecnologías emergentes en casos de uso viables para modernizar procesos y habilitar nuevos modelos.',
+          cta: 'Ver servicios',
+          href: '/soluciones-tecnologicas/innovacion-tecnologica/',
         },
       ],
     },
@@ -321,6 +323,8 @@ export const technologySolutionsByLang: Record<SupportedLang, TechnologySolution
           title: 'Technology Innovation',
           copy:
             'We bring emerging technologies into viable use cases to modernize processes and enable new operating models.',
+          cta: 'View services',
+          href: '/en/technology-solutions/technological-innovation/',
         },
       ],
     },

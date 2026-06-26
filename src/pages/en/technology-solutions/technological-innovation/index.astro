@@ -1,0 +1,53 @@
+---
+import ContactDrawer from '../../../../components/contact/ContactDrawer.astro';
+import Footer from '../../../../components/footer/Footer.astro';
+import TechnologicalInnovationPage from '../../../../components/technological-innovation/TechnologicalInnovationPage.astro';
+import Header from '../../../../components/navigation/Header.astro';
+import PageShellScripts from '../../../../components/navigation/PageShellScripts.astro';
+import { getContactCopy } from '../../../../data/contact';
+import { getFooterCopy } from '../../../../data/footer';
+import { getTechnologicalInnovationContent } from '../../../../data/technologicalInnovation';
+import { getServicesContent } from '../../../../data/services';
+import SiteLayout from '../../../../layouts/SiteLayout.astro';
+import { useTranslations } from '../../../../i18n/utils';
+
+const lang = 'en';
+const content = getTechnologicalInnovationContent(lang);
+const contactCopy = getContactCopy(lang);
+const footerCopy = getFooterCopy(lang);
+const servicesContent = getServicesContent(lang);
+const t = useTranslations(lang);
+---
+
+<SiteLayout
+  title={content.metadata.title}
+  description={content.metadata.description}
+  canonicalUrl={content.metadata.canonicalUrl}
+  htmlLang={content.metadata.htmlLang}
+  locale={content.metadata.locale}
+  alternates={[
+    { lang: 'es-MX', href: 'https://agsit.com.mx/soluciones-tecnologicas/innovacion-tecnologica/' },
+    { lang: 'en', href: content.metadata.canonicalUrl },
+    { lang: 'x-default', href: 'https://agsit.com.mx/soluciones-tecnologicas/innovacion-tecnologica/' },
+  ]}
+>
+  <div class="app-shell">
+    <Header
+      lang={lang}
+      homeHref="/en/#inicio"
+      servicesHref="/en/#servicios"
+      contactHref="/en/#contacto"
+      alternateHref="/soluciones-tecnologicas/innovacion-tecnologica/"
+    />
+    <TechnologicalInnovationPage content={content} contactCopy={contactCopy} />
+    <Footer
+      copy={footerCopy}
+      services={servicesContent.services}
+      homeHref="/en/#inicio"
+      servicesHref="/en/#servicios"
+      contactHref="/en/#contacto"
+    />
+    <ContactDrawer copy={contactCopy} />
+    <PageShellScripts openMenuLabel={t('nav.openMenu')} closeMenuLabel={t('nav.closeMenu')} />
+  </div>
+</SiteLayout>

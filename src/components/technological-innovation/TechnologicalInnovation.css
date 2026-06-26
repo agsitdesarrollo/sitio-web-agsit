@@ -321,7 +321,7 @@
 .inn-benefit-grid { width: min(1120px, 100%); margin: clamp(30px, 5vw, 58px) auto 0; display: grid; grid-template-columns: 1fr; gap: 14px; }
 
 .inn-benefit-card {
-  min-height: 220px; padding: clamp(20px, 4vw, 28px);
+  min-height: 280px; padding: clamp(20px, 4vw, 28px);
   border: 1px solid rgba(37, 63, 108, 0.13); border-radius: 8px;
   background: rgba(255, 255, 255, 0.9); box-shadow: 0 22px 58px rgba(8, 21, 43, 0.08);
   transition: transform 220ms ease, border-color 220ms ease, box-shadow 220ms ease;
@@ -439,8 +439,10 @@
 
   /* 2 services — full 2 col */
   .inn-service-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  /* 4 benefits — full 4 col */
-  .inn-benefit-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  /* 4 benefits — 6-col grid, cards span 2 (3 per row), 4th card centered */
+  .inn-benefit-grid { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+  .inn-benefit-card { grid-column: span 2; }
+  .inn-benefit-card:nth-child(4) { grid-column: 2 / span 2; }
   .inn-approach-map { grid-template-columns: repeat(4, minmax(0, 1fr)); }
 
   .inn-approach-path {
