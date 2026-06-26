@@ -7,8 +7,19 @@
 .about-snap-section {
   position: relative;
   height: calc(var(--app-stable-vh, 100svh) - var(--nav-h));
+  min-height: calc(100vh - var(--nav-h));
   overflow: hidden;
   background: #ffffff;
+}
+
+.about-snap-section[data-about-state='active'] {
+  position: fixed;
+  top: var(--nav-h);
+  left: 0;
+  right: 0;
+  z-index: 40;
+  height: calc(var(--app-vh, var(--app-stable-vh, 100vh)) - var(--nav-h));
+  min-height: calc(100vh - var(--nav-h));
 }
 
 .about-snap-stage {
@@ -508,6 +519,24 @@ a.about-service-link:focus-visible {
   pointer-events: none;
 }
 
+/* ─── Activation visibility ──────────────────────────────────────────────── */
+
+/* Stage and bar are invisible until the section becomes active.
+   This prevents the intro content leaking into view while the hero/bridge
+   animations are still running above. */
+.about-snap-section:not([data-about-state]) .about-snap-stage,
+.about-snap-section:not([data-about-state]) .about-snap-bar {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Bar is also hidden on the intro slide (slide 0) — it only appears once the
+   user navigates to the first service slide. */
+.about-snap-section[data-current-slide='0'] .about-snap-bar {
+  opacity: 0;
+  pointer-events: none;
+}
+
 /* ─── Bottom bar ─────────────────────────────────────────────────────────── */
 
 .about-snap-bar {
@@ -602,40 +631,11 @@ a.about-service-link:focus-visible {
   color: inherit;
 }
 
-.about-snap-bar-cta {
-  flex-shrink: 0;
-  border: 1px solid rgba(37, 63, 108, 0.2);
-  border-radius: 999px;
-  padding: 9px 16px;
-  background: transparent;
-  color: #253f6c;
-  font-family: 'Inter', 'Segoe UI', Tahoma, sans-serif;
-  font-size: clamp(0.58rem, 0.78vw, 0.72rem);
-  font-weight: 800;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  cursor: pointer;
-  white-space: nowrap;
-  transition:
-    background-color 180ms ease,
-    border-color 180ms ease,
-    color 180ms ease,
-    transform 180ms ease;
-}
-
-.about-snap-bar-cta:hover,
-.about-snap-bar-cta:focus-visible {
-  border-color: #41c8f6;
-  background: #287ca1;
-  color: #ffffff;
-  transform: translateY(-1px);
-}
-
 /* ─── Floating consult logo (shared, managed by bridge + About JS) ────────── */
 
 .scroll-consult-logo {
   position: fixed;
-  z-index: 30;
+  z-index: 80;
   width: clamp(78px, 7.2vw, 122px);
   aspect-ratio: 1.08;
   padding: 0;

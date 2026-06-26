@@ -162,9 +162,6 @@ const serviceSides = content.services.map((_, i) => (i % 2 === 0 ? 'text-right' 
         ))
       }
     </div>
-    <button class="about-snap-bar-cta" type="button" data-contact-trigger>
-      {content.alliance.cta}
-    </button>
   </div>
 </section>
 
@@ -227,6 +224,10 @@ const serviceSides = content.services.map((_, i) => (i % 2 === 0 ? 'text-right' 
   let alliancePlayed = false;
   let clientsDropped = false;
   let touchStartY = 0;
+  let lockedScrollY = 0;
+  let previousHtmlOverflow = '';
+  let previousBodyOverflow = '';
+  let lastAboutTop = Number.POSITIVE_INFINITY;
 
   // ── Breakpoints ───────────────────────────────────────────────────────────
   const isMobile = () => window.matchMedia('(max-width: 767px)').matches;
@@ -242,18 +243,24 @@ const serviceSides = content.services.map((_, i) => (i % 2 === 0 ? 'text-right' 
 
     if (!bar) return;
     const barRect = bar.getBoundingClientRect();
-    const centerY = barRect.top + barRect.height / 2;
+    let centerY = barRect.top + barRect.height / 2;
     let centerX: number;
 
     if (slideIdx === 0) {
-      centerX = window.innerWidth / 2;
+      // Intro: keep logo hidden — bridge manages it until user reaches service slides
+      gsap.set(logo, { autoAlpha: 0, pointerEvents: 'none' });
+      return;
     } else if (slideIdx >= 1 && slideIdx <= 5) {
-      const dotsWrap = section.querySelector<HTMLElement>('.about-snap-bar-dots-wrap');
-      const wrapRect  = dotsWrap?.getBoundingClientRect();
-      if (wrapRect) {
-        centerX = wrapRect.left + wrapRect.width * DOT_LEFTS[slideIdx - 1] / 100;
+      const dotRect = dots[slideIdx - 1]?.getBoundingClientRect();
+      if (dotRect) {
+        centerX = dotRect.left + dotRect.width / 2;
+        centerY = dotRect.top + dotRect.height / 2;
       } else {
-        centerX = window.innerWidth * DOT_LEFTS[slideIdx - 1] / 100;
+        const dotsWrap = section.querySelector<HTMLElement>('.about-snap-bar-dots-wrap');
+        const wrapRect = dotsWrap?.getBoundingClientRect();
+        centerX = wrapRect
+          ? wrapRect.left + wrapRect.width * DOT_LEFTS[slideIdx - 1] / 100
+          : window.innerWidth * DOT_LEFTS[slideIdx - 1] / 100;
       }
     } else {
       // Clients + Alliance: far-right logo zone
@@ -265,17 +272,25 @@ const serviceSides = content.services.map((_, i) => (i % 2 === 0 ? 'text-right' 
       centerX = window.innerWidth * pct / 100;
     }
 
+    const logoVars = {
+      left: centerX,
+      top: centerY,
+      x: 0,
+      y: 0,
+      xPercent: -50,
+      yPercent: -50,
+      scale: getLogoScale(),
+      autoAlpha: 1,
+      pointerEvents: 'auto',
+      overwrite: true,
+    } satisfies gsap.TweenVars;
+
+    logo.classList.add('is-tooltip-visible');
+
     if (animate) {
-      gsap.to(logo, { left: centerX, top: centerY, duration: 0.58, ease: 'power1.inOut' });
+      gsap.to(logo, { ...logoVars, duration: 0.58, ease: 'power1.inOut' });
     } else {
-      gsap.set(logo, {
-        left: centerX,
-        top: centerY,
-        scale: getLogoScale(),
-        autoAlpha: 1,
-        pointerEvents: 'auto',
-      });
-      logo.classList.add('is-tooltip-visible');
+      gsap.set(logo, logoVars);
     }
   };
 
@@ -365,6 +380,7 @@ const serviceSides = content.services.map((_, i) => (i % 2 === 0 ? 'text-right' 
 
   // ── On slide arrival ──────────────────────────────────────────────────────
   const onSlideArrival = (slideIdx: number, animate: boolean) => {
+    section.dataset.currentSlide = String(slideIdx);
     updateDots(slideIdx);
     positionLogo(slideIdx, animate);
 
@@ -492,13 +508,20 @@ const serviceSides = content.services.map((_, i) => (i % 2 === 0 ? 'text-right' 
     if (isActive) return;
     isActive = true;
     section.dataset.aboutState = 'active';
+    previousHtmlOverflow = document.documentElement.style.overflow;
+    previousBodyOverflow = document.body.style.overflow;
 
-    // Scroll the page so the section sits exactly at nav bottom
+    // Snap section to exact viewport position (top = nav bottom)
     const navH = getNavH();
     const rect = section.getBoundingClientRect();
-    if (Math.abs(rect.top - navH) > 2) {
-      window.scrollTo({ top: window.scrollY + rect.top - navH });
+    lockedScrollY = window.scrollY + (rect.top - navH);
+    if (Math.abs(rect.top - navH) > 0.5) {
+      window.scrollTo({ top: lockedScrollY, behavior: 'instant' });
     }
+
+    // Lock page scroll — section controls the experience from here
+    document.documentElement.style.overflow = 'hidden';
+    document.body.style.overflow = 'hidden';
 
     onSlideArrival(current, false);
   };
@@ -506,6 +529,10 @@ const serviceSides = content.services.map((_, i) => (i % 2 === 0 ? 'text-right' 
   const deactivate = (reason: 'backward' | 'forward') => {
     if (!isActive) return;
     isActive = false;
+
+    // Unlock page scroll
+    document.documentElement.style.overflow = previousHtmlOverflow;
+    document.body.style.overflow = previousBodyOverflow;
 
     if (reason === 'forward') {
       section.dataset.aboutState = 'done';
@@ -533,9 +560,21 @@ const serviceSides = content.services.map((_, i) => (i % 2 === 0 ? 'text-right' 
   // ── Scroll-based activation check ────────────────────────────────────────
   const checkActivation = () => {
     if (isActive || isAnimating) return;
+    // 'done' means Alliance zoom finished and the section handed off to VideoStory;
+    // don't re-activate it even if the scroll position is back at navH
+    if (section.dataset.aboutState === 'done') return;
     const navH = getNavH();
     const rect = section.getBoundingClientRect();
-    if (Math.abs(rect.top - navH) <= 2) activate();
+    const crossedNav = lastAboutTop > navH && rect.top <= navH;
+    const isAtPanel = rect.top <= navH && rect.bottom > navH;
+    const skippedPanel = crossedNav && rect.bottom <= navH;
+    lastAboutTop = rect.top;
+
+    // Activate when the section reaches the nav, including fast-scroll cases
+    // that land just beyond the section before this listener runs.
+    if (isAtPanel || skippedPanel) {
+      activate();
+    }
   };
 
   window.addEventListener('scroll', checkActivation, { passive: true });
@@ -566,10 +605,11 @@ const serviceSides = content.services.map((_, i) => (i % 2 === 0 ? 'text-right' 
     navigate(Math.sign(dy));
   };
 
-  section.addEventListener('wheel',      onWheel,      { passive: false });
-  section.addEventListener('touchstart', onTouchStart, { passive: true });
-  section.addEventListener('touchmove',  onTouchMove,  { passive: false });
-  section.addEventListener('touchend',   onTouchEnd,   { passive: true });
+  // Listeners on window so they fire regardless of cursor position within viewport
+  window.addEventListener('wheel',      onWheel,      { passive: false });
+  window.addEventListener('touchstart', onTouchStart, { passive: true });
+  window.addEventListener('touchmove',  onTouchMove,  { passive: false });
+  window.addEventListener('touchend',   onTouchEnd,   { passive: true });
 
   // ── Initial slide state ───────────────────────────────────────────────────
   slides.forEach((slide, i) => {
