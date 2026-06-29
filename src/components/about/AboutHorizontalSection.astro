@@ -1,7 +1,7 @@
 ---
 import { Image } from 'astro:assets';
 import type { AboutContent } from '../../data/about';
-import { clientLogos } from '../../data/about';
+// import { clientLogos } from '../../data/about';
 import logoImage from '../../assets/images/logo-asit.webp';
 
 type Props = {
@@ -80,7 +80,7 @@ const serviceSides = content.services.map((_, i) => (i % 2 === 0 ? 'text-right' 
       ))
     }
 
-    <!-- Slide 6: Clients -->
+    <!-- Slide 6: Clients
     <div class="about-snap-slide about-snap-slide--clients" data-slide="6">
       <div class="about-clients-copy js-about-clients-copy">
         <h2>{content.clients.title}</h2>
@@ -94,9 +94,10 @@ const serviceSides = content.services.map((_, i) => (i % 2 === 0 ? 'text-right' 
         />
       </div>
     </div>
+    -->
 
-    <!-- Slide 7: Alliance -->
-    <div class="about-snap-slide about-snap-slide--alliance" data-slide="7">
+    <!-- Slide 6: Alliance -->
+    <div class="about-snap-slide about-snap-slide--alliance" data-slide="6">
       <div class="about-transition-veil js-about-transition-veil" aria-hidden="true"></div>
       <div class="about-alliance-layout">
         <div class="about-alliance-copy js-about-alliance-copy">
@@ -167,10 +168,11 @@ const serviceSides = content.services.map((_, i) => (i % 2 === 0 ? 'text-right' 
 <script>
   import gsap from 'gsap';
   import { initAllianceLogoZoom } from '../../animations/allianceLogoZoom';
-  import { initClientsPhysicsCanvas } from './clientsPhysicsCanvas';
-  import type { ClientLogo } from '../../data/about';
+  // import { initClientsPhysicsCanvas } from './clientsPhysicsCanvas';
+  // import type { ClientLogo } from '../../data/about';
 
   // ── Physics canvas ────────────────────────────────────────────────────────
+  /*
   const initClientsIdle = () => {
     const canvas = document.querySelector<HTMLCanvasElement>('.about-clients-canvas');
     if (!canvas) return;
@@ -182,9 +184,10 @@ const serviceSides = content.services.map((_, i) => (i % 2 === 0 ? 'text-right' 
   } else {
     setTimeout(initClientsIdle, 200);
   }
+  */
 
   // ── Constants ─────────────────────────────────────────────────────────────
-  const TOTAL_SLIDES = 8;
+  const TOTAL_SLIDES = 7;
   const ANIM_MS = 900;
   const WHEEL_THRESHOLD = 12;
   const TOUCH_THRESHOLD = 48;
@@ -202,7 +205,6 @@ const serviceSides = content.services.map((_, i) => (i % 2 === 0 ? 'text-right' 
     { x: 2, y: 1 },
     { x: 2, y: 2 },
     { x: 1, y: 2 },
-    { x: 2, y: 2 },
     { x: 3, y: 2 },
   ] as const;
 
@@ -230,7 +232,7 @@ const serviceSides = content.services.map((_, i) => (i % 2 === 0 ? 'text-right' 
   let isActive = false;
   let allianceDone = false;
   let alliancePlayed = false;
-  let clientsDropped = false;
+  // let clientsDropped = false;
   let touchStartY = 0;
   let lockedScrollY = 0;
   let previousHtmlOverflow = '';
@@ -352,6 +354,7 @@ const serviceSides = content.services.map((_, i) => (i % 2 === 0 ? 'text-right' 
   };
 
   // ── Clients physics drops ─────────────────────────────────────────────────
+  /*
   const dispatchClientsDrops = () => {
     if (clientsDropped) return;
     clientsDropped = true;
@@ -366,13 +369,14 @@ const serviceSides = content.services.map((_, i) => (i % 2 === 0 ? 'text-right' 
     fire(52, 2200);
     fire(-34, 2900);
   };
+  */
 
   // ── Alliance animation ────────────────────────────────────────────────────
   const playAllianceZoom = () => {
     if (alliancePlayed) return;
     alliancePlayed = true;
 
-    const allianceSlide   = slides[7];
+    const allianceSlide   = slides[6];
     const floatingLogo    = document.querySelector<HTMLElement>('.js-scroll-consult-logo');
     const transitionLogo  = allianceSlide.querySelector<HTMLElement>('.js-about-transition-logo');
     const transitionVeil  = allianceSlide.querySelector<HTMLElement>('.js-about-transition-veil');
@@ -408,6 +412,7 @@ const serviceSides = content.services.map((_, i) => (i % 2 === 0 ? 'text-right' 
     updateDots(slideIdx);
     positionLogo(slideIdx, animate);
 
+    /*
     if (slideIdx === 6) {
       // Reveal clients content (initially hidden by scroll controller)
       gsap.to(section.querySelectorAll('.js-about-clients-copy'), {
@@ -419,9 +424,10 @@ const serviceSides = content.services.map((_, i) => (i % 2 === 0 ? 'text-right' 
       clientsDropped = false; // allow re-drop on re-entry
       dispatchClientsDrops();
     }
+    */
 
-    if (slideIdx === 7) {
-      const allianceSlide = slides[7];
+    if (slideIdx === 6) {
+      const allianceSlide = slides[6];
       if (alliancePlayed) {
         // Re-entry: reset state so zoom can replay cleanly
         gsap.set(allianceSlide.querySelector('.js-about-transition-veil'),  { autoAlpha: 0 });
@@ -466,7 +472,7 @@ const serviceSides = content.services.map((_, i) => (i % 2 === 0 ? 'text-right' 
     }
 
     // Lock navigation while Alliance zoom is playing (can't navigate while veil transition runs)
-    if (current === 7 && alliancePlayed && !allianceDone) return;
+    if (current === 6 && alliancePlayed && !allianceDone) return;
 
     // Exit forward from Alliance (only after zoom is done — but zoom auto-deactivates)
     if (target >= TOTAL_SLIDES) {
@@ -556,7 +562,7 @@ const serviceSides = content.services.map((_, i) => (i % 2 === 0 ? 'text-right' 
         current = 0;
         allianceDone   = false;
         alliancePlayed = false;
-        clientsDropped = false;
+        // clientsDropped = false;
         updateDots(0);
       }
     }
