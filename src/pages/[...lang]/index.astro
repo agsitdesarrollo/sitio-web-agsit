@@ -77,10 +77,12 @@ const alternates = [
     </main>
     <Footer copy={footerCopy} services={servicesContent.services} />
     <ContactDrawer copy={contactCopy} />
+    <!--
     <script>
       import { initScrollExperience } from '../../components/scroll/scrollExperienceController';
       initScrollExperience();
     </script>
+    -->
     <script define:vars={{ closeMenuLabel: t('nav.closeMenu'), openMenuLabel: t('nav.openMenu') }}>
       const nav = document.querySelector('.site-nav nav');
       const toggle = document.querySelector('.menu-toggle');
