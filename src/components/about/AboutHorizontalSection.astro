@@ -238,14 +238,33 @@ const serviceSides = content.services.map((_, i) => (i % 2 === 0 ? 'text-right' 
   let previousHtmlOverflow = '';
   let previousBodyOverflow = '';
   let lastAboutTop = Number.POSITIVE_INFINITY;
+  let lastScrollY = window.scrollY;
+  let suppressAllianceAutoPlay = false;
+  let suppressBackwardActivation = false;
 
   // ── Breakpoints ───────────────────────────────────────────────────────────
   const isMobile = () => window.matchMedia('(max-width: 767px)').matches;
   const isTablet = () => window.matchMedia('(min-width: 768px) and (max-width: 1024px)').matches;
   const getNavH  = () => document.querySelector<HTMLElement>('.site-nav')?.getBoundingClientRect().height ?? 0;
+  const getIntroLogoY = () => window.innerHeight - (isMobile() ? 68 : isTablet() ? 72 : 70);
 
   // ── Logo helpers ──────────────────────────────────────────────────────────
   const getLogoScale = () => (isMobile() ? 0.58 : isTablet() ? 0.66 : 0.30);
+
+  const syncLogoTooltipScale = (logo: HTMLElement) => {
+    const tooltip = logo.querySelector<HTMLElement>('.scroll-consult-logo-tooltip');
+    if (!tooltip) return;
+    const scale = getLogoScale();
+    if (scale > 0) {
+      gsap.set(tooltip, {
+        xPercent: -50,
+        y: 0,
+        scale: 0.68 / scale,
+        autoAlpha: 1,
+        transformOrigin: '50% 100%',
+      });
+    }
+  };
 
   const positionLogo = (slideIdx: number, animate: boolean) => {
     const logo = document.querySelector<HTMLElement>('.js-scroll-consult-logo');
@@ -257,9 +276,9 @@ const serviceSides = content.services.map((_, i) => (i % 2 === 0 ? 'text-right' 
     let centerX: number;
 
     if (slideIdx === 0) {
-      // Intro: keep logo hidden — bridge manages it until user reaches service slides
-      gsap.set(logo, { autoAlpha: 0, pointerEvents: 'none' });
-      return;
+      // Keep the bridge logo alive on the intro so the first service handoff is continuous.
+      centerX = window.innerWidth / 2;
+      centerY = getIntroLogoY();
     } else if (slideIdx >= 1 && slideIdx <= 5) {
       const dotRect = dots[slideIdx - 1]?.getBoundingClientRect();
       if (dotRect) {
@@ -296,6 +315,7 @@ const serviceSides = content.services.map((_, i) => (i % 2 === 0 ? 'text-right' 
     } satisfies gsap.TweenVars;
 
     logo.classList.add('is-tooltip-visible');
+    syncLogoTooltipScale(logo);
 
     if (animate) {
       gsap.to(logo, { ...logoVars, duration: 0.58, ease: 'power1.inOut' });
@@ -353,6 +373,14 @@ const serviceSides = content.services.map((_, i) => (i % 2 === 0 ? 'text-right' 
     stage.style.transform = `translate3d(${-position.x * 100}%, ${-position.y * 100}%, 0)`;
   };
 
+  const showOnlySlide = (slideIdx: number) => {
+    slides.forEach((slide, i) => {
+      slide.style.visibility = i === slideIdx ? 'visible' : 'hidden';
+      slide.style.zIndex = i === slideIdx ? '2' : '1';
+      slide.classList.toggle('is-active', i === slideIdx);
+    });
+  };
+
   // ── Clients physics drops ─────────────────────────────────────────────────
   /*
   const dispatchClientsDrops = () => {
@@ -406,6 +434,30 @@ const serviceSides = content.services.map((_, i) => (i % 2 === 0 ? 'text-right' 
     });
   };
 
+  const prepareAllianceForBackwardReentry = () => {
+    const allianceSlide = slides[6];
+
+    gsap.set(allianceSlide, { backgroundColor: '#ffffff' });
+    gsap.set(allianceSlide.querySelector('.js-about-transition-veil'), { autoAlpha: 0 });
+    gsap.set(allianceSlide.querySelector('.js-about-transition-logo'), {
+      autoAlpha: 0,
+      scale: 0.68,
+      x: 0,
+      y: 0,
+      xPercent: -50,
+      yPercent: -50,
+      rotate: 0,
+      backgroundColor: 'rgba(2, 7, 18, 0)',
+    });
+    gsap.set(allianceSlide.querySelectorAll('.js-about-alliance-copy'), { autoAlpha: 1, y: 0 });
+    gsap.set(allianceSlide.querySelectorAll('.js-about-alliance-metric'), { autoAlpha: 1, y: 0, scale: 1 });
+    gsap.set(allianceSlide.querySelectorAll('.js-about-alliance-cta'), {
+      autoAlpha: 1,
+      y: 0,
+      pointerEvents: 'auto',
+    });
+  };
+
   // ── On slide arrival ──────────────────────────────────────────────────────
   const onSlideArrival = (slideIdx: number, animate: boolean) => {
     section.dataset.currentSlide = String(slideIdx);
@@ -428,6 +480,10 @@ const serviceSides = content.services.map((_, i) => (i % 2 === 0 ? 'text-right' 
 
     if (slideIdx === 6) {
       const allianceSlide = slides[6];
+      if (suppressAllianceAutoPlay) {
+        prepareAllianceForBackwardReentry();
+        suppressAllianceAutoPlay = false;
+      } else {
       if (alliancePlayed) {
         // Re-entry: reset state so zoom can replay cleanly
         gsap.set(allianceSlide.querySelector('.js-about-transition-veil'),  { autoAlpha: 0 });
@@ -452,6 +508,7 @@ const serviceSides = content.services.map((_, i) => (i % 2 === 0 ? 'text-right' 
       });
       // 2. Play zoom after content has been visible — zoom handles the exit transition to VideoStory
       setTimeout(playAllianceZoom, 1500);
+      }
     }
 
     // Hydrate incoming video and warm the next slide before it enters.
@@ -483,6 +540,10 @@ const serviceSides = content.services.map((_, i) => (i % 2 === 0 ? 'text-right' 
     const currentEl = slides[current];
     const targetEl  = slides[target];
 
+    section.dataset.currentSlide = String(target);
+    updateDots(target);
+    positionLogo(target, true);
+
     hydrateSlide(targetEl);
     preloadSlide(slides[target + 1]);
 
@@ -504,7 +565,7 @@ const serviceSides = content.services.map((_, i) => (i % 2 === 0 ? 'text-right' 
       current = target;
       isAnimating = false;
 
-      onSlideArrival(current, true);
+      onSlideArrival(current, false);
 
       // Mark active on DOM for CSS hooks
       slides[prev].classList.remove('is-active');
@@ -513,8 +574,19 @@ const serviceSides = content.services.map((_, i) => (i % 2 === 0 ? 'text-right' 
   };
 
   // ── Activation / deactivation ─────────────────────────────────────────────
-  const activate = () => {
+  const activate = (entry: 'normal' | 'from-below' = 'normal') => {
     if (isActive) return;
+
+    if (entry === 'from-below') {
+      current = TOTAL_SLIDES - 1;
+      allianceDone = true;
+      alliancePlayed = true;
+      suppressAllianceAutoPlay = true;
+      showOnlySlide(current);
+      stage.style.transition = 'none';
+      renderStage(current);
+    }
+
     isActive = true;
     section.dataset.aboutState = 'active';
     previousHtmlOverflow = document.documentElement.style.overflow;
@@ -546,9 +618,14 @@ const serviceSides = content.services.map((_, i) => (i % 2 === 0 ? 'text-right' 
     if (reason === 'forward') {
       section.dataset.aboutState = 'done';
       gsap.set('.js-scroll-consult-logo', { autoAlpha: 0, pointerEvents: 'none' });
+      const navH = getNavH();
+      const sectionTop = lockedScrollY || window.scrollY + section.getBoundingClientRect().top - navH;
+      window.scrollTo({ top: sectionTop + section.offsetHeight + 1, behavior: 'instant' });
     } else {
       // Reset so bridge takes over when scrolling back up
       delete section.dataset.aboutState;
+      const navH = getNavH();
+      const sectionTop = lockedScrollY || window.scrollY + section.getBoundingClientRect().top - navH;
       // Reset slide state to 0 for next entry
       if (current !== 0) {
         slides[current].style.visibility = 'hidden';
@@ -565,17 +642,40 @@ const serviceSides = content.services.map((_, i) => (i % 2 === 0 ? 'text-right' 
         // clientsDropped = false;
         updateDots(0);
       }
+      const releaseY = Math.max(0, sectionTop - navH - 2);
+      suppressBackwardActivation = true;
+      window.scrollTo({ top: releaseY, behavior: 'instant' });
+      lastScrollY = releaseY;
+      lastAboutTop = Number.POSITIVE_INFINITY;
+      window.setTimeout(() => {
+        suppressBackwardActivation = false;
+        lastAboutTop = section.getBoundingClientRect().top;
+        lastScrollY = window.scrollY;
+      }, 180);
     }
   };
 
   // ── Scroll-based activation check ────────────────────────────────────────
   const checkActivation = () => {
     if (isActive || isAnimating) return;
-    // 'done' means Alliance zoom finished and the section handed off to VideoStory;
-    // don't re-activate it even if the scroll position is back at navH
-    if (section.dataset.aboutState === 'done') return;
+    const currentScrollY = window.scrollY;
+    const isScrollingUp = currentScrollY < lastScrollY;
+    lastScrollY = currentScrollY;
     const navH = getNavH();
     const rect = section.getBoundingClientRect();
+
+    if (suppressBackwardActivation) {
+      lastAboutTop = rect.top;
+      return;
+    }
+
+    if (section.dataset.aboutState === 'done') {
+      if (isScrollingUp && rect.top <= navH && rect.bottom > navH) {
+        activate('from-below');
+      }
+      return;
+    }
+
     const crossedNav = lastAboutTop > navH && rect.top <= navH;
     const isAtPanel = rect.top <= navH && rect.bottom > navH;
     const skippedPanel = crossedNav && rect.bottom <= navH;

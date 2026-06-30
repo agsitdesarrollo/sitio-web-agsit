@@ -65,7 +65,7 @@
   width: min(760px, 88vw);
   margin-inline: auto;
   text-align: center;
-  transform: translateY(clamp(-120px, -10vh, -60px));
+  transform: translateY(clamp(-96px, -7vh, -48px));
 }
 
 .about-overview-kicker {
@@ -610,9 +610,9 @@ a.about-service-link:focus-visible {
 .about-snap-dot[data-dot='4'] { left: 61.5%; }
 
 .about-snap-dot.is-active {
-  border-color: #287ca1;
-  background: #287ca1;
-  color: #ffffff;
+  border-color: transparent;
+  background: transparent;
+  color: transparent;
 }
 
 .about-snap-dot.is-passed {
@@ -627,6 +627,10 @@ a.about-service-link:focus-visible {
   line-height: 1;
   pointer-events: none;
   color: inherit;
+}
+
+.about-snap-dot.is-active .about-snap-dot-number {
+  opacity: 0;
 }
 
 /* ─── Floating consult logo (shared, managed by bridge + About JS) ────────── */
