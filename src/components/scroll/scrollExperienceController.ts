@@ -39,7 +39,7 @@ export function initScrollExperience(): (() => void) | undefined {
     const getHeroScrollEnd = () => (isMobile ? 105 : isCompact ? 105 : 220);
     const getMobileServicesScrollEnd = () => (isMobile ? 275 : 560);
     const getVideoStoryScrollEnd = () => (isMobile ? 250 : isCompact ? 780 : 880);
-    const getConsultLogoBottomY = () => getViewportHeight() - (isMobile ? 42 : isTablet ? 44 : 40);
+    const getConsultLogoBottomY = () => getViewportHeight() - (isMobile ? 68 : isTablet ? 72 : 70);
     const getConsultLogoTravelScale = () => (isMobile ? 0.58 : isTablet ? 0.66 : 0.30);
     const getConsultLogoStartScale = () => (isMobile ? 0.26 : isTablet ? 0.34 : 0.46);
     const getElementRect = (selector: string) => document.querySelector<HTMLElement>(selector)?.getBoundingClientRect();

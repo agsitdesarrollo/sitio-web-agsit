@@ -42,6 +42,7 @@
 
 html {
   background: var(--bg-dark);
+  scrollbar-gutter: stable;
 }
 
 html,

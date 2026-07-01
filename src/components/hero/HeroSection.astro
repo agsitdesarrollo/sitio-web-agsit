@@ -39,7 +39,10 @@ const { copy } = Astro.props;
 </div>
 
 <section id="inicio" class="hero-section js-hero">
-  <div class="hero-video-wrap" aria-hidden="true">
+  <div class="hero-media-wrap" aria-hidden="true">
+    <video class="hero-video" autoplay muted loop playsinline preload="metadata" poster="/assets/fondo-ventana.webp">
+      <source src="/assets/edificios-v2.mp4" type="video/mp4" />
+    </video>
     <div class="hero-window-overlay">
       <Image src={windowOverlayImage} alt="" loading="eager" fetchpriority="high" />
     </div>

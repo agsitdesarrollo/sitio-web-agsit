@@ -46,6 +46,14 @@ export function initAllianceLogoZoom({
   );
 
   timeline.set(
+    panelEl,
+    {
+      backgroundColor: '#ffffff',
+    },
+    startAt,
+  );
+
+  timeline.set(
     [transitionLogoEl, veilEl],
     {
       pointerEvents: 'none',
@@ -65,6 +73,16 @@ export function initAllianceLogoZoom({
     },
     startAt,
   );
+
+  if (logoImage) {
+    timeline.set(
+      logoImage,
+      {
+        autoAlpha: 1,
+      },
+      startAt,
+    );
+  }
 
   timeline.to(
     floatingLogoEl,
@@ -168,10 +186,12 @@ export function initAllianceLogoZoom({
     );
   }
 
-  timeline.set(
+  timeline.to(
     panelEl,
     {
       backgroundColor: DARK_BACKGROUND,
+      duration: 0.12,
+      ease: 'none',
     },
     zoomStart + 0.84,
   );
