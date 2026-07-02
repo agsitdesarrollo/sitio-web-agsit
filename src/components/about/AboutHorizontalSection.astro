@@ -776,6 +776,7 @@ const serviceSides = content.services.map((_, i) => (i % 2 === 0 ? 'text-right' 
       const releaseY = Math.max(0, sectionTop + navH - window.innerHeight - 2);
       const releaseDistance = window.innerHeight - navH + 8;
       suppressBackwardActivation = true;
+      section.dataset.aboutRelease = 'backward';
       window.scrollTo({ top: releaseY, behavior: 'auto' });
       lastScrollY = releaseY;
       lastAboutTop = Number.POSITIVE_INFINITY;
@@ -787,6 +788,7 @@ const serviceSides = content.services.map((_, i) => (i % 2 === 0 ? 'text-right' 
         overwrite: true,
         onComplete: () => {
           // Reset so bridge takes over when scrolling back up.
+          delete section.dataset.aboutRelease;
           delete section.dataset.aboutState;
           gsap.set(section, { clearProps: 'transform' });
 
@@ -813,6 +815,7 @@ const serviceSides = content.services.map((_, i) => (i % 2 === 0 ? 'text-right' 
       });
 
       window.setTimeout(() => {
+        delete section.dataset.aboutRelease;
         suppressBackwardActivation = false;
         lastAboutTop = section.getBoundingClientRect().top;
         lastScrollY = window.scrollY;

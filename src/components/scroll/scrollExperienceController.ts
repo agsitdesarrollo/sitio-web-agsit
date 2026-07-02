@@ -547,7 +547,8 @@ export function initScrollExperience(): (() => void) | undefined {
 
     const updateConsultLogoBridge = () => {
       const about = document.querySelector<HTMLElement>('.js-about-snap');
-      if (about?.dataset.aboutState === 'active') {
+      const isAboutReleasingBackward = about?.dataset.aboutRelease === 'backward';
+      if (about?.dataset.aboutState === 'active' && !isAboutReleasingBackward) {
         return;
       }
 
@@ -627,17 +628,22 @@ export function initScrollExperience(): (() => void) | undefined {
       }
 
       if (aboutTop <= endY) {
-        if (about?.dataset.aboutState === 'active' || about?.dataset.aboutState === 'done') {
+        if (
+          !isAboutReleasingBackward &&
+          (about?.dataset.aboutState === 'active' || about?.dataset.aboutState === 'done')
+        ) {
           return;
         }
         gsap.set('.js-scroll-consult-logo', {
           autoAlpha: 1,
-          pointerEvents: 'auto',
+          pointerEvents: isAboutReleasingBackward ? 'none' : 'auto',
           left: '50%',
           top: getConsultLogoBottomY,
           scale: getConsultLogoTravelScale,
         });
-        document.querySelector('.js-scroll-consult-logo')?.classList.add('is-tooltip-visible');
+        document
+          .querySelector('.js-scroll-consult-logo')
+          ?.classList.toggle('is-tooltip-visible', !isAboutReleasingBackward);
         return;
       }
 
@@ -645,14 +651,14 @@ export function initScrollExperience(): (() => void) | undefined {
 
       gsap.set('.js-scroll-consult-logo', {
         autoAlpha: progress,
-        pointerEvents: progress > 0.08 ? 'auto' : 'none',
+        pointerEvents: !isAboutReleasingBackward && progress > 0.08 ? 'auto' : 'none',
         left: '50%',
         top: gsap.utils.interpolate(getConsultLogoBridgeY(), getConsultLogoBottomY(), progress),
         scale: gsap.utils.interpolate(getConsultLogoStartScale(), getConsultLogoTravelScale(), progress),
       });
       document
         .querySelector('.js-scroll-consult-logo')
-        ?.classList.toggle('is-tooltip-visible', progress > 0.08);
+        ?.classList.toggle('is-tooltip-visible', !isAboutReleasingBackward && progress > 0.08);
     };
 
     window.addEventListener('scroll', updateConsultLogoBridge, { passive: true });
