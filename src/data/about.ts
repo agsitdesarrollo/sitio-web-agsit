@@ -239,24 +239,21 @@ export const aboutContentByLang: Record<SupportedLang, AboutContent> = {
 export const aboutServices = aboutContentByLang.es.services;
 
 export const clientLogos: ClientLogo[] = [
-  { label: '01', src: 'https://agsit.com.mx/wp-content/uploads/2023/01/imageedit_6_4472145671.png' },
-  { label: '02', src: 'https://agsit.com.mx/wp-content/uploads/2023/01/imageedit_3_3365397207.png' },
-  { label: '03', src: 'https://agsit.com.mx/wp-content/uploads/2023/01/imageedit_13_6856746062.png' },
-  { label: '04', src: 'https://agsit.com.mx/wp-content/uploads/2023/03/Elektra.png' },
-  { label: '05', src: 'https://agsit.com.mx/wp-content/uploads/2023/05/imageedit_2_7727411694-1024x527.webp' },
-  { label: '06', src: 'https://agsit.com.mx/wp-content/uploads/2023/11/CarolinaHerreraLogo.png' },
-  { label: '07', src: 'https://agsit.com.mx/wp-content/uploads/2020/04/Alebrije-1.jpg' },
-  { label: '08', src: 'https://agsit.com.mx/wp-content/uploads/2020/04/Alsea-1.jpg' },
-  { label: '09', src: 'https://agsit.com.mx/wp-content/uploads/2020/04/Gobierno_CDMX-1.jpg' },
-  { label: '10', src: 'https://agsit.com.mx/wp-content/uploads/2020/04/AutomationSolutionsFactory-1.jpg' },
-  {
-    label: '11',
-    src: 'https://agsit.com.mx/wp-content/uploads/2020/04/Seguridad-en-arrendamiento-y-adquisiciones-1.jpg',
-  },
-  { label: '12', src: 'https://agsit.com.mx/wp-content/uploads/2020/04/SUMA_empresarial-1.jpg' },
-  { label: '13', src: 'https://agsit.com.mx/wp-content/uploads/2020/04/Tubepol-1.jpg' },
-  { label: '14', src: 'https://agsit.com.mx/wp-content/uploads/2021/11/VC-Logo.webp' },
-  { label: '15', src: 'https://agsit.com.mx/wp-content/uploads/2021/11/AGSIT-Aldrete-Asociados-1.webp' },
+  { label: '01', src: '/assets/client-logos/client-01.png' },
+  { label: '02', src: '/assets/client-logos/client-02.png' },
+  { label: '03', src: '/assets/client-logos/client-03.png' },
+  { label: '04', src: '/assets/client-logos/client-04.png' },
+  { label: '05', src: '/assets/client-logos/client-05.webp' },
+  { label: '06', src: '/assets/client-logos/client-06.png' },
+  { label: '07', src: '/assets/client-logos/client-07.jpg' },
+  { label: '08', src: '/assets/client-logos/client-08.jpg' },
+  { label: '09', src: '/assets/client-logos/client-09.jpg' },
+  { label: '10', src: '/assets/client-logos/client-10.jpg' },
+  { label: '11', src: '/assets/client-logos/client-11.jpg' },
+  { label: '12', src: '/assets/client-logos/client-12.jpg' },
+  { label: '13', src: '/assets/client-logos/client-13.jpg' },
+  { label: '14', src: '/assets/client-logos/client-14.webp' },
+  { label: '15', src: '/assets/client-logos/client-15.webp' },
 ];
 
 export function getAboutContent(lang: SupportedLang) {
