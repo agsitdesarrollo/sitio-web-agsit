@@ -225,6 +225,9 @@ const serviceSides = content.services.map((_, i) => (i % 2 === 0 ? 'text-right' 
   let allianceDone = false;
   let alliancePlayed = false;
   let touchStartY = 0;
+  let allianceDragArmed = false;
+  let isDraggingAlliance = false;
+  let allianceDragBaseTime = 0;
   let lockedScrollY = 0;
   let previousHtmlOverflow = '';
   let previousBodyOverflow = '';
@@ -435,6 +438,24 @@ const serviceSides = content.services.map((_, i) => (i % 2 === 0 ? 'text-right' 
     slide.querySelectorAll<HTMLVideoElement>('video').forEach((v) => v.pause());
   };
 
+  // Warm the next section's video (video-story) as soon as the user starts the
+  // alliance zoom, not when they land on it. iOS only allows autoplay to survive
+  // Low Power Mode when play() runs inside a real user-gesture handler, and
+  // starting it this early gives the video the most possible time to buffer
+  // before the zoom's black veil finishes fading in.
+  let videoStoryWarmed = false;
+  const warmVideoStoryVideo = () => {
+    if (videoStoryWarmed) return;
+    videoStoryWarmed = true;
+    const video = document.querySelector<HTMLVideoElement>('.js-video-story-frame video');
+    if (!video) return;
+    if (video.dataset.src && !video.currentSrc) {
+      video.src = video.dataset.src;
+      video.load();
+    }
+    ensureVideoAutoplay(video);
+  };
+
   const renderStage = (slideIdx: number) => {
     const position = SLIDE_POSITIONS[slideIdx];
     stage.style.transform = `translate3d(${-position.x * 100}%, ${-position.y * 100}%, 0)`;
@@ -591,6 +612,7 @@ const serviceSides = content.services.map((_, i) => (i % 2 === 0 ? 'text-right' 
     allianceScrubTl = buildAllianceScrubTimeline();
     if (!allianceScrubTl) return;
 
+    warmVideoStoryVideo();
     isAllianceScrubbing = true;
     current = ALLIANCE_SLIDE;
     allianceDone = false;
@@ -670,33 +692,6 @@ const serviceSides = content.services.map((_, i) => (i % 2 === 0 ? 'text-right' 
         if (targetTime >= duration - 0.01) {
           finishAllianceScrubForward();
         } else if (targetTime <= 0.01) {
-          finishAllianceScrubBackward();
-        }
-      },
-    });
-  };
-
-  // On touch devices the zoom plays end-to-end with a single swipe: per-swipe
-  // scrubbing needed ~29 gestures to traverse the timeline (each touch gesture is
-  // one event, unlike the wheel's stream).
-  const playAllianceZoom = (direction: number) => {
-    if (!isAllianceScrubbing) {
-      ensureAllianceScrub(direction > 0 ? 0 : Number.POSITIVE_INFINITY);
-    }
-    if (!allianceScrubTl) return;
-
-    const target = direction > 0 ? allianceScrubTl.duration() : 0;
-    if (allianceScrubTween?.isActive() && allianceScrubTime === target) return;
-    allianceScrubTime = target;
-
-    allianceScrubTween?.kill();
-    allianceScrubTween = allianceScrubTl.tweenTo(target, {
-      duration: 1.8,
-      ease: 'power2.inOut',
-      onComplete: () => {
-        if (direction > 0) {
-          finishAllianceScrubForward();
-        } else {
           finishAllianceScrubBackward();
         }
       },
@@ -978,34 +973,87 @@ const serviceSides = content.services.map((_, i) => (i % 2 === 0 ? 'text-right' 
   };
 
   // ── Touch handlers ────────────────────────────────────────────────────────
+  // The alliance zoom is dragged in real time: the finger's vertical travel maps
+  // 1:1 to timeline progress (same idea as the desktop wheel scrub, but driven by
+  // touchmove instead of a wheel-event stream). Priming happens on the first move
+  // rather than touchstart so a plain tap on the CTA button never touches the
+  // scrub machinery.
   const onTouchStart = (e: TouchEvent) => {
     if (!isActive) return;
     touchStartY = e.touches[0].clientY;
+    allianceDragArmed = isAllianceScrubbing || (current === ALLIANCE_SLIDE && !allianceDone);
+    isDraggingAlliance = false;
+
+    if (allianceDragArmed) {
+      // touchstart carries the strongest gesture privilege for iOS autoplay —
+      // warm the next section's video here rather than waiting for a move.
+      warmVideoStoryVideo();
+    }
   };
 
   const onTouchMove = (e: TouchEvent) => {
     if (!isActive) return;
     e.preventDefault();
+    if (!allianceDragArmed) return;
+
+    if (!isDraggingAlliance) {
+      if (!isAllianceScrubbing) {
+        ensureAllianceScrub(0);
+      }
+      if (!allianceScrubTl) {
+        allianceDragArmed = false;
+        return;
+      }
+      allianceScrubTween?.kill();
+      allianceScrubTween = undefined;
+      isDraggingAlliance = true;
+      allianceDragBaseTime = allianceScrubTime;
+    }
+
+    if (!allianceScrubTl) return;
+
+    const dy = touchStartY - e.touches[0].clientY;
+    const dragSpan = window.innerHeight * 0.9;
+    const duration = allianceScrubTl.duration();
+    const targetTime = gsap.utils.clamp(0, duration, allianceDragBaseTime + (dy / dragSpan) * duration);
+    allianceScrubTime = targetTime;
+    allianceScrubTl.time(targetTime);
   };
 
   const onTouchEnd = (e: TouchEvent) => {
     if (!isActive) return;
+
+    if (isDraggingAlliance) {
+      isDraggingAlliance = false;
+      allianceDragArmed = false;
+
+      if (allianceScrubTl) {
+        const duration = allianceScrubTl.duration();
+        const snapMargin = duration * 0.03;
+
+        if (allianceScrubTime <= snapMargin) {
+          allianceScrubTween = allianceScrubTl.tweenTo(0, {
+            duration: 0.3,
+            ease: 'power2.out',
+            onComplete: finishAllianceScrubBackward,
+          });
+        } else if (allianceScrubTime >= duration - snapMargin) {
+          allianceScrubTween = allianceScrubTl.tweenTo(duration, {
+            duration: 0.3,
+            ease: 'power2.out',
+            onComplete: finishAllianceScrubForward,
+          });
+        }
+        // Otherwise the zoom stays mid-way, mirroring what happens when the
+        // desktop wheel scrub simply stops mid-scroll.
+      }
+      return;
+    }
+
+    allianceDragArmed = false;
     const dy = touchStartY - e.changedTouches[0].clientY;
     if (Math.abs(dy) < TOUCH_THRESHOLD) return;
-    const direction = Math.sign(dy);
-
-    // Touch: a single swipe plays the alliance zoom end-to-end (and a swipe in
-    // the opposite direction mid-flight reverses it).
-    if (isAllianceScrubbing) {
-      playAllianceZoom(direction);
-      return;
-    }
-    if (current === ALLIANCE_SLIDE && direction > 0 && !allianceDone && !isAnimating) {
-      playAllianceZoom(1);
-      return;
-    }
-
-    navigate(direction);
+    navigate(Math.sign(dy));
   };
 
   // Listeners on window so they fire regardless of cursor position within viewport
