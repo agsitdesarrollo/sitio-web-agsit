@@ -1,7 +1,19 @@
 const DARK_BACKGROUND = '#020712';
 
+// The transition logo's layout box is oversized by this factor and compensated
+// with transform scale. Browsers rasterize <img> content (SVG included) at layout
+// size, so an oversized box keeps the full-screen zoom crisp instead of blowing
+// up a ~120px raster. Keep in sync with --logo-oversample in AboutHorizontal.css.
+export const ALLIANCE_LOGO_OVERSAMPLE = 12;
+
 const getNavHeight = () =>
   parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--nav-h')) || 0;
+
+// On mobile the triangle wrap sits 38px below the slide center (see the mobile
+// block in AboutHorizontal.css); the zoomed logo and the floating-logo handoff
+// must land on the same spot.
+const getMobileCenterOffset = () =>
+  window.matchMedia('(max-width: 767px)').matches ? 38 : 0;
 
 type AllianceLogoZoomConfig = {
   timeline: gsap.core.Timeline;
@@ -15,9 +27,10 @@ type AllianceLogoZoomConfig = {
 };
 
 const getLogoFillScale = (logoEl: HTMLElement) => {
-  const bounds = logoEl.getBoundingClientRect();
-  const width = Math.max(bounds.width, 1);
-  const height = Math.max(bounds.height, 1);
+  // Layout size (offsetWidth/Height) on purpose: getBoundingClientRect includes the
+  // current transform scale and would compound with the oversampled box.
+  const width = Math.max(logoEl.offsetWidth, 1);
+  const height = Math.max(logoEl.offsetHeight, 1);
 
   return Math.max(window.innerWidth / width, window.innerHeight / height) * 1.15;
 };
@@ -65,11 +78,11 @@ export function initAllianceLogoZoom({
     transitionLogoEl,
     {
       autoAlpha: 0,
-      scale: 1,
+      scale: 1 / ALLIANCE_LOGO_OVERSAMPLE,
       xPercent: -50,
       yPercent: -50,
       left: '50%',
-      top: () => (window.innerHeight - getNavHeight()) / 2,
+      top: () => (window.innerHeight - getNavHeight()) / 2 + getMobileCenterOffset(),
     },
     startAt,
   );
@@ -90,7 +103,7 @@ export function initAllianceLogoZoom({
       autoAlpha: 1,
       pointerEvents: 'none',
       left: '50%',
-      top: () => (window.innerHeight + getNavHeight()) / 2,
+      top: () => (window.innerHeight + getNavHeight()) / 2 + getMobileCenterOffset(),
       scale: 1,
       duration: 0.72,
       ease: 'power2.inOut',
@@ -102,7 +115,7 @@ export function initAllianceLogoZoom({
     transitionLogoEl,
     {
       autoAlpha: 1,
-      scale: 1,
+      scale: 1 / ALLIANCE_LOGO_OVERSAMPLE,
     },
     handoffAt,
   );

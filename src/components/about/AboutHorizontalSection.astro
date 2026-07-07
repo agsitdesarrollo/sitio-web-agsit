@@ -1,8 +1,6 @@
 ---
-import { Image } from 'astro:assets';
 import type { AboutContent } from '../../data/about';
 import { clientLogos } from '../../data/about';
-import logoImage from '../../assets/images/logo-asit.webp';
 
 type Props = {
   content: AboutContent;
@@ -122,9 +120,9 @@ const serviceSides = content.services.map((_, i) => (i % 2 === 0 ? 'text-right' 
           class="about-transition-logo js-about-transition-logo"
           aria-hidden="true"
         >
-          <Image
+          <img
             class="about-transition-logo-image"
-            src={logoImage}
+            src="/assets/logo-agsit.svg"
             alt=""
             loading="lazy"
             draggable="false"
@@ -174,7 +172,8 @@ const serviceSides = content.services.map((_, i) => (i % 2 === 0 ? 'text-right' 
 
 <script>
   import gsap from 'gsap';
-  import { initAllianceLogoZoom } from '../../animations/allianceLogoZoom';
+  import { ALLIANCE_LOGO_OVERSAMPLE, initAllianceLogoZoom } from '../../animations/allianceLogoZoom';
+  import { ensureVideoAutoplay } from '../../scripts/videoAutoplay';
   // ── Constants ─────────────────────────────────────────────────────────────
   const TOTAL_SLIDES = 8;
   const LAST_SERVICE_SLIDE = 5;
@@ -241,7 +240,8 @@ const serviceSides = content.services.map((_, i) => (i % 2 === 0 ? 'text-right' 
   const isMobile = () => window.matchMedia('(max-width: 767px)').matches;
   const isTablet = () => window.matchMedia('(min-width: 768px) and (max-width: 1024px)').matches;
   const getNavH  = () => document.querySelector<HTMLElement>('.site-nav')?.getBoundingClientRect().height ?? 0;
-  const getIntroLogoY = () => window.innerHeight - (isMobile() ? 68 : isTablet() ? 72 : 70);
+  const getDynamicViewportHeight = () => window.visualViewport?.height ?? window.innerHeight;
+  const getIntroLogoY = () => getDynamicViewportHeight() - (isMobile() ? 68 : isTablet() ? 72 : 70);
   const getLayoutWidth = () => section.getBoundingClientRect().width || document.documentElement.clientWidth;
   const getActivationLead = () => (isMobile() ? 44 : isTablet() ? 52 : 58);
   const shouldReduceMotion = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -249,19 +249,56 @@ const serviceSides = content.services.map((_, i) => (i % 2 === 0 ? 'text-right' 
   // ── Logo helpers ──────────────────────────────────────────────────────────
   const getLogoScale = () => (isMobile() ? 0.58 : isTablet() ? 0.66 : 0.30);
 
-  const syncLogoTooltipScale = (logo: HTMLElement) => {
+  const syncLogoTooltipScale = (logo: HTMLElement, targetCenterX?: number) => {
     const tooltip = logo.querySelector<HTMLElement>('.scroll-consult-logo-tooltip');
     if (!tooltip) return;
     const scale = getLogoScale();
-    if (scale > 0) {
-      gsap.set(tooltip, {
-        xPercent: -50,
-        y: 0,
-        scale: 0.68 / scale,
-        autoAlpha: 1,
-        transformOrigin: '50% 100%',
-      });
+    if (scale <= 0) return;
+
+    gsap.set(tooltip, {
+      xPercent: -50,
+      x: 0,
+      y: 0,
+      scale: 0.68 / scale,
+      autoAlpha: 1,
+      transformOrigin: '50% 100%',
+    });
+
+    // Keep the tooltip inside the viewport when the logo docks near an edge
+    // (e.g., the first service dot on mobile).
+    const margin = 8;
+    const viewportW = document.documentElement.clientWidth;
+    const clampOnce = (center: number, half: number) => {
+      const minCenter = margin + half;
+      const maxCenter = Math.max(minCenter, viewportW - margin - half);
+      return Math.min(Math.max(center, minCenter), maxCenter) - center;
+    };
+
+    if (targetCenterX !== undefined) {
+      // Logo still traveling: single estimated shift against its landing spot;
+      // the post-landing resync (no target) refines it.
+      const rect = tooltip.getBoundingClientRect();
+      if (!rect.width) return;
+      const diff = clampOnce(targetCenterX, rect.width / 2);
+      if (Math.abs(diff) > 0.5) gsap.set(tooltip, { x: diff });
+      return;
     }
+
+    // Landed: iterate against the real rect. The tooltip has a CSS transition on
+    // transform, so shifts must be applied with it disabled or every measurement
+    // reads the still-animating old position.
+    const previousTransition = tooltip.style.transition;
+    tooltip.style.transition = 'none';
+    for (let i = 0; i < 4; i++) {
+      const rect = tooltip.getBoundingClientRect();
+      if (!rect.width) break;
+      const diff = clampOnce(rect.left + rect.width / 2, rect.width / 2);
+      if (Math.abs(diff) <= 0.5) break;
+      const currentX = Number(gsap.getProperty(tooltip, 'x')) || 0;
+      gsap.set(tooltip, { x: currentX + diff });
+    }
+    tooltip.getBoundingClientRect();
+    tooltip.style.transition = previousTransition;
   };
 
   const hideLogoTooltip = (logo: HTMLElement) => {
@@ -331,16 +368,26 @@ const serviceSides = content.services.map((_, i) => (i % 2 === 0 ? 'text-right' 
 
     const shouldShowTooltip = slideIdx <= LAST_SERVICE_SLIDE;
     logo.classList.toggle('is-tooltip-visible', shouldShowTooltip);
-    if (shouldShowTooltip) {
-      syncLogoTooltipScale(logo);
-    } else {
+    if (!shouldShowTooltip) {
       hideLogoTooltip(logo);
     }
 
     if (animate) {
-      gsap.to(logo, { ...logoVars, duration: 0.58, ease: 'power1.inOut' });
+      gsap.to(logo, {
+        ...logoVars,
+        duration: 0.58,
+        ease: 'power1.inOut',
+        onComplete: () => {
+          // Re-clamp against the real rendered rect once the logo has landed.
+          if (shouldShowTooltip) syncLogoTooltipScale(logo);
+        },
+      });
+      if (shouldShowTooltip) {
+        syncLogoTooltipScale(logo, typeof logoVars.left === 'number' ? logoVars.left : undefined);
+      }
     } else {
       gsap.set(logo, logoVars);
+      if (shouldShowTooltip) syncLogoTooltipScale(logo);
     }
   };
 
@@ -370,7 +417,7 @@ const serviceSides = content.services.map((_, i) => (i % 2 === 0 ? 'text-right' 
         v.load();
       }
       if (shouldPlay) {
-        v.play().catch(() => {});
+        ensureVideoAutoplay(v);
       } else {
         v.pause();
       }
@@ -492,7 +539,7 @@ const serviceSides = content.services.map((_, i) => (i % 2 === 0 ? 'text-right' 
     tl.set(transitionVeil, { autoAlpha: 0 }, 0);
     tl.set(transitionLogo, {
       autoAlpha: 0,
-      scale: 0.68,
+      scale: 0.68 / ALLIANCE_LOGO_OVERSAMPLE,
       x: 0,
       y: 0,
       xPercent: -50,
@@ -576,7 +623,7 @@ const serviceSides = content.services.map((_, i) => (i % 2 === 0 ? 'text-right' 
     gsap.set(allianceSlide, { backgroundColor: '#ffffff' });
     gsap.set(allianceSlide.querySelector('.js-about-transition-veil'), { autoAlpha: 0 });
     gsap.set(allianceSlide.querySelector('.js-about-transition-logo'), {
-      autoAlpha: 0, scale: 0.68, x: 0, y: 0, xPercent: -50, yPercent: -50, rotate: 0,
+      autoAlpha: 0, scale: 0.68 / ALLIANCE_LOGO_OVERSAMPLE, x: 0, y: 0, xPercent: -50, yPercent: -50, rotate: 0,
     });
     gsap.set(allianceSlide.querySelectorAll('.js-about-alliance-copy'), { autoAlpha: 1, y: 0 });
     gsap.set(allianceSlide.querySelectorAll('.js-about-alliance-metric'), { autoAlpha: 1, y: 0, scale: 1 });
@@ -629,6 +676,33 @@ const serviceSides = content.services.map((_, i) => (i % 2 === 0 ? 'text-right' 
     });
   };
 
+  // On touch devices the zoom plays end-to-end with a single swipe: per-swipe
+  // scrubbing needed ~29 gestures to traverse the timeline (each touch gesture is
+  // one event, unlike the wheel's stream).
+  const playAllianceZoom = (direction: number) => {
+    if (!isAllianceScrubbing) {
+      ensureAllianceScrub(direction > 0 ? 0 : Number.POSITIVE_INFINITY);
+    }
+    if (!allianceScrubTl) return;
+
+    const target = direction > 0 ? allianceScrubTl.duration() : 0;
+    if (allianceScrubTween?.isActive() && allianceScrubTime === target) return;
+    allianceScrubTime = target;
+
+    allianceScrubTween?.kill();
+    allianceScrubTween = allianceScrubTl.tweenTo(target, {
+      duration: 1.8,
+      ease: 'power2.inOut',
+      onComplete: () => {
+        if (direction > 0) {
+          finishAllianceScrubForward();
+        } else {
+          finishAllianceScrubBackward();
+        }
+      },
+    });
+  };
+
   // ── On slide arrival ──────────────────────────────────────────────────────
   const onSlideArrival = (slideIdx: number, animate: boolean) => {
     section.dataset.currentSlide = String(slideIdx);
@@ -645,7 +719,7 @@ const serviceSides = content.services.map((_, i) => (i % 2 === 0 ? 'text-right' 
         // Re-entry: reset state so zoom can replay cleanly
         gsap.set(allianceSlide.querySelector('.js-about-transition-veil'),  { autoAlpha: 0 });
         gsap.set(allianceSlide.querySelector('.js-about-transition-logo'),  {
-          autoAlpha: 0, scale: 0.68, x: 0, y: 0, xPercent: -50, yPercent: -50, rotate: 0,
+          autoAlpha: 0, scale: 0.68 / ALLIANCE_LOGO_OVERSAMPLE, x: 0, y: 0, xPercent: -50, yPercent: -50, rotate: 0,
         });
         gsap.set(allianceSlide.querySelectorAll('.js-about-alliance-copy'),   { autoAlpha: 0, y: 24 });
         gsap.set(allianceSlide.querySelectorAll('.js-about-alliance-metric'), { autoAlpha: 0, y: 22, scale: 0.96 });
@@ -867,6 +941,17 @@ const serviceSides = content.services.map((_, i) => (i % 2 === 0 ? 'text-right' 
 
   window.addEventListener('scroll', checkActivation, { passive: true });
 
+  // Re-dock the logo when the mobile browser UI shows/hides (viewport height change).
+  window.addEventListener(
+    'agsit:viewport-change',
+    () => {
+      if (isActive && !isAllianceScrubbing && !isAnimating) {
+        positionLogo(current, false);
+      }
+    },
+    { passive: true },
+  );
+
   // ── Wheel handler ─────────────────────────────────────────────────────────
   const onWheel = (e: WheelEvent) => {
     if (!isActive) {
@@ -907,7 +992,20 @@ const serviceSides = content.services.map((_, i) => (i % 2 === 0 ? 'text-right' 
     if (!isActive) return;
     const dy = touchStartY - e.changedTouches[0].clientY;
     if (Math.abs(dy) < TOUCH_THRESHOLD) return;
-    navigate(Math.sign(dy));
+    const direction = Math.sign(dy);
+
+    // Touch: a single swipe plays the alliance zoom end-to-end (and a swipe in
+    // the opposite direction mid-flight reverses it).
+    if (isAllianceScrubbing) {
+      playAllianceZoom(direction);
+      return;
+    }
+    if (current === ALLIANCE_SLIDE && direction > 0 && !allianceDone && !isAnimating) {
+      playAllianceZoom(1);
+      return;
+    }
+
+    navigate(direction);
   };
 
   // Listeners on window so they fire regardless of cursor position within viewport

@@ -19,7 +19,10 @@
   right: 0;
   z-index: 40;
   height: calc(var(--app-vh, var(--app-stable-vh, 100vh)) - var(--nav-h));
-  min-height: calc(100vh - var(--nav-h));
+  /* dvh tracks the browser UI natively (no JS lag) so the bottom bar stays
+     glued to the visible edge while the section is active. */
+  height: calc(100dvh - var(--nav-h));
+  min-height: 0;
 }
 
 .about-snap-stage {
@@ -516,11 +519,16 @@ a.about-service-link:focus-visible {
 /* Alliance overlay elements */
 .about-transition-logo {
   --logo-reveal-y: 100%;
+  --logo-base-w: clamp(78px, 7.2vw, 122px);
+  /* Caja 12x más grande compensada con transform scale: el navegador rasteriza la
+     imagen al tamaño de layout, así el zoom a pantalla completa no se pixelea.
+     Mantener en sincronía con ALLIANCE_LOGO_OVERSAMPLE en allianceLogoZoom.ts. */
+  --logo-oversample: 12;
   position: absolute;
   left: 50%;
   top: 50%;
   z-index: 6;
-  width: clamp(78px, 7.2vw, 122px);
+  width: calc(var(--logo-base-w) * var(--logo-oversample));
   aspect-ratio: 1.08;
   overflow: hidden;
   background: transparent;
@@ -533,11 +541,12 @@ a.about-service-link:focus-visible {
 
 .about-transition-logo-image {
   position: absolute;
-  top: 3%;
-  left: 0;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 100%;
   height: 93%;
-  width: auto;
-  max-width: none;
+  object-fit: contain;
   user-select: none;
   pointer-events: none;
 }
@@ -888,6 +897,10 @@ a.about-service-link:focus-visible {
   .about-alliance-title-line { width: 100%; text-align: center; }
   .about-alliance-copy > p:last-child { max-width: 315px; font-size: clamp(0.78rem, 3.25vw, 0.9rem); }
   .about-alliance-metric { font-size: clamp(1.34rem, 6.4vw, 1.92rem); }
+  /* Centrado en el espacio libre entre el copy y el CTA (el 50% de la lámina
+     queda alto porque el copy ocupa la parte superior). Mantener en sincronía
+     con el offset móvil de allianceLogoZoom.ts. */
+  .about-alliance-triangle-wrap { top: calc(50% + 38px); }
   .about-alliance-triangle-spacer { width: 82px; }
   .about-alliance-cta {
     width: min(316px, calc(100vw - 44px));
@@ -895,7 +908,7 @@ a.about-service-link:focus-visible {
     font-size: clamp(0.6rem, 2.5vw, 0.72rem);
   }
 
-  .about-transition-logo { width: 82px; }
+  .about-transition-logo { --logo-base-w: 82px; }
 
   .scroll-consult-logo { width: 82px; }
   .scroll-consult-logo-tooltip {

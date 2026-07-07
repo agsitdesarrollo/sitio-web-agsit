@@ -1,5 +1,7 @@
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { ALLIANCE_LOGO_OVERSAMPLE } from '../../animations/allianceLogoZoom';
+import { ensureVideoAutoplay } from '../../scripts/videoAutoplay';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -33,13 +35,17 @@ export function initScrollExperience(): (() => void) | undefined {
     };
     const getViewportHeight = () =>
       isCompact ? getRootPixelValue('--app-stable-vh', window.innerHeight) : window.innerHeight;
+    // For elements anchored to the visible bottom edge (consult logo): the stable
+    // height is the LARGE viewport, which sits below the fold while the mobile
+    // browser UI is showing.
+    const getDynamicViewportHeight = () => window.visualViewport?.height ?? window.innerHeight;
     const getNavHeight = () => document.querySelector('.site-nav')?.getBoundingClientRect().height ?? 0;
     const getPinnedSectionStart = () => `top top+=${getNavHeight()}`;
     const getVideoStoryInset = () => (isMobile ? 22 : isTablet ? 24 : isCompact ? 28 : 34);
     const getHeroScrollEnd = () => (isMobile ? 105 : isCompact ? 105 : 220);
     const getMobileServicesScrollEnd = () => (isMobile ? 275 : 560);
     const getVideoStoryScrollEnd = () => (isMobile ? 250 : isCompact ? 780 : 880);
-    const getConsultLogoBottomY = () => getViewportHeight() - (isMobile ? 68 : isTablet ? 72 : 70);
+    const getConsultLogoBottomY = () => getDynamicViewportHeight() - (isMobile ? 68 : isTablet ? 72 : 70);
     const getConsultLogoTravelScale = () => (isMobile ? 0.58 : isTablet ? 0.66 : 0.30);
     const getConsultLogoStartScale = () => (isMobile ? 0.26 : isTablet ? 0.34 : 0.46);
     const getElementRect = (selector: string) => document.querySelector<HTMLElement>(selector)?.getBoundingClientRect();
@@ -143,7 +149,7 @@ export function initScrollExperience(): (() => void) | undefined {
       }
 
       if (video.autoplay) {
-        video.play().catch(() => undefined);
+        ensureVideoAutoplay(video);
       }
     };
     const getAboutServiceVideos = () =>
@@ -158,6 +164,13 @@ export function initScrollExperience(): (() => void) | undefined {
       });
     };
     cleanupAboutServiceVideoPlayback = () => pauseAboutServiceVideos();
+
+    // iOS can leave the hero video paused even with autoplay/muted/playsinline in
+    // the markup; harden it and register the first-gesture unlock.
+    const heroVideo = document.querySelector<HTMLVideoElement>('.hero-video');
+    if (heroVideo) {
+      ensureVideoAutoplay(heroVideo);
+    }
 
     gsap.set('.js-floating-person', { y: 0, yPercent: -5, scale: 1.08, autoAlpha: 1 });
     gsap.set('.js-services-person', { autoAlpha: 0 });
@@ -187,7 +200,7 @@ export function initScrollExperience(): (() => void) | undefined {
     setIfFound('.js-about-transition-logo', {
       '--logo-reveal-y': '100%',
       autoAlpha: 0,
-      scale: 0.68,
+      scale: 0.68 / ALLIANCE_LOGO_OVERSAMPLE,
       x: 0,
       y: 0,
       xPercent: -50,
