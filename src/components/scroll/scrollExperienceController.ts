@@ -201,6 +201,32 @@ export function initScrollExperience(): (() => void) | undefined {
     setIfFound('.js-about-alliance-metric', { autoAlpha: 0, y: 22, scale: 0.96 });
     setIfFound('.js-about-alliance-cta', { autoAlpha: 0, y: 16, pointerEvents: 'none' });
 
+    // While the about snap section is active it is position:fixed and out of the
+    // document flow, so a ScrollTrigger.refresh() fired in that state (window load,
+    // resize, viewport-change) measures every trigger below it one viewport short
+    // and the video-story pin ends up unpinning early. Re-insert the section into
+    // the flow for the synchronous measurement pass and restore it right after.
+    let aboutStateHeldForRefresh: string | undefined;
+    const onScrollTriggerRefreshInit = () => {
+      const about = document.querySelector<HTMLElement>('.js-about-snap');
+      if (about?.dataset.aboutState === 'active') {
+        aboutStateHeldForRefresh = about.dataset.aboutState;
+        delete about.dataset.aboutState;
+      }
+    };
+    const onScrollTriggerRefreshDone = () => {
+      if (!aboutStateHeldForRefresh) {
+        return;
+      }
+      const about = document.querySelector<HTMLElement>('.js-about-snap');
+      if (about) {
+        about.dataset.aboutState = aboutStateHeldForRefresh;
+      }
+      aboutStateHeldForRefresh = undefined;
+    };
+    ScrollTrigger.addEventListener('refreshInit', onScrollTriggerRefreshInit);
+    ScrollTrigger.addEventListener('refresh', onScrollTriggerRefreshDone);
+
     let viewportRefreshFrame = 0;
     let viewportRefreshTimeout = 0;
     const requestViewportRefresh = (event?: Event) => {
@@ -229,6 +255,8 @@ export function initScrollExperience(): (() => void) | undefined {
       window.clearTimeout(viewportRefreshTimeout);
       window.removeEventListener('orientationchange', requestViewportRefresh);
       window.removeEventListener('agsit:viewport-change', requestViewportRefresh);
+      ScrollTrigger.removeEventListener('refreshInit', onScrollTriggerRefreshInit);
+      ScrollTrigger.removeEventListener('refresh', onScrollTriggerRefreshDone);
     };
 
     const heroTimeline = gsap.timeline({
@@ -742,19 +770,21 @@ export function initScrollExperience(): (() => void) | undefined {
     const lineStep = isMobile ? 0.92 : 0.72;
     const lineFadeStart = isMobile ? 0.58 : 0.46;
 
-    gsap.utils.toArray<HTMLElement>('.js-video-story-line').forEach((line, index) => {
+    const storyLineEls = gsap.utils.toArray<HTMLElement>('.js-video-story-line');
+    storyLineEls.forEach((line, index) => {
       const startAt = videoLineStart + index * lineStep;
-      videoStoryTimeline
-        .to(
-          line,
-          {
-            autoAlpha: 1,
-            duration: 0.28,
-            ease: 'power2.out',
-          },
-          startAt,
-        )
-        .to(
+      videoStoryTimeline.to(
+        line,
+        {
+          autoAlpha: 1,
+          duration: 0.28,
+          ease: 'power2.out',
+        },
+        startAt,
+      );
+
+      if (index < storyLineEls.length - 1) {
+        videoStoryTimeline.to(
           line,
           {
             autoAlpha: 0,
@@ -763,6 +793,11 @@ export function initScrollExperience(): (() => void) | undefined {
           },
           startAt + lineFadeStart,
         );
+      } else {
+        // The last line stays visible into the contact section; the hold keeps the
+        // timeline length so it appears at the same scroll point as before.
+        videoStoryTimeline.to({}, { duration: lineFadeStart + 0.24 - 0.28 }, startAt + 0.28);
+      }
     });
   }, root);
 
