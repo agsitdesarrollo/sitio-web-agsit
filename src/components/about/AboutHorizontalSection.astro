@@ -440,11 +440,11 @@ const serviceSides = content.services.map((_, i) => (i % 2 === 0 ? 'text-right' 
     );
   };
 
-  // ── Alliance scrubbed handoff ──────────────────────────────────────────────
-  const ALLIANCE_PANEL_TIME = 1.22;
-  const ALLIANCE_ZOOM_START = ALLIANCE_PANEL_TIME + 0.16;
-  const ALLIANCE_COPY_START = ALLIANCE_ZOOM_START + 0.78;
-  const ALLIANCE_CTA_START = ALLIANCE_ZOOM_START + 1.16;
+  // ── Alliance scrubbed zoom ─────────────────────────────────────────────────
+  // The scrub covers only the final zoom: clients→alliance travels as a normal
+  // slide, so the timeline starts at the alliance resting state (content visible,
+  // floating logo docked at the bar).
+  const ALLIANCE_ZOOM_START = 0.16;
 
   const showSlidesForAllianceScrub = () => {
     slides.forEach((slide, i) => {
@@ -476,7 +476,6 @@ const serviceSides = content.services.map((_, i) => (i % 2 === 0 ? 'text-right' 
       ...allianceCta,
     ]);
 
-    const clientsPos = SLIDE_POSITIONS[CLIENTS_SLIDE];
     const alliancePos = SLIDE_POSITIONS[ALLIANCE_SLIDE];
     const sectionRect = section.getBoundingClientRect();
     const stageW = sectionRect.width || window.innerWidth;
@@ -484,8 +483,8 @@ const serviceSides = content.services.map((_, i) => (i % 2 === 0 ? 'text-right' 
     const tl = gsap.timeline({ paused: true });
 
     tl.set(stage, {
-      x: -clientsPos.x * stageW,
-      y: -clientsPos.y * stageH,
+      x: -alliancePos.x * stageW,
+      y: -alliancePos.y * stageH,
       xPercent: 0,
       yPercent: 0,
     }, 0);
@@ -501,40 +500,20 @@ const serviceSides = content.services.map((_, i) => (i % 2 === 0 ? 'text-right' 
       rotate: 0,
       backgroundColor: 'rgba(2, 7, 18, 0)',
     }, 0);
-    tl.set(allianceCopy, { autoAlpha: 0, y: 24 }, 0);
-    tl.set(metricsEls, { autoAlpha: 0, y: 22, scale: 0.96 }, 0);
-    tl.set(allianceCta, { autoAlpha: 0, y: 16, pointerEvents: 'none' }, 0);
-    tl.to(stage, {
-      x: -alliancePos.x * stageW,
-      y: -alliancePos.y * stageH,
-      duration: ALLIANCE_PANEL_TIME,
+    tl.set(allianceCopy, { autoAlpha: 1, y: 0 }, 0);
+    tl.set(metricsEls, { autoAlpha: 1, y: 0, scale: 1 }, 0);
+    tl.set(allianceCta, { autoAlpha: 1, y: 0, pointerEvents: 'auto' }, 0);
+    // Keep-alive fromTo with explicit values at position 0: when the timeline is
+    // rebuilt on re-entry from below, a plain .to() would capture the logo's hidden
+    // post-exit state, and GSAP reverts targets to their pre-timeline state when
+    // the playhead lands before a tween's start — either way the logo would blink.
+    const { overwrite: _o, ...restingLogoVars } = logoVars;
+    tl.fromTo(floatingLogo, restingLogoVars, {
+      ...restingLogoVars,
+      duration: ALLIANCE_ZOOM_START,
       ease: 'none',
-    }, 0);
-    // fromTo with explicit start values: when the timeline is rebuilt on re-entry
-    // from below, a plain .to() would capture the logo's hidden post-exit state and
-    // render it invisible while scrubbing back toward the clients slide.
-    // Placed at position 0 — if the playhead lands before a tween's start, GSAP
-    // reverts the target to its pre-timeline state and the logo would blink out.
-    const { overwrite: _o, ...clientsLogoVars } = getLogoVars(CLIENTS_SLIDE) ?? logoVars;
-    tl.fromTo(floatingLogo, clientsLogoVars, {
-      ...logoVars,
-      duration: 0.7,
-      ease: 'power1.inOut',
       immediateRender: false,
     }, 0);
-    tl.to(allianceCopy, {
-      autoAlpha: 1,
-      y: 0,
-      duration: 0.56,
-      ease: 'power3.out',
-    }, ALLIANCE_COPY_START);
-    tl.to(allianceCta, {
-      autoAlpha: 1,
-      y: 0,
-      pointerEvents: 'auto',
-      duration: 0.42,
-      ease: 'power2.out',
-    }, ALLIANCE_CTA_START);
 
     const zoomDuration = initAllianceLogoZoom({
       timeline: tl,
@@ -582,17 +561,28 @@ const serviceSides = content.services.map((_, i) => (i % 2 === 0 ? 'text-right' 
     allianceScrubTime = 0;
     allianceDone = false;
     alliancePlayed = false;
-    current = CLIENTS_SLIDE;
-    showOnlySlide(CLIENTS_SLIDE);
+    current = ALLIANCE_SLIDE;
+    showOnlySlide(ALLIANCE_SLIDE);
     gsap.set(stage, { clearProps: 'transform' });
     stage.style.transition = 'none';
-    renderStage(CLIENTS_SLIDE);
-    section.dataset.currentSlide = String(CLIENTS_SLIDE);
-    updateDots(CLIENTS_SLIDE);
-    positionLogo(CLIENTS_SLIDE, false);
-    revealClients();
+    renderStage(ALLIANCE_SLIDE);
+    section.dataset.currentSlide = String(ALLIANCE_SLIDE);
+    updateDots(ALLIANCE_SLIDE);
+    positionLogo(ALLIANCE_SLIDE, false);
 
-    // Brief lockout so wheel momentum doesn't blow straight past the clients slide.
+    // Restore the alliance resting state explicitly — the killed timeline may have
+    // left the zoom visuals (veil, big logo) mid-revert on its final frame.
+    const allianceSlide = slides[ALLIANCE_SLIDE];
+    gsap.set(allianceSlide, { backgroundColor: '#ffffff' });
+    gsap.set(allianceSlide.querySelector('.js-about-transition-veil'), { autoAlpha: 0 });
+    gsap.set(allianceSlide.querySelector('.js-about-transition-logo'), {
+      autoAlpha: 0, scale: 0.68, x: 0, y: 0, xPercent: -50, yPercent: -50, rotate: 0,
+    });
+    gsap.set(allianceSlide.querySelectorAll('.js-about-alliance-copy'), { autoAlpha: 1, y: 0 });
+    gsap.set(allianceSlide.querySelectorAll('.js-about-alliance-metric'), { autoAlpha: 1, y: 0, scale: 1 });
+    gsap.set(allianceSlide.querySelectorAll('.js-about-alliance-cta'), { autoAlpha: 1, y: 0, pointerEvents: 'auto' });
+
+    // Brief lockout so wheel momentum doesn't blow straight past the alliance slide.
     isAnimating = true;
     window.setTimeout(() => {
       isAnimating = false;
@@ -609,7 +599,7 @@ const serviceSides = content.services.map((_, i) => (i % 2 === 0 ? 'text-right' 
 
   const scrubAlliance = (delta: number) => {
     if (!allianceScrubTl) {
-      ensureAllianceScrub(delta > 0 ? ALLIANCE_PANEL_TIME : ALLIANCE_ZOOM_START);
+      ensureAllianceScrub(delta > 0 ? 0 : Number.POSITIVE_INFINITY);
     }
     if (!allianceScrubTl) return;
 
@@ -697,7 +687,9 @@ const serviceSides = content.services.map((_, i) => (i % 2 === 0 ? 'text-right' 
       return;
     }
 
-    if (current === CLIENTS_SLIDE && delta > 0 && !alliancePlayed) {
+    // Scroll down on the alliance slide starts the scrubbed zoom handoff;
+    // clients→alliance itself travels as a normal slide.
+    if (current === ALLIANCE_SLIDE && delta > 0 && !allianceDone) {
       ensureAllianceScrub(0);
       scrubAlliance(delta);
       return;
