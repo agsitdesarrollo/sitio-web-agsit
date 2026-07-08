@@ -16,11 +16,10 @@ const getNavHeight = () => {
   return Number.isFinite(cssNavHeight) ? cssNavHeight : 0;
 };
 
-// On mobile the triangle wrap sits 38px below the slide center (see the mobile
-// block in AboutHorizontal.css); the zoomed logo and the floating-logo handoff
-// must land on the same spot.
+// On mobile the logo lands slightly above the triangle wrap's visual center so it
+// sits better between Alcance, Costo and Tiempo.
 const getMobileCenterOffset = () =>
-  window.matchMedia('(max-width: 767px)').matches ? 38 : 0;
+  0;
 
 type AllianceLogoZoomConfig = {
   timeline: gsap.core.Timeline;

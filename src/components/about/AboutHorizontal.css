@@ -941,7 +941,7 @@ a.about-service-link:focus-visible {
   /* Centrado en el espacio libre entre el copy y el CTA (el 50% de la lámina
      queda alto porque el copy ocupa la parte superior). Mantener en sincronía
      con el offset móvil de allianceLogoZoom.ts. */
-  .about-alliance-triangle-wrap { top: calc(50% + 38px); }
+  .about-alliance-triangle-wrap { top: calc(50% + 16px); }
   .about-alliance-triangle-spacer { width: 82px; }
   .about-alliance-cta {
     width: min(316px, calc(100vw - 44px));
