@@ -948,7 +948,9 @@ a.about-service-link:focus-visible {
     padding-block: 8px;
   }
 
-  .about-snap-bar-dots-wrap { width: 100%; height: 24px; }
+  /* flex: 1 (heredado del layout en fila de escritorio) estiraría el wrap
+     verticalmente en esta columna y la línea quedaría debajo de los dots. */
+  .about-snap-bar-dots-wrap { flex: 0 0 auto; width: 100%; height: 24px; }
   .about-snap-dot { width: 24px; height: 24px; }
   .about-snap-dot-number { font-size: 9px; }
 

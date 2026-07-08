@@ -1004,6 +1004,17 @@ const getVideoRatioKind = (image: string) => (image.endsWith('/servicios.mp4') ?
     if (!allianceDragArmed) return;
 
     if (!isDraggingAlliance) {
+      const dy = touchStartY - e.touches[0].clientY;
+      // Wait until the direction is unambiguous before committing to a drag.
+      if (Math.abs(dy) < 10) return;
+      // From the resting alliance slide (no scrub built yet) a downward swipe
+      // means "go back to clients" — real devices always fire touchmove during
+      // a swipe, so without this the drag machinery would swallow the gesture
+      // and clamp the timeline at 0 instead of letting touchend navigate.
+      if (!isAllianceScrubbing && dy < 0) {
+        allianceDragArmed = false;
+        return;
+      }
       if (!isAllianceScrubbing) {
         ensureAllianceScrub(0);
       }

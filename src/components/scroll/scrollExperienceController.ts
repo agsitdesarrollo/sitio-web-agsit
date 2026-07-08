@@ -97,12 +97,18 @@ export function initScrollExperience(): (() => void) | undefined {
       const cta = getElementRect('.services-advice-cta');
       const fallback = getViewportHeight() + (isMobile ? 26 : isTablet ? 34 : 42);
 
-      if (!cta || cta.bottom <= 0 || cta.top >= getViewportHeight()) {
+      if (!cta || cta.top >= getViewportHeight()) {
         return fallback;
       }
 
-      if (isCompact) {
-        return isMobile ? Math.min(cta.bottom + 12, getViewportHeight() - 18) : fallback;
+      if (isCompact && isMobile) {
+        // Track the button continuously — even once it has scrolled past the
+        // top edge — so the bridge interpolation never jumps mid-flight.
+        return Math.min(cta.bottom + 12, getViewportHeight() - 18);
+      }
+
+      if (isCompact || cta.bottom <= 0) {
+        return fallback;
       }
 
       return cta.bottom + 70;
@@ -597,63 +603,25 @@ export function initScrollExperience(): (() => void) | undefined {
       const startY = getViewportHeight() * (isMobile ? 1.18 : isTablet ? 1.06 : 0.72);
       const endY = getNavHeight() + (isMobile ? 44 : isTablet ? 52 : 58);
 
-      if (isCompact && compactServicesScrollTrigger) {
-        const serviceProgress = compactServicesScrollTrigger.progress;
-
-        if (compactServicesScrollTrigger.isActive && (isTablet || serviceProgress < compactServicesLogoStartProgress)) {
-          gsap.set('.js-scroll-consult-logo', {
-            autoAlpha: 0,
-            pointerEvents: 'none',
-            left: '50%',
-            top: getConsultLogoStartTop,
-            scale: getConsultLogoStartScale,
-          });
-          document.querySelector('.js-scroll-consult-logo')?.classList.remove('is-tooltip-visible');
-          return;
-        }
-
-        const servicesCta = getElementRect('.services-advice-cta');
-        const isServicesCtaVisible =
-          Boolean(servicesCta) && servicesCta!.bottom > 0 && servicesCta!.top < getViewportHeight();
-
-        if (
-          !isTablet &&
-          serviceProgress >= compactServicesLogoStartProgress &&
-          aboutTop > endY &&
-          (compactServicesScrollTrigger.isActive || isServicesCtaVisible)
-        ) {
-          const serviceLogoProgress = gsap.utils.clamp(
-            0,
-            1,
-            (serviceProgress - compactServicesLogoStartProgress) /
-              Math.max(1 - compactServicesLogoStartProgress, 0.01),
-          );
-          const aboutLogoProgress =
-            aboutTop > startY ? 0 : gsap.utils.clamp(0, 1, (startY - aboutTop) / Math.max(startY - endY, 1));
-          const logoProgress = Math.max(serviceLogoProgress, aboutLogoProgress);
-          const logoStartY = getConsultLogoStartTop();
-          const logoLiftY = logoStartY + (isMobile ? 22 : 30);
-          const liftProgress = gsap.utils.clamp(0, 1, logoProgress / 0.36);
-          const travelProgress = gsap.utils.clamp(0, 1, (logoProgress - 0.28) / 0.72);
-
-          gsap.set('.js-scroll-consult-logo', {
-            autoAlpha: logoProgress,
-            pointerEvents: logoProgress > 0.4 ? 'auto' : 'none',
-            left: '50%',
-            top: gsap.utils.interpolate(
-              gsap.utils.interpolate(logoStartY, logoLiftY, liftProgress),
-              getConsultLogoBottomY(),
-              travelProgress,
-            ),
-            scale: gsap.utils.interpolate(
-              getConsultLogoStartScale() * 0.58,
-              getConsultLogoTravelScale(),
-              logoProgress,
-            ),
-          });
-          document.querySelector('.js-scroll-consult-logo')?.classList.remove('is-tooltip-visible');
-          return;
-        }
+      // While the services section is still pinned with cards animating, the
+      // bridge hasn't started — keep the logo parked. Past that point every
+      // breakpoint shares the same aboutTop-driven bridge below (mobile used to
+      // have a custom emergence tied to the services pin tail, which diverged
+      // between emulation and real devices and never anchored to the CTA button).
+      if (
+        isCompact &&
+        compactServicesScrollTrigger?.isActive &&
+        (isTablet || compactServicesScrollTrigger.progress < compactServicesLogoStartProgress)
+      ) {
+        gsap.set('.js-scroll-consult-logo', {
+          autoAlpha: 0,
+          pointerEvents: 'none',
+          left: '50%',
+          top: getConsultLogoStartTop,
+          scale: getConsultLogoStartScale,
+        });
+        document.querySelector('.js-scroll-consult-logo')?.classList.remove('is-tooltip-visible');
+        return;
       }
 
       if (aboutTop > startY) {
