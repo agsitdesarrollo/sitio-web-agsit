@@ -825,19 +825,34 @@ a.about-service-link:focus-visible {
 @media (max-width: 767px) {
   :root { --snap-bar-h: 68px; }
 
-  .about-overview {
-    transform: translateY(-32px);
+  .about-snap-slide--intro {
+    padding-inline: 22px;
   }
 
-  .about-overview-title { font-size: clamp(3.35rem, 15vw, 5.15rem); }
+  .about-overview {
+    width: min(350px, 100%);
+    transform: translateY(-24px);
+  }
+
+  .about-overview-title {
+    max-width: min(340px, 100%);
+    font-size: clamp(3.25rem, 14.2vw, 4.55rem);
+  }
   .about-overview-kicker {
-    margin-bottom: 10px;
-    font-size: clamp(0.68rem, 3vw, 0.82rem);
+    max-width: min(328px, 100%);
+    margin: 0 auto 12px;
+    font-size: clamp(0.66rem, 2.85vw, 0.8rem);
+    letter-spacing: 0.28em;
   }
   .about-overview-copy {
+    max-width: min(330px, 100%);
     margin-top: 14px;
     font-size: clamp(0.92rem, 3.9vw, 1.04rem);
     line-height: 1.58;
+  }
+
+  .about-overview-scroll {
+    margin-top: clamp(22px, 3.4vh, 34px);
   }
 
   /* Mobile services: text top, video bottom */
