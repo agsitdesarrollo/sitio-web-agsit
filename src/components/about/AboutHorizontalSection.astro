@@ -10,6 +10,8 @@ const { content } = Astro.props;
 
 // side per service index (0-based): even = texto-right/video-left, odd = texto-left/video-right
 const serviceSides = content.services.map((_, i) => (i % 2 === 0 ? 'text-right' : 'text-left'));
+const getVideoAspectRatio = (image: string) => (image.endsWith('/servicios.mp4') ? '1 / 1' : '16 / 9');
+const getVideoRatioKind = (image: string) => (image.endsWith('/servicios.mp4') ? 'square' : 'wide');
 ---
 
 <section
@@ -39,9 +41,14 @@ const serviceSides = content.services.map((_, i) => (i % 2 === 0 ? 'text-right' 
           <article
             class="about-service-story js-about-service-card"
             data-side={serviceSides[i]}
+            data-service-code={service.code}
             aria-label={service.alt}
           >
-            <div class="about-service-image-frame js-about-service-visual">
+            <div
+              class="about-service-image-frame js-about-service-visual"
+              data-video-ratio={getVideoRatioKind(service.image)}
+              style={`--about-service-video-ratio: ${getVideoAspectRatio(service.image)}`}
+            >
               <video
                 data-src={service.image}
                 poster="/assets/fondo-ventana.webp"
