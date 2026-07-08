@@ -58,7 +58,7 @@ export const digitalMarketingV2ByLang: Record<SupportedLang, DigitalMarketingV2C
       title: 'Marketing Digital AGSIT | Estrategia, SEO, SEM y analítica para crecer',
       description:
         'Marketing digital AGSIT: estrategia, SEO, SEM, analítica, social media y e-commerce trabajando como un solo sistema para atraer, convertir y medir resultados.',
-      canonicalUrl: 'https://agsit.com.mx/mercadotecnia-digital-v2/',
+      canonicalUrl: 'https://agsit.com.mx/mercadotecnia-digital/',
       htmlLang: 'es-MX',
       locale: 'es_MX',
     },
@@ -158,7 +158,7 @@ export const digitalMarketingV2ByLang: Record<SupportedLang, DigitalMarketingV2C
       title: 'AGSIT Digital Marketing | Strategy, SEO, SEM and analytics for growth',
       description:
         'AGSIT digital marketing: strategy, SEO, SEM, analytics, social media and e-commerce working as one system to attract, convert and measure results.',
-      canonicalUrl: 'https://agsit.com.mx/en/digital-marketing-v2/',
+      canonicalUrl: 'https://agsit.com.mx/en/digital-marketing/',
       htmlLang: 'en',
       locale: 'en_US',
     },
