@@ -6,8 +6,15 @@ const DARK_BACKGROUND = '#020712';
 // up a ~120px raster. Keep in sync with --logo-oversample in AboutHorizontal.css.
 export const ALLIANCE_LOGO_OVERSAMPLE = 12;
 
-const getNavHeight = () =>
-  parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--nav-h')) || 0;
+const getNavHeight = () => {
+  const navRectHeight = document.querySelector<HTMLElement>('.site-nav')?.getBoundingClientRect().height;
+  if (navRectHeight && Number.isFinite(navRectHeight)) return navRectHeight;
+
+  const cssNavHeight = Number.parseFloat(
+    getComputedStyle(document.documentElement).getPropertyValue('--nav-h'),
+  );
+  return Number.isFinite(cssNavHeight) ? cssNavHeight : 0;
+};
 
 // On mobile the triangle wrap sits 38px below the slide center (see the mobile
 // block in AboutHorizontal.css); the zoomed logo and the floating-logo handoff
@@ -82,7 +89,7 @@ export function initAllianceLogoZoom({
       xPercent: -50,
       yPercent: -50,
       left: '50%',
-      top: () => (window.innerHeight - getNavHeight()) / 2 + getMobileCenterOffset(),
+      top: () => window.innerHeight / 2 + getMobileCenterOffset(),
     },
     startAt,
   );
@@ -103,7 +110,7 @@ export function initAllianceLogoZoom({
       autoAlpha: 1,
       pointerEvents: 'none',
       left: '50%',
-      top: () => (window.innerHeight + getNavHeight()) / 2 + getMobileCenterOffset(),
+      top: () => getNavHeight() + window.innerHeight / 2 + getMobileCenterOffset(),
       scale: 1,
       duration: 0.72,
       ease: 'power2.inOut',
