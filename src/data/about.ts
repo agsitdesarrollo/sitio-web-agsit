@@ -106,7 +106,7 @@ export const aboutContentByLang: Record<SupportedLang, AboutContent> = {
         ...commonServices.its,
         title: 'Soluciones Tecnológicas',
         description:
-          'Arquitectura, software, infraestructura, inteligencia artificial y ciberseguridad para acelerar la transformación digital.',
+          'Integramos tecnología, estrategia e innovación para optimizar la operación de tu empresa, acelerar su transformación digital y generar ventajas competitivas que impulsen su crecimiento.',
         tags: ['ITIL', 'Cloud', 'Desarrollo de software', 'IA & Big Data'],
         alt: 'Visual de soluciones tecnológicas',
         href: '/soluciones-tecnologicas/',
@@ -178,7 +178,7 @@ export const aboutContentByLang: Record<SupportedLang, AboutContent> = {
         ...commonServices.its,
         title: 'Technology Solutions',
         description:
-          'Architecture, software, infrastructure, artificial intelligence and cybersecurity to accelerate digital transformation.',
+          'We integrate technology, strategy and innovation to optimize your company’s operations, accelerate its digital transformation and generate competitive advantages that drive growth.',
         tags: ['ITIL', 'Cloud', 'Software development', 'AI & Big Data'],
         alt: 'Technology solutions visual',
         href: '/en/technology-solutions/',
