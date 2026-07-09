@@ -136,15 +136,16 @@
   padding: clamp(42px, 6vw, 96px);
   display: grid;
   /* default: text-left — text col1, video col2 */
-  grid-template-columns: minmax(360px, 0.82fr) minmax(520px, 1.18fr);
-  gap: clamp(36px, 5vw, 92px);
+  grid-template-columns: minmax(420px, 1fr) minmax(420px, 1fr);
+  gap: 0;
   align-items: center;
+  justify-items: center;
   overflow: hidden;
   background: #ffffff;
 }
 
 .about-service-story[data-side='text-right'] {
-  grid-template-columns: minmax(520px, 1.18fr) minmax(360px, 0.82fr);
+  grid-template-columns: minmax(420px, 1fr) minmax(420px, 1fr);
 }
 
 /* text-right variant: video col1, text col2 */
@@ -163,8 +164,9 @@
   grid-column: 2;
   grid-row: 1;
   z-index: 0;
-  width: 100%;
+  width: min(100%, clamp(540px, 43vw, 800px));
   height: auto;
+  justify-self: center;
   aspect-ratio: var(--about-service-video-ratio, 16 / 9);
   overflow: hidden;
   border-radius: 8px;

@@ -9,7 +9,7 @@ type Props = {
 const { content } = Astro.props;
 
 // side per service index (0-based): even = texto-right/video-left, odd = texto-left/video-right
-const serviceSides = content.services.map((_, i) => (i % 2 === 0 ? 'text-right' : 'text-left'));
+// const serviceSides = content.services.map((_, i) => (i % 2 === 0 ? 'text-right' : 'text-left'));
 const getVideoAspectRatio = (image: string) => (image.endsWith('/servicios.mp4') ? '1 / 1' : '16 / 9');
 const getVideoRatioKind = (image: string) => (image.endsWith('/servicios.mp4') ? 'square' : 'wide');
 ---
@@ -40,7 +40,7 @@ const getVideoRatioKind = (image: string) => (image.endsWith('/servicios.mp4') ?
         <div class="about-snap-slide about-snap-slide--service" data-slide={i + 1}>
           <article
             class="about-service-story js-about-service-card"
-            data-side={serviceSides[i]}
+            
             data-service-code={service.code}
             aria-label={service.alt}
           >
@@ -199,12 +199,12 @@ const getVideoRatioKind = (image: string) => (image.endsWith('/servicios.mp4') ?
   const SLIDE_POSITIONS = [
     { x: 0, y: 0 },
     { x: 1, y: 0 },
-    { x: 1, y: 1 },
-    { x: 2, y: 1 },
-    { x: 2, y: 2 },
-    { x: 1, y: 2 },
-    { x: 2, y: 2 },
-    { x: 3, y: 2 },
+    { x: 2, y: 0 },
+    { x: 3, y: 0 },
+    { x: 4, y: 0 },
+    { x: 5, y: 0 },
+    { x: 6, y: 3 },
+    { x: 7, y: 2 },
   ] as const;
 
   // ── DOM ───────────────────────────────────────────────────────────────────
