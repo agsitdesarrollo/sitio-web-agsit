@@ -82,6 +82,12 @@ const alternates = [
       import { initScrollExperience } from '../../components/scroll/scrollExperienceController';
       initScrollExperience();
     </script>
+
+    <script>
+      import { initContactFormSubmissions } from '../../scripts/contactFormSubmit';
+
+      initContactFormSubmissions();
+    </script>
    
     <script define:vars={{ closeMenuLabel: t('nav.closeMenu'), openMenuLabel: t('nav.openMenu') }}>
       const nav = document.querySelector('.site-nav nav');
@@ -92,7 +98,6 @@ const alternates = [
       const navLinks = Array.from(document.querySelectorAll('[data-nav-close]'));
       const homeLinks = Array.from(document.querySelectorAll('a[href="#inicio"]'));
       const servicesLinks = Array.from(document.querySelectorAll('a[href="#servicios"]'));
-      const forms = Array.from(document.querySelectorAll('[data-contact-form]'));
       let contactScrollY = 0;
       let isContactOpen = false;
 
@@ -191,7 +196,6 @@ const alternates = [
         }),
       );
       closeButtons.forEach((button) => button.addEventListener('click', () => setContactOpen(false)));
-      forms.forEach((form) => form.addEventListener('submit', (event) => event.preventDefault()));
       window.addEventListener('keydown', (event) => {
         if (event.key === 'Escape') {
           setContactOpen(false);

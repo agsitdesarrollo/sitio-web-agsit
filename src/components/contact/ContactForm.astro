@@ -6,32 +6,94 @@ type Props = {
 };
 
 const { copy } = Astro.props;
+const personNamePattern = "[A-Za-zÀ-ÖØ-öø-ÿ]+(?:[ '\\.-][A-Za-zÀ-ÖØ-öø-ÿ]+)*";
+const phonePattern = "\\+?[0-9][0-9\\s().-]{7,19}";
 ---
 
-<form class="contact-form" data-contact-form>
+<form
+  class="contact-form"
+  method="post"
+  action="/api/contact"
+  data-contact-form
+  data-sending-text={copy.sending}
+  data-success-text={copy.success}
+  data-error-text={copy.error}
+>
+  <div class="contact-form-hp" aria-hidden="true">
+    <label>
+      Website
+      <input type="text" name="website" tabindex="-1" autocomplete="off" />
+    </label>
+  </div>
   <label>
     {copy.name}
-    <input type="text" name="name" placeholder={copy.namePlaceholder} />
+    <input
+      type="text"
+      name="name"
+      placeholder={copy.namePlaceholder}
+      autocomplete="given-name"
+      minlength="2"
+      maxlength="60"
+      pattern={personNamePattern}
+      title="Usa solo letras y separadores validos como espacio, apostrofo, punto o guion."
+      required
+    />
   </label>
   <label>
     {copy.lastName}
-    <input type="text" name="lastName" placeholder={copy.lastNamePlaceholder} />
+    <input
+      type="text"
+      name="lastName"
+      placeholder={copy.lastNamePlaceholder}
+      autocomplete="family-name"
+      minlength="2"
+      maxlength="80"
+      pattern={personNamePattern}
+      title="Usa solo letras y separadores validos como espacio, apostrofo, punto o guion."
+      required
+    />
   </label>
   <label>
     {copy.phone}
-    <input type="tel" name="phone" placeholder={copy.phonePlaceholder} />
+    <input
+      type="tel"
+      name="phone"
+      placeholder={copy.phonePlaceholder}
+      autocomplete="tel"
+      inputmode="tel"
+      minlength="8"
+      maxlength="20"
+      pattern={phonePattern}
+      title="Usa un telefono valido, por ejemplo +525512345678."
+      required
+    />
   </label>
   <label>
     {copy.email}
-    <input type="email" name="email" placeholder={copy.emailPlaceholder} />
+    <input
+      type="email"
+      name="email"
+      placeholder={copy.emailPlaceholder}
+      autocomplete="email"
+      maxlength="120"
+      required
+    />
   </label>
   <label class="contact-form-wide">
     {copy.company}
-    <input type="text" name="company" placeholder={copy.companyPlaceholder} />
+    <input
+      type="text"
+      name="company"
+      placeholder={copy.companyPlaceholder}
+      autocomplete="organization"
+      maxlength="120"
+      required
+    />
   </label>
   <label class="contact-form-wide">
     {copy.message}
-    <textarea name="message" placeholder={copy.messagePlaceholder} rows="4"></textarea>
+    <textarea name="message" placeholder={copy.messagePlaceholder} rows="4" maxlength="1000" required></textarea>
   </label>
-  <button class="contact-submit" type="submit">{copy.submit}</button>
+  <p class="contact-form-status contact-form-wide" role="status" aria-live="polite" data-contact-status></p>
+  <button class="contact-submit" type="submit" data-contact-submit>{copy.submit}</button>
 </form>

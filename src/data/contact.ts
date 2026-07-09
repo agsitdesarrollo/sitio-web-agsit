@@ -14,6 +14,9 @@ export type ContactFormCopy = {
   message: string;
   messagePlaceholder: string;
   submit: string;
+  sending: string;
+  success: string;
+  error: string;
 };
 
 export type ContactCopy = {
@@ -59,13 +62,16 @@ export const contactCopyByLang: Record<SupportedLang, ContactCopy> = {
       lastName: 'Apellido',
       lastNamePlaceholder: 'Tu apellido',
       phone: 'Teléfono',
-      phonePlaceholder: '+52',
+      phonePlaceholder: '+52 55 1234 5678 o 55 1234 5678',
       email: 'Email',
       emailPlaceholder: 'correo@empresa.com',
       company: 'Nombre de la compañía',
       companyPlaceholder: 'Empresa',
       message: 'Comentario',
       messagePlaceholder: 'Describe brevemente el proyecto o necesidad',
+      sending: 'Enviando...',
+      success: 'Solicitud enviada. Te contactaremos pronto.',
+      error: 'No se pudo enviar la solicitud. Intenta de nuevo o usa los datos de contacto directo.',
       submit: 'Solicitar asesoría',
     },
   },
@@ -92,7 +98,7 @@ export const contactCopyByLang: Record<SupportedLang, ContactCopy> = {
       lastName: 'Last name',
       lastNamePlaceholder: 'Your last name',
       phone: 'Phone',
-      phonePlaceholder: '+1',
+      phonePlaceholder: '+1 202 555 0123 or 202 555 0123',
       email: 'Email',
       emailPlaceholder: 'email@company.com',
       company: 'Company name',
@@ -100,6 +106,9 @@ export const contactCopyByLang: Record<SupportedLang, ContactCopy> = {
       message: 'Message',
       messagePlaceholder: 'Briefly describe the project or need',
       submit: 'Request consultation',
+      sending: 'Sending...',
+      success: 'Request sent. We will contact you soon.',
+      error: 'The request could not be sent. Try again or use the direct contact details.',
     },
   },
 };
