@@ -1,10 +1,10 @@
 # AGSIT Astro Landing
 
-Landing page estatica en Astro para AGSIT, migrada desde la version React/Vite. La prioridad del proyecto es mantener la experiencia visual y las animaciones de scroll 1:1, reduciendo la hidratacion al minimo mediante islas React puntuales.
+Landing page Astro para AGSIT, migrada desde la version React/Vite. La prioridad del proyecto es mantener la experiencia visual y las animaciones de scroll 1:1, reduciendo la hidratacion al minimo y usando una ruta server-side para el formulario de contacto.
 
 ## Stack
 
-- Astro 6 con salida estatica.
+- Astro 6 con adapter Node para servir `/api/contact`.
 - React solo para islas interactivas.
 - Tailwind CSS 4 importado desde `src/styles/global.css`.
 - GSAP + ScrollTrigger para las animaciones de scroll.
@@ -42,13 +42,15 @@ Landing page estatica en Astro para AGSIT, migrada desde la version React/Vite. 
 `-- package.json
 ```
 
-## Arquitectura de hidratacion
+## Arquitectura de hidratacion y contacto
 
-La pagina principal vive en `src/pages/index.astro` y renderiza HTML estatico para SEO. Solo se hidratan tres piezas:
+La pagina principal vive en `src/pages/[...lang]/index.astro` y renderiza HTML prerenderizado para SEO. Las piezas interactivas principales son:
 
-- `SiteInteractivity` (`client:load`): controla menu movil, eventos `data-contact-trigger`, drawer de contacto y previene el envio visual del formulario.
-- `ScrollExperienceController` (`client:load`): registra GSAP, ScrollTrigger y las timelines sobre clases `js-*`.
-- `ClientsPhysicsCanvas` (`client:load`): ejecuta Matter.js dentro de la seccion de clientes.
+- `PageShellScripts`: controla menu movil, eventos `data-contact-trigger` y drawer de contacto.
+- `contactFormSubmit`: envia los formularios a `/api/contact`.
+- `ScrollExperienceController`: registra GSAP, ScrollTrigger y las timelines sobre clases `js-*`.
+
+El endpoint `src/pages/api/contact.ts` lee `BITRIX_WEBHOOK_URL` desde variables de entorno y llama `crm.lead.add` en Bitrix. Como fallback temporal tambien acepta `BITRIX`.
 
 Las clases `js-*` son parte del contrato de animacion. No renombrarlas sin actualizar `src/components/scroll/ScrollExperienceController.tsx`.
 
@@ -66,6 +68,7 @@ Los botones que deben abrir contacto usan `data-contact-trigger`.
 pnpm install
 pnpm dev
 pnpm build
+pnpm start
 pnpm preview
 ```
 
@@ -74,6 +77,6 @@ pnpm preview
 - Las imagenes estaticas optimizables viven en `src/assets/images` y se importan con `astro:assets`.
 - Los videos y archivos que deben conservar su URL directa viven en `public/assets`; las rutas se consumen como `/assets/nombre.ext`.
 - Los logos de clientes siguen apuntando a URLs remotas de `agsit.com.mx`.
-- El formulario es visual por ahora. No envia datos a una API.
+- El formulario crea prospectos en Bitrix mediante `/api/contact`; no expongas el webhook como variable `PUBLIC_*`.
 - La metadata SEO base esta en `src/data/siteMetadata.ts`.
 - Tailwind esta disponible, pero los estilos complejos de animacion se mantienen en CSS modular para proteger el comportamiento 1:1.

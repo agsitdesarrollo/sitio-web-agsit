@@ -7,6 +7,12 @@ type Props = {
 const { openMenuLabel, closeMenuLabel } = Astro.props;
 ---
 
+<script>
+  import { initContactFormSubmissions } from '../../scripts/contactFormSubmit';
+
+  initContactFormSubmissions();
+</script>
+
 <script define:vars={{ openMenuLabel, closeMenuLabel }}>
   const nav = document.querySelector('.site-nav nav');
   const toggle = document.querySelector('.menu-toggle');
@@ -14,7 +20,6 @@ const { openMenuLabel, closeMenuLabel } = Astro.props;
   const openButtons = Array.from(document.querySelectorAll('[data-contact-trigger]'));
   const closeButtons = Array.from(document.querySelectorAll('[data-contact-close]'));
   const navLinks = Array.from(document.querySelectorAll('[data-nav-close]'));
-  const forms = Array.from(document.querySelectorAll('[data-contact-form]'));
   let contactScrollY = 0;
   let isContactOpen = false;
 
@@ -70,7 +75,6 @@ const { openMenuLabel, closeMenuLabel } = Astro.props;
     }),
   );
   closeButtons.forEach((button) => button.addEventListener('click', () => setContactOpen(false)));
-  forms.forEach((form) => form.addEventListener('submit', (event) => event.preventDefault()));
   window.addEventListener('keydown', (event) => {
     if (event.key === 'Escape') {
       setContactOpen(false);

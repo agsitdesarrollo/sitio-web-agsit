@@ -1,19 +1,22 @@
 # Despliegue en cPanel: reemplazar WordPress por Astro
 
-Esta guia aplica a este proyecto `astro-web-agsit`. El sitio compila como estatico, por lo que en cPanel no se necesita ejecutar Astro, Node.js ni `pnpm` en produccion si se sube el contenido ya generado de `dist/`.
+Esta guia quedo parcialmente obsoleta desde que el formulario de contacto consume Bitrix con un webhook privado. El sitio sigue prerenderizando paginas, pero ahora tambien genera un servidor Node para `/api/contact`; si solo se sube HTML estatico a `public_html`, el sitio carga pero el formulario no puede crear prospectos.
+
+Para mantener el webhook en una variable de entorno, produccion debe ejecutar la app Node generada por Astro o delegar `/api/contact` a otro backend.
 
 ## Resumen de la estrategia
 
-- Compilar el proyecto localmente con `pnpm build`.
+- Compilar el proyecto con `pnpm build`.
+- Configurar `BITRIX_WEBHOOK_URL` como variable de entorno en el runtime Node.
+- Ejecutar `node ./dist/server/entry.mjs` o el script `pnpm start` en un entorno Node compatible.
 - Respaldar el sitio WordPress actual antes de tocar `public_html`.
-- Vaciar o renombrar los archivos de WordPress del document root del dominio.
-- Subir a cPanel el contenido interno de `dist/`, no la carpeta `dist` completa.
+- Publicar los assets de `dist/client` y servir la app con `dist/server/entry.mjs` segun la configuracion Node del hosting.
 - Verificar rutas, assets, HTTPS, SEO y redirecciones desde URLs antiguas de WordPress.
 
 ## Datos especificos de este proyecto
 
 - Framework: Astro 6.
-- Tipo de salida: estatica.
+- Tipo de salida: prerender + endpoint server-side con `@astrojs/node`.
 - Gestor de paquetes: `pnpm@11.1.1`.
 - Node requerido para compilar: `>=22.12.0`.
 - Carpeta de salida: `dist/`.
