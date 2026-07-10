@@ -1,8 +1,8 @@
 # Despliegue en cPanel: reemplazar WordPress por Astro
 
-Esta guia quedo parcialmente obsoleta desde que el formulario de contacto consume Bitrix con un webhook privado. El sitio sigue prerenderizando paginas, pero ahora tambien genera un servidor Node para `/api/contact`; si solo se sube HTML estatico a `public_html`, el sitio carga pero el formulario no puede crear prospectos.
+Esta guia aplica solo si el sitio se va a publicar en un entorno con Node dentro de cPanel o si se decide separar `/api/contact` en otro backend. Desde que el formulario consume Bitrix con un webhook privado, subir solo HTML estatico a `public_html` hace que el sitio cargue, pero el formulario no puede crear prospectos.
 
-Para mantener el webhook en una variable de entorno, produccion debe ejecutar la app Node generada por Astro o delegar `/api/contact` a otro backend.
+Para mantener el webhook en una variable de entorno, produccion debe ejecutar la app Node generada por Astro, usar un proveedor serverless compatible como Netlify, o delegar `/api/contact` a otro backend.
 
 ## Resumen de la estrategia
 
@@ -16,7 +16,8 @@ Para mantener el webhook en una variable de entorno, produccion debe ejecutar la
 ## Datos especificos de este proyecto
 
 - Framework: Astro 6.
-- Tipo de salida: prerender + endpoint server-side con `@astrojs/node`.
+- Tipo de salida: prerender + endpoint server-side.
+- Adapter: `@astrojs/node` por defecto; `@astrojs/netlify` cuando `NETLIFY=true` o `ASTRO_ADAPTER=netlify`.
 - Gestor de paquetes: `pnpm@11.1.1`.
 - Node requerido para compilar: `>=22.12.0`.
 - Carpeta de salida: `dist/`.
@@ -52,6 +53,14 @@ dist/
 ```
 
 En la verificacion hecha para este repo, `pnpm build` termino correctamente y Astro genero el sitio estatico en `dist/`.
+
+Con el adapter Node, el build genera `dist/client` y `dist/server`. El comando de arranque es:
+
+```sh
+pnpm start
+```
+
+En Netlify no se usa `pnpm start`; Netlify ejecuta `pnpm build` y despliega sus funciones automaticamente.
 
 Para revisar el build antes de subirlo:
 

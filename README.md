@@ -4,7 +4,7 @@ Landing page Astro para AGSIT, migrada desde la version React/Vite. La prioridad
 
 ## Stack
 
-- Astro 6 con adapter Node para servir `/api/contact`.
+- Astro 6 con adapter condicional: Netlify en Netlify y Node standalone fuera de Netlify.
 - React solo para islas interactivas.
 - Tailwind CSS 4 importado desde `src/styles/global.css`.
 - GSAP + ScrollTrigger para las animaciones de scroll.
@@ -52,6 +52,17 @@ La pagina principal vive en `src/pages/[...lang]/index.astro` y renderiza HTML p
 
 El endpoint `src/pages/api/contact.ts` lee `BITRIX_WEBHOOK_URL` desde variables de entorno y llama `crm.lead.add` en Bitrix. Como fallback temporal tambien acepta `BITRIX`.
 
+## Despliegue
+
+El proyecto selecciona adapter segun el entorno:
+
+- En Netlify, `NETLIFY=true` activa `@astrojs/netlify` automaticamente.
+- En cPanel con Node, Google Cloud Run, Compute Engine u otro runtime Node, usa `@astrojs/node` por defecto.
+- Para forzar Netlify fuera de Netlify, usa `ASTRO_ADAPTER=netlify`.
+- Para el formulario, configura `BITRIX_WEBHOOK_URL=https://<DOMINIO>/rest/1/<TOKEN>` en variables de entorno del proveedor. No uses prefijo `PUBLIC_`.
+
+Si el sitio se sube como HTML estatico puro a `public_html`, las paginas cargan, pero `/api/contact` no existe y el formulario no puede crear prospectos.
+
 Las clases `js-*` son parte del contrato de animacion. No renombrarlas sin actualizar `src/components/scroll/ScrollExperienceController.tsx`.
 
 ## Eventos DOM
@@ -68,7 +79,7 @@ Los botones que deben abrir contacto usan `data-contact-trigger`.
 pnpm install
 pnpm dev
 pnpm build
-pnpm start
+pnpm start # solo para el build Node standalone
 pnpm preview
 ```
 
