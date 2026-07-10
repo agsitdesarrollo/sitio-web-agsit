@@ -19,7 +19,7 @@ Para mantener el webhook en una variable de entorno, produccion debe ejecutar la
 - Tipo de salida: prerender + endpoint server-side.
 - Adapter: `@astrojs/node` por defecto; `@astrojs/netlify` cuando `NETLIFY=true` o `ASTRO_ADAPTER=netlify`.
 - Gestor de paquetes: `pnpm@11.1.1`.
-- Node requerido para compilar: `>=22.12.0`.
+- Node requerido para compilar: `>=22.13.0`.
 - Carpeta de salida: `dist/`.
 - Dominio configurado en metadata: `https://agsit.com.mx/`.
 - Rutas generadas actualmente:
@@ -286,7 +286,7 @@ No es la opcion recomendada para este proyecto si el hosting solo sirve archivos
 
 Requisitos:
 
-- Node.js `>=22.12.0`.
+- Node.js `>=22.13.0`.
 - `pnpm` compatible.
 - Acceso SSH o Terminal.
 - Permiso para ejecutar builds.
