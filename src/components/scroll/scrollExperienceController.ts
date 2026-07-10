@@ -24,7 +24,7 @@ export function initScrollExperience(): (() => void) | undefined {
     const cards = gsap.utils.toArray<HTMLElement>('.service-card');
     const fillLetters = gsap.utils.toArray<HTMLElement>('.js-title-fill-letter');
     const isCompact = window.matchMedia('(max-width: 1024px)').matches;
-    const isMobile = window.matchMedia('(max-width: 767px)').matches;
+    const isMobile = window.matchMedia('(max-width: 749px)').matches;
     const isTablet = isCompact && !isMobile;
     const isDesktop = !isCompact;
     ScrollTrigger.config({ ignoreMobileResize: true });
@@ -49,6 +49,27 @@ export function initScrollExperience(): (() => void) | undefined {
     const getConsultLogoTravelScale = () => (isMobile ? 0.58 : isTablet ? 0.66 : 0.30);
     const getConsultLogoStartScale = () => (isMobile ? 0.26 : isTablet ? 0.34 : 0.46);
     const getElementRect = (selector: string) => document.querySelector<HTMLElement>(selector)?.getBoundingClientRect();
+    const getTabletCardTargetY = (card: HTMLElement) => {
+      const cardsLayer = document.querySelector<HTMLElement>('.services-cards-layer');
+      const personRect = getElementRect('.js-services-person');
+      const ctaRect = getElementRect('.services-advice-cta');
+
+      if (!cardsLayer || !personRect || !ctaRect) {
+        return (getViewportHeight() - card.offsetHeight) / 2;
+      }
+
+      const safetyGap = 24;
+      const layerRect = cardsLayer.getBoundingClientRect();
+      const cardHeight = card.offsetHeight;
+      const availableTop = personRect.bottom + safetyGap;
+      const availableBottom = ctaRect.top - safetyGap - cardHeight;
+      const targetTop =
+        availableBottom >= availableTop
+          ? availableTop + (availableBottom - availableTop) / 2
+          : Math.max(safetyGap, (getViewportHeight() - cardHeight) / 2);
+
+      return targetTop - layerRect.top;
+    };
     const getServicesPersonTargetRect = () => {
       const services = document.querySelector<HTMLElement>('.js-services');
       const person = document.querySelector<HTMLElement>('.js-services-person');
@@ -457,11 +478,11 @@ export function initScrollExperience(): (() => void) | undefined {
       });
 
     } else if (!isMobile) {
-      cards.forEach((card, index) => {
+      cards.forEach((card) => {
         gsap.set(card, {
           autoAlpha: 0,
-          y: 24,
-          x: index % 2 === 0 ? -140 : 140,
+          x: 0,
+          y: () => getTabletCardTargetY(card) + 24,
         });
       });
 
@@ -501,12 +522,17 @@ export function initScrollExperience(): (() => void) | undefined {
       cards.forEach((card, index) => {
         const startAt = index * tabletCardStep + 0.1;
         servicesTimeline
-          .to(
+          .fromTo(
             card,
+            {
+              autoAlpha: 0,
+              x: 0,
+              y: () => getTabletCardTargetY(card) + 24,
+            },
             {
               autoAlpha: 1,
               x: 0,
-              y: 0,
+              y: () => getTabletCardTargetY(card),
               duration: 0.26,
               ease: 'power2.out',
             },
@@ -516,7 +542,7 @@ export function initScrollExperience(): (() => void) | undefined {
             card,
             {
               autoAlpha: 0,
-              y: -28,
+              y: () => getTabletCardTargetY(card) - 28,
               duration: tabletCardExitDuration,
               ease: 'power1.inOut',
             },

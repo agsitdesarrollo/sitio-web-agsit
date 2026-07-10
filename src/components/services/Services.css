@@ -261,7 +261,7 @@
   }
 }
 
-@media (min-width: 768px) and (max-width: 1024px) {
+@media (min-width: 750px) and (max-width: 1024px) {
   .services-section {
     min-height: var(--app-stable-vh, 100svh);
     padding-inline: clamp(24px, 4vw, 42px);
@@ -285,11 +285,12 @@
 
   .services-cards-layer {
     position: absolute;
-    top: clamp(330px, 45vh, 420px);
+    top: 0;
+    bottom: 0;
     left: 50%;
     transform: translateX(-50%);
-    width: min(900px, 92vw);
-    min-height: clamp(230px, 30vh, 320px);
+    width: min(320px, 34vw);
+    min-height: 0;
     margin: 0;
   }
 
@@ -317,11 +318,12 @@
 
   .service-card.left {
     left: 0;
+    right: auto;
   }
 
   .service-card.right {
-    right: 0;
-    left: auto;
+    left: 0;
+    right: auto;
   }
 
   .service-card-copy p {
@@ -329,7 +331,7 @@
   }
 }
 
-@media (max-width: 767px) {
+@media (max-width: 749px) {
   .services-section {
     min-height: calc(var(--app-stable-vh, 100svh) - var(--nav-h));
     padding:
@@ -423,7 +425,7 @@
   }
 }
 
-@media (max-width: 767px) and (max-height: 720px) {
+@media (max-width: 749px) and (max-height: 720px) {
   .services-section {
     padding-top: calc(var(--nav-h) + 8px);
     padding-bottom: 26px;
@@ -462,7 +464,7 @@
   }
 }
 
-@media (min-width: 641px) and (max-width: 767px) {
+@media (min-width: 641px) and (max-width: 749px) {
   .services-section {
     min-height: calc(var(--app-stable-vh, 100svh) - var(--nav-h));
     padding:
@@ -512,7 +514,7 @@
   }
 }
 
-@media (min-width: 768px) and (max-width: 1024px) {
+@media (min-width: 750px) and (max-width: 1024px) {
   .services-background::before {
     top: calc(var(--nav-h) + clamp(360px, 38svh, 500px));
     bottom: auto;
@@ -522,7 +524,4 @@
     margin-top: clamp(18px, 2.8svh, 34px);
   }
 
-  .services-cards-layer {
-    top: clamp(420px, 51svh, 560px);
-  }
 }
