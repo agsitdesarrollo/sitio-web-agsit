@@ -45,6 +45,11 @@ html {
   scrollbar-gutter: stable;
 }
 
+html.home-snap-active {
+  scroll-padding-top: 0;
+  scroll-snap-type: y mandatory;
+}
+
 html,
 body {
   margin: 0;

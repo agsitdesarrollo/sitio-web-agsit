@@ -1,13 +1,27 @@
-.hero-section {
+.hero-scroll {
   position: relative;
+  min-height: calc((var(--app-stable-vh, 100svh) - var(--nav-h)) + var(--app-stable-vh, 100svh));
+  scroll-snap-align: start;
+  overflow: clip;
+  background: #020712;
+}
+
+.hero-section {
+  position: sticky;
+  top: var(--nav-h);
   height: calc(var(--app-stable-vh, 100svh) - var(--nav-h));
   min-height: calc(var(--app-stable-vh, 100svh) - var(--nav-h));
-  scroll-margin-top: var(--nav-h);
   display: grid;
   align-items: center;
   isolation: isolate;
   overflow: hidden;
   background: #020712;
+}
+
+.hero-second-snap {
+  height: var(--app-stable-vh, 100svh);
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
 }
 
 .hero-media-wrap {
@@ -46,7 +60,7 @@
 
 .hero-person {
   --hero-person-height-limit: calc((var(--app-stable-vh, 100svh) - var(--nav-h)) * 0.94);
-  position: fixed;
+  position: absolute;
   left: 50%;
   bottom: max(0px, calc(var(--app-vh, 100dvh) - var(--app-stable-vh, 100svh)));
   width: min(clamp(470px, 48vw, 700px), var(--hero-person-height-limit));
@@ -65,8 +79,8 @@
 }
 
 .hero-copy {
-  position: fixed;
-  top: var(--nav-h);
+  position: absolute;
+  top: 0;
   left: 0;
   right: 0;
   bottom: 0;
@@ -231,7 +245,12 @@
   color: #fc0303;
   clip-path: inset(0 100% 0 0);
   -webkit-text-stroke: 0;
+  transition: clip-path 460ms ease;
   will-change: clip-path;
+}
+
+.hero-scroll.is-second-state .title-fill-letter {
+  clip-path: inset(0 0% 0 0);
 }
 
 .hero-subcopy-grid {
@@ -335,9 +354,9 @@
 
   .hero-left-panel {
     right: 0;
-    bottom: auto;
+    bottom: 0;
     width: 100%;
-    min-height: auto;
+    min-height: 100%;
     padding: clamp(0px, 1vw, 10px) 30px 0;
     align-items: center;
     justify-content: flex-start;
@@ -399,7 +418,7 @@
   }
 
   .hero-cta-wrap {
-    position: fixed;
+    position: absolute;
     left: 50%;
     bottom: 11%;
     transform: translateX(-50%);

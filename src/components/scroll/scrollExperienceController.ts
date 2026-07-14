@@ -21,12 +21,9 @@ export function initScrollExperience(): (() => void) | undefined {
     window.scrollTo(0, 0);
     ScrollTrigger.getAll().forEach((trigger) => trigger.kill());
 
-    const cards = gsap.utils.toArray<HTMLElement>('.service-card');
-    const fillLetters = gsap.utils.toArray<HTMLElement>('.js-title-fill-letter');
     const isCompact = window.matchMedia('(max-width: 1024px)').matches;
     const isMobile = window.matchMedia('(max-width: 749px)').matches;
     const isTablet = isCompact && !isMobile;
-    const isDesktop = !isCompact;
     ScrollTrigger.config({ ignoreMobileResize: true });
 
     const getRootPixelValue = (name: string, fallback: number) => {
@@ -42,98 +39,15 @@ export function initScrollExperience(): (() => void) | undefined {
     const getNavHeight = () => document.querySelector('.site-nav')?.getBoundingClientRect().height ?? 0;
     const getPinnedSectionStart = () => `top top+=${getNavHeight()}`;
     const getVideoStoryInset = () => (isMobile ? 22 : isTablet ? 24 : isCompact ? 28 : 34);
-    const getHeroScrollEnd = () => (isMobile ? 105 : isCompact ? 105 : 220);
-    const getMobileServicesScrollEnd = () => (isMobile ? 275 : 560);
     const getVideoStoryScrollEnd = () => (isMobile ? 250 : isCompact ? 780 : 880);
     const getConsultLogoBottomY = () => getDynamicViewportHeight() - (isMobile ? 68 : isTablet ? 72 : 70);
     const getConsultLogoTravelScale = () => (isMobile ? 0.58 : isTablet ? 0.66 : 0.30);
-    const getConsultLogoStartScale = () => (isMobile ? 0.26 : isTablet ? 0.34 : 0.46);
-    const getElementRect = (selector: string) => document.querySelector<HTMLElement>(selector)?.getBoundingClientRect();
-    const getTabletCardTargetY = (card: HTMLElement) => {
-      const cardsLayer = document.querySelector<HTMLElement>('.services-cards-layer');
-      const personRect = getElementRect('.js-services-person');
-      const ctaRect = getElementRect('.services-advice-cta');
+    const getConsultLogoBridgeY = () => getViewportHeight() + (isMobile ? 26 : isTablet ? 34 : 42);
 
-      if (!cardsLayer || !personRect || !ctaRect) {
-        return (getViewportHeight() - card.offsetHeight) / 2;
-      }
 
-      const safetyGap = 24;
-      const layerRect = cardsLayer.getBoundingClientRect();
-      const cardHeight = card.offsetHeight;
-      const availableTop = personRect.bottom + safetyGap;
-      const availableBottom = ctaRect.top - safetyGap - cardHeight;
-      const targetTop =
-        availableBottom >= availableTop
-          ? availableTop + (availableBottom - availableTop) / 2
-          : Math.max(safetyGap, (getViewportHeight() - cardHeight) / 2);
-
-      return targetTop - layerRect.top;
-    };
-    const getServicesPersonTargetRect = () => {
-      const services = document.querySelector<HTMLElement>('.js-services');
-      const person = document.querySelector<HTMLElement>('.js-services-person');
-
-      if (!services || !person) {
-        return undefined;
-      }
-
-      const servicesRect = services.getBoundingClientRect();
-      const personRect = person.getBoundingClientRect();
-
-      return {
-        bottom: personRect.bottom - servicesRect.top,
-        width: personRect.width,
-      };
-    };
-    const getFloatingPersonTargetY = () => {
-      const target = getServicesPersonTargetRect();
-
-      if (!target) {
-        return -getViewportHeight() * (isCompact ? 0.28 : 0.18);
-      }
-
-      return target.bottom - getViewportHeight();
-    };
-    const getFloatingPersonTargetScale = () => {
-      const floating = document.querySelector<HTMLElement>('.js-floating-person');
-      const target = getServicesPersonTargetRect();
-
-      if (!floating || !target) {
-        return isCompact ? 0.58 : 0.74;
-      }
-
-      return target.width / Math.max(floating.offsetWidth, 1);
-    };
-    const getConsultLogoStartTop = () => {
-      const cta = getElementRect('.services-advice-cta');
-
-      if (isCompact && cta) {
-        return isMobile ? Math.min(cta.bottom + 12, getViewportHeight() - 18) : getViewportHeight() + 34;
-      }
-
-      return getViewportHeight() - 128;
-    };
-    const getConsultLogoBridgeY = () => {
-      const cta = getElementRect('.services-advice-cta');
-      const fallback = getViewportHeight() + (isMobile ? 26 : isTablet ? 34 : 42);
-
-      if (!cta || cta.top >= getViewportHeight()) {
-        return fallback;
-      }
-
-      if (isCompact && isMobile) {
         // Track the button continuously — even once it has scrolled past the
         // top edge — so the bridge interpolation never jumps mid-flight.
-        return Math.min(cta.bottom + 12, getViewportHeight() - 18);
-      }
 
-      if (isCompact || cta.bottom <= 0) {
-        return fallback;
-      }
-
-      return cta.bottom + 70;
-    };
     const setIfFound = (selector: string, vars: gsap.TweenVars) => {
       const targets = gsap.utils.toArray<HTMLElement>(selector);
 
@@ -199,8 +113,6 @@ export function initScrollExperience(): (() => void) | undefined {
       ensureVideoAutoplay(heroVideo);
     }
 
-    gsap.set('.js-floating-person', { y: 0, yPercent: -5, scale: 1.08, autoAlpha: 1 });
-    gsap.set('.js-services-person', { autoAlpha: 0 });
     gsap.set('.js-video-story-stage', { backgroundColor: '#020712' });
     gsap.set('.js-video-story-line', { autoAlpha: 0, y: 0 });
     gsap.set('.js-video-story-frame', {
@@ -211,14 +123,12 @@ export function initScrollExperience(): (() => void) | undefined {
       height: () => getViewportHeight() - getNavHeight(),
       xPercent: -50,
     });
-    gsap.set('.js-hero-copy', { autoAlpha: 1, y: 0 });
-    gsap.set('.js-title-fill-letter', { clipPath: 'inset(0 100% 0 0)' });
     setIfFound('.js-scroll-consult-logo', {
       autoAlpha: 0,
       pointerEvents: 'none',
       left: '50%',
-      top: getConsultLogoStartTop,
-      scale: getConsultLogoStartScale,
+      top: getConsultLogoBottomY,
+      scale: getConsultLogoTravelScale,
       xPercent: -50,
       yPercent: -50,
     });
@@ -299,325 +209,6 @@ export function initScrollExperience(): (() => void) | undefined {
       ScrollTrigger.removeEventListener('refresh', onScrollTriggerRefreshDone);
     };
 
-    const heroTimeline = gsap.timeline({
-      scrollTrigger: {
-        trigger: '.js-hero',
-        start: () => `top top+=${getNavHeight()}`,
-        end: () => `+=${getHeroScrollEnd()}%`,
-        scrub: true,
-        pin: true,
-        anticipatePin: 1,
-      },
-    });
-
-    fillLetters.forEach((letter) => {
-      heroTimeline.to(letter, {
-        clipPath: 'inset(0 0% 0 0)',
-        duration: 0.08,
-        ease: 'none',
-      });
-    });
-
-    heroTimeline.to('.js-hero-copy', {
-      autoAlpha: 0,
-      y: 28,
-      ease: 'none',
-      duration: 0.32,
-    });
-
-    if (isCompact) {
-      gsap.timeline({
-        scrollTrigger: {
-          trigger: '.js-services',
-          start: 'top bottom',
-          end: 'top top',
-          scrub: true,
-          invalidateOnRefresh: true,
-          onEnter: () => gsap.set('.js-floating-person', { zIndex: 1 }),
-          onLeave: () => {
-            gsap.set('.js-floating-person', { autoAlpha: 0 });
-            gsap.set('.js-services-person', { autoAlpha: 1 });
-          },
-          onEnterBack: () => {
-            gsap.set('.js-floating-person', { autoAlpha: 1, zIndex: 1 });
-            gsap.set('.js-services-person', { autoAlpha: 0 });
-          },
-          onLeaveBack: () => {
-            gsap.set('.js-floating-person', { autoAlpha: 1, zIndex: 4 });
-            gsap.set('.js-services-person', { autoAlpha: 0 });
-          },
-        },
-      }).to('.js-floating-person', {
-        y: getFloatingPersonTargetY,
-        yPercent: 0,
-        scale: getFloatingPersonTargetScale,
-        ease: 'none',
-        duration: 1,
-      });
-    } else {
-      gsap.timeline({
-        scrollTrigger: {
-          trigger: '.js-services',
-          start: 'top bottom',
-          end: 'top top',
-          scrub: true,
-          invalidateOnRefresh: true,
-          onEnter: () => gsap.set('.js-floating-person', { zIndex: 1 }),
-          onLeave: () => {
-            gsap.set('.js-floating-person', { autoAlpha: 0 });
-            gsap.set('.js-services-person', { autoAlpha: 1 });
-          },
-          onEnterBack: () => {
-            gsap.set('.js-floating-person', { autoAlpha: 1, zIndex: 1 });
-            gsap.set('.js-services-person', { autoAlpha: 0 });
-          },
-          onLeaveBack: () => {
-            gsap.set('.js-floating-person', { autoAlpha: 1, zIndex: 4 });
-            gsap.set('.js-services-person', { autoAlpha: 0 });
-          },
-        },
-      }).to('.js-floating-person', {
-        y: () => -getViewportHeight() * 0.18,
-        yPercent: 0,
-        scale: 0.74,
-        ease: 'none',
-        duration: 1,
-      });
-    }
-
-    let compactServicesScrollTrigger: ScrollTrigger | undefined;
-    let compactServicesLogoStartProgress = 1;
-
-    if (isDesktop) {
-      const getDesktopCardStartY = () => Math.min(Math.max(getViewportHeight() * 0.3, 220), 330);
-      const getDesktopCardStartX = () => Math.min(Math.max(window.innerWidth * 0.18, 260), 380);
-
-      cards.forEach((card, index) => {
-        const side = index % 2 === 0 ? -1 : 1;
-
-        gsap.set(card, {
-          autoAlpha: 0,
-          x: () => side * getDesktopCardStartX(),
-          y: getDesktopCardStartY,
-        });
-      });
-
-      const servicesTimeline = gsap.timeline({
-        scrollTrigger: {
-          trigger: '.js-services',
-          start: 'top top',
-          end: '+=560%',
-          scrub: true,
-          pin: true,
-          anticipatePin: 1,
-          invalidateOnRefresh: true,
-          onEnter: () => {
-            gsap.set('.js-floating-person', { autoAlpha: 0 });
-            gsap.set('.js-services-person', { autoAlpha: 1 });
-          },
-          onLeave: () => {
-            gsap.set('.js-floating-person', { autoAlpha: 0 });
-            gsap.set('.js-services-person', { autoAlpha: 1 });
-          },
-          onEnterBack: () => {
-            gsap.set('.js-floating-person', { autoAlpha: 0, zIndex: 1 });
-            gsap.set('.js-services-person', { autoAlpha: 1 });
-          },
-        },
-      });
-
-      cards.forEach((card, index) => {
-        const startAt = index * 0.64 + 0.1;
-        const side = index % 2 === 0 ? -1 : 1;
-
-        servicesTimeline
-          .to(
-            card,
-            {
-              autoAlpha: 0.32,
-              x: () => side * getDesktopCardStartX() * 0.34,
-              y: () => getDesktopCardStartY() * 0.85,
-              duration: 0.1,
-              ease: 'power2.out',
-            },
-            startAt,
-          )
-          .to(
-            card,
-            {
-              autoAlpha: 0.78,
-              x: () => side * getDesktopCardStartX() * 0.16,
-              y: () => getDesktopCardStartY() * 0.22,
-              duration: 0.1,
-              ease: 'power1.inOut',
-            },
-            startAt + 0.1,
-          )
-          .to(
-            card,
-            {
-              autoAlpha: 1,
-              x: 0,
-              y: 0,
-              duration: 0.12,
-              ease: 'power3.out',
-            },
-            startAt + 0.2,
-          )
-          .to(
-            card,
-            {
-              autoAlpha: 0,
-              x: 0,
-              y: -92,
-              duration: 0.24,
-              ease: 'power1.inOut',
-            },
-            startAt + 0.85,
-          );
-      });
-
-    } else if (!isMobile) {
-      cards.forEach((card) => {
-        gsap.set(card, {
-          autoAlpha: 0,
-          x: 0,
-          y: () => getTabletCardTargetY(card) + 24,
-        });
-      });
-
-      const servicesTimeline = gsap.timeline({
-        scrollTrigger: {
-          trigger: '.js-services',
-          start: 'top top',
-          end: '+=560%',
-          scrub: true,
-          pin: true,
-          anticipatePin: 1,
-          invalidateOnRefresh: true,
-          onEnter: () => {
-            gsap.set('.js-floating-person', { autoAlpha: 0 });
-            gsap.set('.js-services-person', { autoAlpha: 1 });
-          },
-          onLeave: () => {
-            gsap.set('.js-floating-person', { autoAlpha: 0 });
-            gsap.set('.js-services-person', { autoAlpha: 1 });
-          },
-          onEnterBack: () => {
-            gsap.set('.js-floating-person', { autoAlpha: 0, zIndex: 1 });
-            gsap.set('.js-services-person', { autoAlpha: 1 });
-          },
-        },
-      });
-      compactServicesScrollTrigger = servicesTimeline.scrollTrigger;
-      const tabletCardStep = 0.98;
-      const tabletCardExitStart = 0.74;
-      const tabletCardExitDuration = 0.26;
-      const tabletCardOutEnd =
-        Math.max(cards.length - 1, 0) * tabletCardStep + 0.1 + tabletCardExitStart + tabletCardExitDuration;
-      const tabletLogoTravelDuration = 0.72;
-      servicesTimeline.to({}, { duration: tabletLogoTravelDuration }, tabletCardOutEnd);
-      compactServicesLogoStartProgress = tabletCardOutEnd / (tabletCardOutEnd + tabletLogoTravelDuration);
-
-      cards.forEach((card, index) => {
-        const startAt = index * tabletCardStep + 0.1;
-        servicesTimeline
-          .fromTo(
-            card,
-            {
-              autoAlpha: 0,
-              x: 0,
-              y: () => getTabletCardTargetY(card) + 24,
-            },
-            {
-              autoAlpha: 1,
-              x: 0,
-              y: () => getTabletCardTargetY(card),
-              duration: 0.26,
-              ease: 'power2.out',
-            },
-            startAt,
-          )
-          .to(
-            card,
-            {
-              autoAlpha: 0,
-              y: () => getTabletCardTargetY(card) - 28,
-              duration: tabletCardExitDuration,
-              ease: 'power1.inOut',
-            },
-            startAt + tabletCardExitStart,
-          );
-      });
-
-    } else {
-      cards.forEach((card) => {
-        gsap.set(card, {
-          autoAlpha: 0,
-          x: 0,
-          y: 24,
-        });
-      });
-
-      const compactServicesTimeline = gsap.timeline({
-        scrollTrigger: {
-          trigger: '.js-services',
-          start: 'top top',
-          end: () => `+=${getMobileServicesScrollEnd()}%`,
-          scrub: true,
-          pin: true,
-          anticipatePin: 1,
-          invalidateOnRefresh: true,
-          onEnter: () => {
-            gsap.set('.js-floating-person', { autoAlpha: 0 });
-            gsap.set('.js-services-person', { autoAlpha: 1 });
-          },
-          onLeave: () => {
-            gsap.set('.js-floating-person', { autoAlpha: 0 });
-            gsap.set('.js-services-person', { autoAlpha: 1 });
-          },
-          onEnterBack: () => {
-            gsap.set('.js-floating-person', { autoAlpha: 0 });
-            gsap.set('.js-services-person', { autoAlpha: 1 });
-          },
-        },
-      });
-      compactServicesScrollTrigger = compactServicesTimeline.scrollTrigger;
-      const mobileCardStep = 0.96;
-      const mobileCardExitStart = 0.7;
-      const mobileCardExitDuration = 0.24;
-      const mobileCardOutEnd =
-        Math.max(cards.length - 1, 0) * mobileCardStep + 0.08 + mobileCardExitStart + mobileCardExitDuration;
-      const mobileLogoTravelDuration = 0.72;
-      compactServicesTimeline.to({}, { duration: mobileLogoTravelDuration }, mobileCardOutEnd);
-      compactServicesLogoStartProgress = mobileCardOutEnd / (mobileCardOutEnd + mobileLogoTravelDuration);
-
-      cards.forEach((card, index) => {
-        const startAt = index * mobileCardStep + 0.08;
-        compactServicesTimeline
-          .to(
-            card,
-            {
-              autoAlpha: 1,
-              y: 0,
-              duration: 0.26,
-              ease: 'power2.out',
-            },
-            startAt,
-          )
-          .to(
-            card,
-            {
-              autoAlpha: 0,
-              y: -24,
-              duration: mobileCardExitDuration,
-              ease: 'power1.inOut',
-            },
-            startAt + mobileCardExitStart,
-          );
-      });
-    }
-
     const updateConsultLogoBridge = () => {
       const about = document.querySelector<HTMLElement>('.js-about-snap');
       const isAboutReleasingBackward = about?.dataset.aboutRelease === 'backward';
@@ -629,34 +220,14 @@ export function initScrollExperience(): (() => void) | undefined {
       const startY = getViewportHeight() * (isMobile ? 1.18 : isTablet ? 1.06 : 0.72);
       const endY = getNavHeight() + (isMobile ? 44 : isTablet ? 52 : 58);
 
-      // While the services section is still pinned with cards animating, the
-      // bridge hasn't started — keep the logo parked. Past that point every
-      // breakpoint shares the same aboutTop-driven bridge below (mobile used to
-      // have a custom emergence tied to the services pin tail, which diverged
-      // between emulation and real devices and never anchored to the CTA button).
-      if (
-        isCompact &&
-        compactServicesScrollTrigger?.isActive &&
-        (isTablet || compactServicesScrollTrigger.progress < compactServicesLogoStartProgress)
-      ) {
-        gsap.set('.js-scroll-consult-logo', {
-          autoAlpha: 0,
-          pointerEvents: 'none',
-          left: '50%',
-          top: getConsultLogoStartTop,
-          scale: getConsultLogoStartScale,
-        });
-        document.querySelector('.js-scroll-consult-logo')?.classList.remove('is-tooltip-visible');
-        return;
-      }
-
+      // Fade the consult logo in only as the horizontal section takes over.
       if (aboutTop > startY) {
         gsap.set('.js-scroll-consult-logo', {
           autoAlpha: 0,
           pointerEvents: 'none',
           left: '50%',
-          top: getConsultLogoStartTop,
-          scale: getConsultLogoStartScale,
+          top: getConsultLogoBottomY,
+          scale: getConsultLogoTravelScale,
         });
         document.querySelector('.js-scroll-consult-logo')?.classList.remove('is-tooltip-visible');
         return;
@@ -689,7 +260,7 @@ export function initScrollExperience(): (() => void) | undefined {
         pointerEvents: !isAboutReleasingBackward && progress > 0.08 ? 'auto' : 'none',
         left: '50%',
         top: gsap.utils.interpolate(getConsultLogoBridgeY(), getConsultLogoBottomY(), progress),
-        scale: gsap.utils.interpolate(getConsultLogoStartScale(), getConsultLogoTravelScale(), progress),
+        scale: getConsultLogoTravelScale,
       });
       document
         .querySelector('.js-scroll-consult-logo')
@@ -718,7 +289,22 @@ export function initScrollExperience(): (() => void) | undefined {
 
     const navigateToServices = (event: Event) => {
       event.preventDefault();
-      document.querySelector('#servicios')?.scrollIntoView({ behavior: 'smooth' });
+      const services = document.querySelector<HTMLElement>('#servicios');
+
+      if (!services) {
+        return;
+      }
+
+      const navHeight = getNavHeight();
+      const stableHeight = getRootPixelValue('--app-stable-vh', window.innerHeight);
+      const panelHeight = Math.max(stableHeight - navHeight, 1);
+      const servicesTop = window.scrollY + services.getBoundingClientRect().top;
+
+      window.scrollTo({
+        top: servicesTop + panelHeight,
+        left: 0,
+        behavior: 'auto',
+      });
     };
     window.addEventListener('agsit:navigate-services', navigateToServices);
     cleanupServicesAnchorNavigation = () => {

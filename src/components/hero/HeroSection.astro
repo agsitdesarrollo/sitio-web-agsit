@@ -12,39 +12,82 @@ type Props = {
 const { copy } = Astro.props;
 ---
 
-<div class="hero-person js-floating-person" aria-hidden="true">
-  <Image src={personImage} alt="" loading="eager" fetchpriority="high" />
-</div>
-
-<div class="hero-copy js-hero-copy">
-  <div class="hero-left-panel">
-    <div class="hero-copy-block">
-      <h1 class="hero-side-titles" aria-label={copy.titleLabel}>
-        <span class="hero-main-line">{copy.lineStart}</span>
-        <span class="hero-side-title hero-emphasis-word">
-          <SplitLetters fillOnScroll text={copy.emphasis} />
-        </span>
-        <span class="hero-main-line">{copy.lineEnd}</span>
-      </h1>
-
-      <p class="hero-support-copy">
-        {copy.support}
-      </p>
+<section id="inicio" class="hero-scroll js-hero" data-hero-scroll>
+  <div class="hero-section hero-sticky">
+    <div class="hero-media-wrap" aria-hidden="true">
+      <video class="hero-video" autoplay muted loop playsinline preload="metadata" poster="/assets/fondo-ventana.webp">
+        <source src="/assets/video-edificio-v3.mp4" type="video/mp4" />
+      </video>
+      <div class="hero-window-overlay">
+        <Image src={windowOverlayImage} alt="" loading="eager" fetchpriority="high" />
+      </div>
     </div>
 
-    <div class="hero-cta-wrap">
-      <button class="hero-contact-button" type="button" data-contact-trigger>{copy.cta}</button>
+    <div class="hero-person" aria-hidden="true">
+      <Image src={personImage} alt="" loading="eager" fetchpriority="high" />
+    </div>
+
+    <div class="hero-copy">
+      <div class="hero-left-panel">
+        <div class="hero-copy-block">
+          <h1 class="hero-side-titles" aria-label={copy.titleLabel}>
+            <span class="hero-main-line">{copy.lineStart}</span>
+            <span class="hero-side-title hero-emphasis-word">
+              <SplitLetters fillOnScroll text={copy.emphasis} />
+            </span>
+            <span class="hero-main-line">{copy.lineEnd}</span>
+          </h1>
+
+          <p class="hero-support-copy">
+            {copy.support}
+          </p>
+        </div>
+
+        <div class="hero-cta-wrap">
+          <button class="hero-contact-button" type="button" data-contact-trigger>{copy.cta}</button>
+        </div>
+      </div>
     </div>
   </div>
-</div>
-
-<section id="inicio" class="hero-section js-hero">
-  <div class="hero-media-wrap" aria-hidden="true">
-    <video class="hero-video" autoplay muted loop playsinline preload="metadata" poster="/assets/fondo-ventana.webp">
-      <source src="/assets/video-edificio-v3.mp4" type="video/mp4" />
-    </video>
-    <div class="hero-window-overlay">
-      <Image src={windowOverlayImage} alt="" loading="eager" fetchpriority="high" />
-    </div>
-  </div>
+  <div class="hero-second-snap" aria-hidden="true"></div>
 </section>
+
+<script>
+  const hero = document.querySelector<HTMLElement>('[data-hero-scroll]');
+
+  const getPanelHeight = () => {
+    const navHeight = document.querySelector<HTMLElement>('.site-nav')?.getBoundingClientRect().height ?? 0;
+    const stableHeight = Number.parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--app-stable-vh'));
+    const viewportHeight = Number.isFinite(stableHeight) && stableHeight > 0 ? stableHeight : window.innerHeight;
+
+    return Math.max(viewportHeight - navHeight, 1);
+  };
+
+  const updateHeroState = () => {
+    if (!hero) {
+      return;
+    }
+
+    const progress = Math.min(Math.max(-hero.getBoundingClientRect().top / getPanelHeight(), 0), 1);
+    hero.classList.toggle('is-second-state', progress >= 0.45);
+  };
+
+  const updateHomeSnapState = () => {
+    const about = document.querySelector<HTMLElement>('.js-about-snap');
+    const navHeight = document.querySelector<HTMLElement>('.site-nav')?.getBoundingClientRect().height ?? 0;
+    const aboutTop = about?.getBoundingClientRect().top ?? Number.POSITIVE_INFINITY;
+    const shouldSnap = about?.dataset.aboutState !== 'active' && aboutTop > navHeight + 8;
+
+    document.documentElement.classList.toggle('home-snap-active', shouldSnap);
+  };
+
+  const updateHomeScrollState = () => {
+    updateHeroState();
+    updateHomeSnapState();
+  };
+
+  window.addEventListener('scroll', updateHomeScrollState, { passive: true });
+  window.addEventListener('resize', updateHomeScrollState, { passive: true });
+  window.addEventListener('agsit:viewport-change', updateHomeScrollState, { passive: true });
+  updateHomeScrollState();
+</script>

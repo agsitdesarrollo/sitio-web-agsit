@@ -30,43 +30,117 @@ const iconPath = (icon: ServicePoint['icon']) => {
 };
 ---
 
-<section class="services-section js-services">
-  <div class="services-background" aria-hidden="true"></div>
+<section id="servicios" class="services-scroll js-services" data-services-scroll>
+  <div class="services-section services-sticky">
+    <div class="services-background" aria-hidden="true"></div>
 
-  <div class="services-intro">
-    <h2>{content.introTitle}</h2>
-    <p>{content.introSubtitle}</p>
+    <div class="services-intro">
+      <h2>{content.introTitle}</h2>
+      <p>{content.introSubtitle}</p>
+    </div>
+
+    <div class="services-person js-services-person" aria-hidden="true">
+      <Image src={personImage} alt="" loading="lazy" />
+    </div>
+
+    <div class="services-cards-layer" aria-live="polite">
+      {
+        content.servicePoints.map((service, index) => {
+          const side = index % 2 === 0 ? 'left' : 'right';
+
+          return (
+            <article
+              class={`service-card ${side}`}
+              data-service-card
+              data-card-index={index}
+              data-card-side={side}
+              aria-label={service.title}
+            >
+              <span class="service-card-icon">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  {iconPath(service.icon).map((path) => (
+                    <path d={path} />
+                  ))}
+                </svg>
+              </span>
+              <div class="service-card-copy">
+                <h3>
+                  <span class="copy-desktop">{service.title}</span>
+                  <span class="copy-mobile">{service.mobileTitle ?? service.title}</span>
+                </h3>
+                <p>
+                  <span class="copy-desktop">{service.description}</span>
+                  <span class="copy-mobile">{service.mobileDescription ?? service.description}</span>
+                </p>
+              </div>
+            </article>
+          );
+        })
+      }
+    </div>
+
+    <button class="services-advice-cta" type="button" data-contact-trigger>{content.cta}</button>
   </div>
 
-  <div class="services-person js-services-person" aria-hidden="true">
-    <Image src={personImage} alt="" loading="lazy" />
+  <div class="services-snap-track" aria-hidden="true">
+    {content.servicePoints.map(() => <div class="services-snap-step"></div>)}
   </div>
-
-  <div class="services-cards-layer">
-    {
-      content.servicePoints.map((service, index) => (
-        <article class={`service-card ${index % 2 === 0 ? 'left' : 'right'}`} aria-label={service.title}>
-          <span class="service-card-icon">
-            <svg viewBox="0 0 24 24" aria-hidden="true">
-              {iconPath(service.icon).map((path) => (
-                <path d={path} />
-              ))}
-            </svg>
-          </span>
-          <div class="service-card-copy">
-            <h3>
-              <span class="copy-desktop">{service.title}</span>
-              <span class="copy-mobile">{service.mobileTitle ?? service.title}</span>
-            </h3>
-            <p>
-              <span class="copy-desktop">{service.description}</span>
-              <span class="copy-mobile">{service.mobileDescription ?? service.description}</span>
-            </p>
-          </div>
-        </article>
-      ))
-    }
-  </div>
-
-  <button class="services-advice-cta" type="button" data-contact-trigger>{content.cta}</button>
 </section>
+
+<script>
+  const servicesSection = document.querySelector<HTMLElement>('[data-services-scroll]');
+  const serviceCards = Array.from(document.querySelectorAll<HTMLElement>('[data-service-card]'));
+  const totalCards = serviceCards.length;
+
+  const clamp = (value: number, min: number, max: number) => Math.min(Math.max(value, min), max);
+  const easeOutCubic = (value: number) => 1 - Math.pow(1 - value, 3);
+  const easeInCubic = (value: number) => value * value * value;
+
+  const getServicesPanelHeight = () => {
+    const navHeight = document.querySelector<HTMLElement>('.site-nav')?.getBoundingClientRect().height ?? 0;
+    const stableHeight = Number.parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--app-stable-vh'));
+    const viewportHeight = Number.isFinite(stableHeight) && stableHeight > 0 ? stableHeight : window.innerHeight;
+
+    return Math.max(viewportHeight - navHeight, 1);
+  };
+
+  const updateServicesCards = () => {
+    if (!servicesSection || totalCards === 0) {
+      return;
+    }
+
+    const sectionTop = servicesSection.getBoundingClientRect().top;
+    const progress = clamp(-sectionTop / getServicesPanelHeight(), 0, totalCards);
+    const isMobile = window.matchMedia('(max-width: 640px)').matches;
+    const isTablet = window.matchMedia('(min-width: 641px) and (max-width: 1024px)').matches;
+    const activeSlide = Math.round(progress);
+
+    servicesSection.dataset.activeSlide = String(activeSlide);
+
+    serviceCards.forEach((card, index) => {
+      const side = card.dataset.cardSide === 'left' ? -1 : 1;
+      const enterProgress = clamp((progress - index - 0.18) / 0.82, 0, 1);
+      const enter = easeOutCubic(enterProgress);
+      const exitStart = index + (isMobile ? 1.02 : 1.82);
+      const exitDuration = isMobile ? 0.12 : 0.18;
+      const exitProgress = index < totalCards - 1 ? clamp((progress - exitStart) / exitDuration, 0, 1) : 0;
+      const exit = easeInCubic(exitProgress);
+      const startX = side * (isMobile ? 78 : isTablet ? 140 : 340);
+      const startY = isMobile ? 92 : isTablet ? 150 : 310;
+      const curveY = startY * Math.pow(1 - enter, 2);
+      const opacity = enterProgress === 0 ? 0 : clamp(enter * (1 - exit), 0, 1);
+
+      card.style.setProperty('--service-card-x', `${startX * (1 - enter)}px`);
+      card.style.setProperty('--service-card-y', `${curveY}px`);
+      card.style.setProperty('--service-card-opacity', String(opacity));
+      card.style.setProperty('--service-card-scale', String(0.96 + enter * 0.04));
+      card.style.setProperty('--service-card-z', String(10 + index));
+      card.classList.toggle('is-current', activeSlide === index + 1);
+    });
+  };
+
+  window.addEventListener('scroll', updateServicesCards, { passive: true });
+  window.addEventListener('resize', updateServicesCards, { passive: true });
+  window.addEventListener('agsit:viewport-change', updateServicesCards, { passive: true });
+  updateServicesCards();
+</script>

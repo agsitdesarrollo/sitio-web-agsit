@@ -8,6 +8,8 @@
   position: relative;
   height: calc(var(--app-stable-vh, 100svh) - var(--nav-h));
   min-height: calc(100vh - var(--nav-h));
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
   overflow: hidden;
   background: #ffffff;
 }
