@@ -467,6 +467,36 @@ html.lenis body {
   line-height: 1.52;
 }
 
+.dm-v2-card-link {
+  min-height: 48px;
+  margin-top: 26px;
+  padding: 0 18px;
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  border: 1px solid rgba(37, 63, 108, 0.26);
+  border-radius: 999px;
+  color: var(--dm-v2-blue);
+  font-family: 'Inter', 'Segoe UI', Tahoma, sans-serif;
+  font-size: var(--dm-v2-small);
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  transition:
+    background-color 180ms ease,
+    border-color 180ms ease,
+    color 180ms ease,
+    transform 180ms ease;
+}
+
+.dm-v2-card-link:hover,
+.dm-v2-card-link:focus-visible {
+  border-color: var(--dm-v2-blue);
+  background: var(--dm-v2-blue);
+  color: #ffffff;
+  transform: translateY(-2px);
+}
+
 .dm-v2-card-visual {
   position: relative;
   min-height: clamp(350px, 42vw, 610px);

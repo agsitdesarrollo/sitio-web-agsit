@@ -1,6 +1,10 @@
 .final-contact-section {
   position: relative;
-  scroll-margin-top: calc(var(--nav-h) + 24px);
+  /* Parada de snap: un scroll desde la última línea del video aterriza aquí.
+     El margen navH alinea el top igual que el resto de slides del home. */
+  scroll-margin-top: var(--nav-h);
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
   padding: clamp(82px, 10vw, 128px) clamp(20px, 6vw, 92px);
   overflow: hidden;
   background:

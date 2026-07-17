@@ -28,10 +28,9 @@ export const servicesContentByLang: Record<SupportedLang, ServicesContent> = {
     cta: 'Agenda una asesoría sin costo',
     services: [
       { title: 'Soluciones Tecnológicas', href: '/soluciones-tecnologicas/' },
-      { title: 'Planeación Estratégica' },
-      { title: 'Dirección de Proyectos' },
-      { title: 'Administración de Procesos' },
-      { title: 'Gestión de Calidad' },
+      { title: 'Planeación Estratégica', href: '/planeacion-estrategica/' },
+      { title: 'Dirección de Proyectos', href: '/direccion-de-proyectos/' },
+      { title: 'Administración de Procesos', href: '/administracion-de-procesos/' },
       { title: 'Mercadotecnia Digital', href: '/mercadotecnia-digital/' },
     ],
     servicePoints: [
@@ -75,10 +74,9 @@ export const servicesContentByLang: Record<SupportedLang, ServicesContent> = {
     cta: 'Schedule a free consultation',
     services: [
       { title: 'Technology Solutions', href: '/en/technology-solutions/' },
-      { title: 'Strategic Planning' },
-      { title: 'Project Management' },
-      { title: 'Process Management' },
-      { title: 'Quality Management' },
+      { title: 'Strategic Planning', href: '/en/strategic-planning/' },
+      { title: 'Project Management', href: '/en/project-management/' },
+      { title: 'Process Management', href: '/en/process-management/' },
       { title: 'Digital Marketing', href: '/en/digital-marketing/' },
     ],
     servicePoints: [

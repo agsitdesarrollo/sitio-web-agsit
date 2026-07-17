@@ -19,6 +19,8 @@ export type StoryServiceCard = {
   copy: string;
   theme: 'cyan' | 'green' | 'blue' | 'paper' | 'warm' | 'sage';
   visual: StoryInlineVisual;
+  cta?: string;
+  href?: string;
 };
 
 export type DigitalMarketingV2Content = {
@@ -109,6 +111,8 @@ export const digitalMarketingV2ByLang: Record<SupportedLang, DigitalMarketingV2C
           copy: 'La hoja de ruta de tu crecimiento: objetivos, audiencias, canales y KPIs alineados a tu negocio.',
           theme: 'cyan',
           visual: 'flower',
+          cta: 'Conoce la estrategia',
+          href: '/mercadotecnia-digital/estrategia-digital/',
         },
         {
           title: 'SEO',
@@ -209,6 +213,8 @@ export const digitalMarketingV2ByLang: Record<SupportedLang, DigitalMarketingV2C
           copy: 'Your growth roadmap: objectives, audiences, channels and KPIs aligned with your business.',
           theme: 'cyan',
           visual: 'flower',
+          cta: 'Explore the strategy',
+          href: '/en/digital-marketing/digital-strategy/',
         },
         {
           title: 'SEO',

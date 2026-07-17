@@ -158,6 +158,14 @@ const assetByVisual: Record<StoryInlineVisual, string> = {
               <p class="dm-v2-card-eyebrow">{card.eyebrow}</p>
               <h3>{card.title}</h3>
               <p>{card.copy}</p>
+              {
+                card.href && card.cta && (
+                  <a class="dm-v2-card-link" href={card.href}>
+                    <span>{card.cta}</span>
+                    <span aria-hidden="true">→</span>
+                  </a>
+                )
+              }
             </div>
             <div class="dm-v2-card-visual" aria-hidden="true">
               <img src={assetByVisual[card.visual]} alt="" />

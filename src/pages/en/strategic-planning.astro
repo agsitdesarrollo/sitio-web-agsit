@@ -6,13 +6,13 @@ import PageShellScripts from '../../components/navigation/PageShellScripts.astro
 import TechnologySolutionsPage from '../../components/technology-solutions/TechnologySolutionsPage.astro';
 import { getContactCopy } from '../../data/contact';
 import { getFooterCopy } from '../../data/footer';
-import { getProjectManagementTemplateContent } from '../../data/serviceTemplatePages';
+import { getStrategicPlanningTemplateContent } from '../../data/serviceTemplatePages';
 import { getServicesContent } from '../../data/services';
 import SiteLayout from '../../layouts/SiteLayout.astro';
 import { useTranslations } from '../../i18n/utils';
 
 const lang = 'en';
-const content = getProjectManagementTemplateContent(lang);
+const content = getStrategicPlanningTemplateContent(lang);
 const contactCopy = getContactCopy(lang);
 const footerCopy = getFooterCopy(lang);
 const servicesContent = getServicesContent(lang);
@@ -26,9 +26,9 @@ const t = useTranslations(lang);
   htmlLang={content.metadata.htmlLang}
   locale={content.metadata.locale}
   alternates={[
-    { lang: 'es-MX', href: 'https://agsit.com.mx/direccion-de-proyectos/' },
+    { lang: 'es-MX', href: 'https://agsit.com.mx/planeacion-estrategica/' },
     { lang: 'en', href: content.metadata.canonicalUrl },
-    { lang: 'x-default', href: 'https://agsit.com.mx/direccion-de-proyectos/' },
+    { lang: 'x-default', href: 'https://agsit.com.mx/planeacion-estrategica/' },
   ]}
 >
   <div class="app-shell">
@@ -37,7 +37,7 @@ const t = useTranslations(lang);
       homeHref="/en/#inicio"
       servicesHref="/en/#servicios"
       contactHref="/en/#contacto"
-      alternateHref="/direccion-de-proyectos/"
+      alternateHref="/planeacion-estrategica/"
     />
     <TechnologySolutionsPage content={content} contactCopy={contactCopy} />
     <Footer

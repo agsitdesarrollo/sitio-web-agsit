@@ -1,0 +1,427 @@
+---
+import ContactDirectCard from '../contact/ContactDirectCard.astro';
+import ContactForm from '../contact/ContactForm.astro';
+import type { ContactCopy } from '../../data/contact';
+import type { DigitalStrategyContent } from '../../data/digitalStrategy';
+
+type Props = {
+  content: DigitalStrategyContent;
+  contactCopy: ContactCopy;
+  marketingHref: string;
+};
+
+const { content, contactCopy, marketingHref } = Astro.props;
+---
+
+<main class="strategy-page js-strategy-page">
+  <section class="strategy-hero" aria-labelledby="strategy-title">
+    <img class="strategy-hero-halo js-strategy-halo" src="/assets/storytelling-v2/brand-halo.svg" alt="" aria-hidden="true" />
+    <div class="strategy-hero-content">
+      <a class="strategy-back-link js-strategy-hero-item" href={marketingHref}>
+        <span aria-hidden="true">←</span>
+        {content.backLink}
+      </a>
+      <p class="strategy-eyebrow js-strategy-hero-item">{content.hero.eyebrow}</p>
+      <h1 id="strategy-title">
+        <span class="js-strategy-title-primary">{content.hero.primary}</span>
+        <em class="js-strategy-title-secondary">{content.hero.secondary}</em>
+      </h1>
+      <p class="strategy-hero-copy js-strategy-hero-item">{content.hero.copy}</p>
+      <button type="button" class="strategy-primary-cta js-strategy-hero-item" data-contact-trigger>{content.hero.cta}</button>
+    </div>
+    <p class="strategy-scroll-hint js-strategy-hint" aria-hidden="true">
+      {content.hero.scrollHint}
+      <span></span>
+    </p>
+  </section>
+
+  <section class="strategy-narrative js-strategy-narrative" aria-label={content.narrative.ariaLabel}>
+    <p class="strategy-large-copy js-strategy-words" aria-label={content.narrative.ariaLabel}>
+      {
+        content.narrative.segments.map((segment) => (
+          <>
+            {segment.text}
+            {segment.accent && <span class="strategy-serif">{segment.accent}</span>}
+          </>
+        ))
+      }
+    </p>
+  </section>
+
+  <section class="strategy-lifecycle" aria-labelledby="strategy-lifecycle-title">
+    <div class="strategy-heading js-strategy-reveal">
+      <p class="strategy-eyebrow">{content.lifecycle.eyebrow}</p>
+      <h2 id="strategy-lifecycle-title">{content.lifecycle.title}</h2>
+      <p>{content.lifecycle.copy}</p>
+    </div>
+
+    <div class="strategy-journey js-strategy-journey">
+      <div class="strategy-journey-rail" aria-hidden="true">
+        <p class="strategy-journey-counter">
+          <span class="js-strategy-counter">01</span>
+          <i>/ {String(content.lifecycle.stages.length).padStart(2, '0')}</i>
+        </p>
+        <div class="strategy-journey-progress"><i class="js-strategy-progress"></i></div>
+        <ol class="strategy-journey-labels">
+          {content.lifecycle.stages.map((stage, index) => (
+            <li class:list={['js-strategy-rail-item', { 'is-active': index === 0 }]}>{stage.label}</li>
+          ))}
+        </ol>
+      </div>
+
+      <div class="strategy-journey-stages">
+        {
+          content.lifecycle.stages.map((stage, index) => (
+            <article class="strategy-stage js-strategy-stage">
+              <div class="strategy-stage-media">
+                <img
+                  src={stage.image}
+                  alt={stage.imageAlt}
+                  width="1200"
+                  height="900"
+                  loading={index === 0 ? 'eager' : 'lazy'}
+                  decoding="async"
+                />
+              </div>
+              <div class="strategy-stage-body">
+                <p class="strategy-stage-count">{String(index + 1).padStart(2, '0')}</p>
+                <p class="strategy-stage-sublabel">{stage.sublabel}</p>
+                <h3>{stage.label}</h3>
+                <p class="strategy-stage-copy">{stage.copy}</p>
+              </div>
+            </article>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <section class="strategy-method" aria-labelledby="strategy-method-title">
+    <div class="strategy-method-grid">
+      <div class="strategy-method-intro">
+        <div class="strategy-heading strategy-heading-light strategy-heading-left js-strategy-reveal">
+          <p class="strategy-eyebrow">{content.method.eyebrow}</p>
+          <h2 id="strategy-method-title">{content.method.title}</h2>
+          <p>{content.method.copy}</p>
+        </div>
+        <ol class="strategy-method-list">
+          {
+            content.method.steps.map((step, index) => (
+              <li class="strategy-method-step js-strategy-reveal">
+                <span class="strategy-method-number">{String(index + 1).padStart(2, '0')}</span>
+                <div>
+                  <h3>{step.title}</h3>
+                  <p>{step.copy}</p>
+                </div>
+              </li>
+            ))
+          }
+        </ol>
+      </div>
+      <div class="strategy-method-media js-strategy-reveal">
+        <img
+          class="js-strategy-method-img"
+          src={content.method.image}
+          alt={content.method.imageAlt}
+          width="1200"
+          height="900"
+          loading="lazy"
+          decoding="async"
+        />
+      </div>
+    </div>
+  </section>
+
+  <section class="strategy-layers" aria-labelledby="strategy-layers-title">
+    <div class="strategy-heading strategy-heading-light js-strategy-reveal">
+      <p class="strategy-eyebrow">{content.layers.eyebrow}</p>
+      <h2 id="strategy-layers-title">{content.layers.title}</h2>
+      <p>{content.layers.copy}</p>
+    </div>
+    <ul class="strategy-layer-list">
+      {
+        content.layers.items.map((layer, index) => (
+          <li class="strategy-layer js-strategy-reveal">
+            <span>{String(index + 1).padStart(2, '0')}</span>
+            <h3>{layer.title}</h3>
+            <p>{layer.copy}</p>
+          </li>
+        ))
+      }
+    </ul>
+  </section>
+
+  <section class="strategy-benefits" aria-labelledby="strategy-benefits-title">
+    <div class="strategy-heading js-strategy-reveal">
+      <p class="strategy-eyebrow">{content.benefits.eyebrow}</p>
+      <h2 id="strategy-benefits-title">{content.benefits.title}</h2>
+      <p>{content.benefits.copy}</p>
+    </div>
+    <dl class="strategy-benefit-list">
+      {
+        content.benefits.items.map((benefit) => (
+          <div class="strategy-benefit js-strategy-reveal">
+            <dt>{benefit.title}</dt>
+            <dd>{benefit.copy}</dd>
+          </div>
+        ))
+      }
+    </dl>
+
+    <div class="strategy-bridge js-strategy-reveal">
+      <h2>{content.bridge.title}</h2>
+      <p>{content.bridge.copy}</p>
+      <a class="strategy-bridge-link" href={marketingHref}>
+        <span>{content.bridge.cta}</span>
+        <span aria-hidden="true">→</span>
+      </a>
+    </div>
+  </section>
+
+  <section id="strategy-contact" class="strategy-contact" aria-labelledby="strategy-contact-title">
+    <div class="strategy-contact-heading js-strategy-reveal">
+      <p class="strategy-eyebrow">{content.contact.eyebrow}</p>
+      <h2 id="strategy-contact-title">{content.contact.title}</h2>
+      <p>{content.contact.copy}</p>
+    </div>
+    <div class="strategy-contact-grid js-strategy-reveal">
+      <ContactDirectCard copy={contactCopy.direct} />
+      <div class="strategy-contact-form">
+        <ContactForm copy={contactCopy.form} />
+      </div>
+    </div>
+  </section>
+</main>
+
+<script>
+  import gsap from 'gsap';
+  import { ScrollTrigger } from 'gsap/ScrollTrigger';
+  import Lenis from 'lenis';
+
+  gsap.registerPlugin(ScrollTrigger);
+
+  const splitWords = (element: HTMLElement) => {
+    if (element.dataset.wordsReady === 'true') {
+      return;
+    }
+
+    element.dataset.wordsReady = 'true';
+
+    const visit = (node: ChildNode) => {
+      if (node.nodeType === Node.TEXT_NODE) {
+        const text = node.textContent ?? '';
+        const fragment = document.createDocumentFragment();
+        text.split(/(\s+)/).forEach((part) => {
+          if (!part) {
+            return;
+          }
+          if (/^\s+$/.test(part)) {
+            fragment.appendChild(document.createTextNode(part));
+            return;
+          }
+          const span = document.createElement('span');
+          span.className = 'strategy-word';
+          span.textContent = part;
+          fragment.appendChild(span);
+        });
+        node.parentNode?.replaceChild(fragment, node);
+        return;
+      }
+
+      if (!(node instanceof HTMLElement)) {
+        return;
+      }
+
+      Array.from(node.childNodes).forEach(visit);
+    };
+
+    Array.from(element.childNodes).forEach(visit);
+  };
+
+  const initDigitalStrategy = () => {
+    const root = document.querySelector<HTMLElement>('.js-strategy-page');
+
+    if (!root || root.dataset.strategyReady === 'true') {
+      return;
+    }
+
+    root.dataset.strategyReady = 'true';
+
+    const words = root.querySelector<HTMLElement>('.js-strategy-words');
+    if (words) {
+      splitWords(words);
+    }
+
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    if (reduceMotion) {
+      root.classList.add('is-reduced-motion');
+      return;
+    }
+
+    root.classList.add('is-enhanced');
+
+    // Smooth scrolling with Lenis (only on this page)
+    const lenis = new Lenis({
+      duration: 1.2,
+      easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+    });
+    let rafId = 0;
+    const raf = (time: number) => {
+      lenis.raf(time);
+      ScrollTrigger.update();
+      rafId = requestAnimationFrame(raf);
+    };
+    rafId = requestAnimationFrame(raf);
+
+    const navHeight = () => document.querySelector<HTMLElement>('.site-nav')?.getBoundingClientRect().height ?? 0;
+
+    const context = gsap.context(() => {
+      ScrollTrigger.config({ ignoreMobileResize: true });
+
+      // ─── HERO ENTRANCE ───
+      gsap.set('.js-strategy-halo', { xPercent: -50, yPercent: -50, scale: 2.6, transformOrigin: '50% 50%' });
+      gsap.set('.js-strategy-hero-item', { autoAlpha: 0, y: 16 });
+      gsap.set('.js-strategy-title-primary', { autoAlpha: 0, y: '-0.9em' });
+      gsap.set('.js-strategy-title-secondary', { autoAlpha: 0, y: '0.9em' });
+      gsap.set('.js-strategy-hint', { autoAlpha: 0 });
+
+      const heroTimeline = gsap.timeline();
+      heroTimeline.to('.js-strategy-halo', { scale: 1, duration: 0.7, ease: 'power2.inOut' }, 0);
+      heroTimeline.to('.js-strategy-title-primary', { autoAlpha: 1, y: 0, duration: 0.7, ease: 'power2.inOut' }, 0.45);
+      heroTimeline.to('.js-strategy-title-secondary', { autoAlpha: 1, y: 0, duration: 0.7, ease: 'power2.inOut' }, 0.65);
+      heroTimeline.to('.js-strategy-hero-item', { autoAlpha: 1, y: 0, duration: 0.6, ease: 'power2.out', stagger: 0.12 }, 0.85);
+      heroTimeline.to('.js-strategy-hint', { autoAlpha: 0.8, duration: 0.6, ease: 'power2.out' }, 1.4);
+
+      gsap.to('.js-strategy-hint', {
+        autoAlpha: 0,
+        ease: 'none',
+        scrollTrigger: { trigger: '.strategy-hero', start: '2% top', end: '12% top', scrub: true },
+      });
+
+      // ─── PINNED NARRATIVE (word reveal) ───
+      const narrativeTimeline = gsap.timeline();
+      narrativeTimeline.from('.js-strategy-words .strategy-word', {
+        opacity: 0.14,
+        duration: 0.3,
+        ease: 'power1.out',
+        stagger: { each: 0.4 },
+      });
+      narrativeTimeline.to({}, { duration: 2 });
+
+      ScrollTrigger.create({
+        trigger: '.js-strategy-narrative',
+        start: () => `top top+=${navHeight()}`,
+        end: '+=130%',
+        pin: true,
+        animation: narrativeTimeline,
+        scrub: 0.5,
+        invalidateOnRefresh: true,
+      });
+
+      // ─── LIFECYCLE JOURNEY (pinned crossfade, desktop only) ───
+      gsap.matchMedia().add('(min-width: 901px)', () => {
+        const stages = gsap.utils.toArray<HTMLElement>('.js-strategy-stage', root);
+        const railItems = gsap.utils.toArray<HTMLElement>('.js-strategy-rail-item', root);
+        const counter = root.querySelector<HTMLElement>('.js-strategy-counter');
+        const progress = root.querySelector<HTMLElement>('.js-strategy-progress');
+
+        if (stages.length < 2) {
+          return;
+        }
+
+        stages.forEach((stage, index) => {
+          if (index > 0) {
+            gsap.set(stage, { autoAlpha: 0, y: 44 });
+          }
+        });
+        if (progress) {
+          gsap.set(progress, { scaleY: 1 / stages.length, transformOrigin: '50% 0%' });
+        }
+
+        const journeyTimeline = gsap.timeline();
+        const switchTimes: number[] = [];
+        journeyTimeline.to({}, { duration: 0.7 });
+        stages.forEach((stage, index) => {
+          if (index === 0) {
+            return;
+          }
+          journeyTimeline.to(stages[index - 1], { autoAlpha: 0, y: -44, duration: 1, ease: 'power1.in' });
+          journeyTimeline.to(stage, { autoAlpha: 1, y: 0, duration: 1, ease: 'power1.out' }, '<0.35');
+          switchTimes.push(journeyTimeline.recent().startTime() + 0.5);
+          journeyTimeline.to({}, { duration: 0.7 });
+        });
+
+        const setActive = (index: number) => {
+          railItems.forEach((item, i) => item.classList.toggle('is-active', i === index));
+          if (counter) {
+            counter.textContent = String(index + 1).padStart(2, '0');
+          }
+        };
+
+        ScrollTrigger.create({
+          trigger: '.js-strategy-journey',
+          start: () => `top top+=${navHeight() + 24}`,
+          end: () => `+=${stages.length * 85}%`,
+          pin: true,
+          animation: journeyTimeline,
+          scrub: 0.6,
+          invalidateOnRefresh: true,
+          onUpdate: (self) => {
+            const time = self.progress * journeyTimeline.duration();
+            const index = switchTimes.filter((switchTime) => time >= switchTime).length;
+            setActive(index);
+            if (progress) {
+              gsap.set(progress, { scaleY: Math.max(1 / stages.length, self.progress) });
+            }
+          },
+        });
+      });
+
+      // ─── METHOD IMAGE PARALLAX ───
+      gsap.fromTo(
+        '.js-strategy-method-img',
+        { yPercent: 5 },
+        {
+          yPercent: -5,
+          ease: 'none',
+          scrollTrigger: { trigger: '.strategy-method', start: 'top bottom', end: 'bottom top', scrub: true },
+        },
+      );
+
+      // ─── GENERIC REVEALS ───
+      gsap.utils.toArray<HTMLElement>('.js-strategy-reveal', root).forEach((element) => {
+        gsap.from(element, {
+          autoAlpha: 0,
+          y: 30,
+          duration: 0.9,
+          ease: 'power3.out',
+          scrollTrigger: { trigger: element, start: 'top 88%' },
+        });
+      });
+
+      const refresh = () => ScrollTrigger.refresh();
+      window.addEventListener('agsit:viewport-change', refresh, { passive: true });
+
+      return () => {
+        window.removeEventListener('agsit:viewport-change', refresh);
+      };
+    }, root);
+
+    window.addEventListener(
+      'pagehide',
+      () => {
+        cancelAnimationFrame(rafId);
+        lenis.destroy();
+        context.revert();
+      },
+      { once: true },
+    );
+  };
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initDigitalStrategy, { once: true });
+  } else {
+    initDigitalStrategy();
+  }
+</script>

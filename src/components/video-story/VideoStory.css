@@ -5,17 +5,43 @@
 
 .video-story-section {
   --transition-blue: #020712;
+  --video-panel-h: calc(var(--app-stable-vh, 100svh) - var(--nav-h));
   position: relative;
   margin-top: 0;
-  min-height: calc(var(--app-stable-vh, 100svh) - var(--nav-h));
+  min-height: var(--video-panel-h);
+  scroll-margin-top: var(--nav-h);
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+  background: #ffffff;
+}
+
+.video-story-viewport {
+  position: sticky;
+  top: var(--nav-h);
+  width: 100%;
+  z-index: 30;
+  height: var(--video-panel-h);
+  min-height: var(--video-panel-h);
   overflow: hidden;
-  background: var(--transition-blue);
+  background: #ffffff;
+}
+
+.video-story-track {
+  position: relative;
+  z-index: 0;
+}
+
+.video-story-step {
+  height: var(--video-panel-h);
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+  scroll-margin-top: var(--nav-h);
 }
 
 .video-story-stage {
-  position: relative;
-  min-height: calc(var(--app-stable-vh, 100svh) - var(--nav-h));
-  background: var(--transition-blue);
+  position: absolute;
+  inset: 0;
+  background: #ffffff;
 }
 
 .partners-screen {

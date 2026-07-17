@@ -12,6 +12,13 @@ type Props = {
 const { copy } = Astro.props;
 ---
 
+<!-- Personaje flotante: fijo al viewport (no dentro del sticky del hero) para
+     que el tramo de snap hero→servicios lo scrubee hasta convertirse en el
+     personaje de la sección 2 (réplica del modelo previo al refactor). -->
+<div class="hero-person js-floating-person" aria-hidden="true">
+  <Image src={personImage} alt="" loading="eager" fetchpriority="high" />
+</div>
+
 <section id="inicio" class="hero-scroll js-hero" data-hero-scroll>
   <div class="hero-section hero-sticky">
     <div class="hero-media-wrap" aria-hidden="true">
@@ -21,10 +28,6 @@ const { copy } = Astro.props;
       <div class="hero-window-overlay">
         <Image src={windowOverlayImage} alt="" loading="eager" fetchpriority="high" />
       </div>
-    </div>
-
-    <div class="hero-person" aria-hidden="true">
-      <Image src={personImage} alt="" loading="eager" fetchpriority="high" />
     </div>
 
     <div class="hero-copy">
@@ -73,10 +76,13 @@ const { copy } = Astro.props;
   };
 
   const updateHomeSnapState = () => {
-    const about = document.querySelector<HTMLElement>('.js-about-snap');
+    const contact = document.querySelector<HTMLElement>('.final-contact-section');
     const navHeight = document.querySelector<HTMLElement>('.site-nav')?.getBoundingClientRect().height ?? 0;
-    const aboutTop = about?.getBoundingClientRect().top ?? Number.POSITIVE_INFINITY;
-    const shouldSnap = about?.dataset.aboutState !== 'active' && aboutTop > navHeight + 8;
+    const contactTop = contact?.getBoundingClientRect().top ?? Number.POSITIVE_INFINITY;
+    // El snap cubre hero, servicios, about, los pasos del video y el aterrizaje
+    // en contacto; se apaga una vez asentado ahí para que el resto del
+    // formulario y el footer scrolleen libres.
+    const shouldSnap = contactTop > navHeight + 8;
 
     document.documentElement.classList.toggle('home-snap-active', shouldSnap);
   };

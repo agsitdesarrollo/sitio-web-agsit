@@ -5,21 +5,27 @@
 }
 
 .about-snap-section {
+  --about-panel-h: calc(var(--app-stable-vh, 100svh) - var(--nav-h));
   position: relative;
-  height: calc(var(--app-stable-vh, 100svh) - var(--nav-h));
-  min-height: calc(100vh - var(--nav-h));
+  min-height: var(--about-panel-h);
+  scroll-margin-top: var(--nav-h);
   scroll-snap-align: start;
   scroll-snap-stop: always;
+  background: #ffffff;
+}
+
+.about-snap-viewport {
+  position: sticky;
+  top: var(--nav-h);
+  width: 100%;
+  z-index: 40;
+  height: var(--about-panel-h);
+  min-height: var(--about-panel-h);
   overflow: hidden;
   background: #ffffff;
 }
 
-.about-snap-section[data-about-state='active'] {
-  position: fixed;
-  top: var(--nav-h);
-  left: 0;
-  right: 0;
-  z-index: 40;
+.about-snap-section[data-about-state='active'] .about-snap-viewport {
   height: calc(var(--app-vh, var(--app-stable-vh, 100vh)) - var(--nav-h));
   /* dvh tracks the browser UI natively (no JS lag) so the bottom bar stays
      glued to the visible edge while the section is active. */
@@ -34,6 +40,21 @@
   height: 100%;
   transform: translate3d(0, 0, 0);
   will-change: transform;
+}
+
+.about-snap-track {
+  position: relative;
+  z-index: 0;
+  padding-bottom: var(--nav-h);
+}
+
+.about-snap-step {
+  height: var(--about-panel-h);
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+  /* Sin este margen el snap nativo reposa navH por debajo del punto que usan
+     los scrollTo programáticos y el progreso queda corrido ~0.1 pasos. */
+  scroll-margin-top: var(--nav-h);
 }
 
 /* ─── Slides ─────────────────────────────────────────────────────────────── */
@@ -566,14 +587,6 @@ a.about-service-link:focus-visible {
 }
 
 /* ─── Activation visibility ──────────────────────────────────────────────── */
-
-/* Stage and bar are invisible until the section becomes active.
-   This prevents the intro content leaking into view while the hero/bridge
-   animations are still running above. */
-.about-snap-section:not([data-about-state]) .about-snap-stage {
-  opacity: 0;
-  pointer-events: none;
-}
 
 /* The progress bar only belongs to the five service slides. */
 .about-snap-bar {

@@ -1,9 +1,6 @@
 import gsap from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { ALLIANCE_LOGO_OVERSAMPLE } from '../../animations/allianceLogoZoom';
 import { ensureVideoAutoplay } from '../../scripts/videoAutoplay';
-
-gsap.registerPlugin(ScrollTrigger);
 
 export function initScrollExperience(): (() => void) | undefined {
   const root = document.querySelector<HTMLElement>('[data-scroll-root]');
@@ -12,19 +9,20 @@ export function initScrollExperience(): (() => void) | undefined {
     return undefined;
   }
 
-  let cleanupBridgeScroll: (() => void) | undefined;
   let cleanupViewportRefresh: (() => void) | undefined;
   let cleanupServicesAnchorNavigation: (() => void) | undefined;
   let cleanupAboutServiceVideoPlayback: (() => void) | undefined;
+  let cleanupVideoStoryReadyNavigation: (() => void) | undefined;
+  let cleanupVideoStorySync: (() => void) | undefined;
+  let cleanupFloatingPersonSync: (() => void) | undefined;
 
   const context = gsap.context(() => {
     window.scrollTo(0, 0);
-    ScrollTrigger.getAll().forEach((trigger) => trigger.kill());
 
     const isCompact = window.matchMedia('(max-width: 1024px)').matches;
     const isMobile = window.matchMedia('(max-width: 749px)').matches;
     const isTablet = isCompact && !isMobile;
-    ScrollTrigger.config({ ignoreMobileResize: true });
+    const shouldReduceMotion = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
     const getRootPixelValue = (name: string, fallback: number) => {
       const value = Number.parseFloat(getComputedStyle(document.documentElement).getPropertyValue(name));
@@ -32,21 +30,8 @@ export function initScrollExperience(): (() => void) | undefined {
     };
     const getViewportHeight = () =>
       isCompact ? getRootPixelValue('--app-stable-vh', window.innerHeight) : window.innerHeight;
-    // For elements anchored to the visible bottom edge (consult logo): the stable
-    // height is the LARGE viewport, which sits below the fold while the mobile
-    // browser UI is showing.
-    const getDynamicViewportHeight = () => window.visualViewport?.height ?? window.innerHeight;
     const getNavHeight = () => document.querySelector('.site-nav')?.getBoundingClientRect().height ?? 0;
-    const getPinnedSectionStart = () => `top top+=${getNavHeight()}`;
     const getVideoStoryInset = () => (isMobile ? 22 : isTablet ? 24 : isCompact ? 28 : 34);
-    const getVideoStoryScrollEnd = () => (isMobile ? 250 : isCompact ? 780 : 880);
-    const getConsultLogoBottomY = () => getDynamicViewportHeight() - (isMobile ? 68 : isTablet ? 72 : 70);
-    const getConsultLogoTravelScale = () => (isMobile ? 0.58 : isTablet ? 0.66 : 0.30);
-    const getConsultLogoBridgeY = () => getViewportHeight() + (isMobile ? 26 : isTablet ? 34 : 42);
-
-
-        // Track the button continuously — even once it has scrolled past the
-        // top edge — so the bridge interpolation never jumps mid-flight.
 
     const setIfFound = (selector: string, vars: gsap.TweenVars) => {
       const targets = gsap.utils.toArray<HTMLElement>(selector);
@@ -113,22 +98,13 @@ export function initScrollExperience(): (() => void) | undefined {
       ensureVideoAutoplay(heroVideo);
     }
 
-    gsap.set('.js-video-story-stage', { backgroundColor: '#020712' });
     gsap.set('.js-video-story-line', { autoAlpha: 0, y: 0 });
-    gsap.set('.js-video-story-frame', {
-      autoAlpha: 0,
-      top: 0,
-      left: '50%',
-      width: () => window.innerWidth,
-      height: () => getViewportHeight() - getNavHeight(),
-      xPercent: -50,
-    });
+    setIfFound('.js-floating-person', { y: 0, yPercent: -5, scale: 1.08, autoAlpha: 1 });
+    setIfFound('.js-services-person', { autoAlpha: 0 });
     setIfFound('.js-scroll-consult-logo', {
       autoAlpha: 0,
       pointerEvents: 'none',
       left: '50%',
-      top: getConsultLogoBottomY,
-      scale: getConsultLogoTravelScale,
       xPercent: -50,
       yPercent: -50,
     });
@@ -151,31 +127,231 @@ export function initScrollExperience(): (() => void) | undefined {
     setIfFound('.js-about-alliance-metric', { autoAlpha: 0, y: 22, scale: 0.96 });
     setIfFound('.js-about-alliance-cta', { autoAlpha: 0, y: 16, pointerEvents: 'none' });
 
-    // While the about snap section is active it is position:fixed and out of the
-    // document flow, so a ScrollTrigger.refresh() fired in that state (window load,
-    // resize, viewport-change) measures every trigger below it one viewport short
-    // and the video-story pin ends up unpinning early. Re-insert the section into
-    // the flow for the synchronous measurement pass and restore it right after.
-    let aboutStateHeldForRefresh: string | undefined;
-    const onScrollTriggerRefreshInit = () => {
-      const about = document.querySelector<HTMLElement>('.js-about-snap');
-      if (about?.dataset.aboutState === 'active') {
-        aboutStateHeldForRefresh = about.dataset.aboutState;
-        delete about.dataset.aboutState;
+    // ── Personaje flotante: puente hero→servicios ─────────────────────────────
+    // Réplica del modelo previo al refactor (commit c2442f4): el personaje del
+    // hero es fixed al viewport; mientras el top de servicios viaja del borde
+    // inferior al superior, se interpola su y/escala (en compact hasta el rect
+    // exacto del personaje de servicios; en desktop los valores literales del
+    // commit) y al cruzar se crossfadea con .js-services-person. El tramo es un
+    // paso de snap, así que el scrub sigue la animación del snap nativo.
+    const floatingPersonEl = document.querySelector<HTMLElement>('.js-floating-person');
+    const servicesSectionEl = document.querySelector<HTMLElement>('.js-services');
+
+    const getServicesPersonTargetRect = () => {
+      const person = document.querySelector<HTMLElement>('.js-services-person');
+
+      if (!servicesSectionEl || !person) {
+        return undefined;
       }
+
+      const servicesRect = servicesSectionEl.getBoundingClientRect();
+      const personRect = person.getBoundingClientRect();
+
+      return {
+        bottom: personRect.bottom - servicesRect.top,
+        width: personRect.width,
+      };
     };
-    const onScrollTriggerRefreshDone = () => {
-      if (!aboutStateHeldForRefresh) {
+    const getFloatingPersonTargetY = () => {
+      const target = getServicesPersonTargetRect();
+
+      if (!target) {
+        return -getViewportHeight() * (isCompact ? 0.28 : 0.18);
+      }
+
+      return target.bottom - getViewportHeight();
+    };
+    const getFloatingPersonTargetScale = () => {
+      const target = getServicesPersonTargetRect();
+
+      if (!floatingPersonEl || !target) {
+        return isCompact ? 0.58 : 0.74;
+      }
+
+      return target.width / Math.max(floatingPersonEl.offsetWidth, 1);
+    };
+
+    let personSyncFrame = 0;
+    let personZone: 'above' | 'inside' | 'below' | undefined;
+
+    const syncFloatingPersonToScroll = () => {
+      personSyncFrame = 0;
+
+      if (!floatingPersonEl || !servicesSectionEl) {
         return;
       }
-      const about = document.querySelector<HTMLElement>('.js-about-snap');
-      if (about) {
-        about.dataset.aboutState = aboutStateHeldForRefresh;
+
+      const viewportHeight = getViewportHeight();
+      const servicesTop = servicesSectionEl.getBoundingClientRect().top;
+      const progress = gsap.utils.clamp(0, 1, (viewportHeight - servicesTop) / viewportHeight);
+      const zone: 'above' | 'inside' | 'below' =
+        progress <= 0 ? 'above' : progress >= 1 ? 'below' : 'inside';
+
+      if (zone !== personZone) {
+        personZone = zone;
+
+        if (zone === 'above') {
+          gsap.set(floatingPersonEl, { autoAlpha: 1, zIndex: 4 });
+          setIfFound('.js-services-person', { autoAlpha: 0 });
+        } else if (zone === 'inside') {
+          gsap.set(floatingPersonEl, { autoAlpha: 1, zIndex: 1 });
+          setIfFound('.js-services-person', { autoAlpha: 0 });
+        } else {
+          gsap.set(floatingPersonEl, { autoAlpha: 0 });
+          setIfFound('.js-services-person', { autoAlpha: 1 });
+        }
       }
-      aboutStateHeldForRefresh = undefined;
+
+      if (zone === 'below') {
+        return;
+      }
+
+      const targetY = isCompact ? getFloatingPersonTargetY() : -viewportHeight * 0.18;
+      const targetScale = isCompact ? getFloatingPersonTargetScale() : 0.74;
+
+      gsap.set(floatingPersonEl, {
+        y: gsap.utils.interpolate(0, targetY, progress),
+        yPercent: gsap.utils.interpolate(-5, 0, progress),
+        scale: gsap.utils.interpolate(1.08, targetScale, progress),
+      });
     };
-    ScrollTrigger.addEventListener('refreshInit', onScrollTriggerRefreshInit);
-    ScrollTrigger.addEventListener('refresh', onScrollTriggerRefreshDone);
+    const requestFloatingPersonSync = () => {
+      if (personSyncFrame) {
+        return;
+      }
+      personSyncFrame = requestAnimationFrame(syncFloatingPersonToScroll);
+    };
+
+    window.addEventListener('scroll', requestFloatingPersonSync, { passive: true });
+    window.addEventListener('resize', requestFloatingPersonSync, { passive: true });
+    window.addEventListener('agsit:viewport-change', requestFloatingPersonSync, { passive: true });
+    cleanupFloatingPersonSync = () => {
+      cancelAnimationFrame(personSyncFrame);
+      window.removeEventListener('scroll', requestFloatingPersonSync);
+      window.removeEventListener('resize', requestFloatingPersonSync);
+      window.removeEventListener('agsit:viewport-change', requestFloatingPersonSync);
+    };
+    syncFloatingPersonToScroll();
+
+    // ── Video story: timeline pausada dirigida por la posición real de scroll ──
+    // Igual que Servicios/About: la sección es un track de pasos con viewport
+    // sticky; un paso de scroll = un estado. time == progreso en pasos.
+    const videoStorySection = document.querySelector<HTMLElement>('.js-video-story');
+    const storyLineEls = gsap.utils.toArray<HTMLElement>('.js-video-story-line');
+    // Una parada por línea. La parada 0 es el aterrizaje del zoom de alianza
+    // (marco + primera línea); no existe tramo fullscreen — al subir desde la
+    // parada 0 el wheel-return dispara el zoom inverso directamente.
+    const VIDEO_STORY_READY_STOP = 0;
+    const VIDEO_STORY_MAX_TIME = Math.max(storyLineEls.length - 1, 0);
+
+    const getVideoStoryPanelHeight = () => Math.max(getViewportHeight() - getNavHeight(), 1);
+
+    // El marco vive fijo en su estado enmarcado sobre fondo blanco; solo las
+    // líneas se scrubbean. Se re-aplica en cada cambio de viewport.
+    const applyVideoStoryFrame = () => {
+      setIfFound('.js-video-story-frame', {
+        autoAlpha: 1,
+        top: getVideoStoryInset(),
+        left: '50%',
+        xPercent: -50,
+        width: getVideoStoryWidth(),
+        height: getVideoStoryHeight(),
+        borderRadius: isMobile ? 10 : 14,
+        boxShadow: '0 28px 60px rgba(8, 21, 43, 0.2)',
+      });
+      setIfFound('.js-video-story-stage', { backgroundColor: '#ffffff' });
+    };
+    applyVideoStoryFrame();
+
+    const videoStoryTimeline = gsap.timeline({ paused: true });
+
+    storyLineEls.forEach((line, index) => {
+      if (index === 0) {
+        // Visible en la parada 0. fromTo con immediateRender: en timelines
+        // scrubeadas GSAP revierte al estado pre-tween cuando el playhead queda
+        // antes del inicio, así el "antes" queda fijado explícitamente en 1.
+        if (storyLineEls.length > 1) {
+          videoStoryTimeline.fromTo(
+            line,
+            { autoAlpha: 1 },
+            { autoAlpha: 0, duration: 0.45, ease: 'power1.inOut', immediateRender: true },
+            0.15,
+          );
+        } else {
+          gsap.set(line, { autoAlpha: 1 });
+        }
+        return;
+      }
+
+      videoStoryTimeline.fromTo(
+        line,
+        { autoAlpha: 0 },
+        { autoAlpha: 1, duration: 0.6, ease: 'power2.out', immediateRender: false },
+        index - 0.65,
+      );
+
+      if (index < storyLineEls.length - 1) {
+        videoStoryTimeline.to(
+          line,
+          { autoAlpha: 0, duration: 0.45, ease: 'power1.inOut' },
+          index + 0.15,
+        );
+      }
+    });
+
+    if (videoStoryTimeline.duration() < VIDEO_STORY_MAX_TIME) {
+      videoStoryTimeline.to({}, { duration: VIDEO_STORY_MAX_TIME - videoStoryTimeline.duration() });
+    }
+
+    let videoStoryHydrated = false;
+    const hydrateVideoStory = () => {
+      if (videoStoryHydrated) {
+        return;
+      }
+      videoStoryHydrated = true;
+      hydrateVideo(document.querySelector<HTMLVideoElement>('.js-video-story-frame video'));
+    };
+
+    const getVideoStoryProgress = () => {
+      if (!videoStorySection) {
+        return 0;
+      }
+      const rect = videoStorySection.getBoundingClientRect();
+      return gsap.utils.clamp(
+        0,
+        VIDEO_STORY_MAX_TIME,
+        (getNavHeight() - rect.top) / getVideoStoryPanelHeight(),
+      );
+    };
+
+    let videoStorySyncFrame = 0;
+    const syncVideoStoryToScroll = () => {
+      videoStorySyncFrame = 0;
+      if (!videoStorySection) {
+        return;
+      }
+
+      if (videoStorySection.getBoundingClientRect().top < getViewportHeight() * 1.5) {
+        hydrateVideoStory();
+      }
+
+      videoStoryTimeline.time(getVideoStoryProgress());
+    };
+    const requestVideoStorySync = () => {
+      if (videoStorySyncFrame) {
+        return;
+      }
+      videoStorySyncFrame = requestAnimationFrame(syncVideoStoryToScroll);
+    };
+
+    window.addEventListener('scroll', requestVideoStorySync, { passive: true });
+    window.addEventListener('resize', requestVideoStorySync, { passive: true });
+    cleanupVideoStorySync = () => {
+      cancelAnimationFrame(videoStorySyncFrame);
+      window.removeEventListener('scroll', requestVideoStorySync);
+      window.removeEventListener('resize', requestVideoStorySync);
+    };
+    syncVideoStoryToScroll();
 
     let viewportRefreshFrame = 0;
     let viewportRefreshTimeout = 0;
@@ -191,7 +367,10 @@ export function initScrollExperience(): (() => void) | undefined {
       viewportRefreshTimeout = window.setTimeout(
         () => {
           viewportRefreshFrame = requestAnimationFrame(() => {
-            ScrollTrigger.refresh();
+            // Re-aplica las dimensiones del marco y el estado que corresponde a
+            // la posición actual de scroll.
+            applyVideoStoryFrame();
+            syncVideoStoryToScroll();
           });
         },
         isCompact ? 180 : 0,
@@ -205,87 +384,7 @@ export function initScrollExperience(): (() => void) | undefined {
       window.clearTimeout(viewportRefreshTimeout);
       window.removeEventListener('orientationchange', requestViewportRefresh);
       window.removeEventListener('agsit:viewport-change', requestViewportRefresh);
-      ScrollTrigger.removeEventListener('refreshInit', onScrollTriggerRefreshInit);
-      ScrollTrigger.removeEventListener('refresh', onScrollTriggerRefreshDone);
     };
-
-    const updateConsultLogoBridge = () => {
-      const about = document.querySelector<HTMLElement>('.js-about-snap');
-      const isAboutReleasingBackward = about?.dataset.aboutRelease === 'backward';
-      if (about?.dataset.aboutState === 'active' && !isAboutReleasingBackward) {
-        return;
-      }
-
-      const aboutTop = about?.getBoundingClientRect().top ?? getViewportHeight();
-      const startY = getViewportHeight() * (isMobile ? 1.18 : isTablet ? 1.06 : 0.72);
-      const endY = getNavHeight() + (isMobile ? 44 : isTablet ? 52 : 58);
-
-      // Fade the consult logo in only as the horizontal section takes over.
-      if (aboutTop > startY) {
-        gsap.set('.js-scroll-consult-logo', {
-          autoAlpha: 0,
-          pointerEvents: 'none',
-          left: '50%',
-          top: getConsultLogoBottomY,
-          scale: getConsultLogoTravelScale,
-        });
-        document.querySelector('.js-scroll-consult-logo')?.classList.remove('is-tooltip-visible');
-        return;
-      }
-
-      if (aboutTop <= endY) {
-        if (
-          !isAboutReleasingBackward &&
-          (about?.dataset.aboutState === 'active' || about?.dataset.aboutState === 'done')
-        ) {
-          return;
-        }
-        gsap.set('.js-scroll-consult-logo', {
-          autoAlpha: 1,
-          pointerEvents: isAboutReleasingBackward ? 'none' : 'auto',
-          left: '50%',
-          top: getConsultLogoBottomY,
-          scale: getConsultLogoTravelScale,
-        });
-        document
-          .querySelector('.js-scroll-consult-logo')
-          ?.classList.toggle('is-tooltip-visible', !isAboutReleasingBackward);
-        return;
-      }
-
-      const progress = gsap.utils.clamp(0, 1, (startY - aboutTop) / Math.max(startY - endY, 1));
-
-      gsap.set('.js-scroll-consult-logo', {
-        autoAlpha: progress,
-        pointerEvents: !isAboutReleasingBackward && progress > 0.08 ? 'auto' : 'none',
-        left: '50%',
-        top: gsap.utils.interpolate(getConsultLogoBridgeY(), getConsultLogoBottomY(), progress),
-        scale: getConsultLogoTravelScale,
-      });
-      document
-        .querySelector('.js-scroll-consult-logo')
-        ?.classList.toggle('is-tooltip-visible', !isAboutReleasingBackward && progress > 0.08);
-    };
-
-    window.addEventListener('scroll', updateConsultLogoBridge, { passive: true });
-    gsap.ticker.add(updateConsultLogoBridge);
-
-    const consultTooltipEl = document.querySelector<HTMLElement>('.js-scroll-consult-logo .scroll-consult-logo-tooltip');
-    const consultLogoEl = document.querySelector<HTMLElement>('.js-scroll-consult-logo');
-    const syncTooltipScale = () => {
-      if (document.querySelector<HTMLElement>('.js-about-snap')?.dataset.aboutState === 'active') return;
-      if (!consultLogoEl || !consultTooltipEl) return;
-      const s = Number(gsap.getProperty(consultLogoEl, 'scaleX')) || 1;
-      if (s > 0) gsap.set(consultTooltipEl, { scale: 0.68 / s, transformOrigin: '50% 100%' });
-    };
-    gsap.ticker.add(syncTooltipScale);
-
-    cleanupBridgeScroll = () => {
-      window.removeEventListener('scroll', updateConsultLogoBridge);
-      gsap.ticker.remove(updateConsultLogoBridge);
-      gsap.ticker.remove(syncTooltipScale);
-    };
-    updateConsultLogoBridge();
 
     const navigateToServices = (event: Event) => {
       event.preventDefault();
@@ -311,94 +410,100 @@ export function initScrollExperience(): (() => void) | undefined {
       window.removeEventListener('agsit:navigate-services', navigateToServices);
     };
 
+    let isReturningToAlliance = false;
+    let cleanupVideoStoryWheelReturn: (() => void) | undefined;
 
-    const videoStoryTimeline = gsap.timeline({
-      scrollTrigger: {
-        trigger: '.js-video-story',
-        start: getPinnedSectionStart,
-        end: () => `+=${getVideoStoryScrollEnd()}%`,
-        scrub: true,
-        pin: true,
-        anticipatePin: 1,
-      },
-    });
-
-    videoStoryTimeline
-      .to({}, { duration: 0.04 })
-      .call(() => hydrateVideo(document.querySelector<HTMLVideoElement>('.js-video-story-frame video')), [], 0.02)
-      .to(
-        '.js-video-story-frame',
-        {
-          autoAlpha: 1,
-          top: 0,
-          ease: 'none',
-          duration: 0.18,
-        },
-      );
-
-    videoStoryTimeline.to({}, { duration: 0.06 });
-
-    videoStoryTimeline
-      .to('.js-video-story-frame', {
-        top: () => getVideoStoryInset(),
-        width: () => getVideoStoryWidth(),
-        height: () => getVideoStoryHeight(),
-        borderRadius: isMobile ? 10 : 14,
-        boxShadow: '0 28px 60px rgba(8, 21, 43, 0.2)',
-        ease: 'none',
-        duration: 0.72,
-      })
-      .to(
-        '.js-video-story-stage',
-        {
-          backgroundColor: '#ffffff',
-          ease: 'none',
-          duration: 0.6,
-        },
-        '<',
-      );
-
-    const videoLineStart = videoStoryTimeline.duration() + 0.22;
-
-    const lineStep = isMobile ? 0.92 : 0.72;
-    const lineFadeStart = isMobile ? 0.58 : 0.46;
-
-    const storyLineEls = gsap.utils.toArray<HTMLElement>('.js-video-story-line');
-    storyLineEls.forEach((line, index) => {
-      const startAt = videoLineStart + index * lineStep;
-      videoStoryTimeline.to(
-        line,
-        {
-          autoAlpha: 1,
-          duration: 0.28,
-          ease: 'power2.out',
-        },
-        startAt,
-      );
-
-      if (index < storyLineEls.length - 1) {
-        videoStoryTimeline.to(
-          line,
-          {
-            autoAlpha: 0,
-            duration: 0.24,
-            ease: 'power1.inOut',
-          },
-          startAt + lineFadeStart,
-        );
-      } else {
-        // The last line stays visible into the contact section; the hold keeps the
-        // timeline length so it appears at the same scroll point as before.
-        videoStoryTimeline.to({}, { duration: lineFadeStart + 0.24 - 0.28 }, startAt + 0.28);
+    const returnVideoStoryToAlliance = () => {
+      if (isReturningToAlliance) {
+        return false;
       }
-    });
+
+      const about = document.querySelector<HTMLElement>('.js-about-snap');
+
+      if (about?.dataset.aboutState !== 'done') {
+        return false;
+      }
+
+      // Claim this handoff before dispatching: scrolling during the custom
+      // event must not allow a second wheel event to start a competing
+      // reverse sequence.
+      isReturningToAlliance = true;
+      const returnEvent = new CustomEvent('agsit:return-about-alliance', { cancelable: true });
+      const wasHandled = !window.dispatchEvent(returnEvent);
+
+      if (!wasHandled) {
+        isReturningToAlliance = false;
+        return false;
+      }
+
+      window.setTimeout(() => {
+        isReturningToAlliance = false;
+      }, shouldReduceMotion() ? 0 : 1250);
+
+      return true;
+    };
+
+    const onVideoStoryWheel = (event: WheelEvent) => {
+      if (event.deltaY >= 0 || isReturningToAlliance) {
+        return;
+      }
+
+      const videoStoryTop = videoStorySection?.getBoundingClientRect().top ?? Number.POSITIVE_INFINITY;
+      const isAtVideoStoryStart = Math.abs(videoStoryTop - getNavHeight()) <= 6;
+      const aboutIsDone = document.querySelector<HTMLElement>('.js-about-snap')?.dataset.aboutState === 'done';
+      if (!isAtVideoStoryStart || !aboutIsDone) {
+        return;
+      }
+
+      if (returnVideoStoryToAlliance()) {
+        event.preventDefault();
+      }
+    };
+
+    const showVideoStoryReady = (event: Event) => {
+      event.preventDefault();
+
+      if (!videoStorySection) {
+        return;
+      }
+
+      hydrateVideoStory();
+
+      const applyReadyState = () => {
+        const top =
+          window.scrollY +
+          videoStorySection.getBoundingClientRect().top -
+          getNavHeight() +
+          getVideoStoryPanelHeight() * VIDEO_STORY_READY_STOP;
+
+        window.scrollTo({ top, left: 0, behavior: 'auto' });
+        syncVideoStoryToScroll();
+      };
+
+      applyReadyState();
+      requestAnimationFrame(applyReadyState);
+      window.setTimeout(applyReadyState, 120);
+    };
+    window.addEventListener('agsit:show-video-story-ready', showVideoStoryReady);
+    // Capture guarantees the upward wheel is claimed before the browser starts
+    // scrolling back into the About section.
+    window.addEventListener('wheel', onVideoStoryWheel, { passive: false, capture: true });
+    cleanupVideoStoryReadyNavigation = () => {
+      window.removeEventListener('agsit:show-video-story-ready', showVideoStoryReady);
+      cleanupVideoStoryWheelReturn?.();
+    };
+    cleanupVideoStoryWheelReturn = () => {
+      window.removeEventListener('wheel', onVideoStoryWheel, { capture: true });
+    };
   }, root);
 
   return () => {
-    cleanupBridgeScroll?.();
     cleanupViewportRefresh?.();
     cleanupServicesAnchorNavigation?.();
     cleanupAboutServiceVideoPlayback?.();
+    cleanupVideoStoryReadyNavigation?.();
+    cleanupVideoStorySync?.();
+    cleanupFloatingPersonSync?.();
     context.revert();
   };
 }

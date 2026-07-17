@@ -118,6 +118,7 @@ export const aboutContentByLang: Record<SupportedLang, AboutContent> = {
           'Análisis, documentación y optimización de procesos para mejorar eficiencia, control operativo y rentabilidad.',
         tags: ['AS-IS / TO-BE', 'BPMS Automation', 'KPIs operativos', 'Auditoría'],
         alt: 'Visual de administración de procesos',
+        href: '/administracion-de-procesos/',
       },
       {
         ...commonServices.dm,
@@ -134,6 +135,7 @@ export const aboutContentByLang: Record<SupportedLang, AboutContent> = {
           'Gestión profesional de proyectos, PMOs y metodologías ágiles o waterfall para cumplir tiempos y presupuesto.',
         tags: ['PMO', 'Scrum & Agile', 'OPM3', 'PMP'],
         alt: 'Visual de dirección de proyectos',
+        href: '/direccion-de-proyectos/',
       },
       {
         ...commonServices.spm,
@@ -142,6 +144,7 @@ export const aboutContentByLang: Record<SupportedLang, AboutContent> = {
           'Definición de objetivos, diagnóstico empresarial, gobierno corporativo y tableros para orientar el crecimiento.',
         tags: ['Plan estratégico', 'Gobierno corporativo', 'KPIs & Dashboards', 'Franquicia'],
         alt: 'Visual de planeación estratégica',
+        href: '/planeacion-estrategica/',
       },
     ],
     clients: {
@@ -190,6 +193,7 @@ export const aboutContentByLang: Record<SupportedLang, AboutContent> = {
           'Process analysis, documentation and optimization to improve efficiency, operational control and profitability.',
         tags: ['AS-IS / TO-BE', 'BPMS Automation', 'Operational KPIs', 'Auditing'],
         alt: 'Process management visual',
+        href: '/en/process-management/',
       },
       {
         ...commonServices.dm,
@@ -206,6 +210,7 @@ export const aboutContentByLang: Record<SupportedLang, AboutContent> = {
           'Professional project management, PMOs and agile or waterfall methodologies to meet timelines and budgets.',
         tags: ['PMO', 'Scrum & Agile', 'OPM3', 'PMP'],
         alt: 'Project management visual',
+        href: '/en/project-management/',
       },
       {
         ...commonServices.spm,
@@ -214,6 +219,7 @@ export const aboutContentByLang: Record<SupportedLang, AboutContent> = {
           'Objective definition, business diagnosis, corporate governance and dashboards to guide growth.',
         tags: ['Strategic plan', 'Corporate governance', 'KPIs & Dashboards', 'Franchise'],
         alt: 'Strategic planning visual',
+        href: '/en/strategic-planning/',
       },
     ],
     clients: {

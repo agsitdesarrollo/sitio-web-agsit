@@ -224,6 +224,10 @@
   display: none;
 }
 
+.services-snap-track {
+  padding-bottom: var(--nav-h);
+}
+
 .services-snap-step {
   height: var(--services-panel-h);
   scroll-snap-align: start;
