@@ -12,7 +12,7 @@
   scroll-margin-top: var(--nav-h);
   scroll-snap-align: start;
   scroll-snap-stop: always;
-  background: #ffffff;
+  background: var(--transition-blue);
 }
 
 .video-story-viewport {
@@ -23,7 +23,7 @@
   height: var(--video-panel-h);
   min-height: var(--video-panel-h);
   overflow: hidden;
-  background: #ffffff;
+  background: var(--transition-blue);
 }
 
 .video-story-track {
@@ -41,7 +41,7 @@
 .video-story-stage {
   position: absolute;
   inset: 0;
-  background: #ffffff;
+  background: var(--transition-blue);
 }
 
 .partners-screen {

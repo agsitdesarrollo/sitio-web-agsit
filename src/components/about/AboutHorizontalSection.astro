@@ -682,7 +682,7 @@ const getVideoRatioKind = (image: string) => (image.endsWith('/servicios.mp4') ?
   let aboutSyncFrame = 0;
   let zoomHandoffState: 'idle' | 'forward' | 'done' | 'reverse' = 'idle';
   let isAllianceAtCenter = false;
-  let isAllianceWheelScrubbing = false;
+  let isAllianceTravelPlaying = false;
 
   const getAboutPanelHeight = () => {
     const stableHeight = Number.parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--app-stable-vh'));
@@ -832,78 +832,71 @@ const getVideoRatioKind = (image: string) => (image.endsWith('/servicios.mp4') ?
     allianceScrubTl.time(ALLIANCE_CENTER_TIME);
   };
 
-  // ── Wheel-scrub de bajada (parada 7 → centro) ─────────────────────────────
-  // El snap nativo recorre el tramo completo con un solo tick y el logo "salta"
-  // al centro. En bajada el usuario scrubbea por acumulación: cada tick avanza
-  // un pasito la timeline con la página quieta en la parada 7; al llegar al
-  // centro se fija la parada 8 y el siguiente scroll dispara el zoom. La subida
-  // desde el centro y el táctil siguen con el scroll nativo.
-  const stepAllianceCenterScrub = (deltaY: number) => {
+  // ── Viaje disparado del logo (parada 7 ⇄ centro) ──────────────────────────
+  // Un solo scroll dispara la animación completa: bajando, el logo viaja de la
+  // barra al centro y se detiene (el zoom es el siguiente scroll); subiendo
+  // desde el centro, el viaje completo de regreso a la barra. Durante la
+  // animación la página queda quieta y la rueda está en lockout, como en
+  // cualquier transición de slide. El táctil sigue con el scroll nativo.
+  const playAllianceCenterTravel = (direction: 1 | -1) => {
+    if (isAllianceTravelPlaying) return;
+
     if (!isAllianceScrubbing || !allianceScrubTl) {
-      ensureAllianceScrub(gsap.utils.clamp(0, ALLIANCE_CENTER_TIME, allianceScrubTime));
+      ensureAllianceScrub(direction > 0 ? 0 : ALLIANCE_CENTER_TIME);
     }
     if (!allianceScrubTl) return;
 
-    const direction = deltaY > 0 ? 1 : -1;
-    const timeStep = gsap.utils.clamp(0.1, 0.3, Math.abs(deltaY) / 4200) * direction;
+    const targetTime = direction > 0 ? ALLIANCE_CENTER_TIME : 0;
+    isAllianceTravelPlaying = true;
     allianceScrubTween?.kill();
-    const fromTime = gsap.utils.clamp(0, ALLIANCE_CENTER_TIME, allianceScrubTl.time());
-    const targetTime = gsap.utils.clamp(0, ALLIANCE_CENTER_TIME, fromTime + timeStep);
-    allianceScrubTime = targetTime;
-
-    if (Math.abs(targetTime - fromTime) < 0.001) {
-      if (targetTime <= 0.005) isAllianceWheelScrubbing = false;
-      return;
-    }
-
-    isAllianceWheelScrubbing = true;
     allianceScrubTween = allianceScrubTl.tweenTo(targetTime, {
-      duration: shouldReduceMotion() ? 0 : 0.34,
-      ease: 'power2.out',
+      duration: shouldReduceMotion() ? 0 : 1,
+      ease: 'power2.inOut',
       onComplete: () => {
         allianceScrubTween = undefined;
+        allianceScrubTime = targetTime;
+        isAllianceTravelPlaying = false;
 
-        if (targetTime >= ALLIANCE_CENTER_TIME - 0.005) {
-          isAllianceWheelScrubbing = false;
+        if (direction > 0) {
           lockAllianceAtCenter();
           scrollToAboutStep(CENTERED_ALLIANCE_STEP);
-          return;
-        }
-
-        if (targetTime <= 0.005) {
-          isAllianceWheelScrubbing = false;
+        } else {
+          isAllianceAtCenter = false;
+          scrollToAboutStep(ALLIANCE_SLIDE);
         }
       },
     });
   };
 
-  const onAllianceDescentWheel = (event: WheelEvent) => {
+  const onAllianceWheel = (event: WheelEvent) => {
     if (event.deltaY === 0) return;
     if (zoomHandoffState !== 'idle') return;
-    if (isAllianceAtCenter) return;
     if (section.dataset.aboutState !== 'active') return;
 
-    // Solo con la página en reposo en la parada de alianza; en cualquier otro
-    // punto el snap nativo es el dueño del scroll.
-    const rect = section.getBoundingClientRect();
-    const progress = (getNavH() - rect.top) / getAboutPanelHeight();
-    if (Math.abs(progress - ALLIANCE_SLIDE) > 0.05) return;
-
-    const currentTime = isAllianceScrubbing && allianceScrubTl
-      ? gsap.utils.clamp(0, ALLIANCE_CENTER_TIME, allianceScrubTl.time())
-      : 0;
-
-    if (event.deltaY > 0 && currentTime < ALLIANCE_CENTER_TIME - 0.005) {
+    if (isAllianceTravelPlaying) {
+      // Lockout: la animación en curso es dueña del gesto.
       event.preventDefault();
-      stepAllianceCenterScrub(event.deltaY);
       return;
     }
 
-    // Rueda arriba a medio camino: regresa el scrub en vez de soltar el scroll
-    // hacia el slide de clientes con el logo a medio vuelo.
-    if (event.deltaY < 0 && currentTime > 0.005) {
+    const rect = section.getBoundingClientRect();
+    const progress = (getNavH() - rect.top) / getAboutPanelHeight();
+
+    // Bajada: en reposo en la lámina de alianza con el logo anclado a la barra.
+    if (event.deltaY > 0 && !isAllianceAtCenter && Math.abs(progress - ALLIANCE_SLIDE) < 0.05) {
+      const currentTime = isAllianceScrubbing && allianceScrubTl ? allianceScrubTl.time() : 0;
+
+      if (currentTime < ALLIANCE_CENTER_TIME - 0.005) {
+        event.preventDefault();
+        playAllianceCenterTravel(1);
+      }
+      return;
+    }
+
+    // Subida: centrado en la parada 8, un scroll regresa el logo a la barra.
+    if (event.deltaY < 0 && isAllianceAtCenter && Math.abs(progress - CENTERED_ALLIANCE_STEP) < 0.05) {
       event.preventDefault();
-      stepAllianceCenterScrub(event.deltaY);
+      playAllianceCenterTravel(-1);
     }
   };
 
@@ -1076,14 +1069,10 @@ const getVideoRatioKind = (image: string) => (image.endsWith('/servicios.mp4') ?
       return;
     }
 
-    if (isAllianceWheelScrubbing) {
-      // El wheel-scrub avanza la timeline con la página quieta en la parada 7;
-      // los eventos espurios (resize, viewport-change) no deben pisarla. Si el
-      // scroll sí se movió de verdad (scrollbar, teclado), el scrub suelta.
-      if (Math.abs(progress - ALLIANCE_SLIDE) < 0.5) {
-        return;
-      }
-      isAllianceWheelScrubbing = false;
+    if (isAllianceTravelPlaying) {
+      // La animación disparada corre con la página quieta en una parada; los
+      // eventos espurios (resize, viewport-change) no deben pisar la timeline.
+      return;
     }
 
     if (progress < ALLIANCE_SLIDE) {
@@ -1121,8 +1110,8 @@ const getVideoRatioKind = (image: string) => (image.endsWith('/servicios.mp4') ?
   window.addEventListener('resize', requestAboutSync, { passive: true });
   window.addEventListener('agsit:viewport-change', requestAboutSync, { passive: true });
   window.addEventListener('agsit:return-about-alliance', returnFromVideoStoryToAlliance);
-  // Capture: reclama el tick antes de que el snap nativo arranque el viaje 7→8.
-  window.addEventListener('wheel', onAllianceDescentWheel, { passive: false, capture: true });
+  // Capture: reclama el tick antes de que el snap nativo arranque el viaje 7⇄8.
+  window.addEventListener('wheel', onAllianceWheel, { passive: false, capture: true });
 
   // ── Initial slide state ───────────────────────────────────────────────────
   stage.style.transition = 'none';

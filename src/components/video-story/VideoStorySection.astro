@@ -8,10 +8,10 @@ type Props = {
 
 const { lines, lang } = Astro.props;
 const label = lang === 'es' ? 'Presentación corporativa AGSIT' : 'AGSIT corporate presentation';
-// Una parada por línea; el marco del video vive fijo en su estado enmarcado.
-// La parada 0 (el propio viewport sticky) es el aterrizaje del zoom de alianza:
-// marco + primera línea. El track agrega las paradas restantes.
-const videoScrollSteps = Array.from({ length: Math.max(lines.length - 1, 0) });
+// Paradas: 0 video fullscreen (el propio viewport sticky, aterrizaje del zoom
+// de alianza), 1 enmarcado + primera línea, luego una por línea restante.
+// El track agrega las paradas después de la 0.
+const videoScrollSteps = Array.from({ length: Math.max(lines.length, 1) });
 ---
 
 <div class="video-story-overlap">

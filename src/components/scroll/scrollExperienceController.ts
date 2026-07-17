@@ -238,63 +238,63 @@ export function initScrollExperience(): (() => void) | undefined {
     // sticky; un paso de scroll = un estado. time == progreso en pasos.
     const videoStorySection = document.querySelector<HTMLElement>('.js-video-story');
     const storyLineEls = gsap.utils.toArray<HTMLElement>('.js-video-story-line');
-    // Una parada por línea. La parada 0 es el aterrizaje del zoom de alianza
-    // (marco + primera línea); no existe tramo fullscreen — al subir desde la
-    // parada 0 el wheel-return dispara el zoom inverso directamente.
+    // Paradas: 0 video fullscreen (sin texto, aterrizaje del zoom de alianza),
+    // 1 video enmarcado + primera línea, 2.. una por línea restante. La subida
+    // es el espejo: enmarcado → fullscreen → (rueda arriba) zoom inverso.
     const VIDEO_STORY_READY_STOP = 0;
-    const VIDEO_STORY_MAX_TIME = Math.max(storyLineEls.length - 1, 0);
+    const VIDEO_STORY_MAX_TIME = Math.max(storyLineEls.length, 1);
 
     const getVideoStoryPanelHeight = () => Math.max(getViewportHeight() - getNavHeight(), 1);
 
-    // El marco vive fijo en su estado enmarcado sobre fondo blanco; solo las
-    // líneas se scrubbean. Se re-aplica en cada cambio de viewport.
-    const applyVideoStoryFrame = () => {
-      setIfFound('.js-video-story-frame', {
-        autoAlpha: 1,
-        top: getVideoStoryInset(),
-        left: '50%',
-        xPercent: -50,
-        width: getVideoStoryWidth(),
-        height: getVideoStoryHeight(),
-        borderRadius: isMobile ? 10 : 14,
-        boxShadow: '0 28px 60px rgba(8, 21, 43, 0.2)',
-      });
-      setIfFound('.js-video-story-stage', { backgroundColor: '#ffffff' });
-    };
-    applyVideoStoryFrame();
-
     const videoStoryTimeline = gsap.timeline({ paused: true });
 
-    storyLineEls.forEach((line, index) => {
-      if (index === 0) {
-        // Visible en la parada 0. fromTo con immediateRender: en timelines
-        // scrubeadas GSAP revierte al estado pre-tween cuando el playhead queda
-        // antes del inicio, así el "antes" queda fijado explícitamente en 1.
-        if (storyLineEls.length > 1) {
-          videoStoryTimeline.fromTo(
-            line,
-            { autoAlpha: 1 },
-            { autoAlpha: 0, duration: 0.45, ease: 'power1.inOut', immediateRender: true },
-            0.15,
-          );
-        } else {
-          gsap.set(line, { autoAlpha: 1 });
-        }
-        return;
-      }
+    // fromTo en posición 0: GSAP revierte los targets al estado previo cuando el
+    // playhead queda antes del inicio de un tween normal (gotcha de timelines
+    // scrubeadas), y además fija el estado fullscreen inicial.
+    videoStoryTimeline.fromTo(
+      '.js-video-story-frame',
+      {
+        autoAlpha: 1,
+        top: 0,
+        left: '50%',
+        xPercent: -50,
+        width: () => window.innerWidth,
+        height: () => getVideoStoryPanelHeight(),
+        borderRadius: 0,
+        boxShadow: '0 0 0 rgba(8, 21, 43, 0)',
+      },
+      {
+        top: () => getVideoStoryInset(),
+        width: () => getVideoStoryWidth(),
+        height: () => getVideoStoryHeight(),
+        borderRadius: isMobile ? 10 : 14,
+        boxShadow: '0 28px 60px rgba(8, 21, 43, 0.2)',
+        ease: 'none',
+        duration: 1,
+      },
+      0,
+    );
+    videoStoryTimeline.fromTo(
+      '.js-video-story-stage',
+      { backgroundColor: '#020712' },
+      { backgroundColor: '#ffffff', ease: 'none', duration: 1 },
+      0,
+    );
 
+    storyLineEls.forEach((line, index) => {
+      const stopAt = index + 1;
       videoStoryTimeline.fromTo(
         line,
         { autoAlpha: 0 },
         { autoAlpha: 1, duration: 0.6, ease: 'power2.out', immediateRender: false },
-        index - 0.65,
+        stopAt - 0.65,
       );
 
       if (index < storyLineEls.length - 1) {
         videoStoryTimeline.to(
           line,
           { autoAlpha: 0, duration: 0.45, ease: 'power1.inOut' },
-          index + 0.15,
+          stopAt + 0.15,
         );
       }
     });
@@ -367,9 +367,9 @@ export function initScrollExperience(): (() => void) | undefined {
       viewportRefreshTimeout = window.setTimeout(
         () => {
           viewportRefreshFrame = requestAnimationFrame(() => {
-            // Re-aplica las dimensiones del marco y el estado que corresponde a
-            // la posición actual de scroll.
-            applyVideoStoryFrame();
+            // Re-lee los getters de dimensiones del marco y re-aplica el estado
+            // que corresponde a la posición actual de scroll.
+            videoStoryTimeline.invalidate();
             syncVideoStoryToScroll();
           });
         },
