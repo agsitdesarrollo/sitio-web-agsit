@@ -502,6 +502,17 @@ html.lenis body {
   min-height: clamp(350px, 42vw, 610px);
   display: grid;
   place-items: center;
+  overflow: hidden;
+}
+
+.dm-v2-card-video {
+  width: min(100%, 720px);
+  aspect-ratio: 16 / 9;
+  display: block;
+  object-fit: cover;
+  border: 1px solid rgba(37, 63, 108, 0.15);
+  border-radius: 8px;
+  box-shadow: 0 20px 58px rgba(8, 21, 43, 0.11);
 }
 
 .dm-v2-card-visual > img {

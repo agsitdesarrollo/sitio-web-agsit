@@ -19,6 +19,7 @@ export type StoryServiceCard = {
   copy: string;
   theme: 'cyan' | 'green' | 'blue' | 'paper' | 'warm' | 'sage';
   visual: StoryInlineVisual;
+  srcvideo: string;
   cta?: string;
   href?: string;
 };
@@ -111,6 +112,7 @@ export const digitalMarketingV2ByLang: Record<SupportedLang, DigitalMarketingV2C
           copy: 'La hoja de ruta de tu crecimiento: objetivos, audiencias, canales y KPIs alineados a tu negocio.',
           theme: 'cyan',
           visual: 'flower',
+          srcvideo: '/assets/Omnicanalidad.mp4',
           cta: 'Conoce la estrategia',
           href: '/mercadotecnia-digital/estrategia-digital/',
         },
@@ -120,6 +122,7 @@ export const digitalMarketingV2ByLang: Record<SupportedLang, DigitalMarketingV2C
           copy: 'Posiciona tu marca donde tus clientes ya están buscando, con tráfico calificado que crece mes a mes.',
           theme: 'green',
           visual: 'eye',
+          srcvideo: '/assets/Omnicanalidad.mp4',
         },
         {
           title: 'SEM',
@@ -127,6 +130,7 @@ export const digitalMarketingV2ByLang: Record<SupportedLang, DigitalMarketingV2C
           copy: 'Campañas de pago con segmentación precisa y retorno medible desde el primer clic.',
           theme: 'blue',
           visual: 'heart',
+          srcvideo: '/assets/Omnicanalidad.mp4',
         },
         {
           title: 'Analytics',
@@ -134,6 +138,7 @@ export const digitalMarketingV2ByLang: Record<SupportedLang, DigitalMarketingV2C
           copy: 'Tableros claros que convierten datos en decisiones de negocio, sin intuiciones aisladas.',
           theme: 'paper',
           visual: 'flower',
+          srcvideo: '/assets/Omnicanalidad.mp4',
         },
         {
           title: 'Social Media',
@@ -141,6 +146,7 @@ export const digitalMarketingV2ByLang: Record<SupportedLang, DigitalMarketingV2C
           copy: 'Comunidades activas y contenido consistente que construye confianza todos los días.',
           theme: 'warm',
           visual: 'heart',
+          srcvideo: '/assets/Omnicanalidad.mp4',
         },
         {
           title: 'E-Commerce',
@@ -148,6 +154,7 @@ export const digitalMarketingV2ByLang: Record<SupportedLang, DigitalMarketingV2C
           copy: 'Menos fricción entre el interés y la compra: tu canal de ventas abierto las 24 horas.',
           theme: 'sage',
           visual: 'eye',
+          srcvideo: '/assets/Omnicanalidad.mp4',
         },
       ],
     },
@@ -213,6 +220,7 @@ export const digitalMarketingV2ByLang: Record<SupportedLang, DigitalMarketingV2C
           copy: 'Your growth roadmap: objectives, audiences, channels and KPIs aligned with your business.',
           theme: 'cyan',
           visual: 'flower',
+          srcvideo: '/assets/Omnicanalidad.mp4',
           cta: 'Explore the strategy',
           href: '/en/digital-marketing/digital-strategy/',
         },
@@ -222,6 +230,7 @@ export const digitalMarketingV2ByLang: Record<SupportedLang, DigitalMarketingV2C
           copy: 'Position your brand where your customers are already searching, with qualified traffic that grows month after month.',
           theme: 'green',
           visual: 'eye',
+          srcvideo: '/assets/Omnicanalidad.mp4',
         },
         {
           title: 'SEM',
@@ -229,6 +238,7 @@ export const digitalMarketingV2ByLang: Record<SupportedLang, DigitalMarketingV2C
           copy: 'Paid campaigns with precise targeting and measurable return from the very first click.',
           theme: 'blue',
           visual: 'heart',
+          srcvideo: '/assets/Omnicanalidad.mp4',
         },
         {
           title: 'Analytics',
@@ -236,6 +246,7 @@ export const digitalMarketingV2ByLang: Record<SupportedLang, DigitalMarketingV2C
           copy: 'Clear dashboards that turn data into business decisions, not isolated guesses.',
           theme: 'paper',
           visual: 'flower',
+          srcvideo: '/assets/Omnicanalidad.mp4',
         },
         {
           title: 'Social Media',
@@ -243,6 +254,7 @@ export const digitalMarketingV2ByLang: Record<SupportedLang, DigitalMarketingV2C
           copy: 'Active communities and consistent content that builds trust every single day.',
           theme: 'warm',
           visual: 'heart',
+          srcvideo: '/assets/Omnicanalidad.mp4',
         },
         {
           title: 'E-Commerce',
@@ -250,6 +262,7 @@ export const digitalMarketingV2ByLang: Record<SupportedLang, DigitalMarketingV2C
           copy: 'Less friction between interest and purchase: your sales channel open around the clock.',
           theme: 'sage',
           visual: 'eye',
+          srcvideo: '/assets/Omnicanalidad.mp4',
         },
       ],
     },

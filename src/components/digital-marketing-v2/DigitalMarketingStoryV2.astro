@@ -168,13 +168,15 @@ const assetByVisual: Record<StoryInlineVisual, string> = {
               }
             </div>
             <div class="dm-v2-card-visual" aria-hidden="true">
-              <img src={assetByVisual[card.visual]} alt="" />
-              <div class="dm-v2-card-dashboard">
-                <i></i>
-                <i></i>
-                <i></i>
-                <strong>{String(index + 1).padStart(2, '0')}</strong>
-              </div>
+              <video
+                class="dm-v2-card-video"
+                src={card.srcvideo}
+                muted
+                playsinline
+                preload="metadata"
+                loop
+                autoplay
+              ></video>
             </div>
           </li>
         ))
