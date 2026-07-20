@@ -322,6 +322,19 @@
   }
 }
 
+/* Tablet apaisada (táctil): el marco se capa a 52% de la altura (ver
+   getVideoStoryWidth en el controlador); la frase se acomoda debajo. */
+@media (pointer: coarse) and (orientation: landscape) and (max-width: 1024px) and (max-height: 900px) {
+  .video-story-copy {
+    top: calc(28px + 54vh);
+    width: min(700px, 82vw);
+  }
+
+  .video-story-line {
+    font-size: clamp(1.6rem, 6vh, 2.6rem);
+  }
+}
+
 @media (max-width: 767px) {
   .partners-screen {
     padding: 18px;

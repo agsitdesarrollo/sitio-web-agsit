@@ -42,7 +42,15 @@ export function initScrollExperience(): (() => void) | undefined {
     };
     const getVideoStoryWidth = () => {
       const ratio = isMobile ? 0.92 : isTablet ? 0.94 : isCompact ? 0.92 : 0.68;
-      return window.innerWidth * ratio;
+      const base = window.innerWidth * ratio;
+
+      if (isTablet) {
+        // En tablet apaisada la altura manda: el marco 16:9 no debe pasar de
+        // ~52% del viewport de alto o aplasta la frase contra la barra.
+        return Math.min(base, getViewportHeight() * 0.52 * (16 / 9));
+      }
+
+      return base;
     };
     const getVideoStoryHeight = () => {
       if (isMobile) {

@@ -449,3 +449,27 @@
     min-height: 46px;
   }
 }
+
+/* ─── Tablet apaisada (táctil, landscape, poca altura) ───────────────────── */
+/* El min-height fijo de 760px hace la sección más alta que el viewport
+   (corta el CTA y desalinea el snap). El resto ya escala por vh. Gate por
+   pointer coarse para no tocar laptops de escritorio. */
+
+@media (pointer: coarse) and (orientation: landscape) and (max-height: 900px) {
+  .services-section {
+    min-height: 0;
+  }
+
+  .services-intro {
+    margin-top: clamp(16px, 3.2vh, 40px);
+  }
+
+  .services-intro h2 {
+    font-size: clamp(1.9rem, 5.2vh, 3.4rem);
+  }
+
+  .services-intro p {
+    margin-top: 6px;
+    font-size: clamp(0.85rem, 2vh, 1.05rem);
+  }
+}
