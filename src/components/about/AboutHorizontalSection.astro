@@ -8,6 +8,10 @@ type Props = {
 
 const { content } = Astro.props;
 const aboutScrollSteps = Array.from({ length: 9 });
+// La rejilla de clientes muestra 15 lugares; el resto del array es la reserva
+// que entra en rotación (ver el bloque de rotación en el script de abajo).
+const VISIBLE_CLIENT_LOGOS = 15;
+const visibleClientLogos = clientLogos.slice(0, VISIBLE_CLIENT_LOGOS);
 
 // side per service index (0-based): even = texto-right/video-left, odd = texto-left/video-right
 // const serviceSides = content.services.map((_, i) => (i % 2 === 0 ? 'text-right' : 'text-left'));
@@ -95,7 +99,7 @@ const getVideoRatioKind = (image: string) => (image.endsWith('/servicios.mp4') ?
       </div>
       <div class="about-clients-stage js-about-clients-stage">
         <div class="about-clients-logo-grid" aria-label={content.clients.title}>
-          {clientLogos.map((client) => (
+          {visibleClientLogos.map((client) => (
             <div class="about-client-logo js-about-client-logo">
               <img
                 src={client.src}
@@ -107,6 +111,7 @@ const getVideoRatioKind = (image: string) => (image.endsWith('/servicios.mp4') ?
             </div>
           ))}
         </div>
+        <script type="application/json" class="js-client-logo-pool" set:html={JSON.stringify(clientLogos)} />
       </div>
     </div>
 
@@ -242,8 +247,9 @@ const getVideoRatioKind = (image: string) => (image.endsWith('/servicios.mp4') ?
   let isAllianceScrubbing = false;
 
   // ── Breakpoints ───────────────────────────────────────────────────────────
-  const isMobile = () => window.matchMedia('(max-width: 767px)').matches;
-  const isTablet = () => window.matchMedia('(min-width: 768px) and (max-width: 1024px)').matches;
+  // En sincronía con los cortes de AboutHorizontal.css (tablet desde 600px).
+  const isMobile = () => window.matchMedia('(max-width: 599px)').matches;
+  const isTablet = () => window.matchMedia('(min-width: 600px) and (max-width: 1024px)').matches;
   const getNavH  = () => document.querySelector<HTMLElement>('.site-nav')?.getBoundingClientRect().height ?? 0;
   const getDynamicViewportHeight = () => window.visualViewport?.height ?? window.innerHeight;
   const getIntroLogoY = () => getDynamicViewportHeight() - (isMobile() ? 68 : isTablet() ? 72 : 70);
@@ -509,6 +515,63 @@ const getVideoRatioKind = (image: string) => (image.endsWith('/servicios.mp4') ?
     );
   };
 
+  // ── Rotación de logos de clientes ─────────────────────────────────────────
+  // La rejilla muestra 15 lugares; los logos posteriores del array (reserva)
+  // van entrando: cada CLIENT_LOGO_ROTATION_MS se intercambia UN lugar no
+  // fijado (round-robin) con fade. Los `pinned: true` nunca rotan. Solo rota
+  // mientras la lámina de clientes está activa. Config en src/data/about.ts.
+  const CLIENT_LOGO_ROTATION_MS = 4000;
+  const CLIENT_LOGO_FADE_S = 0.35;
+
+  const initClientLogoRotation = () => {
+    const poolScript = section.querySelector<HTMLScriptElement>('.js-client-logo-pool');
+    const cards = Array.from(section.querySelectorAll<HTMLElement>('.js-about-client-logo'));
+    if (!poolScript || !cards.length) return;
+
+    type PoolLogo = { label: string; src: string; pinned?: boolean };
+    let pool: PoolLogo[] = [];
+    try {
+      pool = JSON.parse(poolScript.textContent ?? '[]');
+    } catch {
+      return;
+    }
+
+    const visible = pool.slice(0, cards.length);
+    const reserve = pool.slice(cards.length);
+    if (!reserve.length) return; // sin reserva no hay rotación
+
+    const rotatableSlots = cards.map((_, i) => i).filter((i) => !visible[i]?.pinned);
+    if (!rotatableSlots.length) return;
+
+    let cursor = 0;
+    window.setInterval(() => {
+      if (section.dataset.aboutState !== 'active') return;
+      if (section.dataset.currentSlide !== String(CLIENTS_SLIDE)) return;
+
+      const slot = rotatableSlots[cursor % rotatableSlots.length];
+      cursor += 1;
+      const card = cards[slot];
+      const img = card.querySelector('img');
+      const incoming = reserve.shift();
+      if (!img || !incoming) return;
+
+      reserve.push(visible[slot]);
+      visible[slot] = incoming;
+
+      gsap.to(card, {
+        autoAlpha: 0,
+        duration: CLIENT_LOGO_FADE_S,
+        ease: 'power1.inOut',
+        onComplete: () => {
+          img.src = incoming.src;
+          img.alt = `Logo cliente AGSIT ${incoming.label}`;
+          gsap.to(card, { autoAlpha: 1, duration: CLIENT_LOGO_FADE_S, ease: 'power1.out' });
+        },
+      });
+    }, CLIENT_LOGO_ROTATION_MS);
+  };
+  initClientLogoRotation();
+
   // ── Alliance scrubbed zoom ─────────────────────────────────────────────────
   // The scrub covers only the final zoom: clients→alliance travels as a normal
   // slide, so the timeline starts at the alliance resting state (content visible,
@@ -622,7 +685,10 @@ const getVideoRatioKind = (image: string) => (image.endsWith('/servicios.mp4') ?
     current = ALLIANCE_SLIDE;
     allianceDone = false;
     alliancePlayed = false;
-    allianceScrubTime = gsap.utils.clamp(0, allianceScrubTl.duration(), startTime);
+    // Nunca exactamente 0: los .set() en la posición 0 de la timeline no
+    // disparan con el playhead clavado en 0 (ni al llegar en reversa), y la
+    // lámina de alianza quedaría con su contenido oculto (pantalla en blanco).
+    allianceScrubTime = gsap.utils.clamp(0.001, allianceScrubTl.duration(), startTime);
     allianceScrubTl.time(allianceScrubTime);
   };
 
@@ -805,7 +871,8 @@ const getVideoRatioKind = (image: string) => (image.endsWith('/servicios.mp4') ?
     updateDots(ALLIANCE_SLIDE);
     allianceDone = false;
     alliancePlayed = false;
-    allianceScrubTime = ALLIANCE_CENTER_TIME * centeredProgress;
+    // 0.001 y no 0: ver nota del nudge en ensureAllianceScrub.
+    allianceScrubTime = Math.max(ALLIANCE_CENTER_TIME * centeredProgress, 0.001);
     allianceScrubTl.time(allianceScrubTime);
   };
 
@@ -846,7 +913,8 @@ const getVideoRatioKind = (image: string) => (image.endsWith('/servicios.mp4') ?
     }
     if (!allianceScrubTl) return;
 
-    const targetTime = direction > 0 ? ALLIANCE_CENTER_TIME : 0;
+    // 0.001 y no 0: ver nota del nudge en ensureAllianceScrub.
+    const targetTime = direction > 0 ? ALLIANCE_CENTER_TIME : 0.001;
     isAllianceTravelPlaying = true;
     allianceScrubTween?.kill();
     allianceScrubTween = allianceScrubTl.tweenTo(targetTime, {

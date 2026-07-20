@@ -780,55 +780,100 @@ a.about-service-link:focus-visible {
   transform: translateX(-50%) translateY(0);
 }
 
-/* ─── Tablet (768–1024px) ────────────────────────────────────────────────── */
+/* ─── Tablet (600–1024px) ────────────────────────────────────────────────── */
+/* El corte baja a 600px para cubrir tablets angostas (Galaxy Tab S4 = 712px).
+   El layout se reparte por altura: texto arriba (auto) y el video centrado en
+   el espacio restante entre el link "ver más" y la barra de progreso. */
 
-@media (min-width: 768px) and (max-width: 1024px) {
+@media (min-width: 600px) and (max-width: 1024px) {
   :root { --snap-bar-h: 58px; }
 
   .about-service-story,
   .about-service-story[data-side='text-right'] {
-    padding: clamp(26px, 3.8vh, 38px) clamp(34px, 5vw, 56px);
+    padding: clamp(16px, 2.4vh, 32px) clamp(24px, 4vw, 48px);
     grid-template-columns: 1fr;
-    grid-template-rows: auto auto;
-    gap: clamp(18px, 2.6vh, 26px);
-    align-content: start;
+    grid-template-rows: auto minmax(0, 1fr);
+    gap: 0;
+    align-content: stretch;
     justify-items: center;
   }
 
-  /* On tablet, all services: text on top, video on bottom */
+  /* Texto arriba, video centrado en el resto de la altura disponible */
   .about-service-image-frame,
   .about-service-story[data-side='text-right'] .about-service-image-frame {
     grid-column: 1;
     grid-row: 2;
+    align-self: center;
     justify-self: center;
-    margin-top: clamp(4px, 0.8vh, 10px);
+    margin-top: 0;
   }
 
   .about-service-image-frame[data-video-ratio='wide'] {
-    width: min(620px, 78vw);
+    /* Cabe por ancho y por alto (46% del panel para el video) */
+    width: min(88vw, 700px, calc(var(--about-panel-h) * 0.46 * 16 / 9));
   }
 
   .about-service-image-frame[data-video-ratio='square'] {
-    width: min(340px, 48vw);
+    width: min(52vw, 380px, calc(var(--about-panel-h) * 0.44));
   }
 
   .about-service-body,
   .about-service-story[data-side='text-right'] .about-service-body {
     grid-column: 1;
     grid-row: 1;
-    width: min(620px, 100%);
+    width: min(700px, 92vw);
     align-self: start;
     justify-content: flex-start;
   }
 
-  .about-service-number { font-size: clamp(3rem, 7vw, 4.5rem); }
-  .about-service-code   { font-size: clamp(0.58rem, 1.15vw, 0.72rem); }
-  .about-service-body h3 { font-size: clamp(2.35rem, 5vw, 3.45rem); }
-  .about-service-description { font-size: clamp(0.9rem, 1.55vw, 1.05rem); }
+  .about-service-number { font-size: clamp(3.2rem, 7.4vw, 5rem); }
+  .about-service-code   { font-size: clamp(0.66rem, 1.25vw, 0.8rem); }
+  .about-service-body h3 { font-size: clamp(2.6rem, 5.8vw, 3.9rem); }
+  .about-service-description {
+    max-width: none;
+    font-size: clamp(0.98rem, 1.85vw, 1.16rem);
+  }
+  .about-service-tags span { font-size: clamp(0.56rem, 1.05vw, 0.68rem); }
+  .about-service-link { font-size: clamp(0.72rem, 1.3vw, 0.88rem); }
 
-  .about-clients-copy h2 { font-size: clamp(2.7rem, 8vw, 4.8rem); }
-  .about-clients-logo-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-  .about-client-logo { min-height: clamp(74px, 8.5vh, 96px); }
+  /* Clientes: los logos se reparten en la altura entre el párrafo y la barra */
+  .about-snap-slide--clients {
+    grid-template-rows: auto minmax(0, 1fr);
+    align-content: stretch;
+    gap: clamp(14px, 2.2vh, 28px);
+    padding-inline: clamp(24px, 4vw, 52px);
+    padding-top: clamp(20px, 3vh, 44px);
+  }
+
+  .about-clients-copy { width: min(700px, 92vw); }
+  .about-clients-copy h2 { font-size: clamp(2.7rem, 6.4vw, 4.8rem); }
+  .about-clients-copy p:last-child { font-size: clamp(0.92rem, 1.7vw, 1.08rem); }
+
+  .about-clients-stage {
+    align-self: stretch;
+    width: min(700px, 92vw);
+    min-height: 0;
+    display: grid;
+  }
+
+  .about-clients-logo-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-rows: repeat(5, minmax(0, 1fr));
+    height: 100%;
+    min-height: 0;
+    gap: clamp(8px, 1.3vh, 18px);
+  }
+
+  .about-client-logo {
+    min-height: 0;
+    height: 100%;
+    padding: clamp(8px, 1.4vh, 18px);
+  }
+
+  .about-client-logo img {
+    max-width: min(148px, 16vw);
+    max-height: min(58px, 6.5vh);
+  }
 
   .about-alliance-title { flex-direction: column; gap: 0; white-space: normal; }
   .about-alliance-copy h2,
@@ -839,9 +884,55 @@ a.about-service-link:focus-visible {
   .about-snap-dot-number { font-size: 9px; }
 }
 
-/* ─── Mobile (≤ 767px) ───────────────────────────────────────────────────── */
+/* ─── Tablet apaisada (táctil, landscape, poca altura) ───────────────────── */
+/* Gate por pointer coarse: los anchos coinciden con laptops de escritorio y
+   NO deben tocarse; solo dispositivos táctiles apaisados con altura corta. */
 
-@media (max-width: 767px) {
+@media (pointer: coarse) and (orientation: landscape) and (min-width: 900px) and (max-height: 900px) {
+  .about-snap-slide--clients {
+    grid-template-rows: auto minmax(0, 1fr);
+    align-content: stretch;
+    gap: clamp(10px, 1.8vh, 20px);
+    padding-top: clamp(14px, 2.4vh, 28px);
+  }
+
+  .about-clients-copy h2 { font-size: clamp(2.1rem, 5.2vh, 3.4rem); }
+  .about-clients-copy p:last-child {
+    margin-top: 8px;
+    font-size: clamp(0.85rem, 2vh, 1rem);
+    line-height: 1.5;
+  }
+
+  .about-clients-stage {
+    align-self: stretch;
+    min-height: 0;
+    display: grid;
+    width: min(1080px, 90vw);
+  }
+
+  .about-clients-logo-grid {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    grid-template-rows: repeat(3, minmax(0, 1fr));
+    height: 100%;
+    min-height: 0;
+    gap: clamp(6px, 1.4vh, 14px);
+  }
+
+  .about-client-logo {
+    min-height: 0;
+    height: 100%;
+    padding: clamp(6px, 1.2vh, 14px);
+  }
+
+  .about-client-logo img {
+    max-width: min(140px, 14vw);
+    max-height: min(52px, 7.5vh);
+  }
+}
+
+/* ─── Mobile (≤ 599px) ───────────────────────────────────────────────────── */
+
+@media (max-width: 599px) {
   :root { --snap-bar-h: 68px; }
 
   .about-snap-slide--intro {

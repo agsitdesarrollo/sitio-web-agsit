@@ -20,6 +20,8 @@ export type AboutService = {
 export type ClientLogo = {
   label: string;
   src: string;
+  /** true = el logo nunca rota (empresas grandes que deben quedarse fijas). */
+  pinned?: boolean;
 };
 
 export type AboutContent = {
@@ -244,6 +246,15 @@ export const aboutContentByLang: Record<SupportedLang, AboutContent> = {
 
 export const aboutServices = aboutContentByLang.es.services;
 
+// ── Cómo configurar la rotación de logos ────────────────────────────────────
+// - La rejilla muestra los primeros 15 del array; los que están después son la
+//   reserva y van entrando en rotación (un cambio cada CLIENT_LOGO_ROTATION_MS,
+//   definido en AboutHorizontalSection.astro).
+// - `pinned: true` en cualquiera de los primeros 15 = ese lugar nunca rota
+//   (empresas grandes). Los demás lugares se van intercambiando con la reserva.
+// - Para que un logo NO fijo aparezca "más tiempo", inclúyelo dos veces en la
+//   reserva: pasará por la rejilla el doble de seguido.
+// - Con 15 logos o menos no hay rotación (no hay reserva).
 export const clientLogos: ClientLogo[] = [
   { label: '01', src: '/assets/client-logos/client-01.png' },
   { label: '02', src: '/assets/client-logos/client-02.png' },

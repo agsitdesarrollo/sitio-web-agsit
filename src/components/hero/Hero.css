@@ -1,5 +1,9 @@
 .hero-scroll {
   position: relative;
+  /* Por encima de las secciones hermanas (z-auto): el personaje fixed vive en
+     el stacking context del hero y debe pintar sobre servicios mientras viaja
+     en el tramo de transición. Las cajas no se traslapan, solo el personaje. */
+  z-index: 5;
   min-height: calc((var(--app-stable-vh, 100svh) - var(--nav-h)) + var(--app-stable-vh, 100svh));
   scroll-snap-align: start;
   overflow: clip;

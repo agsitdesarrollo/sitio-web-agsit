@@ -12,13 +12,6 @@ type Props = {
 const { copy } = Astro.props;
 ---
 
-<!-- Personaje flotante: fijo al viewport (no dentro del sticky del hero) para
-     que el tramo de snap hero→servicios lo scrubee hasta convertirse en el
-     personaje de la sección 2 (réplica del modelo previo al refactor). -->
-<div class="hero-person js-floating-person" aria-hidden="true">
-  <Image src={personImage} alt="" loading="eager" fetchpriority="high" />
-</div>
-
 <section id="inicio" class="hero-scroll js-hero" data-hero-scroll>
   <div class="hero-section hero-sticky">
     <div class="hero-media-wrap" aria-hidden="true">
@@ -28,6 +21,14 @@ const { copy } = Astro.props;
       <div class="hero-window-overlay">
         <Image src={windowOverlayImage} alt="" loading="eager" fetchpriority="high" />
       </div>
+    </div>
+
+    <!-- Personaje flotante: position fixed (viaja con el snap hero→servicios)
+         pero DENTRO del stacking context del hero para que el copy/CTA (z20)
+         pinte encima de él. El z-index de .hero-scroll lo mantiene por encima
+         de servicios durante el tramo de transición. -->
+    <div class="hero-person js-floating-person" aria-hidden="true">
+      <Image src={personImage} alt="" loading="eager" fetchpriority="high" />
     </div>
 
     <div class="hero-copy">
