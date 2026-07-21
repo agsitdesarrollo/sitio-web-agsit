@@ -98,8 +98,12 @@ const iconPath = (icon: ServicePoint['icon']) => {
 
   const getServicesPanelHeight = () => {
     const navHeight = document.querySelector<HTMLElement>('.site-nav')?.getBoundingClientRect().height ?? 0;
-    const stableHeight = Number.parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--app-stable-vh'));
-    const viewportHeight = Number.isFinite(stableHeight) && stableHeight > 0 ? stableHeight : window.innerHeight;
+    const isShortLandscape = window.matchMedia(
+      '(pointer: coarse) and (orientation: landscape) and (max-width: 932px) and (max-height: 520px)',
+    ).matches;
+    const viewportVariable = isShortLandscape ? '--app-vh' : '--app-stable-vh';
+    const viewportValue = Number.parseFloat(getComputedStyle(document.documentElement).getPropertyValue(viewportVariable));
+    const viewportHeight = Number.isFinite(viewportValue) && viewportValue > 0 ? viewportValue : window.innerHeight;
 
     return Math.max(viewportHeight - navHeight, 1);
   };
@@ -112,7 +116,11 @@ const iconPath = (icon: ServicePoint['icon']) => {
     const sectionTop = servicesSection.getBoundingClientRect().top;
     const progress = clamp(-sectionTop / getServicesPanelHeight(), 0, totalCards);
     const isMobile = window.matchMedia('(max-width: 640px)').matches;
+    const isShortLandscape = window.matchMedia(
+      '(pointer: coarse) and (orientation: landscape) and (max-width: 932px) and (max-height: 520px)',
+    ).matches;
     const isTablet = window.matchMedia('(min-width: 641px) and (max-width: 1024px)').matches;
+    const usesSingleCardLifecycle = isMobile || isShortLandscape;
     const activeSlide = Math.round(progress);
 
     servicesSection.dataset.activeSlide = String(activeSlide);
@@ -121,12 +129,16 @@ const iconPath = (icon: ServicePoint['icon']) => {
       const side = card.dataset.cardSide === 'left' ? -1 : 1;
       const enterProgress = clamp((progress - index - 0.18) / 0.82, 0, 1);
       const enter = easeOutCubic(enterProgress);
-      const exitStart = index + (isMobile ? 1.02 : 1.82);
-      const exitDuration = isMobile ? 0.12 : 0.18;
+      // En portrait y en landscape corto, la tarjeta saliente abandona el
+      // encuadre antes de que la siguiente empiece a entrar. Así cada parada
+      // conserva una sola tarjeta, incluso cuando cambia la altura útil del
+      // navegador móvil.
+      const exitStart = index + (usesSingleCardLifecycle ? 1.02 : 1.82);
+      const exitDuration = usesSingleCardLifecycle ? 0.16 : 0.18;
       const exitProgress = index < totalCards - 1 ? clamp((progress - exitStart) / exitDuration, 0, 1) : 0;
       const exit = easeInCubic(exitProgress);
-      const startX = side * (isMobile ? 78 : isTablet ? 140 : 340);
-      const startY = isMobile ? 92 : isTablet ? 150 : 310;
+      const startX = side * (isShortLandscape ? Math.min(window.innerWidth * 0.38, 280) : isMobile ? 78 : isTablet ? 140 : 340);
+      const startY = isShortLandscape ? 24 : isMobile ? 92 : isTablet ? 150 : 310;
       const curveY = startY * Math.pow(1 - enter, 2);
       const opacity = enterProgress === 0 ? 0 : clamp(enter * (1 - exit), 0, 1);
 

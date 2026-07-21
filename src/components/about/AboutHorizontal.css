@@ -1096,3 +1096,266 @@ a.about-service-link:focus-visible {
     letter-spacing: 0.08em;
   }
 }
+
+/* Teléfonos horizontales con muy poca altura: el contenido cambia a dos
+   columnas, conservando los mismos slides y el mismo track de animación. */
+@media (pointer: coarse) and (orientation: landscape) and (max-width: 932px) and (max-height: 520px) {
+  .about-snap-section {
+    --about-panel-h: var(--app-panel-h);
+  }
+
+  .about-snap-slide--intro {
+    padding: 12px 24px var(--snap-bar-h);
+  }
+
+  .about-overview {
+    width: min(760px, 88vw);
+    transform: none;
+  }
+
+  .about-overview-kicker,
+  .about-overview-scroll {
+    display: none;
+  }
+
+  .about-overview-title {
+    max-width: 720px;
+    font-size: clamp(1.85rem, 7.4vh, 2.8rem);
+    line-height: 0.96;
+  }
+
+  .about-overview-copy {
+    max-width: 720px;
+    margin-top: 8px;
+    font-size: clamp(0.72rem, 2.45vh, 0.9rem);
+    line-height: 1.32;
+  }
+
+  .about-service-story,
+  .about-service-story[data-side='text-right'] {
+    padding: 10px 24px calc(var(--snap-bar-h) + 4px);
+    grid-template-columns: minmax(0, 0.96fr) minmax(0, 1.04fr);
+    grid-template-rows: minmax(0, 1fr);
+    gap: clamp(14px, 2.8vw, 28px);
+    align-items: center;
+  }
+
+  .about-service-image-frame,
+  .about-service-story[data-side='text-right'] .about-service-image-frame {
+    grid-row: 1;
+    width: auto;
+    height: min(100%, 190px);
+    max-width: 100%;
+    margin: 0;
+    align-self: center;
+  }
+
+  .about-service-image-frame {
+    grid-column: 2;
+  }
+
+  .about-service-story[data-side='text-right'] .about-service-image-frame {
+    grid-column: 1;
+  }
+
+  .about-service-image-frame[data-video-ratio='square'] {
+    height: min(100%, 170px);
+  }
+
+  .about-service-body,
+  .about-service-story[data-side='text-right'] .about-service-body {
+    grid-row: 1;
+    width: 100%;
+    align-self: center;
+  }
+
+  .about-service-body {
+    grid-column: 1;
+  }
+
+  .about-service-story[data-side='text-right'] .about-service-body {
+    grid-column: 2;
+  }
+
+  .about-service-number,
+  .about-service-tags {
+    display: none;
+  }
+
+  .about-service-code {
+    margin-bottom: 4px;
+    font-size: clamp(0.48rem, 1.8vh, 0.62rem);
+    letter-spacing: 0.14em;
+    line-height: 1.2;
+  }
+
+  .about-service-body h3 {
+    font-size: clamp(1.45rem, 5.8vh, 2.2rem);
+    line-height: 0.98;
+  }
+
+  .about-service-description {
+    margin-top: 5px;
+    font-size: clamp(0.66rem, 2.25vh, 0.82rem);
+    line-height: 1.28;
+  }
+
+  .about-service-link {
+    margin-top: 6px;
+    font-size: clamp(0.48rem, 1.8vh, 0.6rem);
+    letter-spacing: 0.1em;
+  }
+
+  .about-snap-slide--clients {
+    gap: 6px;
+    padding: 8px 22px var(--snap-bar-h);
+  }
+
+  .about-clients-copy,
+  .about-clients-stage {
+    width: min(900px, 92vw);
+  }
+
+  .about-clients-copy h2 {
+    font-size: clamp(1.65rem, 6.4vh, 2.45rem);
+    line-height: 0.96;
+  }
+
+  .about-clients-copy p:last-child {
+    margin-top: 4px;
+    font-size: clamp(0.62rem, 2.1vh, 0.78rem);
+    line-height: 1.25;
+  }
+
+  .about-clients-stage {
+    min-height: 0;
+    display: grid;
+  }
+
+  .about-clients-logo-grid {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    grid-template-rows: repeat(3, minmax(0, 1fr));
+    height: 100%;
+    min-height: 0;
+    gap: clamp(4px, 1.1vh, 8px);
+  }
+
+  .about-client-logo {
+    min-height: 0;
+    height: 100%;
+    padding: clamp(3px, 0.8vh, 7px);
+  }
+
+  .about-client-logo img {
+    max-width: min(116px, 13vw);
+    max-height: min(34px, 7vh);
+  }
+
+  .about-alliance-layout {
+    padding: 12px 24px var(--snap-bar-h);
+  }
+
+  .about-alliance-copy h2,
+  .about-alliance-title {
+    font-size: clamp(1.55rem, 6vh, 2.25rem);
+    line-height: 0.94;
+  }
+
+  .about-alliance-copy > p:last-child {
+    display: none;
+  }
+
+  .about-alliance-triangle-wrap {
+    --alliance-logo-size: clamp(40px, 4.8vh, 52px);
+    top: 55%;
+    width: min(360px, 58vw);
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) var(--alliance-logo-size) minmax(0, 1fr);
+    grid-template-rows: auto var(--alliance-logo-size);
+    align-items: center;
+    row-gap: clamp(5px, 1.1vh, 9px);
+  }
+
+  .about-alliance-triangle-spacer {
+    grid-column: 2;
+    grid-row: 2;
+    width: var(--alliance-logo-size);
+  }
+
+  .about-alliance-triangle-bottom {
+    display: contents;
+  }
+
+  .about-alliance-metric {
+    font-size: clamp(1.16rem, 5vh, 1.7rem);
+    line-height: 0.94;
+  }
+
+  .about-alliance-metric-scope {
+    grid-column: 1 / -1;
+    grid-row: 1;
+    justify-self: center;
+    position: relative;
+    top: -5px;
+  }
+
+  .about-alliance-metric-cost,
+  .about-alliance-metric-time {
+    grid-row: 2;
+    align-self: center;
+    margin: 0;
+    padding: 0 !important;
+  }
+
+  .about-alliance-metric-cost {
+    grid-column: 1;
+    justify-self: center;
+  }
+
+  .about-alliance-metric-time {
+    grid-column: 3;
+    justify-self: center;
+  }
+
+  .about-transition-logo {
+    --logo-base-w: clamp(40px, 4.8vh, 52px);
+    margin-top: -14px;
+  }
+
+  body:has(.about-snap-section[data-current-slide='7']) .scroll-consult-logo {
+    width: clamp(40px, 4.8vh, 52px);
+    margin-top: -14px;
+  }
+
+  .about-alliance-cta {
+    bottom: 6px;
+    padding: 8px 14px;
+    font-size: clamp(0.5rem, 1.9vh, 0.62rem);
+  }
+
+  .about-snap-bar {
+    height: var(--snap-bar-h);
+    flex-direction: row;
+    gap: 0;
+    padding: 5px 18px;
+  }
+
+  .about-snap-bar-dots-wrap {
+    flex: 1 1 auto;
+    width: auto;
+    height: 20px;
+  }
+
+  .about-snap-dot {
+    width: 20px;
+    height: 20px;
+  }
+
+  .about-snap-dot-number {
+    font-size: 8px;
+  }
+
+  .scroll-consult-logo {
+    width: 54px;
+  }
+}

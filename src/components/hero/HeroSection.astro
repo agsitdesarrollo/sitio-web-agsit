@@ -61,6 +61,12 @@ const { copy } = Astro.props;
 
   const getPanelHeight = () => {
     const navHeight = document.querySelector<HTMLElement>('.site-nav')?.getBoundingClientRect().height ?? 0;
+    const panelHeight = Number.parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--app-panel-h'));
+
+    if (Number.isFinite(panelHeight) && panelHeight > 0) {
+      return panelHeight;
+    }
+
     const stableHeight = Number.parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--app-stable-vh'));
     const viewportHeight = Number.isFinite(stableHeight) && stableHeight > 0 ? stableHeight : window.innerHeight;
 

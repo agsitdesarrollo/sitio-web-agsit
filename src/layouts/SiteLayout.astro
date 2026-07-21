@@ -33,8 +33,12 @@ const { title, description, canonicalUrl, htmlLang = 'es-MX', locale, alternates
       (() => {
         const root = document.documentElement;
         const compactQuery = window.matchMedia('(max-width: 900px)');
+        const shortLandscapeQuery = window.matchMedia(
+          '(pointer: coarse) and (orientation: landscape) and (max-width: 932px) and (max-height: 520px)',
+        );
         let frame = 0;
         let stableHeight = 0;
+        let lastDynamicHeight = 0;
         let lastWidth = window.innerWidth;
 
         const getDynamicHeight = () => Math.round(window.visualViewport?.height || window.innerHeight);
@@ -46,6 +50,7 @@ const { title, description, canonicalUrl, htmlLang = 'es-MX', locale, alternates
           const width = window.innerWidth;
           const isCompact = compactQuery.matches;
           const widthChanged = Math.abs(width - lastWidth) > 24;
+          const dynamicChanged = Math.abs(dynamicHeight - lastDynamicHeight) > 1;
           let stableChanged = false;
 
           root.style.setProperty('--app-vh', `${dynamicHeight}px`);
@@ -56,14 +61,20 @@ const { title, description, canonicalUrl, htmlLang = 'es-MX', locale, alternates
             stableChanged = true;
           }
 
+          lastDynamicHeight = dynamicHeight;
           lastWidth = width;
 
-          if (stableChanged || !isCompact) {
+          // En teléfonos horizontales el alto cambia al aparecer/desaparecer la
+          // UI de Chrome. La sección de alianza usa ese alto dentro de una
+          // timeline, así que necesita recibir el evento para recalcular sus
+          // coordenadas. El resto de compactos conserva la política estable.
+          if (stableChanged || !isCompact || (shortLandscapeQuery.matches && dynamicChanged)) {
             window.dispatchEvent(
               new CustomEvent('agsit:viewport-change', {
                 detail: {
                   reason,
                   stableChanged,
+                  dynamicChanged,
                   dynamicHeight,
                   stableHeight,
                 },

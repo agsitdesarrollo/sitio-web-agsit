@@ -28,6 +28,7 @@
   --nav-h: clamp(76px, 10vh, 96px);
   --app-vh: 100svh;
   --app-stable-vh: 100svh;
+  --app-panel-h: calc(var(--app-stable-vh) - var(--nav-h));
   --bg-dark: #020712;
   --bg-ink: #08152b;
   --primary: #41c8f6;
@@ -82,6 +83,17 @@ main {
 @media (max-width: 900px) {
   :root {
     --nav-h: 74px;
+  }
+}
+
+/* Teléfonos táctiles en horizontal: la barra del navegador puede dejar menos
+   de 300px útiles. Este modo depende de altura + orientación, no de un ancho
+   aislado, para no alterar portrait, tablets ni escritorios. */
+@media (pointer: coarse) and (orientation: landscape) and (max-width: 932px) and (max-height: 520px) {
+  :root {
+    --nav-h: 56px;
+    --snap-bar-h: 38px;
+    --app-panel-h: calc(var(--app-vh) - var(--nav-h));
   }
 }
 

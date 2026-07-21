@@ -250,9 +250,14 @@ const getVideoRatioKind = (image: string) => (image.endsWith('/servicios.mp4') ?
   // En sincronía con los cortes de AboutHorizontal.css (tablet desde 600px).
   const isMobile = () => window.matchMedia('(max-width: 599px)').matches;
   const isTablet = () => window.matchMedia('(min-width: 600px) and (max-width: 1024px)').matches;
+  const isShortLandscape = () => window.matchMedia(
+    '(pointer: coarse) and (orientation: landscape) and (max-width: 932px) and (max-height: 520px)',
+  ).matches;
   const getNavH  = () => document.querySelector<HTMLElement>('.site-nav')?.getBoundingClientRect().height ?? 0;
   const getDynamicViewportHeight = () => window.visualViewport?.height ?? window.innerHeight;
-  const getIntroLogoY = () => getDynamicViewportHeight() - (isMobile() ? 68 : isTablet() ? 72 : 70);
+  const getIntroLogoY = () => getDynamicViewportHeight() - (
+    isShortLandscape() ? 42 : isMobile() ? 68 : isTablet() ? 72 : 70
+  );
   const getLayoutWidth = () => section.getBoundingClientRect().width || document.documentElement.clientWidth;
   const getActivationLead = () => (isMobile() ? 44 : isTablet() ? 52 : 58);
   const shouldReduceMotion = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -734,9 +739,41 @@ const getVideoRatioKind = (image: string) => (image.endsWith('/servicios.mp4') ?
   };
 
   // Re-dock the logo when the mobile browser UI shows/hides (viewport height change).
+  let allianceViewportRebuildFrame = 0;
   window.addEventListener(
     'agsit:viewport-change',
-    () => {
+    (event) => {
+      const viewportEvent = event as CustomEvent<{ dynamicChanged?: boolean }>;
+
+      // La timeline de alianza usa traslaciones en píxeles para alinear la
+      // cuadrícula horizontal. Cuando Chrome modifica el alto visible, esas
+      // coordenadas deben reconstruirse; de lo contrario el logo queda fuera
+      // de su centro al recorrer los slides en reversa.
+      if (
+        isActive &&
+        isShortLandscape() &&
+        viewportEvent.detail?.dynamicChanged &&
+        isAllianceScrubbing &&
+        !isAllianceTravelPlaying &&
+        !isAnimating &&
+        zoomHandoffState === 'idle'
+      ) {
+        cancelAnimationFrame(allianceViewportRebuildFrame);
+        allianceViewportRebuildFrame = requestAnimationFrame(() => {
+          allianceViewportRebuildFrame = 0;
+          if (
+            isActive &&
+            isAllianceScrubbing &&
+            !isAllianceTravelPlaying &&
+            !isAnimating &&
+            zoomHandoffState === 'idle'
+          ) {
+            ensureAllianceScrub(allianceScrubTl?.time() ?? allianceScrubTime);
+          }
+        });
+        return;
+      }
+
       if (isActive && !isAllianceScrubbing && !isAnimating) {
         positionLogo(current, false);
       }
@@ -751,8 +788,9 @@ const getVideoRatioKind = (image: string) => (image.endsWith('/servicios.mp4') ?
   let isAllianceTravelPlaying = false;
 
   const getAboutPanelHeight = () => {
-    const stableHeight = Number.parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--app-stable-vh'));
-    const viewportHeight = Number.isFinite(stableHeight) && stableHeight > 0 ? stableHeight : window.innerHeight;
+    const viewportVariable = isShortLandscape() ? '--app-vh' : '--app-stable-vh';
+    const viewportValue = Number.parseFloat(getComputedStyle(document.documentElement).getPropertyValue(viewportVariable));
+    const viewportHeight = Number.isFinite(viewportValue) && viewportValue > 0 ? viewportValue : window.innerHeight;
     return Math.max(viewportHeight - getNavH(), 1);
   };
 

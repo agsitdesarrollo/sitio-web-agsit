@@ -19,19 +19,29 @@ export function initScrollExperience(): (() => void) | undefined {
   const context = gsap.context(() => {
     window.scrollTo(0, 0);
 
-    const isCompact = window.matchMedia('(max-width: 1024px)').matches;
-    const isMobile = window.matchMedia('(max-width: 749px)').matches;
-    const isTablet = isCompact && !isMobile;
+    // These are functions rather than values captured at load. A phone can
+    // cross all three breakpoints after it rotates.
+    const isCompact = () => window.matchMedia('(max-width: 1024px)').matches;
+    const isMobile = () => window.matchMedia('(max-width: 749px)').matches;
+    const isTablet = () => isCompact() && !isMobile();
+    const isShortLandscape = () =>
+      window.matchMedia('(pointer: coarse) and (orientation: landscape) and (max-width: 932px) and (max-height: 520px)').matches;
+    const getHeroRestYPercent = () => (isShortLandscape() ? 0 : -5);
     const shouldReduceMotion = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
     const getRootPixelValue = (name: string, fallback: number) => {
       const value = Number.parseFloat(getComputedStyle(document.documentElement).getPropertyValue(name));
       return Number.isFinite(value) && value > 0 ? value : fallback;
     };
-    const getViewportHeight = () =>
-      isCompact ? getRootPixelValue('--app-stable-vh', window.innerHeight) : window.innerHeight;
+    const getViewportHeight = () => {
+      if (isShortLandscape()) {
+        return getRootPixelValue('--app-vh', window.innerHeight);
+      }
+
+      return isCompact() ? getRootPixelValue('--app-stable-vh', window.innerHeight) : window.innerHeight;
+    };
     const getNavHeight = () => document.querySelector('.site-nav')?.getBoundingClientRect().height ?? 0;
-    const getVideoStoryInset = () => (isMobile ? 22 : isTablet ? 24 : isCompact ? 28 : 34);
+    const getVideoStoryInset = () => (isShortLandscape() ? 10 : isMobile() ? 22 : isTablet() ? 24 : isCompact() ? 28 : 34);
 
     const setIfFound = (selector: string, vars: gsap.TweenVars) => {
       const targets = gsap.utils.toArray<HTMLElement>(selector);
@@ -41,10 +51,14 @@ export function initScrollExperience(): (() => void) | undefined {
       }
     };
     const getVideoStoryWidth = () => {
-      const ratio = isMobile ? 0.92 : isTablet ? 0.94 : isCompact ? 0.92 : 0.68;
+      const ratio = isShortLandscape() ? 0.76 : isMobile() ? 0.92 : isTablet() ? 0.94 : isCompact() ? 0.92 : 0.68;
       const base = window.innerWidth * ratio;
 
-      if (isTablet) {
+      if (isShortLandscape()) {
+        return Math.min(base, getViewportHeight() * 0.44 * (16 / 9));
+      }
+
+      if (isTablet()) {
         // En tablet apaisada la altura manda: el marco 16:9 no debe pasar de
         // ~52% del viewport de alto o aplasta la frase contra la barra.
         return Math.min(base, getViewportHeight() * 0.52 * (16 / 9));
@@ -53,22 +67,26 @@ export function initScrollExperience(): (() => void) | undefined {
       return base;
     };
     const getVideoStoryHeight = () => {
-      if (isMobile) {
+      if (isShortLandscape()) {
+        return getViewportHeight() * 0.44;
+      }
+
+      if (isMobile()) {
         return getViewportHeight() * 0.32;
       }
 
-      if (isTablet) {
+      if (isTablet()) {
         return getVideoStoryWidth() * 0.5625;
       }
 
-      return getViewportHeight() * (isCompact ? 0.34 : 0.44);
+      return getViewportHeight() * (isCompact() ? 0.34 : 0.44);
     };
     const hydrateVideo = (video: HTMLVideoElement | null | undefined) => {
       if (!video) {
         return;
       }
 
-      if (isMobile && video.dataset.mobile === 'static') {
+      if (isMobile() && video.dataset.mobile === 'static') {
         video.pause();
         video.removeAttribute('src');
         video.load();
@@ -107,7 +125,7 @@ export function initScrollExperience(): (() => void) | undefined {
     }
 
     gsap.set('.js-video-story-line', { autoAlpha: 0, y: 0 });
-    setIfFound('.js-floating-person', { y: 0, yPercent: -5, scale: 1.08, autoAlpha: 1 });
+    setIfFound('.js-floating-person', { y: 0, yPercent: getHeroRestYPercent(), scale: 1.08, autoAlpha: 1 });
     setIfFound('.js-services-person', { autoAlpha: 0 });
     setIfFound('.js-scroll-consult-logo', {
       autoAlpha: 0,
@@ -164,7 +182,7 @@ export function initScrollExperience(): (() => void) | undefined {
       const target = getServicesPersonTargetRect();
 
       if (!target) {
-        return -getViewportHeight() * (isCompact ? 0.28 : 0.18);
+        return -getViewportHeight() * (isCompact() ? 0.28 : 0.18);
       }
 
       return target.bottom - getViewportHeight();
@@ -173,7 +191,7 @@ export function initScrollExperience(): (() => void) | undefined {
       const target = getServicesPersonTargetRect();
 
       if (!floatingPersonEl || !target) {
-        return isCompact ? 0.58 : 0.74;
+        return isCompact() ? 0.58 : 0.74;
       }
 
       return target.width / Math.max(floatingPersonEl.offsetWidth, 1);
@@ -214,12 +232,12 @@ export function initScrollExperience(): (() => void) | undefined {
         return;
       }
 
-      const targetY = isCompact ? getFloatingPersonTargetY() : -viewportHeight * 0.18;
-      const targetScale = isCompact ? getFloatingPersonTargetScale() : 0.74;
+      const targetY = isCompact() ? getFloatingPersonTargetY() : -viewportHeight * 0.18;
+      const targetScale = isCompact() ? getFloatingPersonTargetScale() : 0.74;
 
       gsap.set(floatingPersonEl, {
         y: gsap.utils.interpolate(0, targetY, progress),
-        yPercent: gsap.utils.interpolate(-5, 0, progress),
+        yPercent: gsap.utils.interpolate(getHeroRestYPercent(), 0, progress),
         scale: gsap.utils.interpolate(1.08, targetScale, progress),
       });
     };
@@ -275,7 +293,7 @@ export function initScrollExperience(): (() => void) | undefined {
         top: () => getVideoStoryInset(),
         width: () => getVideoStoryWidth(),
         height: () => getVideoStoryHeight(),
-        borderRadius: isMobile ? 10 : 14,
+        borderRadius: isMobile() ? 10 : 14,
         boxShadow: '0 28px 60px rgba(8, 21, 43, 0.2)',
         ease: 'none',
         duration: 1,
@@ -325,11 +343,23 @@ export function initScrollExperience(): (() => void) | undefined {
         return 0;
       }
       const rect = videoStorySection.getBoundingClientRect();
-      return gsap.utils.clamp(
+      const panelHeight = getVideoStoryPanelHeight();
+      const distanceFromReadyStop = getNavHeight() - rect.top;
+      const progress = gsap.utils.clamp(
         0,
         VIDEO_STORY_MAX_TIME,
-        (getNavHeight() - rect.top) / getVideoStoryPanelHeight(),
+        distanceFromReadyStop / panelHeight,
       );
+
+      // La rueda ya reconoce la parada fullscreen con una tolerancia de 6px.
+      // En escritorio fijamos también la timeline a 0 dentro de ese mismo
+      // margen: sin ello el frame conserva una fracción de su reducción y el
+      // primer scroll de regreso deja el overlay apenas incompleto.
+      if (!isCompact() && Math.abs(distanceFromReadyStop) <= 6) {
+        return VIDEO_STORY_READY_STOP;
+      }
+
+      return progress;
     };
 
     let videoStorySyncFrame = 0;
@@ -366,7 +396,7 @@ export function initScrollExperience(): (() => void) | undefined {
     const requestViewportRefresh = (event?: Event) => {
       const viewportEvent = event as CustomEvent<{ stableChanged?: boolean }> | undefined;
 
-      if (isCompact && event?.type === 'agsit:viewport-change' && !viewportEvent?.detail?.stableChanged) {
+      if (isCompact() && event?.type === 'agsit:viewport-change' && !viewportEvent?.detail?.stableChanged) {
         return;
       }
 
@@ -381,7 +411,7 @@ export function initScrollExperience(): (() => void) | undefined {
             syncVideoStoryToScroll();
           });
         },
-        isCompact ? 180 : 0,
+        isCompact() ? 180 : 0,
       );
     };
 
@@ -403,8 +433,7 @@ export function initScrollExperience(): (() => void) | undefined {
       }
 
       const navHeight = getNavHeight();
-      const stableHeight = getRootPixelValue('--app-stable-vh', window.innerHeight);
-      const panelHeight = Math.max(stableHeight - navHeight, 1);
+      const panelHeight = getRootPixelValue('--app-panel-h', Math.max(getViewportHeight() - navHeight, 1));
       const servicesTop = window.scrollY + services.getBoundingClientRect().top;
 
       window.scrollTo({

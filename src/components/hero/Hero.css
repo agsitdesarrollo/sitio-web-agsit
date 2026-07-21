@@ -562,3 +562,63 @@
     line-height: 1.58;
   }
 }
+
+/* El hero conserva su composición de retrato hasta aquí. En un teléfono
+   horizontal la altura, no el ancho, es el recurso escaso. */
+@media (pointer: coarse) and (orientation: landscape) and (max-width: 932px) and (max-height: 520px) {
+  .hero-scroll {
+    min-height: calc(var(--app-panel-h) + var(--app-vh));
+  }
+
+  .hero-section {
+    height: var(--app-panel-h);
+    min-height: var(--app-panel-h);
+  }
+
+  .hero-second-snap {
+    height: var(--app-vh);
+  }
+
+  .hero-left-panel {
+    padding: 8px 20px 0;
+    justify-content: flex-start;
+  }
+
+  .hero-copy-block {
+    width: min(560px, 74vw);
+    gap: 4px;
+  }
+
+  .hero-side-titles {
+    width: min(560px, 74vw);
+    font-size: clamp(1.3rem, 6vh, 2rem);
+    line-height: 0.9;
+    gap: 0;
+  }
+
+  .hero-support-copy {
+    width: min(480px, 72vw);
+    display: block;
+    font-size: clamp(0.56rem, 2vh, 0.68rem);
+    line-height: 1.28;
+  }
+
+  .hero-person {
+    --hero-person-height-limit: calc(var(--app-panel-h) * 0.65);
+    bottom: 0;
+    width: min(360px, 52vw, var(--hero-person-height-limit));
+    transform: translate(-50%, 0) scale(1);
+  }
+
+  .hero-cta-wrap {
+    bottom: 6%;
+    width: min(290px, 62vw);
+  }
+
+  .hero-contact-button {
+    min-height: 32px;
+    padding-inline: 13px;
+    font-size: clamp(0.5rem, 1.8vh, 0.6rem);
+    letter-spacing: 0.08em;
+  }
+}
