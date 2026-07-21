@@ -295,7 +295,10 @@ body.drawer-open {
     grid-template-columns: 1fr 1.1fr;
   }
 
-  .contact-direct-card {
+  /* Solo la tarjeta dentro del panel debe ocupar ambas columnas. Sin este
+     alcance, la tarjeta del contacto final fuerza una nueva fila y deja el
+     formulario atrapado en la primera columna en tablets apaisadas. */
+  .contact-drawer-content .contact-direct-card {
     grid-column: 1 / -1;
   }
 }

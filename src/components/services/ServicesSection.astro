@@ -40,7 +40,7 @@ const iconPath = (icon: ServicePoint['icon']) => {
     </div>
 
     <div class="services-person js-services-person" aria-hidden="true">
-      <Image src={personImage} alt="" loading="lazy" />
+      <Image src={personImage} alt="" loading="eager" fetchpriority="high" />
     </div>
 
     <div class="services-cards-layer" aria-live="polite">

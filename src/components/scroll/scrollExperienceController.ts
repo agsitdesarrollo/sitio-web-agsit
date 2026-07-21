@@ -26,6 +26,9 @@ export function initScrollExperience(): (() => void) | undefined {
     const isTablet = () => isCompact() && !isMobile();
     const isShortLandscape = () =>
       window.matchMedia('(pointer: coarse) and (orientation: landscape) and (max-width: 932px) and (max-height: 520px)').matches;
+    // Sólo teléfonos: el puente hero→servicios necesita conservar su capa
+    // fixed mientras Safari resuelve el snap entre ambas secciones.
+    const isPhoneHeroBridge = () => isMobile() || isShortLandscape();
     const getHeroRestYPercent = () => (isShortLandscape() ? 0 : -5);
     const shouldReduceMotion = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
@@ -212,6 +215,25 @@ export function initScrollExperience(): (() => void) | undefined {
       const progress = gsap.utils.clamp(0, 1, (viewportHeight - servicesTop) / viewportHeight);
       const zone: 'above' | 'inside' | 'below' =
         progress <= 0 ? 'above' : progress >= 1 ? 'below' : 'inside';
+
+      if (isPhoneHeroBridge()) {
+        // El relevo ocurre únicamente al final, cuando ambos personajes ya
+        // coinciden. Así el snap nativo no deja un frame vacío y al subir se
+        // ejecuta el mismo trayecto en sentido inverso.
+        const handoff = gsap.utils.clamp(0, 1, (progress - 0.985) / 0.015);
+
+        gsap.set(floatingPersonEl, { autoAlpha: 1 - handoff, zIndex: 4 });
+        setIfFound('.js-services-person', { autoAlpha: handoff });
+
+        gsap.set(floatingPersonEl, {
+          y: gsap.utils.interpolate(0, getFloatingPersonTargetY(), progress),
+          yPercent: gsap.utils.interpolate(getHeroRestYPercent(), 0, progress),
+          scale: gsap.utils.interpolate(1.08, getFloatingPersonTargetScale(), progress),
+        });
+
+        personZone = zone;
+        return;
+      }
 
       if (zone !== personZone) {
         personZone = zone;

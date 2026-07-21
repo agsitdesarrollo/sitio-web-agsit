@@ -135,9 +135,24 @@
   }
 }
 
-@media (max-width: 900px) {
+/* En tablets y pantallas apaisadas intermedias, una sola columna evita que el
+   formulario quede reducido a la primera columna tras la tarjeta de contacto. */
+@media (max-width: 1080px) {
   .final-contact-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .final-contact-grid .contact-direct-card {
+    position: static;
+  }
+}
+
+/* Algunos móviles en horizontal superan el corte por ancho debido a su escala
+   de dispositivo. La altura útil es la señal fiable para conservar el
+   formulario a ancho completo. */
+@media (orientation: landscape) and (max-height: 520px) {
+  .final-contact-grid {
+    grid-template-columns: minmax(0, 1fr);
   }
 
   .final-contact-grid .contact-direct-card {

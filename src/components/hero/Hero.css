@@ -436,6 +436,16 @@
   }
 }
 
+/* Safari/iOS puede recortar un descendiente fixed al hacer snap si alguno de
+   sus ancestros sticky usa overflow. El video ya se contiene en su propia
+   capa, por lo que liberamos únicamente al personaje en teléfonos. */
+@media (max-width: 749px), (pointer: coarse) and (orientation: landscape) and (max-width: 932px) and (max-height: 520px) {
+  .hero-scroll,
+  .hero-section {
+    overflow: visible;
+  }
+}
+
 @media (max-width: 640px) {
   .hero-media-wrap {
     background:
