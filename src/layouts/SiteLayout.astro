@@ -40,11 +40,18 @@ const { title, description, canonicalUrl, htmlLang = 'es-MX', locale, alternates
         let stableHeight = 0;
         let lastDynamicHeight = 0;
         let lastWidth = window.innerWidth;
+        let handoffViewportLocked = false;
+        let pendingViewportReason = '';
 
         const getDynamicHeight = () => Math.round(window.visualViewport?.height || window.innerHeight);
         const getStableCandidate = () => Math.round(Math.max(window.innerHeight, getDynamicHeight()));
 
         const applyViewportHeight = (reason = 'resize', forceStable = false) => {
+          if (handoffViewportLocked) {
+            pendingViewportReason = reason;
+            return;
+          }
+
           const dynamicHeight = getDynamicHeight();
           const stableCandidate = getStableCandidate();
           const width = window.innerWidth;
@@ -102,6 +109,14 @@ const { title, description, canonicalUrl, htmlLang = 'es-MX', locale, alternates
           { passive: true },
         );
         window.addEventListener('pageshow', () => scheduleViewportHeight('pageshow', true), { passive: true });
+        window.addEventListener('agsit:handoff-viewport-lock', () => {
+          handoffViewportLocked = true;
+        });
+        window.addEventListener('agsit:handoff-viewport-unlock', () => {
+          handoffViewportLocked = false;
+          scheduleViewportHeight(pendingViewportReason || 'handoff-unlock', true);
+          pendingViewportReason = '';
+        });
       })();
     </script>
     <slot />

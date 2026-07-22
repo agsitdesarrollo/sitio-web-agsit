@@ -30,15 +30,16 @@ type AllianceLogoZoomConfig = {
   veilEl: HTMLElement;
   metricsEls: HTMLElement[];
   contentEls: HTMLElement[];
+  getViewportHeight: () => number;
 };
 
-const getLogoFillScale = (logoEl: HTMLElement) => {
+const getLogoFillScale = (logoEl: HTMLElement, viewportHeight: number) => {
   // Layout size (offsetWidth/Height) on purpose: getBoundingClientRect includes the
   // current transform scale and would compound with the oversampled box.
   const width = Math.max(logoEl.offsetWidth, 1);
   const height = Math.max(logoEl.offsetHeight, 1);
 
-  return Math.max(window.innerWidth / width, window.innerHeight / height) * 1.15;
+  return Math.max(window.innerWidth / width, viewportHeight / height) * 1.15;
 };
 
 export function initAllianceLogoZoom({
@@ -50,6 +51,7 @@ export function initAllianceLogoZoom({
   veilEl,
   metricsEls,
   contentEls,
+  getViewportHeight,
 }: AllianceLogoZoomConfig) {
   const logoImage = transitionLogoEl.querySelector<HTMLElement>('.about-transition-logo-image');
   const handoffAt = startAt + 0.82;
@@ -88,7 +90,7 @@ export function initAllianceLogoZoom({
       xPercent: -50,
       yPercent: -50,
       left: '50%',
-      top: () => window.innerHeight / 2 + getMobileCenterOffset(),
+      top: () => getViewportHeight() / 2 + getMobileCenterOffset(),
     },
     startAt,
   );
@@ -109,7 +111,7 @@ export function initAllianceLogoZoom({
       autoAlpha: 1,
       pointerEvents: 'none',
       left: '50%',
-      top: () => getNavHeight() + window.innerHeight / 2 + getMobileCenterOffset(),
+      top: () => getNavHeight() + getViewportHeight() / 2 + getMobileCenterOffset(),
       scale: 1,
       duration: 0.72,
       ease: 'power2.inOut',
@@ -175,7 +177,7 @@ export function initAllianceLogoZoom({
   timeline.to(
     transitionLogoEl,
     {
-      scale: () => getLogoFillScale(transitionLogoEl),
+      scale: () => getLogoFillScale(transitionLogoEl, getViewportHeight()),
       duration: 0.86,
       ease: 'none',
     },

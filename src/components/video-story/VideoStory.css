@@ -5,7 +5,7 @@
 
 .video-story-section {
   --transition-blue: #020712;
-  --video-panel-h: calc(var(--app-stable-vh, 100svh) - var(--nav-h));
+  --video-panel-h: calc(var(--handoff-vh, var(--app-stable-vh, 100svh)) - var(--nav-h));
   position: relative;
   margin-top: 0;
   min-height: var(--video-panel-h);
@@ -251,7 +251,7 @@
   left: 0;
   z-index: 4;
   width: 100vw;
-  height: calc(var(--app-stable-vh, 100svh) - var(--nav-h));
+  height: var(--video-panel-h);
   overflow: hidden;
   background: var(--transition-blue);
   border-radius: 0;
@@ -280,6 +280,14 @@
   place-items: center;
   text-align: center;
   pointer-events: none;
+}
+
+/* The handoff owns the visual stack. Never let a line that belonged to the
+   framed stop leak over the About section while native scroll is settling:
+   only the framed stop (o el estado inicial, sin atributo) muestra el copy. */
+html[data-scroll-handoff]:not([data-scroll-handoff='video-framed']):not([data-scroll-handoff='alliance-rest'])
+  .video-story-copy {
+  visibility: hidden;
 }
 
 .video-story-line {
@@ -335,7 +343,7 @@
   }
 }
 
-@media (max-width: 767px) {
+@media (max-width: 599px) {
   .partners-screen {
     padding: 18px;
   }
@@ -430,7 +438,7 @@
 
 @media (pointer: coarse) and (orientation: landscape) and (max-width: 932px) and (max-height: 520px) {
   .video-story-section {
-    --video-panel-h: var(--app-panel-h);
+    --video-panel-h: calc(var(--handoff-vh, var(--app-vh, 100svh)) - var(--nav-h));
   }
 
   .video-story-copy {

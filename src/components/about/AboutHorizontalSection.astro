@@ -192,6 +192,7 @@ const getVideoRatioKind = (image: string) => (image.endsWith('/servicios.mp4') ?
 <script>
   import gsap from 'gsap';
   import { ALLIANCE_LOGO_OVERSAMPLE, initAllianceLogoZoom } from '../../animations/allianceLogoZoom';
+  import { getAllianceVideoHandoff } from '../scroll/allianceVideoHandoff';
   import { ensureVideoAutoplay } from '../../scripts/videoAutoplay';
   // ── Constants ─────────────────────────────────────────────────────────────
   const TOTAL_SLIDES = 8;
@@ -220,6 +221,7 @@ const getVideoRatioKind = (image: string) => (image.endsWith('/servicios.mp4') ?
   // ── DOM ───────────────────────────────────────────────────────────────────
   const section = document.querySelector<HTMLElement>('.js-about-snap');
   if (!section) throw new Error('AboutSnap: section not found');
+  const handoff = getAllianceVideoHandoff();
 
   const stage = section.querySelector<HTMLElement>('.about-snap-stage');
   const slides = Array.from(section.querySelectorAll<HTMLElement>('.about-snap-slide'));
@@ -665,6 +667,9 @@ const getVideoRatioKind = (image: string) => (image.endsWith('/servicios.mp4') ?
       veilEl: transitionVeil,
       metricsEls,
       contentEls: [...allianceCopy, ...allianceCta],
+      // Before the handoff starts, preserve About's native dynamic viewport.
+      // Once it starts, every participant reads the captured height.
+      getViewportHeight: () => handoff.snapshot.viewportHeight ?? getDynamicViewportHeight(),
     });
     tl.to({}, { duration: zoomDuration }, ALLIANCE_ZOOM_START);
 
@@ -786,8 +791,18 @@ const getVideoRatioKind = (image: string) => (image.endsWith('/servicios.mp4') ?
   let zoomHandoffState: 'idle' | 'forward' | 'done' | 'reverse' = 'idle';
   let isAllianceAtCenter = false;
   let isAllianceTravelPlaying = false;
+  let lastAboutSyncY = window.scrollY;
+
+  if (new URLSearchParams(window.location.search).get('debugScroll') === '1') {
+    window.addEventListener('agsit:debug-scroll-snapshot', (event) => {
+      (event as CustomEvent<{ allianceTime: number | null }>).detail.allianceTime = allianceScrubTl?.time() ?? null;
+    });
+  }
 
   const getAboutPanelHeight = () => {
+    if (handoff.snapshot.viewportHeight) {
+      return Math.max(handoff.getViewportHeight() - getNavH(), 1);
+    }
     const viewportVariable = isShortLandscape() ? '--app-vh' : '--app-stable-vh';
     const viewportValue = Number.parseFloat(getComputedStyle(document.documentElement).getPropertyValue(viewportVariable));
     const viewportHeight = Number.isFinite(viewportValue) && viewportValue > 0 ? viewportValue : window.innerHeight;
@@ -965,6 +980,7 @@ const getVideoRatioKind = (image: string) => (image.endsWith('/servicios.mp4') ?
 
         if (direction > 0) {
           lockAllianceAtCenter();
+          handoff.setState('alliance-centering');
           scrollToAboutStep(CENTERED_ALLIANCE_STEP);
         } else {
           isAllianceAtCenter = false;
@@ -1009,6 +1025,8 @@ const getVideoRatioKind = (image: string) => (image.endsWith('/servicios.mp4') ?
   const playZoomForwardToVideo = () => {
     if (zoomHandoffState === 'forward' || zoomHandoffState === 'done') return;
 
+    if (!handoff.beginAllianceZoom()) return;
+
     if (!allianceScrubTl || !isAllianceScrubbing) {
       ensureAllianceScrub(ALLIANCE_CENTER_TIME);
     } else {
@@ -1041,17 +1059,7 @@ const getVideoRatioKind = (image: string) => (image.endsWith('/servicios.mp4') ?
 
       if (videoStory) {
         const handoffEvent = new CustomEvent('agsit:show-video-story-ready', { cancelable: true });
-        const wasHandled = !window.dispatchEvent(handoffEvent);
-
-        if (!wasHandled) {
-          // Fallback: aterriza en la parada 0 del video (marco + primera línea,
-          // la misma que usa el controlador en agsit:show-video-story-ready).
-          window.scrollTo({
-            top: window.scrollY + videoStory.getBoundingClientRect().top - getNavH(),
-            left: 0,
-            behavior: 'auto',
-          });
-        }
+        window.dispatchEvent(handoffEvent);
       }
     };
     allianceScrubTween = gsap.to(allianceScrubTl, {
@@ -1062,13 +1070,6 @@ const getVideoRatioKind = (image: string) => (image.endsWith('/servicios.mp4') ?
         completeForwardHandoff();
       },
     });
-    window.setTimeout(() => {
-      if (zoomHandoffState !== 'forward' || !allianceScrubTl) return;
-      allianceScrubTween?.kill();
-      allianceScrubTween = undefined;
-      allianceScrubTl.time(allianceScrubTl.duration());
-      completeForwardHandoff();
-    }, shouldReduceMotion() ? 0 : 1040);
   };
 
   const playZoomReverseToAlliance = () => {
@@ -1082,26 +1083,38 @@ const getVideoRatioKind = (image: string) => (image.endsWith('/servicios.mp4') ?
     isAnimating = true;
     isAllianceAtCenter = true;
     allianceScrubTween?.kill();
+
     const completeReverseHandoff = () => {
       if (zoomHandoffState !== 'reverse') return;
       lockAllianceAtCenter();
+      // Defensive final state for Android/Safari compositors: the timeline is
+      // already at ALLIANCE_CENTER_TIME, but a previously promoted veil layer
+      // can otherwise remain painted for one or more frames.
+      gsap.set(slides[ALLIANCE_SLIDE], { backgroundColor: '#ffffff' });
+      gsap.set(slides[ALLIANCE_SLIDE].querySelector('.js-about-transition-veil'), { autoAlpha: 0 });
+      handoff.finishReturn();
       scrollToAboutStep(CENTERED_ALLIANCE_STEP);
     };
+    // Espejo VISIBLE del zoom de ida: la propia timeline desvanece el velo y
+    // encoge el logo gigante sobre el panel blanco (las franjas blancas que
+    // antes obligaban a mantener el velo sólido eran el desfase de alturas,
+    // ya congeladas con --handoff-vh). Dos fases: el tramo del zoom a la
+    // misma velocidad que la ida (0.95s por unidad) y un asentamiento corto
+    // por la zona muerta hasta el centro.
     allianceScrubTween = gsap.to(allianceScrubTl, {
-      time: ALLIANCE_CENTER_TIME,
-      duration: shouldReduceMotion() ? 0 : 0.9,
+      time: ALLIANCE_ZOOM_READY_TIME,
+      duration: shouldReduceMotion() ? 0 : 0.95,
       ease: 'power1.inOut',
       onComplete: () => {
-        completeReverseHandoff();
+        if (zoomHandoffState !== 'reverse' || !allianceScrubTl) return;
+        allianceScrubTween = gsap.to(allianceScrubTl, {
+          time: ALLIANCE_CENTER_TIME,
+          duration: shouldReduceMotion() ? 0 : 0.35,
+          ease: 'power1.out',
+          onComplete: completeReverseHandoff,
+        });
       },
     });
-    window.setTimeout(() => {
-      if (zoomHandoffState !== 'reverse' || !allianceScrubTl) return;
-      allianceScrubTween?.kill();
-      allianceScrubTween = undefined;
-      allianceScrubTl.time(ALLIANCE_CENTER_TIME);
-      completeReverseHandoff();
-    }, shouldReduceMotion() ? 0 : 990);
   };
 
   // Arranque compartido de la reversa video→alianza (rueda en el tope del video
@@ -1111,6 +1124,8 @@ const getVideoRatioKind = (image: string) => (image.endsWith('/servicios.mp4') ?
   // el video, el reposo del logo queda arriba en vez de anclado a la barra.
   const beginReverseHandoffFromVideo = () => {
     if (zoomHandoffState === 'reverse') return;
+
+    if (handoff.snapshot.state !== 'returning-alliance' && !handoff.beginReturn()) return;
 
     document.documentElement.classList.add('home-snap-active');
     scrollToAboutStep(VIDEO_HANDOFF_STEP);
@@ -1139,6 +1154,13 @@ const getVideoRatioKind = (image: string) => (image.endsWith('/servicios.mp4') ?
     aboutSyncFrame = 0;
     const rect = section.getBoundingClientRect();
     const navH = getNavH();
+    // Dirección real del gesto. En móvil los rects se mueven SIN scroll del
+    // usuario (asentamiento del snap tras un scrollTo, barra de Chrome que
+    // cambia --app-vh y con ello las alturas de los paneles): los disparadores
+    // de zoom/reversa no pueden depender solo de posiciones.
+    const scrollY = window.scrollY;
+    const scrollDelta = scrollY - lastAboutSyncY;
+    lastAboutSyncY = scrollY;
     const isWithinSection = rect.top <= navH + getActivationLead() && rect.bottom > navH;
 
     if (!isWithinSection) {
@@ -1163,13 +1185,33 @@ const getVideoRatioKind = (image: string) => (image.endsWith('/servicios.mp4') ?
     }
 
     if (zoomHandoffState === 'done') {
+      // Una reversa en curso corrige su propio scroll sin exigir gesto.
+      if (handoff.snapshot.state === 'returning-alliance') {
+        if (rect.bottom > navH + 2) {
+          beginReverseHandoffFromVideo();
+        }
+        return;
+      }
+      // The veil remains the owner while the video is decoding and while the
+      // browser settles on its fullscreen stop. Do not interpret those scroll
+      // events as a reverse re-entry into About. 'video-fullscreen' SÍ debe
+      // poder regresar: en táctil no hay wheel, y salir de esa parada hacia
+      // arriba solo puede resolverse aquí — sin esto el estado queda atrapado
+      // y el velo oscuro cubre About permanentemente al subir.
+      if (handoff.isActive && handoff.snapshot.state !== 'video-fullscreen') {
+        return;
+      }
       // Re-entrada desde el video sin pasar por el wheel-return (momentum,
       // arrastre del scrollbar, teclado): reproduce el zoom inverso en CUALQUIER
       // posición dentro de la sección — incluida la parada 9, donde el snap
       // puede reposar mostrando el velo oscuro del final del zoom (la "lámina
-      // azul"). El margen de 2px evita dispararlo por subpíxeles cuando el
-      // reposo real es la parada 0 del video (bottom == navH exacto).
-      if (rect.bottom > navH + 2) {
+      // azul"). Exige gesto REAL hacia arriba (delta negativo): el rebote del
+      // snap y la barra de Chrome mueven rect.bottom sin intención del usuario
+      // y disparaban la reversa apenas aterrizaba el video. En la parada
+      // fullscreen recién llegada el margen es mayor por el asentamiento del
+      // scrollTo programático.
+      const reverseMargin = handoff.snapshot.state === 'video-fullscreen' ? 24 : 8;
+      if (scrollDelta < -0.5 && rect.bottom > navH + reverseMargin) {
         beginReverseHandoffFromVideo();
       }
       return;
@@ -1202,7 +1244,13 @@ const getVideoRatioKind = (image: string) => (image.endsWith('/servicios.mp4') ?
       return;
     }
 
-    playZoomForwardToVideo();
+    // Solo con gesto real hacia abajo: en móvil, la barra de Chrome encoge
+    // --app-vh y el progreso "cruza" 8.82 sin que el usuario se mueva — eso
+    // disparaba el zoom solo. Con delta 0 el estado queda quieto y el próximo
+    // scroll real decide la dirección.
+    if (scrollDelta > 0.5) {
+      playZoomForwardToVideo();
+    }
   };
 
   const requestAboutSync = () => {

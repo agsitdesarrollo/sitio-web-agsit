@@ -5,7 +5,7 @@
 }
 
 .about-snap-section {
-  --about-panel-h: calc(var(--app-stable-vh, 100svh) - var(--nav-h));
+  --about-panel-h: calc(var(--handoff-vh, var(--app-stable-vh, 100svh)) - var(--nav-h));
   position: relative;
   min-height: var(--about-panel-h);
   scroll-margin-top: var(--nav-h);
@@ -31,6 +31,17 @@
      glued to the visible edge while the section is active. */
   height: calc(100dvh - var(--nav-h));
   min-height: 0;
+}
+
+/* Only the actual alliance/video handoff owns a frozen panel. The regular
+   About slides keep their original dynamic-height layout and logo docking. */
+html[data-scroll-handoff='alliance-zoom'] .about-snap-section[data-about-state='active'] .about-snap-viewport,
+html[data-scroll-handoff='waiting-video-frame'] .about-snap-section[data-about-state='active'] .about-snap-viewport,
+html[data-scroll-handoff='moving-to-video'] .about-snap-section[data-about-state='active'] .about-snap-viewport,
+html[data-scroll-handoff='video-fullscreen'] .about-snap-section[data-about-state='active'] .about-snap-viewport,
+html[data-scroll-handoff='returning-alliance'] .about-snap-section[data-about-state='active'] .about-snap-viewport {
+  height: var(--about-panel-h);
+  min-height: var(--about-panel-h);
 }
 
 .about-snap-stage {
@@ -1101,7 +1112,11 @@ a.about-service-link:focus-visible {
    columnas, conservando los mismos slides y el mismo track de animación. */
 @media (pointer: coarse) and (orientation: landscape) and (max-width: 932px) and (max-height: 520px) {
   .about-snap-section {
-    --about-panel-h: var(--app-panel-h);
+    /* Igual que --video-panel-h en landscape: durante el handoff manda la
+       altura congelada (--handoff-vh). Sin ella, la barra de Chrome cambia
+       --app-vh a mitad del zoom y el viewport de About queda más corto que la
+       pantalla, mostrando el fondo blanco de la sección bajo el velo/logo. */
+    --about-panel-h: calc(var(--handoff-vh, var(--app-vh, 100svh)) - var(--nav-h));
   }
 
   .about-snap-slide--intro {
