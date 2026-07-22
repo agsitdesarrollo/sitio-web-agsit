@@ -48,6 +48,15 @@ html[data-scroll-handoff='returning-alliance'] .about-snap-viewport {
    navegador cambian en el mismo frame. Durante el handoff About es el único
    dueño visual y se fija al viewport; debajo, el scroll puede asentarse en la
    parada exacta del video sin exponer estados intermedios. */
+html[data-scroll-handoff='alliance-zoom'] .about-snap-section,
+html[data-scroll-handoff='waiting-video-frame'] .about-snap-section,
+html[data-scroll-handoff='moving-to-video'] .about-snap-section,
+html[data-scroll-handoff='returning-alliance'] .about-snap-section {
+  /* position: fixed saca el viewport del flujo. Reserva exactamente su altura
+     para que al devolverlo a sticky no empuje el video una pantalla completa. */
+  padding-top: var(--about-panel-h);
+}
+
 html[data-scroll-handoff='alliance-zoom'] .about-snap-viewport,
 html[data-scroll-handoff='waiting-video-frame'] .about-snap-viewport,
 html[data-scroll-handoff='moving-to-video'] .about-snap-viewport,
@@ -1332,7 +1341,7 @@ a.about-service-link:focus-visible {
     grid-row: 1;
     justify-self: center;
     position: relative;
-    top: -5px;
+    top: -10px;
   }
 
   .about-alliance-metric-cost,

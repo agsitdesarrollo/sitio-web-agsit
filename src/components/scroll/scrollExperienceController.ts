@@ -659,19 +659,76 @@ export function initScrollExperience(): (() => void) | undefined {
       // Deja que Safari pinte primero el overlay fijo negro. scrollTo en el
       // mismo frame que un cambio de layout/composición puede mostrar capas
       // sticky antiguas o un frame blanco en iOS.
-      requestAnimationFrame(() => {
-        if (handoff.snapshot.state !== 'moving-to-video') return;
+      let moveApplied = false;
+      let arrivalApplied = false;
+      let arrivalRetryTimeout = 0;
+      let readyStopStableAt = 0;
+      const requiresExactVideoStop = isCompact() || window.matchMedia('(pointer: coarse)').matches;
+      const cleanupArrivalRetry = () => {
+        window.clearTimeout(arrivalRetryTimeout);
+        window.removeEventListener('scrollend', arriveAtVideo);
+      };
+      const arriveAtVideo = () => {
+        if (arrivalApplied || handoff.snapshot.state !== 'moving-to-video') {
+          cleanupArrivalRetry();
+          return;
+        }
+
+        const navHeight = getNavHeight();
         const videoTop = videoStorySection.getBoundingClientRect().top;
-        if (getNavHeight() - videoTop < 10) {
+        const isAtReadyStop = Math.abs(videoTop - navHeight) <= 10;
+
+        // iOS ignora scrollTo mientras el gesto o su inercia siguen activos.
+        // No ocultes About hasta comprobar geométricamente que el video está
+        // realmente bajo la navegación; reintenta sin pedir otro gesto.
+        if (requiresExactVideoStop && !isAtReadyStop) {
+          readyStopStableAt = 0;
+          window.scrollTo({ top: window.scrollY + videoTop - navHeight, left: 0, behavior: 'auto' });
+          window.clearTimeout(arrivalRetryTimeout);
+          arrivalRetryTimeout = window.setTimeout(arriveAtVideo, 140);
+          return;
+        }
+
+        if (requiresExactVideoStop) {
+          const now = performance.now();
+          if (!readyStopStableAt) {
+            readyStopStableAt = now;
+          }
+
+          const stableFor = now - readyStopStableAt;
+          if (stableFor < 450) {
+            window.clearTimeout(arrivalRetryTimeout);
+            arrivalRetryTimeout = window.setTimeout(arriveAtVideo, Math.max(450 - stableFor, 80));
+            return;
+          }
+        }
+
+        arrivalApplied = true;
+        cleanupArrivalRetry();
+        handoff.arriveVideoFullscreen();
+        syncVideoStoryToScroll();
+      };
+      const moveToVideo = () => {
+        if (moveApplied || handoff.snapshot.state !== 'moving-to-video') return;
+        moveApplied = true;
+
+        const videoTop = videoStorySection.getBoundingClientRect().top;
+        // En móvil/tablet la inercia puede rebasar la parada mientras el velo
+        // está fijo. Siempre aterriza en el inicio fullscreen; escritorio
+        // conserva la posibilidad de continuar hacia las frases.
+        if (requiresExactVideoStop || getNavHeight() - videoTop < 10) {
           window.scrollTo({ top: window.scrollY + videoTop - getNavHeight(), left: 0, behavior: 'auto' });
         }
         syncVideoStoryToScroll();
-        requestAnimationFrame(() => {
-          if (handoff.snapshot.state !== 'moving-to-video') return;
-          handoff.arriveVideoFullscreen();
-          syncVideoStoryToScroll();
-        });
-      });
+        window.addEventListener('scrollend', arriveAtVideo, { passive: true });
+        requestAnimationFrame(arriveAtVideo);
+        // WebKit puede posponer RAF durante el asentamiento de un gesto. Este
+        // respaldo evita que el velo quede esperando otro tap para ceder.
+        arrivalRetryTimeout = window.setTimeout(arriveAtVideo, 140);
+      };
+
+      requestAnimationFrame(moveToVideo);
+      window.setTimeout(moveToVideo, 140);
     };
     window.addEventListener('agsit:show-video-story-ready', showVideoStoryReady);
     // Capture guarantees the upward wheel is claimed before the browser starts

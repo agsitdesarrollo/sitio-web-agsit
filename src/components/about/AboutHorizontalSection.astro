@@ -245,6 +245,7 @@ const getVideoRatioKind = (image: string) => (image.endsWith('/servicios.mp4') ?
   let alliancePlayed = false;
   let allianceScrubTl: gsap.core.Timeline | undefined;
   let allianceScrubTween: gsap.core.Tween | undefined;
+  let forwardHandoffTimeout = 0;
   let allianceScrubTime = 0;
   let isAllianceScrubbing = false;
 
@@ -816,6 +817,17 @@ const getVideoRatioKind = (image: string) => (image.endsWith('/servicios.mp4') ?
     lastTouchY = event.touches[0]?.clientY ?? null;
     userScrollIntent = 0;
     userScrollIntentAt = 0;
+
+    // En iOS/iPadOS play() debe ocurrir dentro del gesto real. Al tocar la
+    // parada centrada, desbloquea el video antes de que el scroll y el tween
+    // asíncrono consuman la activación del usuario.
+    if (
+      zoomHandoffState === 'idle' &&
+      isAllianceAtCenter &&
+      section.dataset.aboutState === 'active'
+    ) {
+      warmVideoStoryVideo();
+    }
   };
 
   const onTouchMove = (event: TouchEvent) => {
@@ -1105,6 +1117,8 @@ const getVideoRatioKind = (image: string) => (image.endsWith('/servicios.mp4') ?
     allianceScrubTween?.kill();
     const completeForwardHandoff = () => {
       if (zoomHandoffState !== 'forward') return;
+      window.clearTimeout(forwardHandoffTimeout);
+      forwardHandoffTimeout = 0;
       const videoStory = document.querySelector<HTMLElement>('.js-video-story');
       zoomHandoffState = 'done';
       isAnimating = false;
@@ -1119,6 +1133,18 @@ const getVideoRatioKind = (image: string) => (image.endsWith('/servicios.mp4') ?
         window.dispatchEvent(handoffEvent);
       }
     };
+    const forceCompleteForwardHandoff = () => {
+      if (zoomHandoffState !== 'forward' || !allianceScrubTl) return;
+
+      // Mobile Safari puede dormir el ticker de GSAP mientras termina el
+      // desplazamiento táctil. El tiempo real del handoff no debe depender de
+      // otro tap: asienta el último frame visual y continúa hacia el video.
+      allianceScrubTween?.kill();
+      allianceScrubTween = undefined;
+      allianceScrubTime = allianceScrubTl.duration();
+      allianceScrubTl.time(allianceScrubTime);
+      completeForwardHandoff();
+    };
     allianceScrubTween = gsap.to(allianceScrubTl, {
       time: allianceScrubTl.duration(),
       duration: shouldReduceMotion() ? 0 : 0.95,
@@ -1127,10 +1153,18 @@ const getVideoRatioKind = (image: string) => (image.endsWith('/servicios.mp4') ?
         completeForwardHandoff();
       },
     });
+    window.clearTimeout(forwardHandoffTimeout);
+    forwardHandoffTimeout = window.setTimeout(
+      forceCompleteForwardHandoff,
+      shouldReduceMotion() ? 0 : 1250,
+    );
   };
 
   const playZoomReverseToAlliance = () => {
     if (zoomHandoffState === 'reverse') return;
+
+    window.clearTimeout(forwardHandoffTimeout);
+    forwardHandoffTimeout = 0;
 
     section.dataset.aboutState = 'active';
     ensureAllianceScrub(allianceScrubTl?.duration() ?? Number.POSITIVE_INFINITY);
