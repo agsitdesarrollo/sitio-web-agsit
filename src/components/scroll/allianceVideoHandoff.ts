@@ -15,18 +15,24 @@ type HandoffSnapshot = {
 
 const getViewportHeight = () => {
   const root = document.documentElement;
-  const dynamic = Number.parseFloat(getComputedStyle(root).getPropertyValue('--app-vh'));
+  const rootStyles = getComputedStyle(root);
+  const isShortLandscape = window.matchMedia(
+    '(pointer: coarse) and (orientation: landscape) and (max-width: 932px) and (max-height: 520px)',
+  ).matches;
+  const viewportVariable = isShortLandscape ? '--app-vh' : '--app-stable-vh';
+  const measured = Number.parseFloat(rootStyles.getPropertyValue(viewportVariable));
 
-  return Number.isFinite(dynamic) && dynamic > 0
-    ? Math.round(dynamic)
+  return Number.isFinite(measured) && measured > 0
+    ? Math.round(measured)
     : Math.round(window.visualViewport?.height || window.innerHeight);
 };
 
 class AllianceVideoHandoff {
   private state: AllianceVideoHandoffState = 'alliance-rest';
   private viewportHeight: number | null = null;
-  private videoFramePromise: Promise<void> | null = null;
+  private videoFramePromise: Promise<boolean> | null = null;
   private firstVideoFrameDecoded = false;
+  private videoFullscreenAt = 0;
 
   get snapshot(): HandoffSnapshot {
     return { state: this.state, viewportHeight: this.viewportHeight };
@@ -42,6 +48,10 @@ class AllianceVideoHandoff {
 
   get hasDecodedVideoFrame() {
     return this.firstVideoFrameDecoded;
+  }
+
+  get isVideoFullscreenSettled() {
+    return this.state === 'video-fullscreen' && performance.now() - this.videoFullscreenAt >= 450;
   }
 
   getViewportHeight() {
@@ -68,12 +78,27 @@ class AllianceVideoHandoff {
   async waitForVideoFrame(video: HTMLVideoElement) {
     this.setState('waiting-video-frame');
 
+    if (this.firstVideoFrameDecoded) {
+      return true;
+    }
+
     if (!this.videoFramePromise) {
-      this.videoFramePromise = new Promise<void>((resolve) => {
+      this.videoFramePromise = new Promise<boolean>((resolve) => {
+        let waitSettled = false;
+
         const markReady = () => {
           if (this.firstVideoFrameDecoded) return;
           this.firstVideoFrameDecoded = true;
-          resolve();
+          if (!waitSettled) {
+            waitSettled = true;
+            resolve(true);
+          }
+        };
+
+        const releaseWait = () => {
+          if (waitSettled) return;
+          waitSettled = true;
+          resolve(false);
         };
 
         const requestFrame = () => {
@@ -93,16 +118,16 @@ class AllianceVideoHandoff {
           video.addEventListener('canplay', requestFrame, { once: true });
         }
 
-        // El estado 'waiting-video-frame' mantiene el velo negro y bloquea el
-        // regreso. Si el video falla o tarda (mp4 pesado en red lenta), la
-        // secuencia debe continuar igual: el marco mostrará el fondo oscuro
-        // del panel hasta que el frame llegue, pero la página nunca se atora.
-        video.addEventListener('error', markReady, { once: true });
-        window.setTimeout(markReady, 2000);
+        // El velo puede ceder tras el timeout para no bloquear la página, pero
+        // un timeout NO equivale a un frame decodificado. Los callbacks de video
+        // permanecen activos y marcan el frame si llega después en iOS.
+        video.addEventListener('error', releaseWait, { once: true });
+        window.setTimeout(releaseWait, 2000);
       });
     }
 
-    await this.videoFramePromise;
+    const decoded = await this.videoFramePromise;
+    return decoded || this.firstVideoFrameDecoded;
   }
 
   beginMoveToVideo() {
@@ -110,6 +135,7 @@ class AllianceVideoHandoff {
   }
 
   arriveVideoFullscreen() {
+    this.videoFullscreenAt = performance.now();
     this.setState('video-fullscreen');
   }
 

@@ -791,7 +791,62 @@ const getVideoRatioKind = (image: string) => (image.endsWith('/servicios.mp4') ?
   let zoomHandoffState: 'idle' | 'forward' | 'done' | 'reverse' = 'idle';
   let isAllianceAtCenter = false;
   let isAllianceTravelPlaying = false;
-  let lastAboutSyncY = window.scrollY;
+  type UserScrollDirection = -1 | 0 | 1;
+  const USER_SCROLL_INTENT_TTL = 1400;
+  let userScrollIntent: UserScrollDirection = 0;
+  let userScrollIntentAt = 0;
+  let lastTouchY: number | null = null;
+
+  const rememberUserScrollIntent = (direction: Exclude<UserScrollDirection, 0>) => {
+    userScrollIntent = direction;
+    userScrollIntentAt = performance.now();
+  };
+
+  const hasRecentUserScrollIntent = (direction: Exclude<UserScrollDirection, 0>) =>
+    userScrollIntent === direction && performance.now() - userScrollIntentAt <= USER_SCROLL_INTENT_TTL;
+
+  const consumeUserScrollIntent = (direction: Exclude<UserScrollDirection, 0>) => {
+    if (!hasRecentUserScrollIntent(direction)) return false;
+    userScrollIntent = 0;
+    userScrollIntentAt = 0;
+    return true;
+  };
+
+  const onTouchStart = (event: TouchEvent) => {
+    lastTouchY = event.touches[0]?.clientY ?? null;
+    userScrollIntent = 0;
+    userScrollIntentAt = 0;
+  };
+
+  const onTouchMove = (event: TouchEvent) => {
+    const currentY = event.touches[0]?.clientY;
+    if (currentY === undefined || lastTouchY === null) return;
+    const delta = lastTouchY - currentY;
+    lastTouchY = currentY;
+    if (Math.abs(delta) < 4) return;
+    rememberUserScrollIntent(delta > 0 ? 1 : -1);
+  };
+
+  const onTouchEnd = () => {
+    lastTouchY = null;
+  };
+
+  const onScrollIntentKeyDown = (event: KeyboardEvent) => {
+    const target = event.target as HTMLElement | null;
+    if (target?.closest('input, textarea, select, [contenteditable="true"]')) return;
+
+    if (event.key === 'ArrowDown' || event.key === 'PageDown' || (event.key === ' ' && !event.shiftKey)) {
+      rememberUserScrollIntent(1);
+    } else if (event.key === 'ArrowUp' || event.key === 'PageUp' || (event.key === ' ' && event.shiftKey)) {
+      rememberUserScrollIntent(-1);
+    }
+  };
+
+  window.addEventListener('touchstart', onTouchStart, { passive: true, capture: true });
+  window.addEventListener('touchmove', onTouchMove, { passive: true, capture: true });
+  window.addEventListener('touchend', onTouchEnd, { passive: true, capture: true });
+  window.addEventListener('touchcancel', onTouchEnd, { passive: true, capture: true });
+  window.addEventListener('keydown', onScrollIntentKeyDown, { capture: true });
 
   if (new URLSearchParams(window.location.search).get('debugScroll') === '1') {
     window.addEventListener('agsit:debug-scroll-snapshot', (event) => {
@@ -992,6 +1047,7 @@ const getVideoRatioKind = (image: string) => (image.endsWith('/servicios.mp4') ?
 
   const onAllianceWheel = (event: WheelEvent) => {
     if (event.deltaY === 0) return;
+    rememberUserScrollIntent(event.deltaY > 0 ? 1 : -1);
     if (zoomHandoffState !== 'idle') return;
     if (section.dataset.aboutState !== 'active') return;
 
@@ -1026,6 +1082,7 @@ const getVideoRatioKind = (image: string) => (image.endsWith('/servicios.mp4') ?
     if (zoomHandoffState === 'forward' || zoomHandoffState === 'done') return;
 
     if (!handoff.beginAllianceZoom()) return;
+    consumeUserScrollIntent(1);
 
     if (!allianceScrubTl || !isAllianceScrubbing) {
       ensureAllianceScrub(ALLIANCE_CENTER_TIME);
@@ -1128,20 +1185,26 @@ const getVideoRatioKind = (image: string) => (image.endsWith('/servicios.mp4') ?
     if (handoff.snapshot.state !== 'returning-alliance' && !handoff.beginReturn()) return;
 
     document.documentElement.classList.add('home-snap-active');
-    scrollToAboutStep(VIDEO_HANDOFF_STEP);
 
     requestAnimationFrame(() => {
-      // Otro disparo pudo ganar la carrera (rueda + sync de scroll): no
-      // reconstruyas la timeline debajo del tween en curso.
-      if (zoomHandoffState === 'reverse') {
-        return;
-      }
-      ensureAllianceScrub(allianceScrubTl?.duration() ?? Number.POSITIVE_INFINITY);
-      if (allianceScrubTl) {
-        allianceScrubTime = allianceScrubTl.duration();
-        allianceScrubTl.time(allianceScrubTime);
-      }
-      playZoomReverseToAlliance();
+      if (handoff.snapshot.state !== 'returning-alliance') return;
+      // El primer frame pinta el overlay fijo negro; después se corrige scroll
+      // debajo de él. Separar ambas escrituras evita el flash de capas sticky
+      // que WebKit produce cuando scrollTo coincide con un cambio de layout.
+      scrollToAboutStep(VIDEO_HANDOFF_STEP);
+      requestAnimationFrame(() => {
+        // Otro disparo pudo ganar la carrera (rueda + sync de scroll): no
+        // reconstruyas la timeline debajo del tween en curso.
+        if (zoomHandoffState === 'reverse') {
+          return;
+        }
+        ensureAllianceScrub(allianceScrubTl?.duration() ?? Number.POSITIVE_INFINITY);
+        if (allianceScrubTl) {
+          allianceScrubTime = allianceScrubTl.duration();
+          allianceScrubTl.time(allianceScrubTime);
+        }
+        playZoomReverseToAlliance();
+      });
     });
   };
 
@@ -1154,13 +1217,6 @@ const getVideoRatioKind = (image: string) => (image.endsWith('/servicios.mp4') ?
     aboutSyncFrame = 0;
     const rect = section.getBoundingClientRect();
     const navH = getNavH();
-    // Dirección real del gesto. En móvil los rects se mueven SIN scroll del
-    // usuario (asentamiento del snap tras un scrollTo, barra de Chrome que
-    // cambia --app-vh y con ello las alturas de los paneles): los disparadores
-    // de zoom/reversa no pueden depender solo de posiciones.
-    const scrollY = window.scrollY;
-    const scrollDelta = scrollY - lastAboutSyncY;
-    lastAboutSyncY = scrollY;
     const isWithinSection = rect.top <= navH + getActivationLead() && rect.bottom > navH;
 
     if (!isWithinSection) {
@@ -1201,17 +1257,17 @@ const getVideoRatioKind = (image: string) => (image.endsWith('/servicios.mp4') ?
       if (handoff.isActive && handoff.snapshot.state !== 'video-fullscreen') {
         return;
       }
-      // Re-entrada desde el video sin pasar por el wheel-return (momentum,
-      // arrastre del scrollbar, teclado): reproduce el zoom inverso en CUALQUIER
-      // posición dentro de la sección — incluida la parada 9, donde el snap
-      // puede reposar mostrando el velo oscuro del final del zoom (la "lámina
-      // azul"). Exige gesto REAL hacia arriba (delta negativo): el rebote del
-      // snap y la barra de Chrome mueven rect.bottom sin intención del usuario
-      // y disparaban la reversa apenas aterrizaba el video. En la parada
-      // fullscreen recién llegada el margen es mayor por el asentamiento del
-      // scrollTo programático.
+      // Re-entrada táctil desde el video. window.scrollY NO identifica intención
+      // en iOS: scroll-snap, scrollTo y la barra de Safari también lo modifican.
+      // Solo una dirección capturada desde touchmove puede iniciar la reversa.
       const reverseMargin = handoff.snapshot.state === 'video-fullscreen' ? 24 : 8;
-      if (scrollDelta < -0.5 && rect.bottom > navH + reverseMargin) {
+      const canReturnFromVideo =
+        handoff.snapshot.state !== 'video-fullscreen' || handoff.isVideoFullscreenSettled;
+      if (
+        canReturnFromVideo &&
+        rect.bottom > navH + reverseMargin &&
+        consumeUserScrollIntent(-1)
+      ) {
         beginReverseHandoffFromVideo();
       }
       return;
@@ -1244,11 +1300,9 @@ const getVideoRatioKind = (image: string) => (image.endsWith('/servicios.mp4') ?
       return;
     }
 
-    // Solo con gesto real hacia abajo: en móvil, la barra de Chrome encoge
-    // --app-vh y el progreso "cruza" 8.82 sin que el usuario se mueva — eso
-    // disparaba el zoom solo. Con delta 0 el estado queda quieto y el próximo
-    // scroll real decide la dirección.
-    if (scrollDelta > 0.5) {
+    // Solo un touchmove/wheel descendente reciente puede iniciar el zoom. Los
+    // deltas generados por snap, scrollTo o resize no crean intención nueva.
+    if (consumeUserScrollIntent(1)) {
       playZoomForwardToVideo();
     }
   };

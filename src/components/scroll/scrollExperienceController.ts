@@ -580,6 +580,10 @@ export function initScrollExperience(): (() => void) | undefined {
         return false;
       }
 
+      if (handoff.snapshot.state === 'video-fullscreen' && !handoff.isVideoFullscreenSettled) {
+        return false;
+      }
+
       const about = document.querySelector<HTMLElement>('.js-about-snap');
 
       if (about?.dataset.aboutState !== 'done') {
@@ -639,8 +643,12 @@ export function initScrollExperience(): (() => void) | undefined {
 
       resetVideoStoryFullscreen();
 
-      await handoff.waitForVideoFrame(videoStoryVideo);
+      const frameDecoded = await handoff.waitForVideoFrame(videoStoryVideo);
       if (handoff.snapshot.state !== 'waiting-video-frame') return;
+
+      if (!frameDecoded) {
+        ensureVideoAutoplay(videoStoryVideo);
+      }
 
       handoff.beginMoveToVideo();
       // En dispositivos lentos el tween del zoom se estira (lagSmoothing) y el
@@ -648,15 +656,21 @@ export function initScrollExperience(): (() => void) | undefined {
       // tanto. Solo recoloca en la parada fullscreen si aún no la pasó; si ya
       // va en las frases, se respeta su posición y el sync lo pasa a
       // 'video-framed' en el siguiente frame.
-      const videoTop = videoStorySection.getBoundingClientRect().top;
-      if (getNavHeight() - videoTop < 10) {
-        window.scrollTo({ top: window.scrollY + videoTop - getNavHeight(), left: 0, behavior: 'auto' });
-      }
-      syncVideoStoryToScroll();
+      // Deja que Safari pinte primero el overlay fijo negro. scrollTo en el
+      // mismo frame que un cambio de layout/composición puede mostrar capas
+      // sticky antiguas o un frame blanco en iOS.
       requestAnimationFrame(() => {
         if (handoff.snapshot.state !== 'moving-to-video') return;
-        handoff.arriveVideoFullscreen();
+        const videoTop = videoStorySection.getBoundingClientRect().top;
+        if (getNavHeight() - videoTop < 10) {
+          window.scrollTo({ top: window.scrollY + videoTop - getNavHeight(), left: 0, behavior: 'auto' });
+        }
         syncVideoStoryToScroll();
+        requestAnimationFrame(() => {
+          if (handoff.snapshot.state !== 'moving-to-video') return;
+          handoff.arriveVideoFullscreen();
+          syncVideoStoryToScroll();
+        });
       });
     };
     window.addEventListener('agsit:show-video-story-ready', showVideoStoryReady);

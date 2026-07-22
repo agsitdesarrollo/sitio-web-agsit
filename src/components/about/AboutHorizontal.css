@@ -35,13 +35,34 @@
 
 /* Only the actual alliance/video handoff owns a frozen panel. The regular
    About slides keep their original dynamic-height layout and logo docking. */
-html[data-scroll-handoff='alliance-zoom'] .about-snap-section[data-about-state='active'] .about-snap-viewport,
-html[data-scroll-handoff='waiting-video-frame'] .about-snap-section[data-about-state='active'] .about-snap-viewport,
-html[data-scroll-handoff='moving-to-video'] .about-snap-section[data-about-state='active'] .about-snap-viewport,
-html[data-scroll-handoff='video-fullscreen'] .about-snap-section[data-about-state='active'] .about-snap-viewport,
-html[data-scroll-handoff='returning-alliance'] .about-snap-section[data-about-state='active'] .about-snap-viewport {
+html[data-scroll-handoff='alliance-zoom'] .about-snap-viewport,
+html[data-scroll-handoff='waiting-video-frame'] .about-snap-viewport,
+html[data-scroll-handoff='moving-to-video'] .about-snap-viewport,
+html[data-scroll-handoff='video-fullscreen'] .about-snap-viewport,
+html[data-scroll-handoff='returning-alliance'] .about-snap-viewport {
   height: var(--about-panel-h);
   min-height: var(--about-panel-h);
+}
+
+/* Safari puede desanclar un sticky cuando scrollTo, el snap y la barra del
+   navegador cambian en el mismo frame. Durante el handoff About es el único
+   dueño visual y se fija al viewport; debajo, el scroll puede asentarse en la
+   parada exacta del video sin exponer estados intermedios. */
+html[data-scroll-handoff='alliance-zoom'] .about-snap-viewport,
+html[data-scroll-handoff='waiting-video-frame'] .about-snap-viewport,
+html[data-scroll-handoff='moving-to-video'] .about-snap-viewport,
+html[data-scroll-handoff='returning-alliance'] .about-snap-viewport {
+  position: fixed;
+  top: var(--nav-h);
+  right: 0;
+  left: 0;
+  z-index: 60;
+}
+
+/* El overlay solo cede cuando el video ya tuvo oportunidad de componer su
+   primer frame. En la reversa vuelve a mostrarse negro antes de mover scroll. */
+html[data-scroll-handoff='video-fullscreen'] .about-snap-viewport {
+  visibility: hidden;
 }
 
 .about-snap-stage {

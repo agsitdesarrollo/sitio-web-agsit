@@ -42,6 +42,7 @@ const { title, description, canonicalUrl, htmlLang = 'es-MX', locale, alternates
         let lastWidth = window.innerWidth;
         let handoffViewportLocked = false;
         let pendingViewportReason = '';
+        let pendingViewportForceStable = false;
 
         const getDynamicHeight = () => Math.round(window.visualViewport?.height || window.innerHeight);
         const getStableCandidate = () => Math.round(Math.max(window.innerHeight, getDynamicHeight()));
@@ -49,6 +50,7 @@ const { title, description, canonicalUrl, htmlLang = 'es-MX', locale, alternates
         const applyViewportHeight = (reason = 'resize', forceStable = false) => {
           if (handoffViewportLocked) {
             pendingViewportReason = reason;
+            pendingViewportForceStable ||= forceStable;
             return;
           }
 
@@ -114,8 +116,9 @@ const { title, description, canonicalUrl, htmlLang = 'es-MX', locale, alternates
         });
         window.addEventListener('agsit:handoff-viewport-unlock', () => {
           handoffViewportLocked = false;
-          scheduleViewportHeight(pendingViewportReason || 'handoff-unlock', true);
+          scheduleViewportHeight(pendingViewportReason || 'handoff-unlock', pendingViewportForceStable);
           pendingViewportReason = '';
+          pendingViewportForceStable = false;
         });
       })();
     </script>
