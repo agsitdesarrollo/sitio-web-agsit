@@ -24,6 +24,10 @@
 
 .hero-second-snap {
   height: var(--app-stable-vh, 100svh);
+}
+
+.hero-transition-snap-step {
+  height: 50%;
   scroll-snap-align: start;
   scroll-snap-stop: always;
 }
