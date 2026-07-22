@@ -13,6 +13,7 @@ export type AboutService = {
   description: string;
   tags: string[];
   image: string;
+  poster: string;
   alt: string;
   href?: string;
 };
@@ -57,25 +58,29 @@ const commonServices = {
     number: '01',
     code: 'ITS',
     label: 'Information Technologies Solutions',
-    image: '/assets/v-servicio-soluciones-tecnologicas.mp4',
+    image: '/assets/videos-servicios/Soluciones%20Tecnologicas.mp4',
+    poster: '/assets/videos-servicios/poster-soluciones-tecnologicas.jpg',
   },
   bpm: {
     number: '02',
     code: 'BPM',
     label: 'Business Process Management',
-    image: '/assets/v-servicio-bpm.mp4',
+    image: '/assets/videos-servicios/BPM.mp4',
+    poster: '/assets/videos-servicios/poster-bpm.jpg',
   },
   dm: {
     number: '03',
     code: 'DM',
     label: 'Digital Marketing',
-    image: '/assets/v-servicio-marketing.mp4',
+    image: '/assets/videos-servicios/Video%20Marketing.mp4',
+    poster: '/assets/videos-servicios/poster-marketing.jpg',
   },
   pm: {
     number: '04',
     code: 'PM',
     label: 'Project Management',
-    image: '/assets/v-servicio-direccion-proyectos.mp4',
+    image: '/assets/videos-servicios/PMO.mp4',
+    poster: '/assets/videos-servicios/poster-pmo.jpg',
   },
   qm: {
     number: '05',
@@ -87,7 +92,8 @@ const commonServices = {
     number: '05',
     code: 'SPM',
     label: 'Strategic Planning & Management',
-    image: '/assets/v-servicio-bpm.mp4',
+    image: '/assets/videos-servicios/Planeaci%C3%B3n%20Estrategica.mp4',
+    poster: '/assets/videos-servicios/poster-planeacion-estrategica.jpg',
   },
 } as const;
 

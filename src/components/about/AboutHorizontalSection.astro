@@ -57,7 +57,7 @@ const getVideoRatioKind = (image: string) => (image.endsWith('/servicios.mp4') ?
             >
               <video
                 data-src={service.image}
-                poster="/assets/fondo-ventana.webp"
+                poster={service.poster}
                 muted
                 loop
                 playsinline
