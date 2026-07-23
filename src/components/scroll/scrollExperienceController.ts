@@ -170,6 +170,8 @@ export function initScrollExperience(): (() => void) | undefined {
     // paso de snap, así que el scrub sigue la animación del snap nativo.
     const floatingPersonEl = document.querySelector<HTMLElement>('.js-floating-person');
     const servicesSectionEl = document.querySelector<HTMLElement>('.js-services');
+    const heroCopyEls = gsap.utils.toArray<HTMLElement>('.hero-copy-block, .hero-cta-wrap');
+    const HERO_COPY_FADE_END = 0.5;
 
     const getServicesPersonTargetRect = () => {
       const person = document.querySelector<HTMLElement>('.js-services-person');
@@ -220,6 +222,9 @@ export function initScrollExperience(): (() => void) | undefined {
       const progress = gsap.utils.clamp(0, 1, (viewportHeight - servicesTop) / viewportHeight);
       const zone: 'above' | 'inside' | 'below' =
         progress <= 0 ? 'above' : progress >= 1 ? 'below' : 'inside';
+      const heroCopyFadeProgress = gsap.utils.clamp(0, 1, progress / HERO_COPY_FADE_END);
+
+      gsap.set(heroCopyEls, { autoAlpha: 1 - heroCopyFadeProgress });
 
       if (isPhoneHeroBridge()) {
         // El relevo ocurre únicamente al final, cuando ambos personajes ya
