@@ -28,10 +28,10 @@ export const servicesContentByLang: Record<SupportedLang, ServicesContent> = {
     cta: 'Agenda una asesoría sin costo',
     services: [
       { title: 'Soluciones Tecnológicas', href: '/soluciones-tecnologicas/' },
-      { title: 'Planeación Estratégica', href: '/planeacion-estrategica/' },
+      { title: 'Marketing Digital', href: '/marketing-digital/' },
+      { title: 'Gestión Estratégica de Procesos', href: '/gestion-estrategica-de-procesos/' },
       { title: 'Dirección de Proyectos', href: '/direccion-de-proyectos/' },
-      { title: 'Administración de Procesos', href: '/administracion-de-procesos/' },
-      { title: 'Mercadotecnia Digital', href: '/mercadotecnia-digital/' },
+      { title: 'Planeación Estratégica', href: '/planeacion-estrategica/' },
     ],
     servicePoints: [
       {
@@ -74,10 +74,10 @@ export const servicesContentByLang: Record<SupportedLang, ServicesContent> = {
     cta: 'Schedule a free consultation',
     services: [
       { title: 'Technology Solutions', href: '/en/technology-solutions/' },
-      { title: 'Strategic Planning', href: '/en/strategic-planning/' },
-      { title: 'Project Management', href: '/en/project-management/' },
-      { title: 'Process Management', href: '/en/process-management/' },
       { title: 'Digital Marketing', href: '/en/digital-marketing/' },
+      { title: 'Strategic Process Management', href: '/en/strategic-process-management/' },
+      { title: 'Project Management', href: '/en/project-management/' },
+      { title: 'Strategic Planning', href: '/en/strategic-planning/' },
     ],
     servicePoints: [
       {

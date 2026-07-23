@@ -1,4 +1,4 @@
-﻿import type { SupportedLang } from '../i18n/ui';
+import type { SupportedLang } from '../i18n/ui';
 
 export type StoryInlineVisual = 'eye' | 'flower' | 'heart';
 
@@ -61,7 +61,7 @@ export const digitalMarketingV2ByLang: Record<SupportedLang, DigitalMarketingV2C
       title: 'Marketing Digital AGSIT | Estrategia, SEO, SEM y analítica para crecer',
       description:
         'Marketing digital AGSIT: estrategia, SEO, SEM, analítica, social media y e-commerce trabajando como un solo sistema para atraer, convertir y medir resultados.',
-      canonicalUrl: 'https://agsit.com.mx/mercadotecnia-digital/',
+      canonicalUrl: 'https://agsit.com.mx/marketing-digital/',
       htmlLang: 'es-MX',
       locale: 'es_MX',
     },
@@ -114,7 +114,7 @@ export const digitalMarketingV2ByLang: Record<SupportedLang, DigitalMarketingV2C
           visual: 'flower',
           srcvideo: '/assets/Omnicanalidad.mp4',
           cta: 'Conoce la estrategia',
-          href: '/mercadotecnia-digital/estrategia-digital/',
+          href: '/marketing-digital/estrategia-digital/',
         },
         {
           title: 'SEO',

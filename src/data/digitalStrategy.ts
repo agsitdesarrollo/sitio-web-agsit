@@ -93,7 +93,7 @@ export const digitalStrategyByLang: Record<SupportedLang, DigitalStrategyContent
       title: 'Estrategia de Mercadotecnia Digital AGSIT | El plan antes de invertir',
       description:
         'Deja de invertir en publicidad sin rumbo. Diseñamos el plan estratégico que acompaña a tu cliente en cada etapa, del descubrimiento a la lealtad, con métricas para cuidar tu retorno.',
-      canonicalUrl: 'https://agsit.com.mx/mercadotecnia-digital/estrategia-digital/',
+      canonicalUrl: 'https://agsit.com.mx/marketing-digital/estrategia-digital/',
       htmlLang: 'es-MX',
       locale: 'es_MX',
     },

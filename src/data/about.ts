@@ -12,6 +12,7 @@ export type AboutService = {
   title: string;
   description: string;
   tags: string[];
+  linkLabel: string;
   image: string;
   poster: string;
   alt: string;
@@ -34,7 +35,6 @@ export type AboutContent = {
     copy: string;
     scroll: string;
   };
-  serviceLinkLabel: string;
   services: AboutService[];
   clients: {
     title: string;
@@ -62,14 +62,14 @@ const commonServices = {
     poster: '/assets/videos-servicios/poster-soluciones-tecnologicas.jpg',
   },
   bpm: {
-    number: '02',
+    number: '03',
     code: 'BPM',
     label: 'Business Process Management',
     image: '/assets/videos-servicios/BPM.mp4',
     poster: '/assets/videos-servicios/poster-bpm.jpg',
   },
   dm: {
-    number: '03',
+    number: '02',
     code: 'DM',
     label: 'Digital Marketing',
     image: '/assets/videos-servicios/Video%20Marketing.mp4',
@@ -102,46 +102,50 @@ export const aboutContentByLang: Record<SupportedLang, AboutContent> = {
     sectionLabel: 'Quiénes somos',
     overview: {
       kicker: 'Somos una consultoría integral para empresas.',
-      title: 'Cinco áreas clave.',
-      titleAccent: 'Una sola visión.',
+      title: 'Cinco áreas estratégicas.',
+      titleAccent: 'Un solo aliado para tu empresa',
       copy:
-        'AGSIT interviene en las áreas estratégicas y tácticas que toda organización necesita para funcionar correctamente, crecer de forma sostenida y maximizar su rentabilidad.',
+        'Diseñamos e implementamos soluciones a la medida que potencian tu empresa, garantizando un crecimiento sostenido, escalable y eficiente.',
       scroll: 'Continúa desplazando >>>',
     },
-    serviceLinkLabel: 'Ver más servicios',
     services: [
       {
         ...commonServices.its,
-        title: 'Soluciones Tecnológicas',
+        title: 'Desarrollo de Software',
         description:
-          'Integramos tecnología, estrategia e innovación para optimizar la operación de tu empresa, acelerar su transformación digital y generar ventajas competitivas que impulsen su crecimiento.',
-        tags: ['ITIL', 'Cloud', 'Desarrollo de software', 'IA & Big Data'],
+          'Fusionamos visión estratégica y capacidad digital para evolucionar el modelo operativo de tu empresa, elevar su eficiencia y consolidar una ventaja competitiva sostenible.',
+        tags: ['Software', 'Business Platforms', 'Automation', 'Data & Analytics', 'AI', 'Consulting', 'Cloud'],
+        linkLabel: 'Explorar Servicios ITS',
         alt: 'Visual de soluciones tecnológicas',
         href: '/soluciones-tecnologicas/',
       },
       {
-        ...commonServices.bpm,
-        title: 'Administración de Procesos',
+        ...commonServices.dm,
+        title: 'Marketing Digital',
         description:
-          'Análisis, documentación y optimización de procesos para mejorar eficiencia, control operativo y rentabilidad.',
-        tags: ['AS-IS / TO-BE', 'BPMS Automation', 'KPIs operativos', 'Auditoría'],
-        alt: 'Visual de administración de procesos',
-        href: '/administracion-de-procesos/',
+          'Diseñamos e implementamos estrategias de atracción y conversión que aceleran la generación de prospectos calificados, posicionan tu marca y potencian el crecimiento de tu empresa.',
+        tags: ['Growth', 'SEO', 'Ads', 'Content', 'Ecommerce', 'Analytics'],
+        linkLabel: 'Explorar Servicios DM',
+        alt: 'Visual de mercadotecnia digital',
+        href: '/marketing-digital/',
       },
       {
-        ...commonServices.dm,
-        title: 'Mercadotecnia Digital',
-        description: 'CRM, automatización comercial, campañas, analítica y colaboración para conectar clientes, equipo y resultados.',
-        tags: ['CRM', 'Marketing automation', 'Ventas', 'Analytics'],
-        alt: 'Visual de mercadotecnia digital',
-        href: '/mercadotecnia-digital/',
+        ...commonServices.bpm,
+        title: 'Gestión Estratégica de Procesos',
+        description:
+          'Convertimos la operación de tu empresa en un sistema ordenado, ágil y estandarizado que optimiza el uso de recursos, minimiza el margen de error y potencia el desempeño de tu organización.',
+        tags: ['Process Design', 'Process Automation', 'Process Intelligence', 'Operational Excellence', 'Process Assessment'],
+        linkLabel: 'Explorar Servicios BPM',
+        alt: 'Visual de administración de procesos',
+        href: '/gestion-estrategica-de-procesos/',
       },
       {
         ...commonServices.pm,
         title: 'Dirección de Proyectos',
         description:
-          'Gestión profesional de proyectos, PMOs y metodologías ágiles o waterfall para cumplir tiempos y presupuesto.',
-        tags: ['PMO', 'Scrum & Agile', 'OPM3', 'PMP'],
+          'Lideramos la dirección de tus proyectos en cualquier etapa de su ciclo de vida, integrando una estructura clara que previene retrasos, acelera la ejecución y garantiza el control de los resultados.',
+        tags: ['Governance', 'Delivery', 'Agile', 'Recovery', 'Assessment'],
+        linkLabel: 'Explorar Servicios PM',
         alt: 'Visual de dirección de proyectos',
         href: '/direccion-de-proyectos/',
       },
@@ -149,8 +153,9 @@ export const aboutContentByLang: Record<SupportedLang, AboutContent> = {
         ...commonServices.spm,
         title: 'Planeación Estratégica',
         description:
-          'Definición de objetivos, diagnóstico empresarial, gobierno corporativo y tableros para orientar el crecimiento.',
-        tags: ['Plan estratégico', 'Gobierno corporativo', 'KPIs & Dashboards', 'Franquicia'],
+          'Definimos el rumbo estratégico de la organización y alineamos a sus equipos para convertir la visión ejecutiva en un crecimiento sólido y constante.',
+        tags: ['Strategy', 'Assessment', 'Governance', 'Growth', 'Transformation'],
+        linkLabel: 'Explorar Servicios SPM',
         alt: 'Visual de planeación estratégica',
         href: '/planeacion-estrategica/',
       },
@@ -177,46 +182,50 @@ export const aboutContentByLang: Record<SupportedLang, AboutContent> = {
     sectionLabel: 'About AGSIT',
     overview: {
       kicker: 'We are an integrated consulting firm for businesses.',
-      title: 'Five key areas.',
-      titleAccent: 'One clear vision.',
+      title: 'Five strategic areas.',
+      titleAccent: 'One partner for your business',
       copy:
-        'AGSIT works across the strategic and tactical areas every organization needs to operate correctly, grow sustainably and maximize profitability.',
+        'We design and implement tailored solutions that empower your business, ensuring sustainable, scalable and efficient growth.',
       scroll: 'Keep scrolling >>>',
     },
-    serviceLinkLabel: 'View more services',
     services: [
       {
         ...commonServices.its,
-        title: 'Technology Solutions',
+        title: 'Software Development',
         description:
-          'We integrate technology, strategy and innovation to optimize your company’s operations, accelerate its digital transformation and generate competitive advantages that drive growth.',
-        tags: ['ITIL', 'Cloud', 'Software development', 'AI & Big Data'],
+          'We combine strategic vision and digital capabilities to evolve your company’s operating model, increase efficiency and build a sustainable competitive advantage.',
+        tags: ['Software', 'Business Platforms', 'Automation', 'Data & Analytics', 'AI', 'Consulting', 'Cloud'],
+        linkLabel: 'Explore ITS Services',
         alt: 'Technology solutions visual',
         href: '/en/technology-solutions/',
       },
       {
-        ...commonServices.bpm,
-        title: 'Process Management',
-        description:
-          'Process analysis, documentation and optimization to improve efficiency, operational control and profitability.',
-        tags: ['AS-IS / TO-BE', 'BPMS Automation', 'Operational KPIs', 'Auditing'],
-        alt: 'Process management visual',
-        href: '/en/process-management/',
-      },
-      {
         ...commonServices.dm,
         title: 'Digital Marketing',
-        description: 'CRM, commercial automation, campaigns, analytics and collaboration to connect clients, teams and results.',
-        tags: ['CRM', 'Marketing automation', 'Sales', 'Analytics'],
+        description:
+          'We design and implement attraction and conversion strategies that accelerate qualified lead generation, position your brand and fuel your company’s growth.',
+        tags: ['Growth', 'SEO', 'Ads', 'Content', 'Ecommerce', 'Analytics'],
+        linkLabel: 'Explore DM Services',
         alt: 'Digital marketing visual',
         href: '/en/digital-marketing/',
+      },
+      {
+        ...commonServices.bpm,
+        title: 'Strategic Process Management',
+        description:
+          'We turn your company’s operation into an organized, agile and standardized system that optimizes resource use, minimizes the margin for error and strengthens your organization’s performance.',
+        tags: ['Process Design', 'Process Automation', 'Process Intelligence', 'Operational Excellence', 'Process Assessment'],
+        linkLabel: 'Explore BPM Services',
+        alt: 'Process management visual',
+        href: '/en/strategic-process-management/',
       },
       {
         ...commonServices.pm,
         title: 'Project Management',
         description:
-          'Professional project management, PMOs and agile or waterfall methodologies to meet timelines and budgets.',
-        tags: ['PMO', 'Scrum & Agile', 'OPM3', 'PMP'],
+          'We lead your projects at every stage of their life cycle, integrating a clear structure that prevents delays, accelerates execution and ensures control over results.',
+        tags: ['Governance', 'Delivery', 'Agile', 'Recovery', 'Assessment'],
+        linkLabel: 'Explore PM Services',
         alt: 'Project management visual',
         href: '/en/project-management/',
       },
@@ -224,8 +233,9 @@ export const aboutContentByLang: Record<SupportedLang, AboutContent> = {
         ...commonServices.spm,
         title: 'Strategic Planning',
         description:
-          'Objective definition, business diagnosis, corporate governance and dashboards to guide growth.',
-        tags: ['Strategic plan', 'Corporate governance', 'KPIs & Dashboards', 'Franchise'],
+          'We define your organization’s strategic direction and align its teams to turn executive vision into solid, consistent growth.',
+        tags: ['Strategy', 'Assessment', 'Governance', 'Growth', 'Transformation'],
+        linkLabel: 'Explore SPM Services',
         alt: 'Strategic planning visual',
         href: '/en/strategic-planning/',
       },

@@ -74,7 +74,7 @@ export const digitalMarketingByLang: Record<SupportedLang, DigitalMarketingConte
       title: 'Marketing Digital AGSIT | Resultados medibles para ventas',
       description:
         'Marketing Digital Integral para convertir oportunidades digitales en resultados medibles con SEO, SEM, analytics, social media y e-commerce.',
-      canonicalUrl: 'https://agsit.com.mx/mercadotecnia-digital/',
+      canonicalUrl: 'https://agsit.com.mx/marketing-digital/',
       htmlLang: 'es-MX',
       locale: 'es_MX',
     },

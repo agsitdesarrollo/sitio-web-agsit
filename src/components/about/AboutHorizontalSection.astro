@@ -78,11 +78,11 @@ const getVideoRatioKind = (image: string) => (image.endsWith('/servicios.mp4') ?
               </div>
               {service.href ? (
                 <a class="about-service-link" href={service.href}>
-                  {content.serviceLinkLabel} {service.code} →
+                  {service.linkLabel} →
                 </a>
               ) : (
                 <p class="about-service-link">
-                  {content.serviceLinkLabel} {service.code} →
+                  {service.linkLabel} →
                 </p>
               )}
             </div>

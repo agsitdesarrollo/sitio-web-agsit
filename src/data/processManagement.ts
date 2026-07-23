@@ -76,7 +76,7 @@ export const processManagementByLang: Record<SupportedLang, ProcessManagementCon
       title: 'Administración de Procesos AGSIT | BPM 360 y mejora operativa',
       description:
         'Administración de procesos de negocio con diagnóstico AS-IS, modelado BPMN, análisis, diseño, automatización, KPIs, auditoría y mejora continua.',
-      canonicalUrl: 'https://agsit.com.mx/administracion-de-procesos/',
+      canonicalUrl: 'https://agsit.com.mx/gestion-estrategica-de-procesos/',
       htmlLang: 'es-MX',
       locale: 'es_MX',
     },
@@ -180,7 +180,7 @@ export const processManagementByLang: Record<SupportedLang, ProcessManagementCon
       title: 'AGSIT Process Management | BPM 360 and operational improvement',
       description:
         'Business process management with AS-IS diagnosis, BPMN modeling, analysis, design, automation, KPIs, auditing and continuous improvement.',
-      canonicalUrl: 'https://agsit.com.mx/en/process-management/',
+      canonicalUrl: 'https://agsit.com.mx/en/strategic-process-management/',
       htmlLang: 'en',
       locale: 'en_US',
     },
