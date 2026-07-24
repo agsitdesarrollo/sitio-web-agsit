@@ -14,6 +14,11 @@ const { content, contactCopy } = Astro.props;
 
 <main class="crm-page">
   <section class="crm-hero" aria-labelledby="crm-hero-title">
+    <video class="crm-hero-video" aria-hidden="true" autoplay muted loop playsinline preload="metadata">
+      <source src="/assets/binary-wave-bg.webm" type="video/webm" />
+      <source src="/assets/binary-wave-bg.mp4" type="video/mp4" />
+    </video>
+
     <div class="crm-hero-copy">
       <p class="crm-eyebrow">{content.hero.eyebrow}</p>
       <h1 id="crm-hero-title">{content.hero.title}</h1>
@@ -24,16 +29,35 @@ const { content, contactCopy } = Astro.props;
       </div>
     </div>
 
-    <div class="crm-hub" aria-hidden="true">
-      <div class="crm-hub-top">
-        <span>CRM</span>
-        <span>360</span>
+    <div class="crm-command" aria-hidden="true">
+      <div class="crm-command-bar">
+        <span class="crm-command-status"><i></i> CRM / 360</span>
+        <span>AGSIT OS</span>
       </div>
-      <div class="crm-hub-core">
-        <span>Clientes</span>
-      </div>
-      <div class="crm-hub-signals">
-        {content.hero.signals.map((signal, index) => <span class={`crm-signal crm-signal-${index + 1}`}>{signal}</span>)}
+      <div class="crm-command-body">
+        <div class="crm-command-orbit">
+          <span class="crm-command-core">
+            <small>CRM</small>
+            <strong>{content.hero.coreLabel}</strong>
+          </span>
+          {
+            content.hero.signals.map((signal, index) => (
+              <span class={`crm-command-signal crm-command-signal-${index + 1}`}>
+                <i></i>
+                {signal}
+              </span>
+            ))
+          }
+        </div>
+        <div class="crm-command-feed">
+          {content.hero.signals.slice(0, 3).map((signal, index) => (
+            <span>
+              <i>{String(index + 1).padStart(2, '0')}</i>
+              {signal}
+              <b></b>
+            </span>
+          ))}
+        </div>
       </div>
     </div>
   </section>
@@ -43,17 +67,35 @@ const { content, contactCopy } = Astro.props;
       <p class="crm-eyebrow">{content.contrast.eyebrow}</p>
       <h2 id="crm-contrast-title">{content.contrast.title}</h2>
     </div>
-    <div class="crm-contrast-grid">
-      <article>
-        <span>Fragmentado</span>
+
+    <div class="crm-contrast-board">
+      <article class="crm-contrast-column crm-contrast-column-before">
+        <span>{content.contrast.beforeLabel}</span>
         <ul>
-          {content.contrast.before.map((item) => <li>{item}</li>)}
+          {content.contrast.before.map((item, index) => (
+            <li>
+              <small>{String(index + 1).padStart(2, '0')}</small>
+              {item}
+            </li>
+          ))}
         </ul>
       </article>
-      <article>
-        <span>Conectado</span>
+
+      <div class="crm-contrast-switch" aria-hidden="true">
+        <span></span>
+        <i></i>
+        <span></span>
+      </div>
+
+      <article class="crm-contrast-column crm-contrast-column-after">
+        <span>{content.contrast.afterLabel}</span>
         <ul>
-          {content.contrast.after.map((item) => <li>{item}</li>)}
+          {content.contrast.after.map((item, index) => (
+            <li>
+              <small>{String(index + 1).padStart(2, '0')}</small>
+              {item}
+            </li>
+          ))}
         </ul>
       </article>
     </div>
@@ -66,21 +108,32 @@ const { content, contactCopy } = Astro.props;
       <p>{content.modules.copy}</p>
     </div>
 
-    <div class="crm-module-grid">
-      {
-        content.modules.items.map((item) => (
-          <article>
-            <span>{item.code}</span>
-            <h3>{item.title}</h3>
-            <p>{item.copy}</p>
-          </article>
-        ))
-      }
+    <div class="crm-module-map">
+      <div class="crm-module-axis" aria-hidden="true">
+        <span>CRM</span>
+        <i></i>
+        <strong>360</strong>
+      </div>
+      <div class="crm-module-grid">
+        {
+          content.modules.items.map((item, index) => (
+            <article>
+              <div class="crm-module-meta">
+                <span>{item.code}</span>
+                <small>{String(index + 1).padStart(2, '0')}</small>
+              </div>
+              <h3>{item.title}</h3>
+              <p>{item.copy}</p>
+            </article>
+          ))
+        }
+      </div>
     </div>
   </section>
 
   <section class="crm-workflows" aria-labelledby="crm-workflows-title">
     <div class="crm-workflows-copy">
+      <p class="crm-eyebrow">{content.workflows.eyebrow}</p>
       <h2 id="crm-workflows-title">{content.workflows.title}</h2>
       <p>{content.workflows.copy}</p>
     </div>
@@ -89,8 +142,11 @@ const { content, contactCopy } = Astro.props;
         content.workflows.items.map((item) => (
           <article>
             <span>{item.label}</span>
-            <h3>{item.title}</h3>
-            <p>{item.copy}</p>
+            <div>
+              <h3>{item.title}</h3>
+              <p>{item.copy}</p>
+            </div>
+            <i aria-hidden="true"></i>
           </article>
         ))
       }
@@ -102,11 +158,18 @@ const { content, contactCopy } = Astro.props;
       <p class="crm-eyebrow">{content.ai.eyebrow}</p>
       <h2 id="crm-ai-title">{content.ai.title}</h2>
       <p>{content.ai.copy}</p>
+      <div class="crm-ai-pulse" aria-hidden="true">
+        <span></span>
+        <span></span>
+        <span></span>
+        <i>AI</i>
+      </div>
     </div>
     <div class="crm-ai-grid">
       {
-        content.ai.capabilities.map((capability) => (
+        content.ai.capabilities.map((capability, index) => (
           <article>
+            <span>{String(index + 1).padStart(2, '0')}</span>
             <h3>{capability.title}</h3>
             <ul>
               {capability.points.map((point) => <li>{point}</li>)}
@@ -118,10 +181,18 @@ const { content, contactCopy } = Astro.props;
   </section>
 
   <section class="crm-outcomes" aria-labelledby="crm-outcomes-title">
-    <h2 id="crm-outcomes-title">{content.outcomes.title}</h2>
-    <ul>
-      {content.outcomes.items.map((item) => <li>{item}</li>)}
-    </ul>
+    <div class="crm-outcomes-heading">
+      <p class="crm-eyebrow">{content.outcomes.eyebrow}</p>
+      <h2 id="crm-outcomes-title">{content.outcomes.title}</h2>
+    </div>
+    <ol>
+      {content.outcomes.items.map((item, index) => (
+        <li>
+          <span>{String(index + 1).padStart(2, '0')}</span>
+          <p>{item}</p>
+        </li>
+      ))}
+    </ol>
   </section>
 
   <FinalContactSection copy={contactCopy} />

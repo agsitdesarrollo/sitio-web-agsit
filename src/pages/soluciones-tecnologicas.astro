@@ -39,7 +39,8 @@ const t = useTranslations(lang);
       contactHref="#contacto"
       alternateHref="/en/technology-solutions/"
     />
-    <TechnologySolutionsPage content={content} contactCopy={contactCopy} />
+    <!-- Solo CRM muestra su enlace mientras se define la siguiente ampliación del catálogo. -->
+    <TechnologySolutionsPage content={content} contactCopy={contactCopy} capabilityLinkCodes={['CRM']} />
     <Footer copy={footerCopy} services={servicesContent.services} homeHref="/#inicio" servicesHref="/#servicios" contactHref="#contacto" />
     <ContactDrawer copy={contactCopy} />
     <PageShellScripts openMenuLabel={t('nav.openMenu')} closeMenuLabel={t('nav.closeMenu')} />

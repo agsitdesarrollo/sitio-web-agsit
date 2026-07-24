@@ -39,7 +39,8 @@ const t = useTranslations(lang);
       contactHref="#contacto"
       alternateHref="/soluciones-tecnologicas/"
     />
-    <TechnologySolutionsPage content={content} contactCopy={contactCopy} />
+    <!-- Only CRM shows its link while the next catalogue expansion is defined. -->
+    <TechnologySolutionsPage content={content} contactCopy={contactCopy} capabilityLinkCodes={['CRM']} />
     <Footer
       copy={footerCopy}
       services={servicesContent.services}

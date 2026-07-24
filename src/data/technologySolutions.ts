@@ -131,6 +131,14 @@ export const technologySolutionsByLang: Record<SupportedLang, TechnologySolution
         'Agrupamos los servicios por objetivo operativo para que identifiques con rapidez qué frente tecnológico necesita tu empresa.',
       items: [
         {
+          code: 'CRM',
+          title: 'Administración CRM',
+          copy:
+            'Centralizamos ventas, tareas, colaboración, analítica y automatización para conectar clientes, equipos y resultados.',
+          cta: 'Ver servicios',
+          href: '/administracion-crm/',
+        },
+        {
           code: 'GTI',
           title: 'Gestión y Gobierno TI',
           copy:
@@ -170,14 +178,15 @@ export const technologySolutionsByLang: Record<SupportedLang, TechnologySolution
           cta: 'Ver servicios',
           href: '/soluciones-tecnologicas/datos-e-inteligencia-empresarial/',
         },
-        {
-          code: 'INN',
-          title: 'Innovación Tecnológica',
-          copy:
-            'Aterrizamos tecnologías emergentes en casos de uso viables para modernizar procesos y habilitar nuevos modelos.',
-          cta: 'Ver servicios',
-          href: '/soluciones-tecnologicas/innovacion-tecnologica/',
-        },
+        // Servicio reservado para una ampliación futura del catálogo.
+        // {
+        //   code: 'INN',
+        //   title: 'Innovación Tecnológica',
+        //   copy:
+        //     'Aterrizamos tecnologías emergentes en casos de uso viables para modernizar procesos y habilitar nuevos modelos.',
+        //   cta: 'Ver servicios',
+        //   href: '/soluciones-tecnologicas/innovacion-tecnologica/',
+        // },
       ],
     },
     benefits: {
@@ -279,6 +288,14 @@ export const technologySolutionsByLang: Record<SupportedLang, TechnologySolution
         'We group services by operational goal so you can quickly identify which technology front your company needs.',
       items: [
         {
+          code: 'CRM',
+          title: 'CRM Administration',
+          copy:
+            'We centralize sales, tasks, collaboration, analytics and automation to connect clients, teams and results.',
+          cta: 'View services',
+          href: '/en/crm-administration/',
+        },
+        {
           code: 'ITG',
           title: 'IT Management and Governance',
           copy:
@@ -318,14 +335,15 @@ export const technologySolutionsByLang: Record<SupportedLang, TechnologySolution
           cta: 'View services',
           href: '/en/technology-solutions/data-and-business-intelligence/',
         },
-        {
-          code: 'INN',
-          title: 'Technology Innovation',
-          copy:
-            'We bring emerging technologies into viable use cases to modernize processes and enable new operating models.',
-          cta: 'View services',
-          href: '/en/technology-solutions/technological-innovation/',
-        },
+        // Service reserved for a future catalogue expansion.
+        // {
+        //   code: 'INN',
+        //   title: 'Technology Innovation',
+        //   copy:
+        //     'We bring emerging technologies into viable use cases to modernize processes and enable new operating models.',
+        //   cta: 'View services',
+        //   href: '/en/technology-solutions/technological-innovation/',
+        // },
       ],
     },
     benefits: {

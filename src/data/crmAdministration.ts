@@ -31,11 +31,14 @@ export type CrmAdministrationContent = {
     copy: string;
     primaryCta: string;
     secondaryCta: string;
+    coreLabel: string;
     signals: string[];
   };
   contrast: {
     eyebrow: string;
     title: string;
+    beforeLabel: string;
+    afterLabel: string;
     before: string[];
     after: string[];
   };
@@ -46,6 +49,7 @@ export type CrmAdministrationContent = {
     items: CrmModule[];
   };
   workflows: {
+    eyebrow: string;
     title: string;
     copy: string;
     items: CrmWorkflow[];
@@ -57,6 +61,7 @@ export type CrmAdministrationContent = {
     capabilities: CrmCapability[];
   };
   outcomes: {
+    eyebrow: string;
     title: string;
     items: string[];
   };
@@ -84,11 +89,14 @@ export const crmAdministrationByLang: Record<SupportedLang, CrmAdministrationCon
         'Centralizamos procesos comerciales, tareas, comunicación, analítica y automatización para que cada área deje de trabajar aislada y la experiencia del cliente mejore desde el primer contacto.',
       primaryCta: 'Solicitar asesoría',
       secondaryCta: 'Ver plataforma',
+      coreLabel: 'Clientes',
       signals: ['CRM', 'Tareas', 'Ventas', 'IA'],
     },
     contrast: {
       eyebrow: 'Antes y después',
       title: 'Cuando todo vive en herramientas separadas, el negocio pierde visibilidad.',
+      beforeLabel: 'Fragmentado',
+      afterLabel: 'Conectado',
       before: [
         'Costos excesivos por múltiples plataformas.',
         'Información duplicada, aislada y sin análisis.',
@@ -141,6 +149,7 @@ export const crmAdministrationByLang: Record<SupportedLang, CrmAdministrationCon
       ],
     },
     workflows: {
+      eyebrow: 'Flujo operativo',
       title: 'De solicitud a resultado, sin perder el hilo.',
       copy:
         'Diseñamos flujos para que cada solicitud, venta o tarea avance con responsables, estados, evidencia y automatizaciones claras.',
@@ -172,6 +181,7 @@ export const crmAdministrationByLang: Record<SupportedLang, CrmAdministrationCon
       ],
     },
     outcomes: {
+      eyebrow: 'Impacto 360',
       title: 'Resultados que deben sentirse en clientes y equipos.',
       items: [
         'Respuestas más rápidas a solicitudes y oportunidades de venta.',
@@ -204,11 +214,14 @@ export const crmAdministrationByLang: Record<SupportedLang, CrmAdministrationCon
         'We centralize commercial processes, tasks, communication, analytics and automation so each area stops working in isolation and the customer experience improves from first contact.',
       primaryCta: 'Request consultation',
       secondaryCta: 'View platform',
+      coreLabel: 'Clients',
       signals: ['CRM', 'Tasks', 'Sales', 'AI'],
     },
     contrast: {
       eyebrow: 'Before and after',
       title: 'When everything lives in separate tools, the business loses visibility.',
+      beforeLabel: 'Fragmented',
+      afterLabel: 'Connected',
       before: [
         'Excessive costs from multiple platforms.',
         'Duplicated, isolated and unanalyzed information.',
@@ -261,6 +274,7 @@ export const crmAdministrationByLang: Record<SupportedLang, CrmAdministrationCon
       ],
     },
     workflows: {
+      eyebrow: 'Operational workflow',
       title: 'From request to result, without losing the thread.',
       copy:
         'We design workflows so every request, sale or task moves forward with owners, status, evidence and clear automations.',
@@ -292,6 +306,7 @@ export const crmAdministrationByLang: Record<SupportedLang, CrmAdministrationCon
       ],
     },
     outcomes: {
+      eyebrow: '360 impact',
       title: 'Results that should be felt by clients and teams.',
       items: [
         'Faster responses to requests and sales opportunities.',

@@ -6,9 +6,11 @@ import type { TechnologySolutionsContent } from '../../data/technologySolutions'
 type Props = {
   content: TechnologySolutionsContent;
   contactCopy: ContactCopy;
+  capabilityLinkCodes?: string[];
 };
 
-const { content, contactCopy } = Astro.props;
+const { content, contactCopy, capabilityLinkCodes } = Astro.props;
+const shouldShowCapabilityLink = (code: string) => !capabilityLinkCodes || capabilityLinkCodes.includes(code);
 ---
 
 <main class="technology-page">
@@ -82,7 +84,7 @@ const { content, contactCopy } = Astro.props;
                   <h3>{item.title}</h3>
                   <p>{item.copy}</p>
                 </div>
-                {item.href && (
+                {shouldShowCapabilityLink(item.code) && item.href && (
                   <a class="technology-capability-link" href={item.href}>
                     <span class="technology-capability-link-text">{item.cta}</span>
                     <span class="technology-capability-arrow" aria-hidden="true"></span>
