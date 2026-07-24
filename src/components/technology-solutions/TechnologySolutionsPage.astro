@@ -239,7 +239,6 @@ const { content, contactCopy } = Astro.props;
 
     const capabilities = root.querySelector('.technology-capabilities');
     const stage = root.querySelector('.technology-capabilities-stage');
-    const intro = root.querySelector('.technology-capabilities-intro');
     const introItems = gsap.utils.toArray<HTMLElement>('.js-technology-capabilities-intro-fade', capabilities);
     const cards = gsap.utils.toArray<HTMLElement>('.technology-capability', capabilities);
 
@@ -249,6 +248,7 @@ const { content, contactCopy } = Astro.props;
 
     const matchMedia = gsap.matchMedia();
     const getDesktopSequenceEnd = () => `+=${Math.round(getTechnologyViewportHeight() * (cards.length * 0.68 + 2.25))}`;
+    const getMobileSequenceEnd = () => `+=${Math.round(getTechnologyViewportHeight() * (cards.length * 0.92 + 2.4))}`;
     const getPinStart = () => `top top+=${getTechnologyNavOffset()}`;
 
     matchMedia.add('(prefers-reduced-motion: no-preference) and (min-width: 680px) and (min-height: 521px)', () => {
@@ -296,40 +296,74 @@ const { content, contactCopy } = Astro.props;
       };
     });
 
-    matchMedia.add('(prefers-reduced-motion: no-preference) and (max-width: 679px)', () => {
-      capabilities.classList.add('is-mobile-card-sequence');
-      gsap.set(introItems, { autoAlpha: 0, y: 18 });
-      gsap.set(cards, { autoAlpha: 0, y: 34, scale: 0.98 });
+    matchMedia.add(
+      [
+        '(prefers-reduced-motion: no-preference) and (max-width: 679px)',
+        '(prefers-reduced-motion: no-preference) and (max-width: 1024px) and (max-height: 520px)',
+      ].join(', '),
+      () => {
+        capabilities.classList.add('is-mobile-horizontal-sequence');
+        gsap.set(capabilities, { padding: 0 });
+        gsap.set(stage, { xPercent: 0 });
+        gsap.set(introItems, { autoAlpha: 0, y: 18 });
+        gsap.set(cards, { autoAlpha: 0, xPercent: 115 });
 
-      const introTimeline = gsap.timeline({
-        scrollTrigger: {
-          id: 'technology-capabilities-letters-mobile',
-          trigger: intro,
-          start: 'top 72%',
-          toggleActions: 'play none none reverse',
-        },
-      });
+        const timeline = gsap.timeline({
+          defaults: { ease: 'none' },
+          scrollTrigger: {
+            id: 'technology-capabilities-sequence-mobile',
+            trigger: capabilities,
+            start: getPinStart,
+            end: getMobileSequenceEnd,
+            pin: true,
+            pinSpacing: true,
+            scrub: 0.55,
+            anticipatePin: 1,
+            invalidateOnRefresh: true,
+          },
+        });
 
-      introTimeline.to(introItems, { autoAlpha: 1, y: 0, duration: 0.38, ease: 'power2.out', stagger: 0.08 });
+        timeline
+          .addLabel('mobile-intro')
+          .to(introItems, { autoAlpha: 1, y: 0, duration: 0.44, stagger: 0.08 }, 'mobile-intro')
+          .to({}, { duration: 0.62 })
+          .addLabel('mobile-panel-transition')
+          .to(stage, { xPercent: -50, duration: 0.92 }, 'mobile-panel-transition')
+          .fromTo(
+            cards[0],
+            { autoAlpha: 0, xPercent: 115 },
+            { autoAlpha: 1, xPercent: 0, duration: 0.72, immediateRender: false },
+          )
+          .to({}, { duration: 0.5 });
 
-      const triggers = cards.map((card) =>
-        ScrollTrigger.create({
-          trigger: card,
-          start: 'top 82%',
-          end: 'bottom 18%',
-          onEnter: () => gsap.to(card, { autoAlpha: 1, y: 0, scale: 1, duration: 0.58, ease: 'power2.out' }),
-          onEnterBack: () => gsap.to(card, { autoAlpha: 1, y: 0, scale: 1, duration: 0.4, ease: 'power2.out' }),
-        }),
-      );
+        cards.slice(1).forEach((card, index) => {
+          const previousCard = cards[index];
+          const label = `mobile-card-${index + 2}`;
 
-      return () => {
-        introTimeline.kill();
-        triggers.forEach((trigger) => trigger.kill());
-        capabilities.classList.remove('is-mobile-card-sequence');
-        gsap.set(introItems, { clearProps: 'all' });
-        gsap.set(cards, { clearProps: 'all' });
-      };
-    });
+          timeline
+            .addLabel(label)
+            .to(previousCard, { autoAlpha: 0, xPercent: -115, duration: 0.72 }, label)
+            .fromTo(
+              card,
+              { autoAlpha: 0, xPercent: 115 },
+              { autoAlpha: 1, xPercent: 0, duration: 0.72, immediateRender: false },
+              label,
+            )
+            .to({}, { duration: 0.5 });
+        });
+
+        timeline.to({}, { duration: 0.72 });
+
+        return () => {
+          timeline.kill();
+          capabilities.classList.remove('is-mobile-horizontal-sequence');
+          gsap.set(capabilities, { clearProps: 'padding' });
+          gsap.set(stage, { clearProps: 'all' });
+          gsap.set(introItems, { clearProps: 'all' });
+          gsap.set(cards, { clearProps: 'all' });
+        };
+      },
+    );
   };
 
   const setupTechnologyReveal = () => {
