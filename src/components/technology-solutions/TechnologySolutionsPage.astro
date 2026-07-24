@@ -1,5 +1,5 @@
 ---
-import ServiceContactSection from '../contact/ServiceContactSection.astro';
+import FinalContactSection from '../final-contact/FinalContactSection.astro';
 import type { ContactCopy } from '../../data/contact';
 import type { TechnologySolutionsContent } from '../../data/technologySolutions';
 
@@ -116,13 +116,7 @@ const { content, contactCopy } = Astro.props;
     </div>
   </section>
 
-  <ServiceContactSection
-    id="contacto"
-    eyebrow={content.contact.eyebrow}
-    title={content.contact.title}
-    copy={content.contact.copy}
-    contactCopy={contactCopy}
-  />
+  <FinalContactSection copy={contactCopy} />
 </main>
 
 <script>
@@ -163,7 +157,7 @@ const { content, contactCopy } = Astro.props;
     const getSequenceEnd = (multiplier: number) => `+=${Math.round(getTechnologyViewportHeight() * multiplier)}`;
     const getPinStart = () => `top top+=${getTechnologyNavOffset()}`;
 
-    matchMedia.add('(prefers-reduced-motion: no-preference) and (min-width: 680px)', () => {
+    matchMedia.add('(prefers-reduced-motion: no-preference) and (min-width: 680px) and (min-height: 521px)', () => {
       method.classList.add('is-scroll-sequence');
       gsap.set(steps, { autoAlpha: 0, y: 56 });
 
@@ -257,7 +251,7 @@ const { content, contactCopy } = Astro.props;
     const getDesktopSequenceEnd = () => `+=${Math.round(getTechnologyViewportHeight() * (cards.length * 0.68 + 2.25))}`;
     const getPinStart = () => `top top+=${getTechnologyNavOffset()}`;
 
-    matchMedia.add('(prefers-reduced-motion: no-preference) and (min-width: 680px)', () => {
+    matchMedia.add('(prefers-reduced-motion: no-preference) and (min-width: 680px) and (min-height: 521px)', () => {
       capabilities.classList.add('is-horizontal-sequence');
       gsap.set(stage, { xPercent: 0 });
       gsap.set(introItems, { autoAlpha: 0, y: 18 });
@@ -348,7 +342,7 @@ const { content, contactCopy } = Astro.props;
     const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     const items = Array.from(
       root.querySelectorAll(
-        '.technology-hero-content, .technology-section-heading, .technology-benefit-grid, .svc-contact-heading, .svc-contact-grid',
+        '.technology-hero-content, .technology-section-heading, .technology-benefit-grid',
       ),
     ).filter((item) => item instanceof HTMLElement);
 

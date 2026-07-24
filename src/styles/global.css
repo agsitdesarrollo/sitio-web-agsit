@@ -1,7 +1,6 @@
 @import "tailwindcss";
 @import "../components/navigation/Header.css";
 @import "../components/contact/ContactDrawer.css";
-@import "../components/contact/ServiceContactSection.css";
 @import "../components/hero/Hero.css";
 @import "../components/services/Services.css";
 @import "../components/about/AboutHorizontal.css";
@@ -23,6 +22,7 @@
 @import "../components/video-story/VideoStory.css";
 @import "../components/final-contact/FinalContact.css";
 @import "../components/footer/Footer.css";
+@import "./service-landscape.css";
 
 :root {
   --nav-h: clamp(76px, 10vh, 96px);

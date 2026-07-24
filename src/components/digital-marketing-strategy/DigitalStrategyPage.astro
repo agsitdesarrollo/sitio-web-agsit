@@ -1,6 +1,5 @@
 ---
-import ContactDirectCard from '../contact/ContactDirectCard.astro';
-import ContactForm from '../contact/ContactForm.astro';
+import FinalContactSection from '../final-contact/FinalContactSection.astro';
 import type { ContactCopy } from '../../data/contact';
 import type { DigitalStrategyContent } from '../../data/digitalStrategy';
 
@@ -178,19 +177,7 @@ const { content, contactCopy, marketingHref } = Astro.props;
     </div>
   </section>
 
-  <section id="strategy-contact" class="strategy-contact" aria-labelledby="strategy-contact-title">
-    <div class="strategy-contact-heading js-strategy-reveal">
-      <p class="strategy-eyebrow">{content.contact.eyebrow}</p>
-      <h2 id="strategy-contact-title">{content.contact.title}</h2>
-      <p>{content.contact.copy}</p>
-    </div>
-    <div class="strategy-contact-grid js-strategy-reveal">
-      <ContactDirectCard copy={contactCopy.direct} />
-      <div class="strategy-contact-form">
-        <ContactForm copy={contactCopy.form} />
-      </div>
-    </div>
-  </section>
+  <FinalContactSection copy={contactCopy} />
 </main>
 
 <script>

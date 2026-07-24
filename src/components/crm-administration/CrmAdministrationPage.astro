@@ -1,5 +1,5 @@
 ---
-import ServiceContactSection from '../contact/ServiceContactSection.astro';
+import FinalContactSection from '../final-contact/FinalContactSection.astro';
 import ServicePageAnimations from '../service-animation/ServicePageAnimations.astro';
 import type { ContactCopy } from '../../data/contact';
 import type { CrmAdministrationContent } from '../../data/crmAdministration';
@@ -124,13 +124,7 @@ const { content, contactCopy } = Astro.props;
     </ul>
   </section>
 
-  <ServiceContactSection
-    id="contacto"
-    eyebrow={content.cta.eyebrow}
-    title={content.cta.title}
-    copy={content.cta.copy}
-    contactCopy={contactCopy}
-  />
+  <FinalContactSection copy={contactCopy} />
 
   <ServicePageAnimations />
 </main>

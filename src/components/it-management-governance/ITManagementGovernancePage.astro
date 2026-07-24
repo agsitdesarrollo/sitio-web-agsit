@@ -1,5 +1,5 @@
 ---
-import ServiceContactSection from '../contact/ServiceContactSection.astro';
+import FinalContactSection from '../final-contact/FinalContactSection.astro';
 import ServicePageAnimations from '../service-animation/ServicePageAnimations.astro';
 import type { ContactCopy } from '../../data/contact';
 import type { ITManagementGovernanceContent } from '../../data/itManagementGovernance';
@@ -125,13 +125,7 @@ const { content, contactCopy } = Astro.props;
     </div>
   </section>
 
-  <ServiceContactSection
-    id="contacto"
-    eyebrow={content.cta.eyebrow}
-    title={content.cta.title}
-    copy={content.cta.copy}
-    contactCopy={contactCopy}
-  />
+  <FinalContactSection copy={contactCopy} />
 
   <ServicePageAnimations />
 </main>
@@ -170,7 +164,7 @@ const { content, contactCopy } = Astro.props;
       `+=${Math.round(getITGViewportHeight() * multiplier)}`;
     const getPinStart = () => `top top+=${getITGNavOffset()}`;
 
-    matchMedia.add('(prefers-reduced-motion: no-preference) and (min-width: 680px)', () => {
+    matchMedia.add('(prefers-reduced-motion: no-preference) and (min-width: 680px) and (min-height: 521px)', () => {
       method.classList.add('is-scroll-sequence');
       gsap.set(steps, { autoAlpha: 0, y: 56 });
 

@@ -1,5 +1,5 @@
 ---
-import ServiceContactSection from '../contact/ServiceContactSection.astro';
+import FinalContactSection from '../final-contact/FinalContactSection.astro';
 import type { ContactCopy } from '../../data/contact';
 import type { DigitalMarketingContent } from '../../data/digitalMarketing';
 import FloatingCTA from './FloatingCTA.astro';
@@ -56,14 +56,7 @@ const { content, contactCopy } = Astro.props;
     </div>
   </section>
 
-  <ServiceContactSection
-    id="marketing-contact"
-    eyebrow={content.cta.eyebrow}
-    title={content.cta.title}
-    copy={content.cta.copy}
-    contactCopy={contactCopy}
-    headingClass="js-marketing-reveal"
-  />
+  <FinalContactSection copy={contactCopy} />
 </main>
 
 <script>
