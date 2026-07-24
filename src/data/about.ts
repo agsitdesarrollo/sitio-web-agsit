@@ -19,11 +19,12 @@ export type AboutService = {
   href?: string;
 };
 
+export type ClientLogoPriority = 'A' | 'M' | 'B';
+
 export type ClientLogo = {
   label: string;
   src: string;
-  /** true = el logo nunca rota (empresas grandes que deben quedarse fijas). */
-  pinned?: boolean;
+  priority: ClientLogoPriority;
 };
 
 export type AboutContent = {
@@ -111,7 +112,7 @@ export const aboutContentByLang: Record<SupportedLang, AboutContent> = {
     services: [
       {
         ...commonServices.its,
-        title: 'Desarrollo de Software',
+        title: 'Soluciones Tecnológicas',
         description:
           'Fusionamos visión estratégica y capacidad digital para evolucionar el modelo operativo de tu empresa, elevar su eficiencia y consolidar una ventaja competitiva sostenible.',
         tags: ['Software', 'Business Platforms', 'Automation', 'Data & Analytics', 'AI', 'Consulting', 'Cloud'],
@@ -131,13 +132,13 @@ export const aboutContentByLang: Record<SupportedLang, AboutContent> = {
       },
       {
         ...commonServices.bpm,
-        title: 'Gestión Estratégica de Procesos',
+        title: 'Administración de Procesos',
         description:
           'Convertimos la operación de tu empresa en un sistema ordenado, ágil y estandarizado que optimiza el uso de recursos, minimiza el margen de error y potencia el desempeño de tu organización.',
         tags: ['Process Design', 'Process Automation', 'Process Intelligence', 'Operational Excellence', 'Process Assessment'],
         linkLabel: 'Explorar Servicios BPM',
         alt: 'Visual de administración de procesos',
-        href: '/gestion-estrategica-de-procesos/',
+        href: '/administracion-de-procesos/',
       },
       {
         ...commonServices.pm,
@@ -191,7 +192,7 @@ export const aboutContentByLang: Record<SupportedLang, AboutContent> = {
     services: [
       {
         ...commonServices.its,
-        title: 'Software Development',
+        title: 'Technology Solutions',
         description:
           'We combine strategic vision and digital capabilities to evolve your company’s operating model, increase efficiency and build a sustainable competitive advantage.',
         tags: ['Software', 'Business Platforms', 'Automation', 'Data & Analytics', 'AI', 'Consulting', 'Cloud'],
@@ -211,13 +212,13 @@ export const aboutContentByLang: Record<SupportedLang, AboutContent> = {
       },
       {
         ...commonServices.bpm,
-        title: 'Strategic Process Management',
+        title: 'Process Management',
         description:
           'We turn your company’s operation into an organized, agile and standardized system that optimizes resource use, minimizes the margin for error and strengthens your organization’s performance.',
         tags: ['Process Design', 'Process Automation', 'Process Intelligence', 'Operational Excellence', 'Process Assessment'],
         linkLabel: 'Explore BPM Services',
         alt: 'Process management visual',
-        href: '/en/strategic-process-management/',
+        href: '/en/process-management/',
       },
       {
         ...commonServices.pm,
@@ -262,31 +263,73 @@ export const aboutContentByLang: Record<SupportedLang, AboutContent> = {
 
 export const aboutServices = aboutContentByLang.es.services;
 
-// ── Cómo configurar la rotación de logos ────────────────────────────────────
-// - La rejilla muestra los primeros 15 del array; los que están después son la
-//   reserva y van entrando en rotación (un cambio cada CLIENT_LOGO_ROTATION_MS,
-//   definido en AboutHorizontalSection.astro).
-// - `pinned: true` en cualquiera de los primeros 15 = ese lugar nunca rota
-//   (empresas grandes). Los demás lugares se van intercambiando con la reserva.
-// - Para que un logo NO fijo aparezca "más tiempo", inclúyelo dos veces en la
-//   reserva: pasará por la rejilla el doble de seguido.
-// - Con 15 logos o menos no hay rotación (no hay reserva).
+// Los logos se mantienen en orden numérico dentro de cada prioridad:
+// A (alta), M (media) y B (baja). La letra solo controla la rotación y no se
+// muestra en la interfaz.
 export const clientLogos: ClientLogo[] = [
-  { label: '01', src: '/assets/client-logos/client-01.png' },
-  { label: '02', src: '/assets/client-logos/client-02.png' },
-  { label: '03', src: '/assets/client-logos/client-03.png' },
-  { label: '04', src: '/assets/client-logos/client-04.png' },
-  { label: '05', src: '/assets/client-logos/client-05.webp' },
-  { label: '06', src: '/assets/client-logos/client-06.png' },
-  { label: '07', src: '/assets/client-logos/client-07.jpg' },
-  { label: '08', src: '/assets/client-logos/client-08.jpg' },
-  { label: '09', src: '/assets/client-logos/client-09.jpg' },
-  { label: '10', src: '/assets/client-logos/client-10.jpg' },
-  { label: '11', src: '/assets/client-logos/client-11.jpg' },
-  { label: '12', src: '/assets/client-logos/client-12.jpg' },
-  { label: '13', src: '/assets/client-logos/client-13.jpg' },
-  { label: '14', src: '/assets/client-logos/client-14.webp' },
-  { label: '15', src: '/assets/client-logos/client-15.webp' },
+  { label: '01', priority: 'A', src: '/assets/client-logos/Cliente 01_ A.png' },
+  { label: '02', priority: 'A', src: '/assets/client-logos/Cliente 02 _ A.png' },
+  { label: '03', priority: 'A', src: '/assets/client-logos/Cliente 03 _ A.png' },
+  { label: '04', priority: 'A', src: '/assets/client-logos/Cliente 04 _ A.png' },
+  { label: '05', priority: 'A', src: '/assets/client-logos/Cliente 05_ A.png' },
+  { label: '06', priority: 'A', src: '/assets/client-logos/Cliente 06_ A.png.svg' },
+  { label: '07', priority: 'A', src: '/assets/client-logos/Cliente 07_ A.png' },
+  { label: '08', priority: 'A', src: '/assets/client-logos/Cliente 08 _ A.png' },
+  { label: '09', priority: 'A', src: '/assets/client-logos/Cliente 09 _ A.png' },
+  { label: '10', priority: 'A', src: '/assets/client-logos/Cliente 10 _ A.png' },
+  { label: '11', priority: 'A', src: '/assets/client-logos/Cliente 11 _ A.png' },
+  { label: '12', priority: 'A', src: '/assets/client-logos/Cliente 12 _ A.png' },
+  { label: '13', priority: 'A', src: '/assets/client-logos/Cliente 13 _ A.png' },
+  { label: '14', priority: 'A', src: '/assets/client-logos/Cliente 14 _ A.png.jpg' },
+  { label: '15', priority: 'A', src: '/assets/client-logos/Cliente 15 _ A.png' },
+  { label: '16', priority: 'A', src: '/assets/client-logos/Cliente 16 _ A.png' },
+  { label: '17', priority: 'A', src: '/assets/client-logos/Cliente 17 _ A.png' },
+  { label: '18', priority: 'A', src: '/assets/client-logos/Cliente 18 _ A.png.jpg' },
+  { label: '19', priority: 'A', src: '/assets/client-logos/Cliente 19_ A.png' },
+  { label: '20', priority: 'A', src: '/assets/client-logos/Cliente 20_ A.png' },
+  { label: '21', priority: 'A', src: '/assets/client-logos/Cliente 21_ A.png' },
+  { label: '22', priority: 'A', src: '/assets/client-logos/Cliente 22_ A.png.svg' },
+  { label: '23', priority: 'M', src: '/assets/client-logos/Cliente 23_ M.png.svg.png' },
+  { label: '24', priority: 'M', src: '/assets/client-logos/Cliente 24_ M.png.svg.png' },
+  { label: '25', priority: 'M', src: '/assets/client-logos/Cliente 25_ M.png.svg.png' },
+  { label: '26', priority: 'M', src: '/assets/client-logos/Cliente 26_ M.png.svg.png' },
+  { label: '27', priority: 'M', src: '/assets/client-logos/Cliente 27_ M.png.svg.png.jpg' },
+  { label: '28', priority: 'M', src: '/assets/client-logos/Cliente 28_ M.png.svg.png' },
+  { label: '29', priority: 'M', src: '/assets/client-logos/Cliente 29_ M.png.svg.png.jpg' },
+  { label: '30', priority: 'M', src: '/assets/client-logos/Cliente 30_ M.png.svg.png' },
+  { label: '31', priority: 'M', src: '/assets/client-logos/Cliente 31_ M.png.svg.png' },
+  { label: '32', priority: 'M', src: '/assets/client-logos/Cliente 32_ M.png.svg.png' },
+  { label: '33', priority: 'M', src: '/assets/client-logos/Cliente 33_ M.png.svg.png' },
+  { label: '34', priority: 'M', src: '/assets/client-logos/Cliente 34_ M.png.svg.png' },
+  { label: '35', priority: 'M', src: '/assets/client-logos/Cliente 35_ M.png.svg.png' },
+  { label: '36', priority: 'M', src: '/assets/client-logos/Cliente 36_ M.png.svg.png' },
+  { label: '37', priority: 'M', src: '/assets/client-logos/Cliente 37_ M.png.svg.png' },
+  { label: '38', priority: 'B', src: '/assets/client-logos/Cliente 38_ B.png.svg.png' },
+  { label: '39', priority: 'B', src: '/assets/client-logos/Cliente 39_ B.png.svg.png' },
+  { label: '40', priority: 'B', src: '/assets/client-logos/Cliente 40_ B.png.svg.png' },
+  { label: '41', priority: 'B', src: '/assets/client-logos/Cliente 41_ B.png.svg.png' },
+  { label: '42', priority: 'B', src: '/assets/client-logos/Cliente 42_ B.png.svg.png' },
+  { label: '43', priority: 'B', src: '/assets/client-logos/Cliente 43_ B.png.svg.png' },
+  { label: '44', priority: 'B', src: '/assets/client-logos/Cliente 44 _ B.png.svg.png.jpg' },
+  { label: '45', priority: 'B', src: '/assets/client-logos/Cliente 45_ B.png.svg.png' },
+  { label: '46', priority: 'B', src: '/assets/client-logos/Cliente 46_ B.png.svg.png' },
+  { label: '47', priority: 'B', src: '/assets/client-logos/Cliente 47_ B.png.svg.png' },
+  { label: '48', priority: 'B', src: '/assets/client-logos/Cliente 48_ B.png.svg.png' },
+  { label: '49', priority: 'B', src: '/assets/client-logos/Cliente 49 _ B.png.svg.png.jpg' },
+  { label: '50', priority: 'B', src: '/assets/client-logos/Cliente 50_ B.png.svg' },
+  { label: '51', priority: 'B', src: '/assets/client-logos/Cliente 51 _ B.png.svg.png.jpg' },
+  { label: '52', priority: 'B', src: '/assets/client-logos/Cliente 52_ B.png.svg.png' },
+  { label: '53', priority: 'B', src: '/assets/client-logos/Cliente 53_ B.png.svg' },
+  { label: '54', priority: 'B', src: '/assets/client-logos/Cliente 54_ B.png.svg.png' },
+  { label: '55', priority: 'B', src: '/assets/client-logos/Cliente 55_ B.png.svg.png' },
+  { label: '56', priority: 'B', src: '/assets/client-logos/Cliente 56_ B.png.svg.png' },
+  { label: '57', priority: 'B', src: '/assets/client-logos/Cliente 57_ B.png.svg.png' },
+  { label: '58', priority: 'B', src: '/assets/client-logos/Cliente 58_ B.png.svg.png' },
+  { label: '59', priority: 'B', src: '/assets/client-logos/Cliente 59_ B.png.svg.png' },
+  { label: '60', priority: 'B', src: '/assets/client-logos/Cliente 60_ B.png.svg.png' },
+  { label: '61', priority: 'B', src: '/assets/client-logos/Cliente 61_ B.png.svg.png' },
+  { label: '62', priority: 'B', src: '/assets/client-logos/Cliente 62_ B.png.svg.png' },
+  { label: '63', priority: 'B', src: '/assets/client-logos/Cliente 63_ B.png.svg.png' },
 ];
 
 export function getAboutContent(lang: SupportedLang) {

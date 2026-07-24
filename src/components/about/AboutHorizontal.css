@@ -303,7 +303,7 @@ html[data-scroll-handoff='video-fullscreen'] .about-snap-viewport {
   line-height: 1.05;
 }
 
-/* BPM only: preserve the longer strategic-process title in two lines on wide screens. */
+/* BPM only: preserve the process-management title in two lines on wide screens. */
 @media (min-width: 1025px) {
   .about-service-story[data-service-code='BPM'] .about-service-body h3 {
     font-size: clamp(3rem, 3.85vw, 4.8rem);

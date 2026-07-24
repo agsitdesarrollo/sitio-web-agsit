@@ -1,5 +1,5 @@
 ---
-import type { AboutContent } from '../../data/about';
+import type { AboutContent, ClientLogo, ClientLogoPriority } from '../../data/about';
 import { clientLogos } from '../../data/about';
 
 type Props = {
@@ -8,10 +8,18 @@ type Props = {
 
 const { content } = Astro.props;
 const aboutScrollSteps = Array.from({ length: 9 });
-// La rejilla de clientes muestra 15 lugares; el resto del array es la reserva
-// que entra en rotación (ver el bloque de rotación en el script de abajo).
-const VISIBLE_CLIENT_LOGOS = 15;
-const visibleClientLogos = clientLogos.slice(0, VISIBLE_CLIENT_LOGOS);
+const CLIENT_LOGO_PRIORITIES: ClientLogoPriority[] = ['A', 'M', 'B'];
+const CLIENT_LOGOS_PER_PRIORITY = 5;
+const clientLogosByPriority = Object.fromEntries(
+  CLIENT_LOGO_PRIORITIES.map((priority) => [
+    priority,
+    clientLogos.filter((client) => client.priority === priority),
+  ]),
+) as Record<ClientLogoPriority, ClientLogo[]>;
+const visibleClientLogos = Array.from(
+  { length: CLIENT_LOGOS_PER_PRIORITY },
+  (_, index) => CLIENT_LOGO_PRIORITIES.map((priority) => clientLogosByPriority[priority][index]),
+).flat();
 
 // side per service index (0-based): even = texto-right/video-left, odd = texto-left/video-right
 // const serviceSides = content.services.map((_, i) => (i % 2 === 0 ? 'text-right' : 'text-left'));
@@ -100,7 +108,10 @@ const getVideoRatioKind = (image: string) => (image.endsWith('/servicios.mp4') ?
       <div class="about-clients-stage js-about-clients-stage">
         <div class="about-clients-logo-grid" aria-label={content.clients.title}>
           {visibleClientLogos.map((client) => (
-            <div class="about-client-logo js-about-client-logo">
+            <div
+              class="about-client-logo js-about-client-logo"
+              data-client-priority={client.priority}
+            >
               <img
                 src={client.src}
                 alt={`Logo cliente AGSIT ${client.label}`}
@@ -524,11 +535,18 @@ const getVideoRatioKind = (image: string) => (image.endsWith('/servicios.mp4') ?
   };
 
   // ── Rotación de logos de clientes ─────────────────────────────────────────
-  // La rejilla muestra 15 lugares; los logos posteriores del array (reserva)
-  // van entrando: cada CLIENT_LOGO_ROTATION_MS se intercambia UN lugar no
-  // fijado (round-robin) con fade. Los `pinned: true` nunca rotan. Solo rota
-  // mientras la lámina de clientes está activa. Config en src/data/about.ts.
-  const CLIENT_LOGO_ROTATION_MS = 4000;
+  // Los 15 lugares siguen el patrón A-M-B cinco veces. Cada prioridad conserva
+  // sus cinco lugares y rota todos simultáneamente, respetando el orden numérico.
+  // Los relojes se pausan fuera de esta lámina y continúan al regresar.
+  type ClientPriority = 'A' | 'M' | 'B';
+  type PoolLogo = { label: string; src: string; priority: ClientPriority };
+
+  const CLIENT_PRIORITIES: ClientPriority[] = ['A', 'M', 'B'];
+  const CLIENT_LOGO_ROTATION_MS: Record<ClientPriority, number> = {
+    A: 15_000,
+    M: 10_000,
+    B: 5_000,
+  };
   const CLIENT_LOGO_FADE_S = 0.35;
 
   const initClientLogoRotation = () => {
@@ -536,7 +554,6 @@ const getVideoRatioKind = (image: string) => (image.endsWith('/servicios.mp4') ?
     const cards = Array.from(section.querySelectorAll<HTMLElement>('.js-about-client-logo'));
     if (!poolScript || !cards.length) return;
 
-    type PoolLogo = { label: string; src: string; pinned?: boolean };
     let pool: PoolLogo[] = [];
     try {
       pool = JSON.parse(poolScript.textContent ?? '[]');
@@ -544,39 +561,130 @@ const getVideoRatioKind = (image: string) => (image.endsWith('/servicios.mp4') ?
       return;
     }
 
-    const visible = pool.slice(0, cards.length);
-    const reserve = pool.slice(cards.length);
-    if (!reserve.length) return; // sin reserva no hay rotación
+    const logosByPriority = Object.fromEntries(
+      CLIENT_PRIORITIES.map((priority) => [
+        priority,
+        pool.filter((logo) => logo.priority === priority),
+      ]),
+    ) as Record<ClientPriority, PoolLogo[]>;
+    const cardsByPriority = Object.fromEntries(
+      CLIENT_PRIORITIES.map((priority) => [
+        priority,
+        cards.filter((card) => card.dataset.clientPriority === priority),
+      ]),
+    ) as Record<ClientPriority, HTMLElement[]>;
 
-    const rotatableSlots = cards.map((_, i) => i).filter((i) => !visible[i]?.pinned);
-    if (!rotatableSlots.length) return;
+    if (CLIENT_PRIORITIES.some((priority) => !logosByPriority[priority].length)) return;
 
-    let cursor = 0;
-    window.setInterval(() => {
-      if (section.dataset.aboutState !== 'active') return;
-      if (section.dataset.currentSlide !== String(CLIENTS_SLIDE)) return;
+    // Los primeros cinco de cada grupo ya están visibles en el HTML.
+    const cursors: Record<ClientPriority, number> = { A: 5, M: 5, B: 5 };
 
-      const slot = rotatableSlots[cursor % rotatableSlots.length];
-      cursor += 1;
-      const card = cards[slot];
-      const img = card.querySelector('img');
-      const incoming = reserve.shift();
-      if (!img || !incoming) return;
+    // Son archivos locales pequeños; calentarlos evita destellos vacíos al rotar.
+    const preloaders = pool.map((logo) => {
+      const image = new Image();
+      image.src = logo.src;
+      return image;
+    });
+    void preloaders;
 
-      reserve.push(visible[slot]);
-      visible[slot] = incoming;
+    const rotatePriority = (priority: ClientPriority) => {
+      const priorityCards = cardsByPriority[priority];
+      const priorityLogos = logosByPriority[priority];
+      if (!priorityCards.length || priorityLogos.length <= priorityCards.length) return;
 
-      gsap.to(card, {
+      const incoming = priorityCards.map(
+        (_, index) => priorityLogos[(cursors[priority] + index) % priorityLogos.length],
+      );
+      cursors[priority] = (cursors[priority] + priorityCards.length) % priorityLogos.length;
+
+      gsap.killTweensOf(priorityCards);
+      const duration = shouldReduceMotion() ? 0 : CLIENT_LOGO_FADE_S;
+      gsap.to(priorityCards, {
         autoAlpha: 0,
-        duration: CLIENT_LOGO_FADE_S,
+        duration,
         ease: 'power1.inOut',
+        overwrite: true,
         onComplete: () => {
-          img.src = incoming.src;
-          img.alt = `Logo cliente AGSIT ${incoming.label}`;
-          gsap.to(card, { autoAlpha: 1, duration: CLIENT_LOGO_FADE_S, ease: 'power1.out' });
+          priorityCards.forEach((card, index) => {
+            const img = card.querySelector('img');
+            const nextLogo = incoming[index];
+            if (!img || !nextLogo) return;
+            img.src = nextLogo.src;
+            img.alt = `Logo cliente AGSIT ${nextLogo.label}`;
+          });
+          gsap.to(priorityCards, {
+            autoAlpha: 1,
+            duration,
+            ease: 'power1.out',
+            overwrite: true,
+          });
         },
       });
-    }, CLIENT_LOGO_ROTATION_MS);
+    };
+
+    type PriorityTimer = {
+      remainingMs: number;
+      startedAt: number | null;
+      timeoutId: number | null;
+    };
+
+    const timers = Object.fromEntries(
+      CLIENT_PRIORITIES.map((priority) => [
+        priority,
+        {
+          remainingMs: CLIENT_LOGO_ROTATION_MS[priority],
+          startedAt: null,
+          timeoutId: null,
+        },
+      ]),
+    ) as Record<ClientPriority, PriorityTimer>;
+
+    const isRotationActive = () =>
+      document.visibilityState === 'visible' &&
+      section.dataset.aboutState === 'active' &&
+      section.dataset.currentSlide === String(CLIENTS_SLIDE);
+
+    const pausePriority = (priority: ClientPriority) => {
+      const timer = timers[priority];
+      if (timer.timeoutId === null || timer.startedAt === null) return;
+
+      timer.remainingMs = Math.max(0, timer.remainingMs - (performance.now() - timer.startedAt));
+      window.clearTimeout(timer.timeoutId);
+      timer.timeoutId = null;
+      timer.startedAt = null;
+    };
+
+    const startPriority = (priority: ClientPriority) => {
+      const timer = timers[priority];
+      if (timer.timeoutId !== null || !isRotationActive()) return;
+
+      timer.startedAt = performance.now();
+      timer.timeoutId = window.setTimeout(() => {
+        timer.timeoutId = null;
+        timer.startedAt = null;
+        timer.remainingMs = CLIENT_LOGO_ROTATION_MS[priority];
+        rotatePriority(priority);
+        startPriority(priority);
+      }, timer.remainingMs);
+    };
+
+    const syncRotation = () => {
+      CLIENT_PRIORITIES.forEach((priority) => {
+        if (isRotationActive()) {
+          startPriority(priority);
+        } else {
+          pausePriority(priority);
+        }
+      });
+    };
+
+    const stateObserver = new MutationObserver(syncRotation);
+    stateObserver.observe(section, {
+      attributes: true,
+      attributeFilter: ['data-about-state', 'data-current-slide'],
+    });
+    document.addEventListener('visibilitychange', syncRotation);
+    syncRotation();
   };
   initClientLogoRotation();
 

@@ -29,7 +29,7 @@ export const servicesContentByLang: Record<SupportedLang, ServicesContent> = {
     services: [
       { title: 'Soluciones Tecnológicas', href: '/soluciones-tecnologicas/' },
       { title: 'Marketing Digital', href: '/marketing-digital/' },
-      { title: 'Gestión Estratégica de Procesos', href: '/gestion-estrategica-de-procesos/' },
+      { title: 'Administración de Procesos', href: '/administracion-de-procesos/' },
       { title: 'Dirección de Proyectos', href: '/direccion-de-proyectos/' },
       { title: 'Planeación Estratégica', href: '/planeacion-estrategica/' },
     ],
@@ -75,7 +75,7 @@ export const servicesContentByLang: Record<SupportedLang, ServicesContent> = {
     services: [
       { title: 'Technology Solutions', href: '/en/technology-solutions/' },
       { title: 'Digital Marketing', href: '/en/digital-marketing/' },
-      { title: 'Strategic Process Management', href: '/en/strategic-process-management/' },
+      { title: 'Process Management', href: '/en/process-management/' },
       { title: 'Project Management', href: '/en/project-management/' },
       { title: 'Strategic Planning', href: '/en/strategic-planning/' },
     ],

@@ -554,10 +554,10 @@ export const projectManagementTemplateByLang: Record<SupportedLang, TechnologySo
 export const processManagementTemplateByLang: Record<SupportedLang, TechnologySolutionsContent> = {
   es: {
     metadata: {
-      title: 'Gestión Estratégica de Procesos AGSIT | BPM 360 y mejora operativa',
+      title: 'Administración de Procesos AGSIT | BPM 360 y mejora operativa',
       description:
-        'Gestión estratégica de procesos de negocio con diagnóstico AS-IS, modelado BPMN, análisis, diseño, automatización, KPIs, auditoría y mejora continua.',
-      canonicalUrl: 'https://agsit.com.mx/gestion-estrategica-de-procesos/',
+        'Administración de procesos de negocio con diagnóstico AS-IS, modelado BPMN, análisis, diseño, automatización, KPIs, auditoría y mejora continua.',
+      canonicalUrl: 'https://agsit.com.mx/administracion-de-procesos/',
       htmlLang: 'es-MX',
       locale: 'es_MX',
     },
@@ -611,13 +611,13 @@ export const processManagementTemplateByLang: Record<SupportedLang, TechnologySo
     },
     capabilities: {
       eyebrow: 'Catálogo de servicios',
-      title: 'Servicios de gestión estratégica de procesos',
+      title: 'Servicios de administración de procesos',
       copy:
         'Ordenamos la operación antes de automatizar: procesos, documentación, indicadores, controles y mecanismos de mejora.',
       items: [
         {
           code: 'BPM',
-          title: 'Gestión de procesos',
+          title: 'Administración de procesos',
           copy:
             'Implementamos modelos de madurez, diagnóstico, capacitación, mejora continua y reingeniería operativa.',
         },
@@ -690,10 +690,10 @@ export const processManagementTemplateByLang: Record<SupportedLang, TechnologySo
   },
   en: {
     metadata: {
-      title: 'AGSIT Strategic Process Management | BPM 360 and operational improvement',
+      title: 'AGSIT Process Management | BPM 360 and operational improvement',
       description:
-        'Strategic business process management with AS-IS diagnosis, BPMN modeling, analysis, design, automation, KPIs, auditing and continuous improvement.',
-      canonicalUrl: 'https://agsit.com.mx/en/strategic-process-management/',
+        'Business process management with AS-IS diagnosis, BPMN modeling, analysis, design, automation, KPIs, auditing and continuous improvement.',
+      canonicalUrl: 'https://agsit.com.mx/en/process-management/',
       htmlLang: 'en',
       locale: 'en_US',
     },
@@ -747,7 +747,7 @@ export const processManagementTemplateByLang: Record<SupportedLang, TechnologySo
     },
     capabilities: {
       eyebrow: 'Service catalog',
-      title: 'Strategic process management services',
+      title: 'Process management services',
       copy:
         'We organize operations before automating: processes, documentation, indicators, controls and improvement mechanisms.',
       items: [
