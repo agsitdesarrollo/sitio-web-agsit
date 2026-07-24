@@ -173,16 +173,6 @@ html[data-scroll-handoff='video-fullscreen'] .about-snap-viewport {
   line-height: 1.75;
 }
 
-.about-overview-scroll {
-  margin: clamp(26px, 4vh, 42px) 0 0;
-  color: rgba(37, 63, 108, 0.58);
-  font-family: 'Inter', 'Segoe UI', Tahoma, sans-serif;
-  font-size: clamp(0.62rem, 0.85vw, 0.75rem);
-  font-weight: 800;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-}
-
 /* ─── Service slides ─────────────────────────────────────────────────────── */
 
 .about-snap-slide--service {
@@ -1017,10 +1007,6 @@ a.about-service-link:focus-visible {
     line-height: 1.58;
   }
 
-  .about-overview-scroll {
-    margin-top: clamp(22px, 3.4vh, 34px);
-  }
-
   /* Mobile services: text top, video bottom */
   .about-service-story,
   .about-service-story[data-side='text-right'] {
@@ -1165,8 +1151,7 @@ a.about-service-link:focus-visible {
     transform: none;
   }
 
-  .about-overview-kicker,
-  .about-overview-scroll {
+  .about-overview-kicker {
     display: none;
   }
 

@@ -34,7 +34,6 @@ export type AboutContent = {
     title: string;
     titleAccent: string;
     copy: string;
-    scroll: string;
   };
   services: AboutService[];
   clients: {
@@ -107,7 +106,6 @@ export const aboutContentByLang: Record<SupportedLang, AboutContent> = {
       titleAccent: 'Un solo aliado para tu empresa',
       copy:
         'Diseñamos e implementamos soluciones a la medida que potencian tu empresa, garantizando un crecimiento sostenido, escalable y eficiente.',
-      scroll: 'Continúa desplazando >>>',
     },
     services: [
       {
@@ -187,7 +185,6 @@ export const aboutContentByLang: Record<SupportedLang, AboutContent> = {
       titleAccent: 'One partner for your business',
       copy:
         'We design and implement tailored solutions that empower your business, ensuring sustainable, scalable and efficient growth.',
-      scroll: 'Keep scrolling >>>',
     },
     services: [
       {
