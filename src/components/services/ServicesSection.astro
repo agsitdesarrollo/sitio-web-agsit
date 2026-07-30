@@ -30,9 +30,10 @@ const iconPath = (icon: ServicePoint['icon']) => {
 };
 ---
 
-<section id="servicios" class="services-scroll js-services" data-services-scroll>
+<section class="services-scroll js-services" data-services-scroll>
   <div class="services-section services-sticky">
     <div class="services-background" aria-hidden="true"></div>
+    <div class="services-content-viewport">
 
     <div class="services-intro">
       <h2>{content.introTitle}</h2>
@@ -79,7 +80,8 @@ const iconPath = (icon: ServicePoint['icon']) => {
       }
     </div>
 
-    <button class="services-advice-cta" type="button" data-contact-trigger>{content.cta}</button>
+      <button class="services-advice-cta" type="button" data-contact-trigger>{content.cta}</button>
+    </div>
   </div>
 
   <div class="services-snap-track" aria-hidden="true">
@@ -97,6 +99,14 @@ const iconPath = (icon: ServicePoint['icon']) => {
   const easeInCubic = (value: number) => value * value * value;
 
   const getServicesPanelHeight = () => {
+    const contentHeight = Number.parseFloat(
+      getComputedStyle(document.documentElement).getPropertyValue('--app-content-h'),
+    );
+
+    if (Number.isFinite(contentHeight) && contentHeight > 0) {
+      return contentHeight;
+    }
+
     const navHeight = document.querySelector<HTMLElement>('.site-nav')?.getBoundingClientRect().height ?? 0;
     const isShortLandscape = window.matchMedia(
       '(pointer: coarse) and (orientation: landscape) and (max-width: 932px) and (max-height: 520px)',

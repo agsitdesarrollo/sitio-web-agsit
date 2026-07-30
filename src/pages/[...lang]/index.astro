@@ -57,7 +57,7 @@ const alternates = [
 >
   <div class="app-shell" data-scroll-root>
     <Header lang={lang} />
-    <main>
+    <main class="home-page">
       <HeroSection copy={heroContent} />
       <ServicesSection content={servicesContent} />
       <AboutHorizontalSection content={aboutContent} />
@@ -173,19 +173,23 @@ const alternates = [
             return;
           }
 
-          services.scrollIntoView({ block: 'start', behavior: 'auto' });
+          const navHeight = Number.parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--app-track-offset')) || 0;
+          const contentHeight = Number.parseFloat(
+            getComputedStyle(document.documentElement).getPropertyValue('--app-content-h'),
+          );
+          const panelHeight = Number.isFinite(contentHeight) && contentHeight > 0
+            ? contentHeight
+            : Math.max(
+                window.innerHeight
+                  - (document.querySelector<HTMLElement>('.site-nav')?.getBoundingClientRect().height ?? 0),
+                1,
+              );
+          const servicesTop = window.scrollY + services.getBoundingClientRect().top - navHeight;
 
-          requestAnimationFrame(() => {
-            const revealOffset = Math.max(
-              560,
-              Math.min(window.innerWidth * 0.62, window.innerHeight * 1.05),
-            );
-
-            window.scrollTo({
-              top: window.scrollY + revealOffset,
-              left: 0,
-              behavior: 'auto',
-            });
+          window.scrollTo({
+            top: servicesTop + panelHeight,
+            left: 0,
+            behavior: 'auto',
           });
         }),
       );

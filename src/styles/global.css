@@ -28,7 +28,9 @@
   --nav-h: clamp(76px, 10vh, 96px);
   --app-vh: 100svh;
   --app-stable-vh: 100svh;
-  --app-panel-h: calc(var(--app-stable-vh) - var(--nav-h));
+  --app-panel-h: var(--app-stable-vh);
+  --app-content-h: calc(var(--app-stable-vh) - var(--nav-h));
+  --app-track-offset: 0px;
   --bg-dark: #020712;
   --bg-ink: #08152b;
   --primary: #41c8f6;
@@ -90,6 +92,10 @@ main {
   padding-top: var(--nav-h);
 }
 
+.home-page {
+  padding-top: 0;
+}
+
 @media (max-width: 900px) {
   :root {
     --nav-h: 74px;
@@ -103,7 +109,8 @@ main {
   :root {
     --nav-h: 56px;
     --snap-bar-h: 38px;
-    --app-panel-h: calc(var(--app-vh) - var(--nav-h));
+    --app-panel-h: var(--app-vh);
+    --app-content-h: calc(var(--app-vh) - var(--nav-h));
   }
 }
 

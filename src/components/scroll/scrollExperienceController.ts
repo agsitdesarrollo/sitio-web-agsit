@@ -48,7 +48,11 @@ export function initScrollExperience(): (() => void) | undefined {
 
       return isCompact() ? getRootPixelValue('--app-stable-vh', window.innerHeight) : window.innerHeight;
     };
-    const getNavHeight = () => document.querySelector('.site-nav')?.getBoundingClientRect().height ?? 0;
+    const getNavHeight = () =>
+      Number.parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--app-track-offset')) || 0;
+    const getVisualNavHeight = () =>
+      document.querySelector<HTMLElement>('.site-nav')?.getBoundingClientRect().height
+      ?? getRootPixelValue('--nav-h', 0);
     const getVideoStoryInset = () => (isShortLandscape() ? 10 : isMobile() ? 22 : isTablet() ? 24 : isCompact() ? 28 : 34);
 
     const setIfFound = (selector: string, vars: gsap.TweenVars) => {
@@ -303,7 +307,7 @@ export function initScrollExperience(): (() => void) | undefined {
     const VIDEO_STORY_READY_STOP = 0;
     const VIDEO_STORY_MAX_TIME = Math.max(storyLineEls.length, 1);
 
-    const getVideoStoryPanelHeight = () => Math.max(getViewportHeight() - getNavHeight(), 1);
+    const getVideoStoryPanelHeight = () => Math.max(getViewportHeight() - getVisualNavHeight(), 1);
 
     const videoStoryTimeline = gsap.timeline({ paused: true });
 
@@ -562,8 +566,10 @@ export function initScrollExperience(): (() => void) | undefined {
         return;
       }
 
-      const navHeight = getNavHeight();
-      const panelHeight = getRootPixelValue('--app-panel-h', Math.max(getViewportHeight() - navHeight, 1));
+      const panelHeight = getRootPixelValue(
+        '--app-content-h',
+        Math.max(getViewportHeight() - getVisualNavHeight(), 1),
+      );
       const servicesTop = window.scrollY + services.getBoundingClientRect().top;
 
       window.scrollTo({
@@ -576,6 +582,12 @@ export function initScrollExperience(): (() => void) | undefined {
     cleanupServicesAnchorNavigation = () => {
       window.removeEventListener('agsit:navigate-services', navigateToServices);
     };
+
+    if (window.location.hash === '#servicios') {
+      requestAnimationFrame(() => {
+        navigateToServices(new Event('agsit:navigate-services'));
+      });
+    }
 
     let isReturningToAlliance = false;
     let cleanupVideoStoryWheelReturn: (() => void) | undefined;

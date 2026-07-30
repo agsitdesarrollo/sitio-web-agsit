@@ -63,14 +63,18 @@ const { copy } = Astro.props;
   const hero = document.querySelector<HTMLElement>('[data-hero-scroll]');
 
   const getPanelHeight = () => {
-    const navHeight = document.querySelector<HTMLElement>('.site-nav')?.getBoundingClientRect().height ?? 0;
-    const panelHeight = Number.parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--app-panel-h'));
+    const rootStyles = getComputedStyle(document.documentElement);
+    const viewportVariable = window.matchMedia('(max-width: 1024px)').matches
+      ? '--app-content-h'
+      : '--app-panel-h';
+    const panelHeight = Number.parseFloat(rootStyles.getPropertyValue(viewportVariable));
 
     if (Number.isFinite(panelHeight) && panelHeight > 0) {
       return panelHeight;
     }
 
-    const stableHeight = Number.parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--app-stable-vh'));
+    const navHeight = document.querySelector<HTMLElement>('.site-nav')?.getBoundingClientRect().height ?? 0;
+    const stableHeight = Number.parseFloat(rootStyles.getPropertyValue('--app-stable-vh'));
     const viewportHeight = Number.isFinite(stableHeight) && stableHeight > 0 ? stableHeight : window.innerHeight;
 
     return Math.max(viewportHeight - navHeight, 1);
@@ -87,7 +91,7 @@ const { copy } = Astro.props;
 
   const updateHomeSnapState = () => {
     const contact = document.querySelector<HTMLElement>('.final-contact-section');
-    const navHeight = document.querySelector<HTMLElement>('.site-nav')?.getBoundingClientRect().height ?? 0;
+    const navHeight = Number.parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--app-track-offset')) || 0;
     const contactTop = contact?.getBoundingClientRect().top ?? Number.POSITIVE_INFINITY;
     // El snap cubre hero, servicios, about, los pasos del video y el aterrizaje
     // en contacto; se apaga una vez asentado ahí para que el resto del

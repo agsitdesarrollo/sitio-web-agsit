@@ -5,10 +5,11 @@
 }
 
 .about-snap-section {
-  --about-panel-h: calc(var(--handoff-vh, var(--app-stable-vh, 100svh)) - var(--nav-h));
+  --about-panel-h: var(--handoff-vh, var(--app-stable-vh, 100svh));
+  --about-content-h: calc(var(--about-panel-h) - var(--nav-h));
   position: relative;
   min-height: var(--about-panel-h);
-  scroll-margin-top: var(--nav-h);
+  scroll-margin-top: var(--app-track-offset, 0px);
   scroll-snap-align: start;
   scroll-snap-stop: always;
   background: #ffffff;
@@ -16,7 +17,7 @@
 
 .about-snap-viewport {
   position: sticky;
-  top: var(--nav-h);
+  top: var(--app-track-offset, 0px);
   width: 100%;
   z-index: 40;
   height: var(--about-panel-h);
@@ -26,11 +27,15 @@
 }
 
 .about-snap-section[data-about-state='active'] .about-snap-viewport {
-  height: calc(var(--app-vh, var(--app-stable-vh, 100vh)) - var(--nav-h));
+  height: var(--app-vh, var(--app-stable-vh, 100vh));
   /* dvh tracks the browser UI natively (no JS lag) so the bottom bar stays
      glued to the visible edge while the section is active. */
-  height: calc(100dvh - var(--nav-h));
+  height: 100dvh;
   min-height: 0;
+}
+
+.about-snap-section[data-about-state='active'] .about-snap-stage {
+  height: calc(100dvh - var(--nav-h));
 }
 
 /* Only the actual alliance/video handoff owns a frozen panel. The regular
@@ -42,6 +47,14 @@ html[data-scroll-handoff='video-fullscreen'] .about-snap-viewport,
 html[data-scroll-handoff='returning-alliance'] .about-snap-viewport {
   height: var(--about-panel-h);
   min-height: var(--about-panel-h);
+}
+
+html[data-scroll-handoff='alliance-zoom'] .about-snap-stage,
+html[data-scroll-handoff='waiting-video-frame'] .about-snap-stage,
+html[data-scroll-handoff='moving-to-video'] .about-snap-stage,
+html[data-scroll-handoff='video-fullscreen'] .about-snap-stage,
+html[data-scroll-handoff='returning-alliance'] .about-snap-stage {
+  height: var(--about-content-h);
 }
 
 /* Safari puede desanclar un sticky cuando scrollTo, el snap y la barra del
@@ -62,7 +75,7 @@ html[data-scroll-handoff='waiting-video-frame'] .about-snap-viewport,
 html[data-scroll-handoff='moving-to-video'] .about-snap-viewport,
 html[data-scroll-handoff='returning-alliance'] .about-snap-viewport {
   position: fixed;
-  top: var(--nav-h);
+  top: var(--app-track-offset, 0px);
   right: 0;
   left: 0;
   z-index: 60;
@@ -76,9 +89,12 @@ html[data-scroll-handoff='video-fullscreen'] .about-snap-viewport {
 
 .about-snap-stage {
   position: absolute;
-  inset: 0;
+  top: var(--nav-h);
+  right: 0;
+  bottom: auto;
+  left: 0;
   width: 100%;
-  height: 100%;
+  height: var(--about-content-h);
   transform: translate3d(0, 0, 0);
   will-change: transform;
 }
@@ -86,16 +102,16 @@ html[data-scroll-handoff='video-fullscreen'] .about-snap-viewport {
 .about-snap-track {
   position: relative;
   z-index: 0;
-  padding-bottom: var(--nav-h);
+  padding-bottom: 0;
 }
 
 .about-snap-step {
-  height: var(--about-panel-h);
+  height: var(--about-content-h);
   scroll-snap-align: start;
   scroll-snap-stop: always;
   /* Sin este margen el snap nativo reposa navH por debajo del punto que usan
      los scrollTo programáticos y el progreso queda corrido ~0.1 pasos. */
-  scroll-margin-top: var(--nav-h);
+  scroll-margin-top: var(--app-track-offset, 0px);
 }
 
 /* ─── Slides ─────────────────────────────────────────────────────────────── */
@@ -443,7 +459,7 @@ a.about-service-link:focus-visible {
 /* ─── Alliance slide ─────────────────────────────────────────────────────── */
 
 .about-snap-slide--alliance {
-  overflow: hidden;
+  overflow: visible;
   padding: 0;
 }
 
@@ -618,7 +634,11 @@ a.about-service-link:focus-visible {
 
 .about-transition-veil {
   position: absolute;
-  inset: 0;
+  top: calc(var(--nav-h) * -1);
+  right: 0;
+  bottom: auto;
+  left: 0;
+  height: var(--about-panel-h);
   z-index: 5;
   background: #020712;
   pointer-events: none;
@@ -1139,7 +1159,7 @@ a.about-service-link:focus-visible {
        altura congelada (--handoff-vh). Sin ella, la barra de Chrome cambia
        --app-vh a mitad del zoom y el viewport de About queda más corto que la
        pantalla, mostrando el fondo blanco de la sección bajo el velo/logo. */
-    --about-panel-h: calc(var(--handoff-vh, var(--app-vh, 100svh)) - var(--nav-h));
+    --about-panel-h: var(--handoff-vh, var(--app-vh, 100svh));
   }
 
   .about-snap-slide--intro {
@@ -1148,11 +1168,16 @@ a.about-service-link:focus-visible {
 
   .about-overview {
     width: min(760px, 88vw);
-    transform: none;
+    transform: translateY(-18px);
   }
 
   .about-overview-kicker {
-    display: none;
+    display: block;
+    max-width: min(720px, 86vw);
+    margin: 0 auto 4px;
+    font-size: clamp(0.52rem, 1.8vh, 0.64rem);
+    line-height: 1.2;
+    letter-spacing: 0.2em;
   }
 
   .about-overview-title {

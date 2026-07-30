@@ -4,7 +4,7 @@
      el stacking context del hero y debe pintar sobre servicios mientras viaja
      en el tramo de transición. Las cajas no se traslapan, solo el personaje. */
   z-index: 5;
-  min-height: calc((var(--app-stable-vh, 100svh) - var(--nav-h)) + var(--app-stable-vh, 100svh));
+  min-height: calc(var(--app-panel-h) + var(--app-stable-vh, 100svh));
   scroll-snap-align: start;
   overflow: clip;
   background: #020712;
@@ -12,9 +12,9 @@
 
 .hero-section {
   position: sticky;
-  top: var(--nav-h);
-  height: calc(var(--app-stable-vh, 100svh) - var(--nav-h));
-  min-height: calc(var(--app-stable-vh, 100svh) - var(--nav-h));
+  top: var(--app-track-offset, 0px);
+  height: var(--app-panel-h);
+  min-height: var(--app-panel-h);
   display: grid;
   align-items: center;
   isolation: isolate;
@@ -351,9 +351,13 @@
 }
 
 @media (max-width: 900px) {
+  .hero-copy {
+    top: var(--nav-h);
+  }
+
   .hero-section {
-    height: calc(var(--app-stable-vh, 100svh) - var(--nav-h));
-    min-height: calc(var(--app-stable-vh, 100svh) - var(--nav-h));
+    height: var(--app-panel-h);
+    min-height: var(--app-panel-h);
   }
 
   .hero-person {
@@ -508,6 +512,12 @@
     line-height: 1.42;
   }
 
+  @media (orientation: portrait) {
+    .hero-copy-block {
+      transform: translateY(-30px);
+    }
+  }
+
   .hero-side-title {
     max-width: 100%;
     justify-content: center;
@@ -559,6 +569,10 @@
 }
 
 @media (min-width: 901px) and (max-width: 1024px) {
+  .hero-copy {
+    top: var(--nav-h);
+  }
+
   .hero-left-panel {
     width: min(720px, 62vw);
     padding-top: clamp(48px, 6svh, 78px);
@@ -618,7 +632,7 @@
   }
 
   .hero-person {
-    --hero-person-height-limit: calc(var(--app-panel-h) * 0.65);
+    --hero-person-height-limit: calc(var(--app-content-h) * 0.65);
     bottom: 0;
     width: min(360px, 52vw, var(--hero-person-height-limit));
     transform: translate(-50%, 0) scale(1);
