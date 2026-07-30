@@ -1,0 +1,230 @@
+html.service-slides-active {
+  scroll-snap-type: none;
+  scroll-padding-top: var(--app-track-offset, 0px);
+}
+
+html.service-slides-active.service-track-active,
+html.service-slides-active.service-slides-footer-free {
+  scroll-snap-type: none;
+}
+
+.service-slides-page > .service-slide-panel,
+.service-slides-page > .pin-spacer {
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+}
+
+.service-slides-page > .service-slide-panel {
+  min-height: var(--app-panel-h, 100svh);
+}
+
+.service-card-track {
+  display: grid;
+  align-content: center;
+  overflow: clip;
+}
+
+@media (min-width: 680px) and (min-height: 521px) {
+  .service-card-track {
+    height: var(--app-panel-h, 100svh);
+    min-height: var(--app-panel-h, 100svh);
+    padding-block: clamp(34px, 5vh, 52px);
+    box-sizing: border-box;
+  }
+}
+
+.service-card-track [data-service-reveal] {
+  opacity: 1;
+  transform: none;
+}
+
+.service-card-track-desktop :is(
+  [class*='-service-card'],
+  [class*='-benefit-card'],
+  [class*='-approach-step'],
+  .crm-contrast-column,
+  .crm-module-grid article,
+  .crm-workflow-steps article,
+  .crm-ai-grid article,
+  .crm-outcomes li,
+  .quality-area-grid article,
+  .quality-system-grid article,
+  .quality-certification-steps article,
+  .quality-outcomes li
+),
+.service-card-track-compact :is(
+  [class*='-service-card'],
+  [class*='-benefit-card'],
+  [class*='-approach-step'],
+  .crm-contrast-column,
+  .crm-module-grid article,
+  .crm-workflow-steps article,
+  .crm-ai-grid article,
+  .crm-outcomes li,
+  .quality-area-grid article,
+  .quality-system-grid article,
+  .quality-certification-steps article,
+  .quality-outcomes li
+) {
+  will-change: transform, opacity;
+}
+
+@media (max-width: 679px), (max-width: 1024px) and (max-height: 520px) {
+  html.service-slides-active {
+    scroll-snap-type: none;
+  }
+
+  html.service-slides-active.service-track-active,
+  html.service-slides-active.service-slides-footer-free {
+    scroll-snap-type: none;
+  }
+
+  .service-card-track-compact {
+    min-height: var(--app-panel-h, 100svh);
+    padding-block: clamp(18px, 4vh, 34px);
+  }
+
+  .service-card-track-compact :is(
+    [class*='-grid'],
+    [class*='-map'],
+    [class*='-steps'],
+    .crm-contrast-board,
+    .crm-outcomes ol,
+    .quality-outcomes ul
+  ) {
+    position: relative;
+    min-height: clamp(210px, 46vh, 390px);
+  }
+
+  .service-card-track-compact :is(
+    [class*='-service-card'],
+    [class*='-benefit-card'],
+    [class*='-approach-step'],
+    .crm-contrast-column,
+    .crm-module-grid article,
+    .crm-workflow-steps article,
+    .crm-ai-grid article,
+    .crm-outcomes li,
+    .quality-area-grid article,
+    .quality-system-grid article,
+    .quality-certification-steps article,
+    .quality-outcomes li
+  ) {
+    position: absolute;
+    inset: 0;
+    width: min(100%, 620px);
+    height: fit-content;
+    max-height: 100%;
+    margin: auto;
+  }
+
+  .service-card-track-compact .crm-contrast-switch,
+  .service-card-track-compact .crm-module-axis,
+  .service-card-track-compact :is([class*='-path'], [class*='-axis']) {
+    display: none;
+  }
+}
+
+@media (min-width: 680px) and (max-width: 1024px) and (max-height: 520px) {
+  .service-slides-page [class*='-method'].is-mobile-sequence {
+    min-height: var(--app-panel-h, 100svh);
+    padding: clamp(10px, 2.5vh, 18px) clamp(24px, 6vw, 64px);
+    display: grid;
+    align-content: center;
+    overflow: clip;
+  }
+
+  .service-slides-page [class*='-method'].is-mobile-sequence [class*='-section-heading'] {
+    max-width: min(760px, 88%);
+    margin-inline: auto;
+    text-align: center;
+  }
+
+  .service-slides-page [class*='-method'].is-mobile-sequence [class*='-section-heading'] h2 {
+    font-size: clamp(1.55rem, 4.4vw, 2.15rem);
+    line-height: 0.96;
+  }
+
+  .service-slides-page [class*='-method'].is-mobile-sequence [class*='-section-heading'] > p:not([class*='-eyebrow']) {
+    max-width: 700px;
+    margin: 5px auto 0;
+    font-size: clamp(0.68rem, 1.45vw, 0.82rem);
+    line-height: 1.28;
+  }
+
+  .service-slides-page [class*='-method'].is-mobile-sequence [class*='-method-map'] {
+    position: relative;
+    min-height: clamp(138px, 43vh, 205px);
+    margin-top: clamp(5px, 1.5vh, 10px);
+    display: block;
+  }
+
+  .service-slides-page [class*='-method'].is-mobile-sequence [class*='-method-path'] {
+    display: none;
+  }
+
+  .service-slides-page [class*='-method'].is-mobile-sequence [class*='-method-step'] {
+    position: absolute;
+    inset: 0;
+    width: min(620px, 82%);
+    min-height: 0;
+    margin: auto;
+    padding: clamp(9px, 1.8vh, 14px) clamp(14px, 2vw, 22px);
+    display: grid;
+    grid-template-columns: auto auto 1fr;
+    grid-template-rows: auto auto auto;
+    column-gap: 12px;
+    align-content: center;
+    text-align: left;
+  }
+
+  .service-slides-page [class*='-method'].is-mobile-sequence [class*='-step-index'] {
+    grid-row: 1 / span 2;
+  }
+
+  .service-slides-page [class*='-method'].is-mobile-sequence [class*='-step-node'] {
+    width: 30px;
+    height: 30px;
+    margin: 0;
+    grid-row: 1 / span 2;
+  }
+
+  .service-slides-page [class*='-method'].is-mobile-sequence [class*='-step-node'] > span {
+    width: 10px;
+    height: 10px;
+  }
+
+  .service-slides-page [class*='-method'].is-mobile-sequence [class*='-step-label'] {
+    margin: 0;
+    font-size: 0.58rem;
+  }
+
+  .service-slides-page [class*='-method'].is-mobile-sequence [class*='-method-step'] h3 {
+    margin: 2px 0 0;
+    font-size: clamp(1rem, 2.2vw, 1.3rem);
+  }
+
+  .service-slides-page [class*='-method'].is-mobile-sequence [class*='-method-step'] p:not([class*='-step-label']) {
+    grid-column: 3;
+    margin: 5px 0 0;
+    font-size: clamp(0.65rem, 1.25vw, 0.76rem);
+    line-height: 1.28;
+  }
+
+  .service-slides-page [class*='-method'].is-mobile-sequence [class*='-method-step'] strong {
+    grid-column: 3;
+    margin-top: 4px;
+    font-size: clamp(0.62rem, 1.15vw, 0.72rem);
+    line-height: 1.2;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html.service-slides-active {
+    scroll-snap-type: none;
+  }
+
+  .service-card-track {
+    overflow: visible;
+  }
+}

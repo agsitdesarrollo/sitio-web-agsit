@@ -1,6 +1,7 @@
 ---
 import FinalContactSection from '../final-contact/FinalContactSection.astro';
 import ServicePageAnimations from '../service-animation/ServicePageAnimations.astro';
+import ServiceSlidesController from '../service-slides/ServiceSlidesController.astro';
 import type { ContactCopy } from '../../data/contact';
 import type { QualityManagementContent } from '../../data/qualityManagement';
 
@@ -107,4 +108,5 @@ const { content, contactCopy } = Astro.props;
   <FinalContactSection copy={contactCopy} />
 
   <ServicePageAnimations />
+  <ServiceSlidesController />
 </main>

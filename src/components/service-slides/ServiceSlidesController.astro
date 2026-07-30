@@ -1,0 +1,17 @@
+<script>
+  import { setupServiceSlides } from './serviceSlidesController';
+
+  const startServiceSlides = () => {
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        setupServiceSlides();
+      });
+    });
+  };
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', startServiceSlides, { once: true });
+  } else {
+    startServiceSlides();
+  }
+</script>

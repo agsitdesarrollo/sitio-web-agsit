@@ -18,6 +18,7 @@
 @import "../components/infrastructure-cloud/InfrastructureCloud.css";
 @import "../components/data-business-intelligence/DataBusinessIntelligence.css";
 @import "../components/technological-innovation/TechnologicalInnovation.css";
+@import "../components/service-slides/ServiceSlides.css";
 @import "../components/service-animation/ServicePageAnimations.css";
 @import "../components/video-story/VideoStory.css";
 @import "../components/final-contact/FinalContact.css";
@@ -92,8 +93,33 @@ main {
   padding-top: var(--nav-h);
 }
 
-.home-page {
+:is(
+  .home-page,
+  .technology-page,
+  .itg-page,
+  .auto-page,
+  .dev-page,
+  .ops-page,
+  .data-page,
+  .inn-page,
+  .crm-page,
+  .quality-page
+) {
   padding-top: 0;
+}
+
+:is(
+  .technology-page,
+  .itg-page,
+  .auto-page,
+  .dev-page,
+  .ops-page,
+  .data-page,
+  .inn-page,
+  .crm-page,
+  .quality-page
+) > .pin-spacer > section {
+  min-height: var(--app-panel-h);
 }
 
 @media (max-width: 900px) {

@@ -1,6 +1,7 @@
 ---
 import FinalContactSection from '../final-contact/FinalContactSection.astro';
 import ServicePageAnimations from '../service-animation/ServicePageAnimations.astro';
+import ServiceSlidesController from '../service-slides/ServiceSlidesController.astro';
 import type { ContactCopy } from '../../data/contact';
 import type { DataBusinessIntelligenceContent } from '../../data/dataBusinessIntelligence';
 
@@ -126,6 +127,7 @@ const { content, contactCopy } = Astro.props;
   <FinalContactSection copy={contactCopy} />
 
   <ServicePageAnimations />
+  <ServiceSlidesController />
 </main>
 
 <script>
@@ -134,10 +136,8 @@ const { content, contactCopy } = Astro.props;
 
   gsap.registerPlugin(ScrollTrigger);
 
-  const getDataNavOffset = () => {
-    const nav = document.querySelector('.site-nav, .site-header, header');
-    return nav instanceof HTMLElement ? Math.round(nav.getBoundingClientRect().height) : 0;
-  };
+  const getDataNavOffset = () =>
+    Number.parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--app-track-offset')) || 0;
 
   const getDataViewportHeight = () => {
     const stableVh = Number.parseFloat(
@@ -194,7 +194,12 @@ const { content, contactCopy } = Astro.props;
       };
     });
 
-    matchMedia.add('(prefers-reduced-motion: no-preference) and (max-width: 679px)', () => {
+    matchMedia.add(
+      [
+        '(prefers-reduced-motion: no-preference) and (max-width: 679px)',
+        '(prefers-reduced-motion: no-preference) and (max-width: 1024px) and (max-height: 520px)',
+      ].join(', '),
+      () => {
       method.classList.add('is-scroll-sequence', 'is-mobile-sequence');
       gsap.set(steps, { autoAlpha: 0, y: 46 });
 
@@ -214,24 +219,23 @@ const { content, contactCopy } = Astro.props;
       });
 
       timeline
-        .to(steps[0], { autoAlpha: 1, y: 0, duration: 0.78, ease: 'power2.out' })
-        .to({}, { duration: 0.34 });
+        .to(steps[0], { autoAlpha: 1, y: 0, duration: 0.65, ease: 'power2.out' })
+        .to({}, { duration: 0.35 });
 
       steps.slice(1).forEach((step, index) => {
         const previousStep = steps[index];
-        const isLastStep = index === steps.length - 2;
         const label = `data-step-${index + 2}`;
 
         timeline
           .add(label)
-          .to(previousStep, { autoAlpha: 0, y: -22, duration: 0.5, ease: 'power1.in' }, label)
+          .to(previousStep, { autoAlpha: 0, y: -22, duration: 0.45, ease: 'power1.in' }, label)
           .fromTo(
             step,
             { autoAlpha: 0, y: 46 },
-            { autoAlpha: 1, y: 0, duration: 0.78, ease: 'power2.out' },
+            { autoAlpha: 1, y: 0, duration: 0.65, ease: 'power2.out' },
             label,
           )
-          .to({}, { duration: isLastStep ? 0.62 : 0.32 });
+          .to({}, { duration: 0.35 });
       });
 
       return () => {
@@ -239,7 +243,8 @@ const { content, contactCopy } = Astro.props;
         method.classList.remove('is-scroll-sequence', 'is-mobile-sequence');
         gsap.set(steps, { clearProps: 'all' });
       };
-    });
+      },
+    );
 
     window.addEventListener('agsit:viewport-change', () => ScrollTrigger.refresh());
   };
