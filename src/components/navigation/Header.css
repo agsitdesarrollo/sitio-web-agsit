@@ -12,6 +12,13 @@
   background: #ffffff;
   border-bottom: 1px solid rgba(8, 21, 43, 0.08);
   box-shadow: 0 10px 26px rgba(8, 21, 43, 0.08);
+  transform: translateY(0);
+  transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: transform;
+}
+
+.site-nav.is-scroll-hidden {
+  transform: translateY(calc(-100% - 2px));
 }
 
 .site-nav .brand img {
