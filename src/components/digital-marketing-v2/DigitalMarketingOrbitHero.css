@@ -1,0 +1,83 @@
+.dm-v2-orbit-hero {
+  position: relative;
+  height: var(--dm-v2-panel-h);
+  min-height: var(--dm-v2-panel-h);
+  box-sizing: border-box;
+  display: grid;
+  grid-template-rows: minmax(0, 1fr);
+  place-items: center;
+  padding-top: var(--nav-h, 0px);
+  padding-inline: clamp(16px, 5.21vw, 100px);
+  overflow: hidden;
+  isolation: isolate;
+  background:
+    radial-gradient(circle at 50% 30%, rgba(65, 200, 246, 0.16), transparent 40%),
+    linear-gradient(135deg, #020712 0%, #061228 48%, #020712 100%);
+}
+
+.dm-v2-orbit-canvas {
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
+  align-self: stretch;
+  display: block;
+  pointer-events: none;
+}
+
+.dm-v2-orbit-handoff-label {
+  position: absolute;
+  z-index: 2;
+  top: calc(var(--nav-h, 0px) + clamp(18px, 3.2vh, 34px));
+  left: 50%;
+  margin: 0;
+  color: var(--dm-v2-cyan-soft);
+  font-family: 'Inter', 'Segoe UI', Tahoma, sans-serif;
+  font-size: var(--dm-v2-small);
+  font-weight: 900;
+  letter-spacing: 0.18em;
+  line-height: 1.45;
+  text-transform: uppercase;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateX(-50%);
+  will-change: opacity;
+}
+
+.dm-v2-orbit-accessible {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+@media (max-width: 1023px) {
+  .dm-v2-orbit-hero {
+    padding-inline: clamp(14px, 4vw, 40px);
+  }
+}
+
+@media (max-width: 767px) and (orientation: portrait) {
+  .dm-v2-orbit-hero {
+    padding-inline: 14px;
+  }
+
+  .dm-v2-orbit-handoff-label {
+    top: calc(var(--nav-h, 0px) + 10px);
+  }
+}
+
+@media (max-width: 932px) and (orientation: landscape) {
+  .dm-v2-orbit-hero {
+    padding-inline: clamp(18px, 6vw, 56px);
+  }
+
+  .dm-v2-orbit-handoff-label {
+    top: calc(var(--nav-h, 0px) + 6px);
+  }
+}

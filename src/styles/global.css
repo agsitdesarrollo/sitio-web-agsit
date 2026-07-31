@@ -11,6 +11,7 @@
 @import "../components/quality-management/QualityManagement.css";
 @import "../components/crm-administration/CrmAdministration.css";
 @import "../components/digital-marketing-v2/DigitalMarketingStoryV2.css";
+/* Marketing Digital V2 uses its own hybrid track controller. */
 @import "../components/digital-marketing-strategy/DigitalStrategyPage.css";
 @import "../components/digital-marketing/DigitalMarketing.css";
 @import "../components/automation-optimization/AutomationOptimization.css";
@@ -103,7 +104,8 @@ main {
   .data-page,
   .inn-page,
   .crm-page,
-  .quality-page
+  .quality-page,
+  .dm-v2-page
 ) {
   padding-top: 0;
 }

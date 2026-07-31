@@ -1,5 +1,6 @@
 ---
 import FinalContactSection from '../final-contact/FinalContactSection.astro';
+import DigitalMarketingOrbitHero from './DigitalMarketingOrbitHero.astro';
 import type { ContactCopy } from '../../data/contact';
 import type { DigitalMarketingV2Content, StoryInlineVisual } from '../../data/digitalMarketingV2';
 
@@ -9,16 +10,22 @@ type Props = {
 };
 
 const { content, contactCopy } = Astro.props;
+const orbitText = content.metadata.htmlLang.startsWith('en')
+  ? 'Digital Marketing'
+  : 'Marketing Digital';
 
 const assetByVisual: Record<StoryInlineVisual, string> = {
   eye: '/assets/storytelling-v2/brand-eye.svg',
   flower: '/assets/storytelling-v2/brand-target.svg',
   heart: '/assets/storytelling-v2/brand-pulse.svg',
+  magnifier: '/assets/lupa-mejorada-transparente.png',
 };
 ---
 
 <main class="dm-v2-page js-dm-v2-page">
-  <section class="dm-v2-hero" aria-labelledby="dm-v2-title">
+  <DigitalMarketingOrbitHero text={orbitText} />
+
+  <section class="dm-v2-hero js-dm-v2-hero" aria-labelledby="dm-v2-title">
     <img class="dm-v2-hero-circle js-dm-v2-hero-circle" src="/assets/storytelling-v2/brand-halo.svg" alt="" />
     <div class="dm-v2-hero-title">
       <p class="dm-v2-eyebrow js-dm-v2-eyebrow">{content.hero.eyebrow}</p>
@@ -29,32 +36,40 @@ const assetByVisual: Record<StoryInlineVisual, string> = {
       <p class="dm-v2-hero-copy js-dm-v2-hero-copy">{content.hero.copy}</p>
       <button type="button" class="dm-v2-hero-cta js-dm-v2-hero-cta" data-contact-trigger>{content.hero.cta}</button>
     </div>
-    <svg class="dm-v2-hero-line dm-v2-hero-line-bottom js-dm-v2-line-bottom" viewBox="0 0 720 118" aria-hidden="true" focusable="false">
-      <path d="M8 96 C110 96 150 38 240 58 C330 78 386 26 478 42 C570 58 626 74 712 50" />
-    </svg>
   </section>
 
-  <section class="dm-v2-eye-wrapper">
-    <section class="dm-v2-sticky-wrap" aria-hidden="true">
-      <div class="dm-v2-sticky-trigger js-dm-v2-eye-trigger">
-        <div class="dm-v2-sticky-track">
-          <div class="dm-v2-sticky-element">
-            <img class="dm-v2-sticky-circle js-dm-v2-sticky-circle" src="/assets/storytelling-v2/brand-halo.svg" alt="" />
-            <img class="dm-v2-sticky-eye js-dm-v2-sticky-eye" src="/assets/storytelling-v2/brand-eye.svg" alt="" />
-          </div>
+  <section id="enfoque-digital" class="dm-v2-focus js-dm-v2-focus" aria-labelledby="dm-v2-focus-title">
+    <img
+      class="dm-v2-focus-orbit js-dm-v2-focus-orbit"
+      src="/assets/storytelling-v2/brand-halo.svg"
+      alt=""
+      aria-hidden="true"
+    />
+    <div class="dm-v2-focus-shell">
+      <p class="dm-v2-eyebrow">{content.focus.eyebrow}</p>
+      <div class="dm-v2-focus-stage js-dm-v2-focus-stage">
+        <div class="dm-v2-focus-copy dm-v2-focus-copy-visible">
+          <h2 id="dm-v2-focus-title">{content.focus.title}</h2>
+          <p aria-hidden="true">{content.focus.copy}</p>
+        </div>
+        <div class="dm-v2-focus-copy dm-v2-focus-copy-hidden" aria-hidden="true">
+          <h2>{content.focus.title}</h2>
+          <p>{content.focus.copy}</p>
+        </div>
+        <div class="dm-v2-focus-lens js-dm-v2-focus-lens" aria-hidden="true">
+          <img class="dm-v2-focus-lens-art" src="/assets/lupa-mejorada-transparente.png" alt="" />
         </div>
       </div>
-    </section>
+      <p class="dm-v2-focus-hint" aria-hidden="true">
+        <span class="dm-v2-focus-hint-desktop">{content.focus.hintDesktop}</span>
+        <span class="dm-v2-focus-hint-touch">{content.focus.hintTouch}</span>
+      </p>
+    </div>
+  </section>
 
-    <article class="dm-v2-pin-section dm-v2-pin-one js-dm-v2-pin-one" aria-label={content.narrative[0].ariaLabel}>
-      <img
-        class="dm-v2-eye-origin js-dm-v2-flip1-origin"
-        data-flip-id="dm-eye"
-        src="/assets/storytelling-v2/brand-eye.svg"
-        alt=""
-        aria-hidden="true"
-      />
-      <p class="dm-v2-large-copy js-dm-v2-words js-dm-v2-words-one" data-dm-v2-split aria-label={content.narrative[0].ariaLabel}>
+  <section id="narrativa-digital-uno" class="dm-v2-narrative-track js-dm-v2-track-one">
+    <article class="dm-v2-pin-section dm-v2-pin-one" aria-label={content.narrative[0].ariaLabel}>
+      <p class="dm-v2-large-copy js-dm-v2-words js-dm-v2-words-one" aria-label={content.narrative[0].ariaLabel}>
         {
           content.narrative[0].segments.map((segment) => (
             <>
@@ -64,8 +79,10 @@ const assetByVisual: Record<StoryInlineVisual, string> = {
                 segment.visual && (
                   <span class:list={['dm-v2-inline-visual', `dm-v2-inline-${segment.visual}`]} aria-hidden="true">
                     <img
-                      class={segment.visual === 'eye' ? 'js-dm-v2-flip1-target' : 'js-dm-v2-inline-flower'}
-                      data-flip-id={segment.visual === 'eye' ? 'dm-eye' : undefined}
+                      class:list={[
+                        segment.visual === 'magnifier' && 'js-dm-v2-inline-lens',
+                        segment.visual === 'flower' && 'js-dm-v2-inline-target',
+                      ]}
                       src={assetByVisual[segment.visual]}
                       alt=""
                     />
@@ -79,79 +96,57 @@ const assetByVisual: Record<StoryInlineVisual, string> = {
     </article>
   </section>
 
-  <section class="dm-v2-pin-section dm-v2-pin-two js-dm-v2-pin-two" aria-label={content.narrative[1].ariaLabel}>
-    <div class="dm-v2-flower-origin-wrap" aria-hidden="true">
-      <p class="dm-v2-large-copy">
-        {
-          content.narrative[0].segments.map((segment) => (
-            <>
-              {segment.text}
-              {segment.accent && <span class="dm-v2-serif">{segment.accent}</span>}
-              {
-                segment.visual && (
-                  <span class:list={['dm-v2-inline-visual', `dm-v2-inline-${segment.visual}`]}>
-                    <img
-                      class={segment.visual === 'flower' ? 'dm-v2-flower-origin js-dm-v2-flip2-origin' : ''}
-                      data-flip-id={segment.visual === 'flower' ? 'dm-flower' : undefined}
-                      src={assetByVisual[segment.visual]}
-                      alt=""
-                    />
-                  </span>
-                )
-              }
-            </>
-          ))
-        }
-      </p>
-    </div>
-    <div class="dm-v2-second-copy">
-      <p class="dm-v2-large-copy js-dm-v2-words js-dm-v2-words-two" data-dm-v2-split aria-label={content.narrative[1].ariaLabel}>
-        {
-          content.narrative[1].segments.map((segment) => (
-            <>
-              {segment.text}
-              {segment.accent && <span class="dm-v2-serif">{segment.accent}</span>}
-              {
-                segment.visual && (
-                  <span class:list={['dm-v2-inline-visual', `dm-v2-inline-${segment.visual}`]} aria-hidden="true">
-                    <img class={segment.visual === 'heart' ? 'js-dm-v2-heart' : ''} src={assetByVisual[segment.visual]} alt="" />
-                  </span>
-                )
-              }
-            </>
-          ))
-        }
-      </p>
-    </div>
-    <div class="dm-v2-second-visual" aria-hidden="true">
-      <div class="dm-v2-flower-target">
-        <div class="dm-v2-second-glass-wrap">
-          <img class="dm-v2-second-glass js-dm-v2-side-glass" src="/assets/storytelling-v2/brand-magnifier.svg" alt="" />
-        </div>
-        <img
-          class="dm-v2-second-flower js-dm-v2-flip2-target"
-          data-flip-id="dm-flower"
-          src="/assets/storytelling-v2/brand-target.svg"
-          alt=""
-        />
+  <section id="narrativa-digital-dos" class="dm-v2-narrative-track js-dm-v2-track-two">
+    <article class="dm-v2-pin-section dm-v2-pin-two" aria-label={content.narrative[1].ariaLabel}>
+      <div class="dm-v2-second-copy">
+        <p class="dm-v2-large-copy js-dm-v2-words js-dm-v2-words-two" aria-label={content.narrative[1].ariaLabel}>
+          {
+            content.narrative[1].segments.map((segment) => (
+              <>
+                {segment.text}
+                {segment.accent && <span class="dm-v2-serif">{segment.accent}</span>}
+                {
+                  segment.visual && (
+                    <span class:list={['dm-v2-inline-visual', `dm-v2-inline-${segment.visual}`]} aria-hidden="true">
+                      <img class={segment.visual === 'heart' ? 'js-dm-v2-heart' : ''} src={assetByVisual[segment.visual]} alt="" />
+                    </span>
+                  )
+                }
+              </>
+            ))
+          }
+        </p>
       </div>
-    </div>
+      <div class="dm-v2-second-visual" aria-hidden="true">
+        <div class="dm-v2-target-wrap js-dm-v2-target">
+          <img class="dm-v2-second-target js-dm-v2-second-target" src="/assets/storytelling-v2/brand-target.svg" alt="" />
+          <img class="dm-v2-target-arrow js-dm-v2-target-arrow" src="/assets/storytelling-v2/target-arrow.svg" alt="" />
+          <span class="dm-v2-target-pulse"></span>
+        </div>
+      </div>
+    </article>
   </section>
 
-  <section class="dm-v2-transition js-dm-v2-transition" aria-labelledby="dm-v2-services-title">
-    <h2 id="dm-v2-services-title">
-      <span class="js-dm-v2-transition-left">{content.transitionTitle.first}</span>
-      <span class="js-dm-v2-transition-right">{content.transitionTitle.second}</span>
-    </h2>
+  <section class="dm-v2-transition-track js-dm-v2-transition-track">
+    <article class="dm-v2-transition js-dm-v2-transition" aria-labelledby="dm-v2-services-title">
+      <h2 id="dm-v2-services-title">
+        <span class="js-dm-v2-transition-left">{content.transitionTitle.first}</span>
+        <span class="js-dm-v2-transition-right">{content.transitionTitle.second}</span>
+      </h2>
+    </article>
   </section>
 
-  <section class="dm-v2-card-section" aria-label={content.cards.ariaLabel}>
+  <section
+    id="servicios-marketing-digital"
+    class="dm-v2-card-section js-dm-v2-card-section"
+    aria-label={content.cards.ariaLabel}
+  >
     <ul class="dm-v2-card-stack">
       {
         content.cards.items.map((card, index) => (
           <li
             class:list={['dm-v2-card', `dm-v2-card-${card.theme}`, 'js-dm-v2-card']}
-            style={`--card-top: ${40 + index * 20}px; --card-mb: ${100 - index * 20}px`}
+            style={`--card-index: ${index}; --card-top: ${40 + index * 20}px; --card-mb: ${100 - index * 20}px`}
           >
             <div class="dm-v2-card-copy">
               <p class="dm-v2-card-eyebrow">{card.eyebrow}</p>
@@ -187,417 +182,17 @@ const assetByVisual: Record<StoryInlineVisual, string> = {
 </main>
 
 <script>
-  import gsap from 'gsap';
-  import { Flip } from 'gsap/Flip';
-  import { ScrollTrigger } from 'gsap/ScrollTrigger';
-  import Lenis from 'lenis';
+  import { setupDigitalMarketingStory } from './digitalMarketingStoryController';
 
-  gsap.registerPlugin(Flip, ScrollTrigger);
-
-  const CIRCLE_OPACITY = 0.5;
-
-  const splitWords = (element: HTMLElement) => {
-    if (element.dataset.wordsReady === 'true') {
-      return;
-    }
-
-    element.dataset.wordsReady = 'true';
-
-    const visit = (node: ChildNode) => {
-      if (node.nodeType === Node.TEXT_NODE) {
-        const text = node.textContent ?? '';
-        const fragment = document.createDocumentFragment();
-        text.split(/(\s+)/).forEach((part) => {
-          if (!part) {
-            return;
-          }
-          if (/^\s+$/.test(part)) {
-            fragment.appendChild(document.createTextNode(part));
-            return;
-          }
-          const span = document.createElement('span');
-          span.className = 'dm-v2-word';
-          span.textContent = part;
-          fragment.appendChild(span);
-        });
-        node.parentNode?.replaceChild(fragment, node);
-        return;
-      }
-
-      if (!(node instanceof HTMLElement) || node.classList.contains('dm-v2-inline-visual')) {
-        return;
-      }
-
-      Array.from(node.childNodes).forEach(visit);
-    };
-
-    Array.from(element.childNodes).forEach(visit);
-  };
-
-  const initDigitalMarketingV2 = () => {
-    const root = document.querySelector<HTMLElement>('.js-dm-v2-page');
-
-    if (!root || root.dataset.storytellingReady === 'true') {
-      return;
-    }
-
-    root.dataset.storytellingReady = 'true';
-
-    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    const wordBlocks = gsap.utils.toArray<HTMLElement>('.js-dm-v2-words', root);
-
-    wordBlocks.forEach(splitWords);
-
-    if (reduceMotion) {
-      root.classList.add('is-reduced-motion');
-      return;
-    }
-
-    // Smooth scrolling with Lenis (only on this page)
-    const lenis = new Lenis({
-      duration: 1.2,
-      easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+  const startDigitalMarketingStory = () => {
+    requestAnimationFrame(() => {
+      requestAnimationFrame(setupDigitalMarketingStory);
     });
-    let rafId = 0;
-    const raf = (time: number) => {
-      lenis.raf(time);
-      ScrollTrigger.update();
-      rafId = requestAnimationFrame(raf);
-    };
-    rafId = requestAnimationFrame(raf);
-
-    const navHeight = () => document.querySelector<HTMLElement>('.site-nav')?.getBoundingClientRect().height ?? 0;
-
-    const context = gsap.context(() => {
-      ScrollTrigger.config({ ignoreMobileResize: true });
-
-      // The hero circle is absolute (40% of the section) and the sticky one is
-      // fixed (40% of the viewport) — the scrollbar makes those widths differ,
-      // so the handoff needs the exact rendered width in px.
-      const heroCircleEl = root.querySelector<HTMLElement>('.js-dm-v2-hero-circle');
-      const stickyCircleEl = root.querySelector<HTMLElement>('.js-dm-v2-sticky-circle');
-      const syncStickyCircle = () => {
-        if (heroCircleEl && stickyCircleEl) {
-          gsap.set(stickyCircleEl, { width: heroCircleEl.offsetWidth, minWidth: 0 });
-        }
-      };
-      syncStickyCircle();
-
-      // ─── HERO ENTRANCE (mirrors the reference page-load timeline) ───
-      gsap.set('.js-dm-v2-hero-circle', { x: 0, y: 0, xPercent: -50, yPercent: -50, scale: 3, transformOrigin: '50% 50%' });
-      gsap.set('.js-dm-v2-eyebrow', { autoAlpha: 0, y: 12 });
-      gsap.set('.js-dm-v2-title-primary', { autoAlpha: 0, y: '-0.9em' });
-      gsap.set('.js-dm-v2-title-secondary', { autoAlpha: 0, y: '0.9em' });
-      gsap.set('.js-dm-v2-hero-copy', { autoAlpha: 0, y: 16 });
-      gsap.set('.js-dm-v2-hero-cta', { autoAlpha: 0, y: 16 });
-
-      const lineBottom = root.querySelector<SVGPathElement>('.js-dm-v2-line-bottom path');
-      if (lineBottom) {
-        const len = lineBottom.getTotalLength();
-        gsap.set(lineBottom, { strokeDasharray: len, strokeDashoffset: len });
-      }
-
-      const heroTimeline = gsap.timeline();
-      heroTimeline.to('.js-dm-v2-hero-circle', { scale: 1, duration: 0.7, ease: 'power2.inOut' }, 0);
-      heroTimeline.to('.js-dm-v2-eyebrow', { autoAlpha: 1, y: 0, duration: 0.6, ease: 'power2.out' }, 0.4);
-      heroTimeline.to('.js-dm-v2-title-primary', { autoAlpha: 1, y: 0, duration: 0.7, ease: 'power2.inOut' }, 0.5);
-      heroTimeline.to('.js-dm-v2-title-secondary', { autoAlpha: 1, y: 0, duration: 0.7, ease: 'power2.inOut' }, 0.7);
-      heroTimeline.to('.js-dm-v2-hero-copy', { autoAlpha: 1, y: 0, duration: 0.6, ease: 'power2.out' }, 0.9);
-      heroTimeline.to('.js-dm-v2-hero-cta', { autoAlpha: 1, y: 0, duration: 0.6, ease: 'power2.out' }, 1.05);
-      if (lineBottom) {
-        heroTimeline.to(lineBottom, { strokeDashoffset: 0, duration: 0.8, ease: 'power2.inOut' }, 1.2);
-      }
-
-      // ─── PINNED PARAGRAPHS (word reveal, flower growth, glass, heart zoom) ───
-      gsap.set('.js-dm-v2-side-glass', { xPercent: 160, opacity: 0 });
-
-      const sectionTimeline1 = gsap.timeline();
-      sectionTimeline1.from('.js-dm-v2-words-one .dm-v2-word', {
-        opacity: 0.2,
-        duration: 0.3,
-        ease: 'power1.out',
-        stagger: { each: 0.4 },
-      });
-      sectionTimeline1.fromTo('.js-dm-v2-inline-flower', { scale: 0 }, { scale: 1, duration: 10, ease: 'power1.out' });
-
-      ScrollTrigger.create({
-        trigger: '.js-dm-v2-pin-one',
-        start: () => `top top+=${navHeight()}`,
-        end: 'bottom top',
-        pin: true,
-        animation: sectionTimeline1,
-        scrub: 0.5,
-        invalidateOnRefresh: true,
-      });
-
-      const sectionTimeline2 = gsap.timeline();
-      sectionTimeline2.fromTo(
-        '.js-dm-v2-side-glass',
-        { xPercent: 160, opacity: 0 },
-        { xPercent: 0, opacity: 1, duration: 5, ease: 'power1.out' }
-      );
-      sectionTimeline2.from(
-        '.js-dm-v2-words-two .dm-v2-word',
-        {
-          opacity: 0.2,
-          duration: 0.3,
-          ease: 'power1.out',
-          stagger: { each: 0.4 },
-        },
-        '>-50%'
-      );
-
-      gsap.matchMedia().add('(min-width: 901px)', () => {
-        const heart = root.querySelector<HTMLImageElement>('.js-dm-v2-heart');
-        if (heart && heart.clientWidth > 0 && heart.clientHeight > 0) {
-          const scaleX = window.innerWidth / heart.clientWidth;
-          const scaleY = window.innerHeight / heart.clientHeight;
-          const scale = Math.max(scaleX, scaleY);
-
-          sectionTimeline2.to(
-            heart,
-            { scale: scale * 2.5, x: 200, duration: 8, ease: 'power1.out', force3D: false },
-            '>+=3'
-          );
-          sectionTimeline2.to('.js-dm-v2-pin-two', { overflow: 'hidden', duration: 0.1 }, '<');
-        }
-      });
-
-      ScrollTrigger.create({
-        trigger: '.js-dm-v2-pin-two',
-        start: () => `top top+=${navHeight()}`,
-        end: 'bottom top',
-        pin: true,
-        animation: sectionTimeline2,
-        scrub: 0.5,
-        invalidateOnRefresh: true,
-      });
-
-      // ─── STICKY EYE SEQUENCE (circle shrinks, eye grows and blinks) ───
-      gsap.matchMedia().add('(min-width: 901px)', () => {
-        gsap.set('.js-dm-v2-sticky-circle', { x: 0, y: 0, xPercent: -50, yPercent: -50, scale: 1 });
-        gsap.set('.js-dm-v2-sticky-eye', { x: 0, y: 0, xPercent: -50, yPercent: -50, scale: 0 });
-
-        ScrollTrigger.create({
-          trigger: '.js-dm-v2-eye-trigger',
-          start: 'top 99%',
-          end: 'bottom top',
-          onEnter: () => {
-            gsap.set('.js-dm-v2-hero-circle', { display: 'none' });
-            gsap.set('.js-dm-v2-sticky-circle', { display: 'block', opacity: CIRCLE_OPACITY });
-          },
-          onLeave: () => {
-            gsap.killTweensOf('.js-dm-v2-sticky-circle', 'opacity');
-            gsap.to('.js-dm-v2-sticky-circle', { opacity: 0, duration: 0.5 });
-          },
-          onLeaveBack: () => {
-            gsap.killTweensOf('.js-dm-v2-sticky-circle', 'opacity');
-            gsap.set('.js-dm-v2-sticky-circle', { display: 'none' });
-            gsap.set('.js-dm-v2-hero-circle', { display: 'block' });
-          },
-          onEnterBack: () => {
-            gsap.killTweensOf('.js-dm-v2-sticky-circle', 'opacity');
-            gsap.set('.js-dm-v2-hero-circle', { display: 'none' });
-            gsap.set('.js-dm-v2-sticky-circle', { display: 'block', opacity: CIRCLE_OPACITY });
-          },
-        });
-
-        // Keyframe positions mirror the reference IX2 percentages
-        const eyeTimeline = gsap.timeline({
-          scrollTrigger: {
-            trigger: '.js-dm-v2-eye-trigger',
-            start: 'top top',
-            end: 'bottom top',
-            scrub: 0.9,
-          },
-        });
-        eyeTimeline.to('.js-dm-v2-sticky-circle', { scale: 0.5, ease: 'none', duration: 0.35 }, 0);
-        eyeTimeline.to('.js-dm-v2-sticky-eye', { scale: 1, ease: 'none', duration: 0.35 }, 0.17);
-        eyeTimeline.to('.js-dm-v2-sticky-eye', { scaleY: 0, ease: 'none', duration: 0.06 }, 0.54);
-        eyeTimeline.to('.js-dm-v2-sticky-eye', { scaleY: 1, ease: 'none', duration: 0.03 }, 0.67);
-        eyeTimeline.to({}, { duration: 0.3 }, 0.7);
-      });
-
-      // ─── SCROLL FLIPS (eye flies into paragraph 1, flower flies to the side visual) ───
-      const flipDefs = [
-        {
-          origin: '.js-dm-v2-flip1-origin',
-          target: '.js-dm-v2-flip1-target',
-          trigger: '.js-dm-v2-pin-one',
-          endTrigger: '.js-dm-v2-words-one',
-        },
-        {
-          origin: '.js-dm-v2-flip2-origin',
-          target: '.js-dm-v2-flip2-target',
-          trigger: '.js-dm-v2-pin-two',
-          endTrigger: '.js-dm-v2-words-two',
-        },
-      ];
-
-      let flipTimelines: gsap.core.Timeline[] = [];
-
-      const createFlipTimelines = () => {
-        flipTimelines.forEach((timeline) => timeline.kill());
-        flipTimelines = [];
-        gsap.set(['.js-dm-v2-flip1-target', '.js-dm-v2-flip2-target'], { clearProps: 'transform,width,height' });
-
-        if (!window.matchMedia('(min-width: 901px)').matches) {
-          return;
-        }
-
-        flipDefs.forEach((def) => {
-          const origin = root.querySelector<HTMLElement>(def.origin);
-          const target = root.querySelector<HTMLElement>(def.target);
-          if (!origin || !target) {
-            return;
-          }
-
-          const state = Flip.getState(origin);
-          const timeline = gsap.timeline({
-            scrollTrigger: {
-              trigger: def.trigger,
-              endTrigger: def.endTrigger,
-              start: 'top bottom',
-              end: 'center center',
-              scrub: true,
-            },
-          });
-          timeline.add(Flip.from(state, { targets: target }));
-          flipTimelines.push(timeline);
-        });
-      };
-
-      createFlipTimelines();
-
-      let resizeTimer = 0;
-      const onResize = () => {
-        window.clearTimeout(resizeTimer);
-        resizeTimer = window.setTimeout(() => {
-          syncStickyCircle();
-          createFlipTimelines();
-          ScrollTrigger.refresh();
-        }, 250);
-      };
-      window.addEventListener('resize', onResize);
-
-      // ─── FLIP HAND-OFFS (must run after the flips snapshot their targets) ───
-      // Re-applied on every ScrollTrigger refresh: the Flip tweens restore their
-      // style snapshot (taken before these sets) when a refresh reverts them,
-      // which would otherwise wipe the inline opacity of the targets.
-      gsap.matchMedia().add('(min-width: 901px)', () => {
-        const applyEyeHandoff = (entered: boolean) => {
-          gsap.set('.js-dm-v2-flip1-target', { opacity: entered ? 1 : 0 });
-          gsap.set('.js-dm-v2-sticky-eye', { opacity: entered ? 0 : 1 });
-        };
-        const applyFlowerHandoff = (entered: boolean) => {
-          gsap.set('.js-dm-v2-flip2-target', { opacity: entered ? 1 : 0 });
-          gsap.set('.js-dm-v2-inline-flower', { display: entered ? 'none' : 'block' });
-        };
-
-        applyEyeHandoff(false);
-        applyFlowerHandoff(false);
-
-        ScrollTrigger.create({
-          trigger: '.js-dm-v2-pin-one',
-          start: 'top bottom',
-          onEnter: () => applyEyeHandoff(true),
-          onLeaveBack: () => applyEyeHandoff(false),
-          onRefresh: (self) => applyEyeHandoff(self.scroll() >= self.start),
-        });
-
-        ScrollTrigger.create({
-          trigger: '.js-dm-v2-pin-two',
-          start: 'top bottom',
-          onEnter: () => applyFlowerHandoff(true),
-          onLeaveBack: () => applyFlowerHandoff(false),
-          onRefresh: (self) => applyFlowerHandoff(self.scroll() >= self.start),
-        });
-      });
-
-      // ─── TRANSITION CRISS-CROSS ───
-      const transitionTimeline = gsap
-        .timeline()
-        .from('.js-dm-v2-transition-left', { x: '-13em' })
-        .from('.js-dm-v2-transition-right', { x: '13em' }, '<');
-
-      ScrollTrigger.create({
-        trigger: '.js-dm-v2-transition',
-        start: () => `top top+=${navHeight()}`,
-        end: 'bottom top',
-        pin: true,
-        scrub: true,
-        invalidateOnRefresh: true,
-        animation: transitionTimeline,
-      });
-
-      // ─── STACKING CARDS (desktop only) ───
-      gsap.matchMedia().add('(min-width: 901px)', () => {
-        gsap.utils.toArray<HTMLElement>('.js-dm-v2-card', root).forEach((card, index) => {
-          gsap
-            .timeline({
-              scrollTrigger: {
-                trigger: card,
-                start: 'center center',
-                end: 'center top',
-                scrub: true,
-              },
-            })
-            .to(card, {
-              scale: 0.8 + index * 0.04,
-              transformOrigin: 'center top',
-              duration: 10,
-              ease: 'power1.out',
-            });
-        });
-      });
-
-      // ─── CONTACT SLIDE-UP ───
-      gsap.set('.js-dm-v2-footer-title', { opacity: 0, y: 100 });
-      gsap.set('.js-dm-v2-footer-button', { opacity: 0, y: 100 });
-
-      gsap.to('.js-dm-v2-footer-title', {
-        opacity: 1,
-        y: 0,
-        duration: 1,
-        ease: 'power4.out',
-        scrollTrigger: { trigger: '.js-dm-v2-footer-title', start: 'top 90%' },
-      });
-
-      gsap.to('.js-dm-v2-footer-button', {
-        opacity: 1,
-        y: 0,
-        duration: 1,
-        ease: 'power4.out',
-        scrollTrigger: { trigger: '.js-dm-v2-footer-button', start: 'top 80%' },
-      });
-
-      const refresh = () => {
-        syncStickyCircle();
-        ScrollTrigger.refresh();
-      };
-      window.addEventListener('agsit:viewport-change', refresh, { passive: true });
-
-      return () => {
-        window.removeEventListener('agsit:viewport-change', refresh);
-        window.removeEventListener('resize', onResize);
-        window.clearTimeout(resizeTimer);
-      };
-    }, root);
-
-    window.addEventListener(
-      'pagehide',
-      () => {
-        cancelAnimationFrame(rafId);
-        lenis.destroy();
-        context.revert();
-      },
-      { once: true }
-    );
   };
 
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initDigitalMarketingV2, { once: true });
+    document.addEventListener('DOMContentLoaded', startDigitalMarketingStory, { once: true });
   } else {
-    initDigitalMarketingV2();
+    startDigitalMarketingStory();
   }
 </script>

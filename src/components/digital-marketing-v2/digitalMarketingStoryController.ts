@@ -1,0 +1,1245 @@
+import gsap from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import type {
+  DigitalMarketingOrbitApi,
+  DigitalMarketingOrbitSection,
+} from './digitalMarketingOrbitHeroController';
+
+gsap.registerPlugin(ScrollTrigger);
+
+type Direction = 1 | -1;
+
+type PanelSlideOptions = {
+  onComplete?: () => void;
+  handoff?: {
+    source: HTMLElement;
+    target: HTMLElement;
+  };
+  visualHandoff?: {
+    source: HTMLElement;
+    target: HTMLElement;
+    sourceSelector: string;
+    targetSelector: string;
+    startAlpha?: number;
+    endAlpha?: number;
+  };
+  incomingRevealSelector?: string;
+};
+
+const BOUNDARY_TOLERANCE = 18;
+const MIN_GESTURE_DISTANCE = 10;
+const WHITE_TRANSITION_DURATION = 0;
+
+const splitWords = (element: HTMLElement) => {
+  if (element.dataset.wordsReady === 'true') return;
+
+  element.dataset.wordsReady = 'true';
+
+  const visit = (node: ChildNode) => {
+    if (node.nodeType === Node.TEXT_NODE) {
+      const fragment = document.createDocumentFragment();
+      const text = node.textContent ?? '';
+
+      text.split(/(\s+)/).forEach((part) => {
+        if (!part) return;
+        if (/^\s+$/.test(part)) {
+          fragment.appendChild(document.createTextNode(part));
+          return;
+        }
+
+        const word = document.createElement('span');
+        word.className = 'dm-v2-word';
+        word.textContent = part;
+        fragment.appendChild(word);
+      });
+
+      node.parentNode?.replaceChild(fragment, node);
+      return;
+    }
+
+    if (!(node instanceof HTMLElement) || node.classList.contains('dm-v2-inline-visual')) return;
+    Array.from(node.childNodes).forEach(visit);
+  };
+
+  Array.from(element.childNodes).forEach(visit);
+};
+
+const getNavHeight = () =>
+  Number.parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--app-track-offset')) || 0;
+
+const getPanelHeight = () => {
+  const styles = getComputedStyle(document.documentElement);
+  const configured = Number.parseFloat(styles.getPropertyValue('--app-panel-h'));
+  return Number.isFinite(configured) && configured > 0
+    ? configured
+    : Math.max(1, window.innerHeight);
+};
+
+const getDocumentTop = (element: HTMLElement) =>
+  element.getBoundingClientRect().top + window.scrollY;
+
+const isFormOrNavigationTarget = (target: EventTarget | null) =>
+  target instanceof Element &&
+  Boolean(
+    target.closest(
+      'input, textarea, select, button, a, [data-contact-drawer], [data-mobile-menu]',
+    ),
+  );
+
+const isFocusLensTarget = (target: EventTarget | null) =>
+  target instanceof Element && Boolean(target.closest('.js-dm-v2-focus-lens'));
+
+const isWheelProtectedTarget = (target: EventTarget | null) =>
+  target instanceof Element && Boolean(target.closest('input, textarea, select'));
+
+const setupFocusLens = (
+  root: HTMLElement,
+  reduceMotion: boolean,
+  registerCleanup: (cleanup: () => void) => void,
+) => {
+  const stage = root.querySelector<HTMLElement>('.js-dm-v2-focus-stage');
+  const lens = root.querySelector<HTMLElement>('.js-dm-v2-focus-lens');
+  if (!stage || !lens) return;
+
+  const coarsePointer = window.matchMedia('(pointer: coarse)');
+  const position = { x: 0.52, y: 0.48 };
+  let dragging = false;
+  let dragOffsetX = 0;
+  let dragOffsetY = 0;
+  let resumeTimer = 0;
+  let autoTimeline: gsap.core.Timeline | null = null;
+
+  const render = () => {
+    const rect = stage.getBoundingClientRect();
+    const x = gsap.utils.clamp(0.08, 0.92, position.x) * rect.width;
+    const y = gsap.utils.clamp(0.12, 0.88, position.y) * rect.height;
+
+    stage.style.setProperty('--focus-x', `${x}px`);
+    stage.style.setProperty('--focus-y', `${y}px`);
+    stage.style.setProperty('--focus-radius', `${lens.offsetWidth * 0.205}px`);
+    gsap.set(lens, {
+      x: x - lens.offsetWidth * 0.37,
+      y: y - lens.offsetHeight * 0.347,
+    });
+  };
+
+  const updateFromPointer = (event: PointerEvent, preserveDragOffset = false) => {
+    const rect = stage.getBoundingClientRect();
+    const offsetX = preserveDragOffset ? dragOffsetX : 0;
+    const offsetY = preserveDragOffset ? dragOffsetY : 0;
+    position.x = (event.clientX - rect.left - offsetX) / Math.max(1, rect.width);
+    position.y = (event.clientY - rect.top - offsetY) / Math.max(1, rect.height);
+    render();
+  };
+
+  const createAutoTimeline = () => {
+    autoTimeline?.kill();
+    autoTimeline = null;
+
+    if (!coarsePointer.matches || reduceMotion) return;
+
+    autoTimeline = gsap
+      .timeline({
+        repeat: -1,
+        defaults: { duration: 2.7, ease: 'sine.inOut', onUpdate: render },
+      })
+      .to(position, { x: 0.28, y: 0.36 })
+      .to(position, { x: 0.73, y: 0.3 })
+      .to(position, { x: 0.62, y: 0.7 })
+      .to(position, { x: 0.34, y: 0.66 });
+  };
+
+  const onStagePointerMove = (event: PointerEvent) => {
+    if (coarsePointer.matches || dragging) return;
+    updateFromPointer(event);
+  };
+
+  const onLensPointerDown = (event: PointerEvent) => {
+    if (!coarsePointer.matches) return;
+    event.preventDefault();
+    event.stopPropagation();
+    dragging = true;
+    window.clearTimeout(resumeTimer);
+    autoTimeline?.pause();
+    lens.setPointerCapture(event.pointerId);
+    const rect = stage.getBoundingClientRect();
+    dragOffsetX = event.clientX - (rect.left + position.x * rect.width);
+    dragOffsetY = event.clientY - (rect.top + position.y * rect.height);
+    updateFromPointer(event, true);
+  };
+
+  const onLensPointerMove = (event: PointerEvent) => {
+    if (!dragging) return;
+    event.preventDefault();
+    event.stopPropagation();
+    updateFromPointer(event, true);
+  };
+
+  const onLensPointerUp = (event: PointerEvent) => {
+    if (!dragging) return;
+    event.preventDefault();
+    event.stopPropagation();
+    dragging = false;
+    if (lens.hasPointerCapture(event.pointerId)) lens.releasePointerCapture(event.pointerId);
+    resumeTimer = window.setTimeout(() => autoTimeline?.resume(), 900);
+  };
+
+  const onPointerChange = () => createAutoTimeline();
+  const onResize = () => render();
+
+  stage.addEventListener('pointermove', onStagePointerMove);
+  lens.addEventListener('pointerdown', onLensPointerDown);
+  lens.addEventListener('pointermove', onLensPointerMove);
+  lens.addEventListener('pointerup', onLensPointerUp);
+  lens.addEventListener('pointercancel', onLensPointerUp);
+  coarsePointer.addEventListener('change', onPointerChange);
+  window.addEventListener('resize', onResize, { passive: true });
+
+  render();
+  createAutoTimeline();
+
+  registerCleanup(() => {
+    window.clearTimeout(resumeTimer);
+    autoTimeline?.kill();
+    stage.removeEventListener('pointermove', onStagePointerMove);
+    lens.removeEventListener('pointerdown', onLensPointerDown);
+    lens.removeEventListener('pointermove', onLensPointerMove);
+    lens.removeEventListener('pointerup', onLensPointerUp);
+    lens.removeEventListener('pointercancel', onLensPointerUp);
+    coarsePointer.removeEventListener('change', onPointerChange);
+    window.removeEventListener('resize', onResize);
+  });
+};
+
+export const setupDigitalMarketingStory = () => {
+  const root = document.querySelector<HTMLElement>('.js-dm-v2-page');
+  if (!root || root.dataset.storytellingReady === 'true') return;
+
+  root.dataset.storytellingReady = 'true';
+  document.documentElement.classList.add('dm-v2-story-active');
+
+  const orbitHero = root.querySelector<DigitalMarketingOrbitSection>('.js-dm-v2-orbit-hero');
+  const hero = root.querySelector<HTMLElement>('.js-dm-v2-hero');
+  const heroCircle = root.querySelector<HTMLElement>('.js-dm-v2-hero-circle');
+  const orbitHandoffLabel = root.querySelector<HTMLElement>(
+    '.js-dm-v2-orbit-handoff-label',
+  );
+  const heroEyebrow = root.querySelector<HTMLElement>('.js-dm-v2-eyebrow');
+  const focus = root.querySelector<HTMLElement>('.js-dm-v2-focus');
+  const focusOrbit = root.querySelector<HTMLElement>('.js-dm-v2-focus-orbit');
+  const focusLens = root.querySelector<HTMLElement>('.js-dm-v2-focus-lens');
+  const trackOne = root.querySelector<HTMLElement>('.js-dm-v2-track-one');
+  const pinOne = root.querySelector<HTMLElement>('.dm-v2-pin-one');
+  const inlineLens = root.querySelector<HTMLElement>('.js-dm-v2-inline-lens');
+  const inlineTarget = root.querySelector<HTMLElement>('.js-dm-v2-inline-target');
+  const trackTwo = root.querySelector<HTMLElement>('.js-dm-v2-track-two');
+  const pinTwo = root.querySelector<HTMLElement>('.dm-v2-pin-two');
+  const secondTarget = root.querySelector<HTMLElement>('.js-dm-v2-second-target');
+  const transitionTrack = root.querySelector<HTMLElement>('.js-dm-v2-transition-track');
+  const transition = root.querySelector<HTMLElement>('.js-dm-v2-transition');
+  const cards = root.querySelector<HTMLElement>('.js-dm-v2-card-section');
+  const heart = root.querySelector<HTMLElement>('.js-dm-v2-heart');
+
+  if (!orbitHero) return;
+  if (
+    !hero ||
+    !heroCircle ||
+    !orbitHandoffLabel ||
+    !heroEyebrow ||
+    !focus ||
+    !focusOrbit ||
+    !focusLens ||
+    !trackOne ||
+    !pinOne ||
+    !inlineLens ||
+    !inlineTarget ||
+    !trackTwo ||
+    !pinTwo ||
+    !secondTarget ||
+    !transitionTrack ||
+    !transition ||
+    !cards ||
+    !heart
+  ) return;
+
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const cleanups: Array<() => void> = [];
+  const registerCleanup = (cleanup: () => void) => cleanups.push(cleanup);
+
+  root.querySelectorAll<HTMLElement>('.js-dm-v2-words').forEach(splitWords);
+  setupFocusLens(root, reduceMotion, registerCleanup);
+
+  let navigationAnimating = false;
+  let phaseAnimating = false;
+  let activeScrollFrame = 0;
+  let touchStartY: number | null = null;
+  let touchHandled = false;
+  let whiteExpanded = false;
+  let titleCentered = false;
+  let resizeTimer = 0;
+  let gestureCooldownUntil = 0;
+  let panelSlideTimeline: gsap.core.Timeline | null = null;
+  const navigationEase = gsap.parseEase('power3.inOut');
+  const getOrbitApi = (): DigitalMarketingOrbitApi | undefined => orbitHero.dmOrbitApi;
+
+  const getStops = () => {
+    const navHeight = getNavHeight();
+    const panelHeight = getPanelHeight();
+    const top = (element: HTMLElement) => Math.max(0, getDocumentTop(element) - navHeight);
+    const trackRange = (element: HTMLElement) => {
+      const start = top(element);
+      return {
+        start,
+        end: Math.max(start, start + element.offsetHeight - panelHeight),
+      };
+    };
+
+    return {
+      orbitHero: top(orbitHero),
+      hero: top(hero),
+      focus: top(focus),
+      trackOne: trackRange(trackOne),
+      trackTwo: trackRange(trackTwo),
+      transition: trackRange(transitionTrack),
+      cards: top(cards),
+    };
+  };
+
+  const near = (current: number, target: number, tolerance = BOUNDARY_TOLERANCE) =>
+    Math.abs(current - target) <= tolerance;
+
+  const navigateTo = (
+    destination: number,
+    onComplete?: () => void,
+    durationOverride?: number,
+  ) => {
+    window.cancelAnimationFrame(activeScrollFrame);
+
+    if (reduceMotion || durationOverride === 0) {
+      window.scrollTo(0, destination);
+      ScrollTrigger.update();
+      gestureCooldownUntil = Date.now() + 120;
+      onComplete?.();
+      return;
+    }
+
+    navigationAnimating = true;
+    const startY = window.scrollY;
+    const distance = destination - startY;
+    const duration =
+      durationOverride ?? (window.matchMedia('(pointer: coarse)').matches ? 680 : 840);
+    const startedAt = performance.now();
+
+    const update = (now: number) => {
+      const progress = Math.min(1, (now - startedAt) / duration);
+      window.scrollTo(0, startY + distance * navigationEase(progress));
+
+      if (progress < 1) {
+        activeScrollFrame = window.requestAnimationFrame(update);
+        return;
+      }
+
+      window.scrollTo(0, destination);
+      activeScrollFrame = 0;
+      navigationAnimating = false;
+      gestureCooldownUntil = Date.now() + 220;
+      onComplete?.();
+    };
+
+    activeScrollFrame = window.requestAnimationFrame(update);
+
+  };
+  const removeDuplicateIds = (element: HTMLElement) => {
+    element.removeAttribute('id');
+    element.querySelectorAll<HTMLElement>('[id]').forEach((child) => {
+      child.removeAttribute('id');
+    });
+  };
+
+  const navigatePanelSlide = (
+    destination: number,
+    outgoing: HTMLElement,
+    incoming: HTMLElement,
+    direction: Direction,
+    options: PanelSlideOptions = {},
+  ) => {
+    if (reduceMotion) {
+      navigateTo(destination, undefined, 0);
+      options.onComplete?.();
+      return;
+    }
+
+    window.cancelAnimationFrame(activeScrollFrame);
+    activeScrollFrame = 0;
+    panelSlideTimeline?.kill();
+    root.querySelector('.js-dm-v2-panel-slide')?.remove();
+
+    const portal = document.createElement('div');
+    portal.className = 'dm-v2-panel-slide js-dm-v2-panel-slide';
+    portal.setAttribute('aria-hidden', 'true');
+    portal.style.top = `${getNavHeight()}px`;
+    portal.style.height = `${getPanelHeight()}px`;
+    const sourceRect = options.handoff?.source.getBoundingClientRect();
+    const sourceStyles = options.handoff
+      ? getComputedStyle(options.handoff.source)
+      : null;
+    const visualSourceRect = options.visualHandoff?.source.getBoundingClientRect();
+    const visualSourceStyles = options.visualHandoff
+      ? getComputedStyle(options.visualHandoff.source)
+      : null;
+
+    const createFrame = (source: HTMLElement, hiddenSelector?: string) => {
+      const frame = document.createElement('div');
+      frame.className = 'dm-v2-panel-slide-frame';
+      const clone = source.cloneNode(true) as HTMLElement;
+      removeDuplicateIds(clone);
+      const sourceCanvases = Array.from(source.querySelectorAll('canvas'));
+      const cloneCanvases = Array.from(clone.querySelectorAll('canvas'));
+      sourceCanvases.forEach((sourceCanvas, index) => {
+        const cloneCanvas = cloneCanvases[index];
+        const cloneContext = cloneCanvas?.getContext('2d');
+        if (!cloneCanvas || !cloneContext) return;
+        cloneCanvas.width = sourceCanvas.width;
+        cloneCanvas.height = sourceCanvas.height;
+        cloneContext.drawImage(sourceCanvas, 0, 0);
+      });
+      if (options.handoff) {
+        clone
+          .querySelectorAll<HTMLElement>(
+            '.js-dm-v2-orbit-handoff-label, .js-dm-v2-eyebrow',
+          )
+          .forEach((label) => {
+            label.style.visibility = 'hidden';
+          });
+      }
+      if (hiddenSelector) {
+        clone.querySelectorAll<HTMLElement>(hiddenSelector).forEach((element) => {
+          element.style.visibility = 'hidden';
+        });
+      }
+      frame.appendChild(clone);
+      return frame;
+    };
+
+    const outgoingFrame = createFrame(
+      outgoing,
+      options.visualHandoff?.sourceSelector,
+    );
+    const incomingFrame = createFrame(
+      incoming,
+      options.visualHandoff?.targetSelector,
+    );
+    portal.append(outgoingFrame, incomingFrame);
+
+    let handoffLabel: HTMLElement | null = null;
+    if (options.handoff && sourceRect && sourceStyles) {
+      handoffLabel = document.createElement('p');
+      handoffLabel.className = 'dm-v2-panel-handoff-label';
+      handoffLabel.textContent = options.handoff.source.textContent?.trim() ?? '';
+      Object.assign(handoffLabel.style, {
+        position: 'fixed',
+        left: `${sourceRect.left}px`,
+        top: `${sourceRect.top}px`,
+        width: `${sourceRect.width}px`,
+        height: `${sourceRect.height}px`,
+        margin: '0',
+        zIndex: '4',
+        display: 'grid',
+        placeItems: 'center',
+        color: sourceStyles.color,
+        fontFamily: sourceStyles.fontFamily,
+        fontSize: sourceStyles.fontSize,
+        fontWeight: sourceStyles.fontWeight,
+        letterSpacing: sourceStyles.letterSpacing,
+        lineHeight: sourceStyles.lineHeight,
+        textTransform: sourceStyles.textTransform,
+        whiteSpace: 'nowrap',
+        transformOrigin: '0 0',
+        willChange: 'transform',
+      });
+      portal.appendChild(handoffLabel);
+    }
+
+    let handoffVisual: HTMLElement | null = null;
+    if (
+      options.visualHandoff &&
+      visualSourceRect &&
+      visualSourceStyles &&
+      visualSourceRect.width > 0 &&
+      visualSourceRect.height > 0
+    ) {
+      handoffVisual = options.visualHandoff.source.cloneNode(true) as HTMLElement;
+      removeDuplicateIds(handoffVisual);
+      handoffVisual.classList.add('dm-v2-panel-handoff-visual');
+      const computedAlpha = Number.parseFloat(visualSourceStyles.opacity);
+      const startAlpha =
+        options.visualHandoff.startAlpha ??
+        (Number.isFinite(computedAlpha) ? computedAlpha : 1);
+      Object.assign(handoffVisual.style, {
+        position: 'fixed',
+        left: `${visualSourceRect.left}px`,
+        top: `${visualSourceRect.top}px`,
+        width: `${visualSourceRect.width}px`,
+        height: `${visualSourceRect.height}px`,
+        minWidth: '0',
+        margin: '0',
+        zIndex: '6',
+        opacity: `${startAlpha}`,
+        visibility: 'visible',
+        pointerEvents: 'none',
+        transform: 'none',
+        transformOrigin: '0 0',
+        willChange: 'transform, opacity',
+      });
+      portal.appendChild(handoffVisual);
+    }
+
+    root.appendChild(portal);
+
+    navigationAnimating = true;
+    window.scrollTo(0, destination);
+    ScrollTrigger.update();
+    const targetRect = options.handoff?.target.getBoundingClientRect();
+    const visualTargetRect = options.visualHandoff?.target.getBoundingClientRect();
+    const incomingReveal = options.incomingRevealSelector
+      ? incomingFrame.querySelector<HTMLElement>(options.incomingRevealSelector)
+      : null;
+
+    gsap.set(outgoingFrame, { yPercent: 0 });
+    gsap.set(incomingFrame, { yPercent: direction > 0 ? 100 : -100 });
+    if (incomingReveal) {
+      gsap.set(incomingReveal, {
+        autoAlpha: 0,
+        y: direction > 0 ? 18 : -18,
+      });
+    }
+
+    panelSlideTimeline = gsap
+      .timeline({
+        defaults: { duration: 0.72, ease: 'power3.inOut' },
+        onComplete: () => {
+          portal.remove();
+          panelSlideTimeline = null;
+          navigationAnimating = false;
+          gestureCooldownUntil = Date.now() + 220;
+          options.onComplete?.();
+        },
+      })
+      .to(outgoingFrame, { yPercent: direction > 0 ? -100 : 100 }, 0)
+      .to(incomingFrame, { yPercent: 0 }, 0);
+
+    if (handoffLabel && sourceRect && targetRect) {
+      panelSlideTimeline.to(
+        handoffLabel,
+        {
+          x: targetRect.left - sourceRect.left,
+          y: targetRect.top - sourceRect.top,
+          scaleX: targetRect.width / Math.max(1, sourceRect.width),
+          scaleY: targetRect.height / Math.max(1, sourceRect.height),
+        },
+        0,
+      );
+    }
+
+    if (handoffVisual && visualSourceRect && visualTargetRect) {
+      const startAlpha = options.visualHandoff?.startAlpha ?? 1;
+      const endAlpha = options.visualHandoff?.endAlpha ?? startAlpha;
+      panelSlideTimeline.to(
+        handoffVisual,
+        {
+          x: visualTargetRect.left - visualSourceRect.left,
+          y: visualTargetRect.top - visualSourceRect.top,
+          scaleX: visualTargetRect.width / Math.max(1, visualSourceRect.width),
+          scaleY: visualTargetRect.height / Math.max(1, visualSourceRect.height),
+          duration: 0.72,
+          ease: 'power3.inOut',
+        },
+        0,
+      );
+
+      if (endAlpha !== startAlpha) {
+        panelSlideTimeline.to(
+          handoffVisual,
+          {
+            autoAlpha: endAlpha,
+            duration: 0.2,
+            ease: 'power2.out',
+          },
+          endAlpha < startAlpha ? 0.5 : 0,
+        );
+      }
+    }
+
+    if (incomingReveal) {
+      panelSlideTimeline.to(
+        incomingReveal,
+        {
+          autoAlpha: 1,
+          y: 0,
+          duration: 0.32,
+          ease: 'power2.out',
+        },
+        0.36,
+      );
+    }
+  };
+
+  const getWhiteCoverScale = () => {
+    const rect = heart.getBoundingClientRect();
+    const centerX = rect.left + rect.width / 2;
+    const centerY = rect.top + rect.height / 2;
+    const farthestX = Math.max(centerX, window.innerWidth - centerX);
+    const farthestY = Math.max(centerY, window.innerHeight - centerY);
+    const radius = Math.hypot(farthestX, farthestY);
+    const baseRadius = Math.max(1, Math.min(heart.offsetWidth, heart.offsetHeight) / 2);
+    return (radius / baseRadius) * 1.28;
+  };
+
+  const context = gsap.context(() => {
+    const eyebrow = root.querySelector<HTMLElement>('.js-dm-v2-eyebrow');
+    const primary = root.querySelector<HTMLElement>('.js-dm-v2-title-primary');
+    const secondary = root.querySelector<HTMLElement>('.js-dm-v2-title-secondary');
+    const heroCopy = root.querySelector<HTMLElement>('.js-dm-v2-hero-copy');
+    const heroCta = root.querySelector<HTMLElement>('.js-dm-v2-hero-cta');
+
+    if (!reduceMotion) {
+      if (heroCircle) gsap.set(heroCircle, { scale: 3, transformOrigin: '50% 50%' });
+      gsap.set([eyebrow, primary, secondary, heroCopy, heroCta], { autoAlpha: 0 });
+      gsap.set(eyebrow, { y: 12 });
+      gsap.set(primary, { y: '-0.9em' });
+      gsap.set(secondary, { y: '0.9em' });
+      gsap.set([heroCopy, heroCta], { y: 16 });
+
+      const heroTimeline = gsap.timeline({ defaults: { ease: 'power2.out' } });
+      if (heroCircle) heroTimeline.to(heroCircle, { scale: 1, duration: 0.7, ease: 'power2.inOut' }, 0);
+      heroTimeline
+        .to(eyebrow, { autoAlpha: 1, y: 0, duration: 0.55 }, 0.38)
+        .to(primary, { autoAlpha: 1, y: 0, duration: 0.68, ease: 'power2.inOut' }, 0.48)
+        .to(secondary, { autoAlpha: 1, y: 0, duration: 0.68, ease: 'power2.inOut' }, 0.66)
+        .to(heroCopy, { autoAlpha: 1, y: 0, duration: 0.55 }, 0.86)
+        .to(heroCta, { autoAlpha: 1, y: 0, duration: 0.55 }, 1);
+    }
+
+    const createWordReveal = (
+      track: HTMLElement,
+      selector: string,
+      visualSelector?: string,
+      trailingVisualSelector?: string,
+    ) => {
+      const words = gsap.utils.toArray<HTMLElement>(selector, root);
+      const visual = visualSelector
+        ? root.querySelector<HTMLElement>(visualSelector)
+        : null;
+      const trailingVisual = trailingVisualSelector
+        ? root.querySelector<HTMLElement>(trailingVisualSelector)
+        : null;
+
+      if (reduceMotion) {
+        gsap.set(words, { opacity: 1 });
+        if (visual) gsap.set(visual, { autoAlpha: 1, scale: 1 });
+        if (trailingVisual) {
+          gsap.set(trailingVisual, {
+            autoAlpha: 1,
+            xPercent: 0,
+            yPercent: 0,
+            scale: 1,
+            rotation: -45,
+          });
+        }
+        return;
+      }
+
+      gsap.set(words, { opacity: 0.18 });
+      if (visual) gsap.set(visual, { autoAlpha: 0.34, scale: 0.72 });
+      if (trailingVisual) {
+        gsap.set(trailingVisual, {
+          autoAlpha: 0,
+          xPercent: -112,
+          yPercent: 112,
+          scale: 0.88,
+          rotation: -45,
+          transformOrigin: '50% 50%',
+          force3D: true,
+        });
+      }
+
+      const timeline = gsap.timeline({
+        defaults: { ease: 'none' },
+        scrollTrigger: {
+          trigger: track,
+          start: () => getDocumentTop(track) - getNavHeight(),
+          end: () => {
+            const start = getDocumentTop(track) - getNavHeight();
+            return start + Math.max(1, track.offsetHeight - getPanelHeight());
+          },
+          scrub: 0.38,
+          invalidateOnRefresh: true,
+        },
+      });
+
+      timeline.to(words, {
+        opacity: 1,
+        duration: 0.22,
+        stagger: { each: 0.1 },
+      });
+
+      if (visual) {
+        timeline.to(
+          visual,
+          { autoAlpha: 1, scale: 1, duration: 0.8, ease: 'power2.out' },
+          '>-18%',
+        );
+      }
+
+      if (trailingVisual) {
+        timeline
+          .to(
+            trailingVisual,
+            {
+              autoAlpha: 1,
+              xPercent: 0,
+              yPercent: 0,
+              scale: 1,
+              rotation: -45,
+              duration: 0.52,
+              ease: 'power4.in',
+              force3D: true,
+            },
+            '>',
+          )
+          .to(
+            trailingVisual,
+            {
+              rotation: -47.4,
+              duration: 0.07,
+              ease: 'power1.out',
+            },
+            '>',
+          )
+          .to(trailingVisual, {
+            rotation: -45,
+            duration: 0.2,
+            ease: 'elastic.out(1, 0.38)',
+          });
+      }
+    };
+
+    createWordReveal(
+      trackOne,
+      '.js-dm-v2-words-one .dm-v2-word',
+      '.js-dm-v2-inline-target',
+    );
+    createWordReveal(
+      trackTwo,
+      '.js-dm-v2-words-two .dm-v2-word',
+      undefined,
+      '.js-dm-v2-target-arrow',
+    );
+
+    gsap.set('.js-dm-v2-target', {
+      autoAlpha: 1,
+      scale: 1,
+      rotation: 0,
+    });
+
+    gsap.set(heart, {
+      position: 'relative',
+      zIndex: 40,
+      scale: 1,
+      transformOrigin: '50% 50%',
+      force3D: true,
+    });
+
+    const whiteTimeline = gsap
+      .timeline({ paused: true })
+      .to(heart, {
+        scale: () => getWhiteCoverScale(),
+        duration: 0.92,
+        ease: 'power3.inOut',
+        force3D: true,
+      });
+
+    const leftTitle = root.querySelector<HTMLElement>('.js-dm-v2-transition-left');
+    const rightTitle = root.querySelector<HTMLElement>('.js-dm-v2-transition-right');
+    gsap.set(leftTitle, { x: reduceMotion ? 0 : () => -window.innerWidth * 1.08 });
+    gsap.set(rightTitle, { x: reduceMotion ? 0 : () => window.innerWidth * 1.08 });
+
+    const titleTimeline = gsap
+      .timeline({
+        paused: true,
+        defaults: { ease: 'expo.inOut' },
+      })
+      .to(leftTitle, { x: 0, duration: 1.65 }, 0)
+      .to(rightTitle, { x: 0, duration: 1.65 }, 0);
+
+    const animatePhase = (
+      timeline: gsap.core.Timeline,
+      forward: boolean,
+      setCompleted: (complete: boolean) => void,
+      onSettled?: () => void,
+    ) => {
+      if (phaseAnimating) return;
+      phaseAnimating = true;
+
+      if (reduceMotion) {
+        timeline.progress(forward ? 1 : 0);
+        setCompleted(forward);
+        phaseAnimating = false;
+        gestureCooldownUntil = Date.now() + 120;
+        onSettled?.();
+        return;
+      }
+
+      const callbackName = forward ? 'onComplete' : 'onReverseComplete';
+      timeline.eventCallback(callbackName, () => {
+        timeline.eventCallback(callbackName, null);
+        setCompleted(forward);
+        phaseAnimating = false;
+        gestureCooldownUntil = Date.now() + 220;
+        onSettled?.();
+      });
+
+      if (forward) timeline.restart();
+      else timeline.progress(1).reverse();
+    };
+
+    const expandWhite = (forward: boolean, onSettled?: () => void) => {
+      if (forward) root.classList.remove('is-white-passed');
+      if (forward) {
+        whiteExpanded = false;
+        root.classList.remove('is-white-expanded');
+        gsap.set(heart, { scale: 1 });
+        whiteTimeline.invalidate();
+      }
+      animatePhase(whiteTimeline, forward, (complete) => {
+        whiteExpanded = complete;
+        if (!complete) gsap.set(heart, { scale: 1 });
+        root.classList.toggle('is-white-expanded', complete);
+      }, onSettled);
+    };
+
+    const animateTitle = (forward: boolean, onSettled?: () => void) => {
+      animatePhase(titleTimeline, forward, (complete) => {
+        titleCentered = complete;
+      }, onSettled);
+    };
+
+    const handleDirection = (direction: Direction, projectedDistance = 0) => {
+      if (navigationAnimating || phaseAnimating) return true;
+
+      const stops = getStops();
+      const y = window.scrollY;
+      const crosses = (boundary: number) =>
+        projectedDistance > 0 &&
+        (direction > 0 ? y + projectedDistance > boundary : y - projectedDistance < boundary);
+
+      if (direction > 0) {
+        if (near(y, stops.orbitHero)) {
+          const orbitApi = getOrbitApi();
+          if (!orbitApi) {
+            navigatePanelSlide(stops.hero, orbitHero, hero, 1, {
+              handoff: {
+                source: orbitHandoffLabel,
+                target: heroEyebrow,
+              },
+            });
+            return true;
+          }
+
+          navigationAnimating = true;
+          orbitApi.collapse().then(() => {
+            navigationAnimating = false;
+            navigatePanelSlide(stops.hero, orbitHero, hero, 1, {
+              handoff: {
+                source: orbitHandoffLabel,
+                target: heroEyebrow,
+              },
+            });
+          });
+          return true;
+        }
+
+        if (near(y, stops.hero)) {
+          navigatePanelSlide(stops.focus, hero, focus, 1, {
+            visualHandoff: {
+              source: heroCircle,
+              target: focusOrbit,
+              sourceSelector: '.js-dm-v2-hero-circle',
+              targetSelector: '.js-dm-v2-focus-orbit',
+              startAlpha: 0.5,
+              endAlpha: 0,
+            },
+            incomingRevealSelector: '.dm-v2-focus-shell',
+          });
+          return true;
+        }
+
+        if (near(y, stops.focus)) {
+          navigatePanelSlide(stops.trackOne.start, focus, pinOne, 1, {
+            visualHandoff: {
+              source: focusLens,
+              target: inlineLens,
+              sourceSelector: '.js-dm-v2-focus-lens',
+              targetSelector: '.js-dm-v2-inline-lens',
+              startAlpha: 1,
+              endAlpha: 1,
+            },
+          });
+          return true;
+        }
+
+        if (y >= stops.trackOne.start - BOUNDARY_TOLERANCE && y <= stops.trackOne.end + BOUNDARY_TOLERANCE) {
+          if (y < stops.trackOne.end - BOUNDARY_TOLERANCE) {
+            if (crosses(stops.trackOne.end)) {
+              navigateTo(stops.trackOne.end);
+              return true;
+            }
+            return false;
+          }
+
+          navigatePanelSlide(stops.trackTwo.start, pinOne, pinTwo, 1, {
+            visualHandoff: {
+              source: inlineTarget,
+              target: secondTarget,
+              sourceSelector: '.js-dm-v2-inline-target',
+              targetSelector: '.js-dm-v2-second-target',
+              startAlpha: 1,
+              endAlpha: 1,
+            },
+          });
+          return true;
+        }
+
+        if (y > stops.trackOne.end && y < stops.trackTwo.start - BOUNDARY_TOLERANCE) {
+          navigatePanelSlide(stops.trackTwo.start, pinOne, pinTwo, 1, {
+            visualHandoff: {
+              source: inlineTarget,
+              target: secondTarget,
+              sourceSelector: '.js-dm-v2-inline-target',
+              targetSelector: '.js-dm-v2-second-target',
+              startAlpha: 1,
+              endAlpha: 1,
+            },
+          });
+          return true;
+        }
+
+        if (y >= stops.trackTwo.start - BOUNDARY_TOLERANCE && y <= stops.trackTwo.end + BOUNDARY_TOLERANCE) {
+          if (y < stops.trackTwo.end - BOUNDARY_TOLERANCE) {
+            if (crosses(stops.trackTwo.end)) {
+              navigateTo(stops.trackTwo.end);
+              return true;
+            }
+            return false;
+          }
+
+          expandWhite(true, () => {
+            navigateTo(stops.transition.start, () => {
+              root.classList.add('is-white-passed');
+              animateTitle(true);
+            }, WHITE_TRANSITION_DURATION);
+          });
+          return true;
+        }
+
+        if (y > stops.trackTwo.end && y < stops.transition.start - BOUNDARY_TOLERANCE) {
+          navigateTo(stops.transition.start, () => {
+            root.classList.add('is-white-passed');
+            animateTitle(true);
+          }, WHITE_TRANSITION_DURATION);
+          return true;
+        }
+
+        if (y >= stops.transition.start - BOUNDARY_TOLERANCE && y <= stops.transition.end + BOUNDARY_TOLERANCE) {
+          if (!titleCentered) {
+            animateTitle(true);
+            return true;
+          }
+
+          navigateTo(stops.cards);
+          return true;
+        }
+
+        return false;
+      }
+
+      if (near(y, stops.cards)) {
+        navigateTo(stops.transition.end, () => {
+          whiteExpanded = true;
+          whiteTimeline.progress(1);
+          root.classList.add('is-white-expanded');
+          root.classList.add('is-white-passed');
+          titleCentered = true;
+          titleTimeline.progress(1);
+        });
+        return true;
+      }
+
+      if (y >= stops.transition.start - BOUNDARY_TOLERANCE && y <= stops.transition.end + BOUNDARY_TOLERANCE) {
+        if (titleCentered) {
+          animateTitle(false, () => {
+            navigateTo(stops.trackTwo.end, () => {
+              whiteExpanded = true;
+              whiteTimeline.progress(1);
+              root.classList.add('is-white-expanded');
+              root.classList.remove('is-white-passed');
+              expandWhite(false);
+            }, WHITE_TRANSITION_DURATION);
+          });
+          return true;
+        }
+
+        navigateTo(stops.trackTwo.end, () => {
+          whiteExpanded = true;
+          whiteTimeline.progress(1);
+          root.classList.add('is-white-expanded');
+          root.classList.remove('is-white-passed');
+          expandWhite(false);
+        }, WHITE_TRANSITION_DURATION);
+        return true;
+      }
+
+      if (y > stops.trackTwo.end + BOUNDARY_TOLERANCE && y < stops.transition.start) {
+        navigateTo(stops.trackTwo.end, () => {
+          whiteExpanded = true;
+          whiteTimeline.progress(1);
+          root.classList.add('is-white-expanded');
+          root.classList.remove('is-white-passed');
+          expandWhite(false);
+        }, WHITE_TRANSITION_DURATION);
+        return true;
+      }
+
+      if (y >= stops.trackTwo.start - BOUNDARY_TOLERANCE && y <= stops.trackTwo.end + BOUNDARY_TOLERANCE) {
+        if (near(y, stops.trackTwo.end) && whiteExpanded) {
+          expandWhite(false);
+          return true;
+        }
+
+        if (y > stops.trackTwo.start + BOUNDARY_TOLERANCE) {
+          if (crosses(stops.trackTwo.start)) {
+            navigateTo(stops.trackTwo.start);
+            return true;
+          }
+          return false;
+        }
+
+        navigatePanelSlide(stops.trackOne.end, pinTwo, pinOne, -1, {
+          visualHandoff: {
+            source: secondTarget,
+            target: inlineTarget,
+            sourceSelector: '.js-dm-v2-second-target',
+            targetSelector: '.js-dm-v2-inline-target',
+            startAlpha: 1,
+            endAlpha: 1,
+          },
+        });
+        return true;
+      }
+
+      if (y > stops.trackOne.end + BOUNDARY_TOLERANCE && y < stops.trackTwo.start) {
+        navigatePanelSlide(stops.trackOne.end, pinTwo, pinOne, -1, {
+          visualHandoff: {
+            source: secondTarget,
+            target: inlineTarget,
+            sourceSelector: '.js-dm-v2-second-target',
+            targetSelector: '.js-dm-v2-inline-target',
+            startAlpha: 1,
+            endAlpha: 1,
+          },
+        });
+        return true;
+      }
+
+      if (y >= stops.trackOne.start - BOUNDARY_TOLERANCE && y <= stops.trackOne.end + BOUNDARY_TOLERANCE) {
+        if (y > stops.trackOne.start + BOUNDARY_TOLERANCE) {
+          if (crosses(stops.trackOne.start)) {
+            navigateTo(stops.trackOne.start);
+            return true;
+          }
+          return false;
+        }
+
+        navigatePanelSlide(stops.focus, pinOne, focus, -1, {
+          visualHandoff: {
+            source: inlineLens,
+            target: focusLens,
+            sourceSelector: '.js-dm-v2-inline-lens',
+            targetSelector: '.js-dm-v2-focus-lens',
+            startAlpha: 1,
+            endAlpha: 1,
+          },
+          incomingRevealSelector: '.dm-v2-focus-shell',
+        });
+        return true;
+      }
+
+      if (near(y, stops.focus)) {
+        navigatePanelSlide(stops.hero, focus, hero, -1, {
+          visualHandoff: {
+            source: focusOrbit,
+            target: heroCircle,
+            sourceSelector: '.js-dm-v2-focus-orbit',
+            targetSelector: '.js-dm-v2-hero-circle',
+            startAlpha: 0.06,
+            endAlpha: 0.5,
+          },
+        });
+        return true;
+      }
+
+      if (near(y, stops.hero)) {
+        getOrbitApi()?.setCollapsed(true);
+        navigatePanelSlide(stops.orbitHero, hero, orbitHero, -1, {
+          handoff: {
+            source: heroEyebrow,
+            target: orbitHandoffLabel,
+          },
+          onComplete: () => {
+            const orbitApi = getOrbitApi();
+            if (!orbitApi) return;
+            navigationAnimating = true;
+            orbitApi.expand().then(() => {
+              navigationAnimating = false;
+              gestureCooldownUntil = Date.now() + 220;
+            });
+          },
+        });
+        return true;
+      }
+
+      return false;
+    };
+
+    const onWheel = (event: WheelEvent) => {
+      if (Math.abs(event.deltaY) < MIN_GESTURE_DISTANCE || isWheelProtectedTarget(event.target)) return;
+      if (navigationAnimating || phaseAnimating || Date.now() < gestureCooldownUntil) {
+        gestureCooldownUntil = Math.max(gestureCooldownUntil, Date.now() + 140);
+        event.preventDefault();
+        return;
+      }
+      const direction: Direction = event.deltaY > 0 ? 1 : -1;
+      if (handleDirection(direction, Math.abs(event.deltaY))) event.preventDefault();
+    };
+
+    const onTouchStart = (event: TouchEvent) => {
+      if (isFormOrNavigationTarget(event.target) || isFocusLensTarget(event.target)) {
+        touchStartY = null;
+        return;
+      }
+      touchStartY = event.touches[0]?.clientY ?? null;
+      touchHandled = false;
+    };
+
+    const onTouchMove = (event: TouchEvent) => {
+      if (touchStartY === null) return;
+      if (touchHandled) {
+        event.preventDefault();
+        return;
+      }
+      const currentY = event.touches[0]?.clientY ?? touchStartY;
+      const delta = touchStartY - currentY;
+      if (Math.abs(delta) < 26) return;
+
+      const direction: Direction = delta > 0 ? 1 : -1;
+      touchHandled = handleDirection(direction, Math.abs(delta));
+      if (touchHandled) event.preventDefault();
+    };
+
+    const onTouchEnd = () => {
+      touchStartY = null;
+      touchHandled = false;
+    };
+
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (isFormOrNavigationTarget(event.target)) return;
+      const forward = ['ArrowDown', 'PageDown', ' '].includes(event.key);
+      const backward = ['ArrowUp', 'PageUp'].includes(event.key);
+      if (!forward && !backward) return;
+
+      const direction: Direction = forward ? 1 : -1;
+      if (handleDirection(direction, getPanelHeight())) event.preventDefault();
+    };
+
+    window.addEventListener('wheel', onWheel, { passive: false });
+    window.addEventListener('touchstart', onTouchStart, { passive: true });
+    window.addEventListener('touchmove', onTouchMove, { passive: false });
+    window.addEventListener('touchend', onTouchEnd, { passive: true });
+    window.addEventListener('touchcancel', onTouchEnd, { passive: true });
+    window.addEventListener('keydown', onKeyDown);
+
+    registerCleanup(() => {
+      window.removeEventListener('wheel', onWheel);
+      window.removeEventListener('touchstart', onTouchStart);
+      window.removeEventListener('touchmove', onTouchMove);
+      window.removeEventListener('touchend', onTouchEnd);
+      window.removeEventListener('touchcancel', onTouchEnd);
+      window.removeEventListener('keydown', onKeyDown);
+    });
+
+    if (!reduceMotion) {
+      gsap.matchMedia().add('(min-width: 901px)', () => {
+        gsap.utils.toArray<HTMLElement>('.js-dm-v2-card', root).forEach((card, index) => {
+          gsap.to(card, {
+            scale: 0.8 + index * 0.04,
+            transformOrigin: 'center top',
+            ease: 'none',
+            scrollTrigger: {
+              trigger: card,
+              start: 'center center',
+              end: 'center top',
+              scrub: 0.45,
+            },
+          });
+        });
+      });
+    }
+
+    const syncDeepLinkState = () => {
+      const stops = getStops();
+      const y = window.scrollY;
+      getOrbitApi()?.setCollapsed(y >= stops.hero - BOUNDARY_TOLERANCE);
+      if (y >= stops.transition.start - BOUNDARY_TOLERANCE) {
+        whiteExpanded = true;
+        whiteTimeline.progress(1);
+        root.classList.add('is-white-expanded');
+        root.classList.add('is-white-passed');
+        titleCentered = true;
+        titleTimeline.progress(1);
+      }
+    };
+
+    const refresh = () => {
+      window.clearTimeout(resizeTimer);
+      resizeTimer = window.setTimeout(() => {
+        const whiteProgress = whiteTimeline.progress();
+        const titleProgress = titleTimeline.progress();
+        whiteTimeline.invalidate().progress(whiteProgress);
+        titleTimeline.invalidate().progress(titleProgress);
+        ScrollTrigger.refresh();
+      }, 160);
+    };
+
+    window.addEventListener('resize', refresh, { passive: true });
+    window.addEventListener('agsit:viewport-change', refresh, { passive: true });
+    registerCleanup(() => {
+      window.clearTimeout(resizeTimer);
+      window.removeEventListener('resize', refresh);
+      window.removeEventListener('agsit:viewport-change', refresh);
+    });
+
+    syncDeepLinkState();
+    requestAnimationFrame(() => ScrollTrigger.refresh());
+  }, root);
+
+  const destroy = () => {
+    window.cancelAnimationFrame(activeScrollFrame);
+    panelSlideTimeline?.kill();
+    root.querySelector('.js-dm-v2-panel-slide')?.remove();
+    cleanups.forEach((cleanup) => cleanup());
+    context.revert();
+    document.documentElement.classList.remove('dm-v2-story-active');
+  };
+
+  window.addEventListener('pagehide', destroy, { once: true });
+};

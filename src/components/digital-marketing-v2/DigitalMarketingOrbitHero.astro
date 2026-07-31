@@ -1,0 +1,38 @@
+---
+import './DigitalMarketingOrbitHero.css';
+
+type Props = {
+  text: string;
+};
+
+const { text } = Astro.props;
+---
+
+<section
+  class="dm-v2-orbit-hero js-dm-v2-orbit-hero"
+  data-orbit-text={text.toUpperCase()}
+  data-orbit-state="expanded"
+  aria-label="Marketing digital AGSIT"
+>
+  <canvas class="dm-v2-orbit-canvas js-dm-v2-orbit-canvas" aria-hidden="true"></canvas>
+  <p class="dm-v2-orbit-handoff-label js-dm-v2-orbit-handoff-label" aria-hidden="true">
+    {text}
+  </p>
+  <p class="dm-v2-orbit-accessible">
+    {text}, AGSIT.
+  </p>
+</section>
+
+<script>
+  import { setupDigitalMarketingOrbitHero } from './digitalMarketingOrbitHeroController';
+
+  const startOrbitHero = () => {
+    requestAnimationFrame(setupDigitalMarketingOrbitHero);
+  };
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', startOrbitHero, { once: true });
+  } else {
+    startOrbitHero();
+  }
+</script>

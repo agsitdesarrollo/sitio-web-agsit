@@ -1,6 +1,6 @@
 import type { SupportedLang } from '../i18n/ui';
 
-export type StoryInlineVisual = 'eye' | 'flower' | 'heart';
+export type StoryInlineVisual = 'eye' | 'flower' | 'heart' | 'magnifier';
 
 export type StoryTextSegment = {
   text?: string;
@@ -39,6 +39,13 @@ export type DigitalMarketingV2Content = {
     copy: string;
     cta: string;
   };
+  focus: {
+    eyebrow: string;
+    title: string;
+    copy: string;
+    hintDesktop: string;
+    hintTouch: string;
+  };
   narrative: StoryNarrative[];
   transitionTitle: {
     first: string;
@@ -66,11 +73,18 @@ export const digitalMarketingV2ByLang: Record<SupportedLang, DigitalMarketingV2C
       locale: 'es_MX',
     },
     hero: {
-      eyebrow: 'Marketing Digital AGSIT',
+      eyebrow: 'Marketing Digital',
       primary: 'Tu crecimiento digital,',
       secondary: 'diseñado con datos.',
       copy: 'Diseñamos campañas, contenido y analítica que trabajan como un solo sistema para hacer crecer tu negocio.',
       cta: 'Hablemos de tu proyecto',
+    },
+    focus: {
+      eyebrow: 'Visibilidad digital',
+      title: 'Tus próximos clientes buscan soluciones.',
+      copy: 'Nosotros hacemos que te encuentren.',
+      hintDesktop: 'Mueve la lupa',
+      hintTouch: 'Arrastra la lupa',
     },
     narrative: [
       {
@@ -79,7 +93,7 @@ export const digitalMarketingV2ByLang: Record<SupportedLang, DigitalMarketingV2C
         segments: [
           { text: 'Tu marca no necesita más ruido: necesita una estrategia digital diseñada para ' },
           { accent: 'atraer' },
-          { visual: 'eye' },
+          { visual: 'magnifier' },
           { text: ' a las personas correctas y una experiencia construida para ' },
           { accent: 'convertir' },
           { text: '.' },
@@ -107,52 +121,52 @@ export const digitalMarketingV2ByLang: Record<SupportedLang, DigitalMarketingV2C
       ariaLabel: 'Servicios de marketing digital AGSIT',
       items: [
         {
-          title: 'Estrategia Digital',
+          title: 'Growth Marketing y Estrategia Digital',
           eyebrow: 'Dirección',
-          copy: 'La hoja de ruta de tu crecimiento: objetivos, audiencias, canales y KPIs alineados a tu negocio.',
-          theme: 'cyan',
+          copy: 'Impulsamos el crecimiento con una estrategia digital alineada a objetivos, audiencias y métricas.',
+          theme: 'sage',
           visual: 'flower',
           srcvideo: '/assets/Omnicanalidad.mp4',
-          cta: 'Conoce la estrategia',
-          href: '/marketing-digital/estrategia-digital/',
+          // cta: 'Conoce la estrategia',
+          // href: '/marketing-digital/estrategia-digital/',
         },
         {
-          title: 'SEO',
+          title: 'Posicionamiento Orgánico (SEO)',
           eyebrow: 'Visibilidad orgánica',
-          copy: 'Posiciona tu marca donde tus clientes ya están buscando, con tráfico calificado que crece mes a mes.',
-          theme: 'green',
-          visual: 'eye',
-          srcvideo: '/assets/Omnicanalidad.mp4',
-        },
-        {
-          title: 'SEM',
-          eyebrow: 'Captación pagada',
-          copy: 'Campañas de pago con segmentación precisa y retorno medible desde el primer clic.',
-          theme: 'blue',
-          visual: 'heart',
-          srcvideo: '/assets/Omnicanalidad.mp4',
-        },
-        {
-          title: 'Analytics',
-          eyebrow: 'Decisión con datos',
-          copy: 'Tableros claros que convierten datos en decisiones de negocio, sin intuiciones aisladas.',
+          copy: 'Mejoramos tu visibilidad orgánica para atraer búsquedas relevantes y tráfico calificado.',
           theme: 'paper',
-          visual: 'flower',
-          srcvideo: '/assets/Omnicanalidad.mp4',
+          visual: 'eye',
+          srcvideo: '/assets/SEO%20T%C3%A9cnico.mp4',
         },
         {
-          title: 'Social Media',
-          eyebrow: 'Relación digital',
-          copy: 'Comunidades activas y contenido consistente que construye confianza todos los días.',
+          title: 'Publicidad Digital (Google Ads & Social Ads)',
+          eyebrow: 'Captación pagada',
+          copy: 'Creamos campañas en Google Ads y Social Ads orientadas a alcance, conversión y retorno.',
           theme: 'warm',
           visual: 'heart',
           srcvideo: '/assets/Omnicanalidad.mp4',
         },
         {
-          title: 'E-Commerce',
-          eyebrow: 'Conversión',
-          copy: 'Menos fricción entre el interés y la compra: tu canal de ventas abierto las 24 horas.',
+          title: 'Content Marketing y Social Media',
+          eyebrow: 'Decisión con datos',
+          copy: 'Desarrollamos contenido y comunidades que conectan tu marca con su audiencia.',
           theme: 'sage',
+          visual: 'flower',
+          srcvideo: '/assets/Omnicanalidad.mp4',
+        },
+        {
+          title: 'Diseño y Estrategia de E-commerce',
+          eyebrow: 'Relación digital',
+          copy: 'Diseñamos experiencias de compra digitales claras, atractivas y enfocadas en conversión.',
+          theme: 'paper',
+          visual: 'heart',
+          srcvideo: '/assets/Omnicanalidad.mp4',
+        },
+        {
+          title: 'Analytics y CRO',
+          eyebrow: 'Conversión',
+          copy: 'Medimos el comportamiento y optimizamos cada punto para aumentar las conversiones.',
+          theme: 'warm',
           visual: 'eye',
           srcvideo: '/assets/Omnicanalidad.mp4',
         },
@@ -174,11 +188,18 @@ export const digitalMarketingV2ByLang: Record<SupportedLang, DigitalMarketingV2C
       locale: 'en_US',
     },
     hero: {
-      eyebrow: 'AGSIT Digital Marketing',
+      eyebrow: 'Digital Marketing',
       primary: 'Your digital growth,',
       secondary: 'designed with data.',
       copy: 'We design campaigns, content and analytics that work as one system to grow your business.',
       cta: "Let's talk about your project",
+    },
+    focus: {
+      eyebrow: 'Digital visibility',
+      title: 'Your next customers are looking for solutions.',
+      copy: 'We make sure they find you.',
+      hintDesktop: 'Move the magnifying glass',
+      hintTouch: 'Drag the magnifying glass',
     },
     narrative: [
       {
@@ -187,7 +208,7 @@ export const digitalMarketingV2ByLang: Record<SupportedLang, DigitalMarketingV2C
         segments: [
           { text: 'Your brand doesn’t need more noise: it needs a digital strategy designed to ' },
           { accent: 'attract' },
-          { visual: 'eye' },
+          { visual: 'magnifier' },
           { text: ' the right people and an experience built to ' },
           { accent: 'convert' },
           { text: '.' },
@@ -215,52 +236,52 @@ export const digitalMarketingV2ByLang: Record<SupportedLang, DigitalMarketingV2C
       ariaLabel: 'AGSIT digital marketing services',
       items: [
         {
-          title: 'Digital Strategy',
+          title: 'Growth Marketing and Digital Strategy',
           eyebrow: 'Direction',
-          copy: 'Your growth roadmap: objectives, audiences, channels and KPIs aligned with your business.',
-          theme: 'cyan',
+          copy: 'We drive growth through a digital strategy aligned with goals, audiences, and metrics.',
+          theme: 'sage',
           visual: 'flower',
           srcvideo: '/assets/Omnicanalidad.mp4',
-          cta: 'Explore the strategy',
-          href: '/en/digital-marketing/digital-strategy/',
+          // cta: 'Explore the strategy',
+          // href: '/en/digital-marketing/digital-strategy/',
         },
         {
-          title: 'SEO',
+          title: 'Organic Search Positioning (SEO)',
           eyebrow: 'Organic visibility',
-          copy: 'Position your brand where your customers are already searching, with qualified traffic that grows month after month.',
-          theme: 'green',
-          visual: 'eye',
-          srcvideo: '/assets/Omnicanalidad.mp4',
-        },
-        {
-          title: 'SEM',
-          eyebrow: 'Paid acquisition',
-          copy: 'Paid campaigns with precise targeting and measurable return from the very first click.',
-          theme: 'blue',
-          visual: 'heart',
-          srcvideo: '/assets/Omnicanalidad.mp4',
-        },
-        {
-          title: 'Analytics',
-          eyebrow: 'Data decisions',
-          copy: 'Clear dashboards that turn data into business decisions, not isolated guesses.',
+          copy: 'We improve organic visibility to capture relevant searches and qualified traffic.',
           theme: 'paper',
-          visual: 'flower',
-          srcvideo: '/assets/Omnicanalidad.mp4',
+          visual: 'eye',
+          srcvideo: '/assets/SEO%20T%C3%A9cnico.mp4',
         },
         {
-          title: 'Social Media',
-          eyebrow: 'Digital relationship',
-          copy: 'Active communities and consistent content that builds trust every single day.',
+          title: 'Digital Advertising (Google Ads & Social Ads)',
+          eyebrow: 'Paid acquisition',
+          copy: 'We create Google Ads and Social Ads campaigns focused on reach, conversion, and return.',
           theme: 'warm',
           visual: 'heart',
           srcvideo: '/assets/Omnicanalidad.mp4',
         },
         {
-          title: 'E-Commerce',
-          eyebrow: 'Conversion',
-          copy: 'Less friction between interest and purchase: your sales channel open around the clock.',
+          title: 'Content Marketing and Social Media',
+          eyebrow: 'Data decisions',
+          copy: 'We create content and communities that connect your brand with its audience.',
           theme: 'sage',
+          visual: 'flower',
+          srcvideo: '/assets/Omnicanalidad.mp4',
+        },
+        {
+          title: 'E-commerce Design and Strategy',
+          eyebrow: 'Digital relationship',
+          copy: 'We design clear, engaging digital shopping experiences focused on conversion.',
+          theme: 'paper',
+          visual: 'heart',
+          srcvideo: '/assets/Omnicanalidad.mp4',
+        },
+        {
+          title: 'Analytics and CRO',
+          eyebrow: 'Conversion',
+          copy: 'We analyze behavior and optimize every touchpoint to increase conversions.',
+          theme: 'warm',
           visual: 'eye',
           srcvideo: '/assets/Omnicanalidad.mp4',
         },
