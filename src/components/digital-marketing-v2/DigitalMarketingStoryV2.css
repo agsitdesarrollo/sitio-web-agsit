@@ -315,9 +315,7 @@ html.dm-v2-story-active {
   position: relative;
   height: calc(var(--dm-v2-panel-h) + max(760px, 128vh));
   overflow: visible;
-  background:
-    repeating-linear-gradient(90deg, rgba(65, 200, 246, 0.03) 0 1px, transparent 1px 90px),
-    linear-gradient(180deg, #061228, #020712);
+  background: linear-gradient(180deg, #061228, #020712);
 }
 
 .dm-v2-pin-section {
