@@ -24,6 +24,26 @@ export type StoryServiceCard = {
   href?: string;
 };
 
+export type StoryMethodologyTone =
+  | 'attention'
+  | 'trust'
+  | 'preference'
+  | 'conversion'
+  | 'retention'
+  | 'recommendation';
+
+export type StoryMethodologyStep = {
+  id: StoryMethodologyTone;
+  label: string;
+  lead: string;
+  copy: string;
+};
+
+export type StoryMethodologyOutcomeSegment = {
+  text: string;
+  tone?: StoryMethodologyTone;
+};
+
 export type DigitalMarketingV2Content = {
   metadata: {
     title: string;
@@ -47,6 +67,20 @@ export type DigitalMarketingV2Content = {
     hintTouch: string;
   };
   narrative: StoryNarrative[];
+  methodology: {
+    title: {
+      before: string;
+      accent: string;
+      after: string;
+    };
+    intro: string;
+    ariaLabel: string;
+    steps: StoryMethodologyStep[];
+    outcome: {
+      title: string;
+      segments: StoryMethodologyOutcomeSegment[];
+    };
+  };
   transitionTitle: {
     first: string;
     second: string;
@@ -113,6 +147,74 @@ export const digitalMarketingV2ByLang: Record<SupportedLang, DigitalMarketingV2C
         ],
       },
     ],
+    methodology: {
+      title: {
+        before: 'Así impulsamos el',
+        accent: 'crecimiento',
+        after: 'de tu marca',
+      },
+      intro:
+        'Cada estrategia está diseñada para avanzar a tus clientes desde el primer contacto hasta la recomendación de tu marca.',
+      ariaLabel: 'Metodología de marketing digital AGSIT en seis etapas',
+      steps: [
+        {
+          id: 'attention',
+          label: 'Atención',
+          lead: 'Todo comienza cuando logras ser relevante.',
+          copy:
+            'Creamos el posicionamiento y los mensajes que hacen que tu marca destaque desde el primer contacto.',
+        },
+        {
+          id: 'trust',
+          label: 'Confianza',
+          lead: 'La confianza convierte el interés en credibilidad.',
+          copy:
+            'Respaldamos tu marca con contenido, evidencia y experiencias que generan seguridad antes de vender.',
+        },
+        {
+          id: 'preference',
+          label: 'Preferencia',
+          lead: 'Ser visto no es lo mismo que ser elegido.',
+          copy:
+            'Construimos una propuesta de valor que hace que tus clientes te prefieran frente a la competencia.',
+        },
+        {
+          id: 'conversion',
+          label: 'Conversión',
+          lead: 'Cada interacción debe impulsar una decisión.',
+          copy:
+            'Diseñamos experiencias simples y efectivas para transformar el interés en oportunidades de negocio.',
+        },
+        {
+          id: 'retention',
+          label: 'Retención',
+          lead: 'Crecer también significa permanecer.',
+          copy:
+            'Fortalecemos la relación con tus clientes para generar recurrencia, lealtad y mayor valor a largo plazo.',
+        },
+        {
+          id: 'recommendation',
+          label: 'Recomendación',
+          lead: 'Los mejores clientes son quienes te recomiendan.',
+          copy:
+            'Convertimos resultados positivos en experiencias que las personas quieren compartir con otros.',
+        },
+      ],
+      outcome: {
+        title: 'Ventaja competitiva',
+        segments: [
+          { text: 'Una estrategia diseñada para convertir la ' },
+          { text: 'atención', tone: 'attention' },
+          { text: ' en ' },
+          { text: 'confianza', tone: 'trust' },
+          { text: ', la confianza en ' },
+          { text: 'clientes', tone: 'preference' },
+          { text: ' y los clientes en ' },
+          { text: 'promotores', tone: 'recommendation' },
+          { text: ' de tu marca.' },
+        ],
+      },
+    },
     transitionTitle: {
       first: 'Servicios que',
       second: 'mueven resultados',
@@ -136,7 +238,7 @@ export const digitalMarketingV2ByLang: Record<SupportedLang, DigitalMarketingV2C
           copy: 'Mejoramos tu visibilidad orgánica para atraer búsquedas relevantes y tráfico calificado.',
           theme: 'paper',
           visual: 'eye',
-          srcvideo: '/assets/SEO%20T%C3%A9cnico.mp4',
+          srcvideo: '/assets/SEO%20T%C3%A9cnico%20%283%29.mp4',
         },
         {
           title: 'Publicidad Digital (Google Ads & Social Ads)',
@@ -144,7 +246,7 @@ export const digitalMarketingV2ByLang: Record<SupportedLang, DigitalMarketingV2C
           copy: 'Creamos campañas en Google Ads y Social Ads orientadas a alcance, conversión y retorno.',
           theme: 'warm',
           visual: 'heart',
-          srcvideo: '/assets/Omnicanalidad.mp4',
+          srcvideo: '/assets/Google%20Ads.mp4',
         },
         {
           title: 'Content Marketing y Social Media',
@@ -228,6 +330,74 @@ export const digitalMarketingV2ByLang: Record<SupportedLang, DigitalMarketingV2C
         ],
       },
     ],
+    methodology: {
+      title: {
+        before: 'This is how we drive',
+        accent: 'growth',
+        after: 'for your brand',
+      },
+      intro:
+        'Every strategy is designed to move your customers from first contact to recommending your brand.',
+      ariaLabel: 'AGSIT digital marketing methodology in six stages',
+      steps: [
+        {
+          id: 'attention',
+          label: 'Attention',
+          lead: 'Everything begins when you become relevant.',
+          copy:
+            'We create the positioning and messages that make your brand stand out from the very first contact.',
+        },
+        {
+          id: 'trust',
+          label: 'Trust',
+          lead: 'Trust turns interest into credibility.',
+          copy:
+            'We support your brand with content, evidence, and experiences that build confidence before the sale.',
+        },
+        {
+          id: 'preference',
+          label: 'Preference',
+          lead: 'Being seen is not the same as being chosen.',
+          copy:
+            'We build a value proposition that makes customers prefer you over the competition.',
+        },
+        {
+          id: 'conversion',
+          label: 'Conversion',
+          lead: 'Every interaction should drive a decision.',
+          copy:
+            'We design simple, effective experiences that turn interest into business opportunities.',
+        },
+        {
+          id: 'retention',
+          label: 'Retention',
+          lead: 'Growth also means staying power.',
+          copy:
+            'We strengthen customer relationships to generate repeat business, loyalty, and greater long-term value.',
+        },
+        {
+          id: 'recommendation',
+          label: 'Recommendation',
+          lead: 'Your best customers are the ones who recommend you.',
+          copy:
+            'We turn positive results into experiences people want to share with others.',
+        },
+      ],
+      outcome: {
+        title: 'Competitive advantage',
+        segments: [
+          { text: 'A strategy designed to turn ' },
+          { text: 'attention', tone: 'attention' },
+          { text: ' into ' },
+          { text: 'trust', tone: 'trust' },
+          { text: ', trust into ' },
+          { text: 'customers', tone: 'preference' },
+          { text: ', and customers into ' },
+          { text: 'advocates', tone: 'recommendation' },
+          { text: ' for your brand.' },
+        ],
+      },
+    },
     transitionTitle: {
       first: 'Services that',
       second: 'drive results',
@@ -251,7 +421,7 @@ export const digitalMarketingV2ByLang: Record<SupportedLang, DigitalMarketingV2C
           copy: 'We improve organic visibility to capture relevant searches and qualified traffic.',
           theme: 'paper',
           visual: 'eye',
-          srcvideo: '/assets/SEO%20T%C3%A9cnico.mp4',
+          srcvideo: '/assets/SEO%20T%C3%A9cnico%20%283%29.mp4',
         },
         {
           title: 'Digital Advertising (Google Ads & Social Ads)',
@@ -259,7 +429,7 @@ export const digitalMarketingV2ByLang: Record<SupportedLang, DigitalMarketingV2C
           copy: 'We create Google Ads and Social Ads campaigns focused on reach, conversion, and return.',
           theme: 'warm',
           visual: 'heart',
-          srcvideo: '/assets/Omnicanalidad.mp4',
+          srcvideo: '/assets/Google%20Ads.mp4',
         },
         {
           title: 'Content Marketing and Social Media',

@@ -87,7 +87,8 @@ const isFormOrNavigationTarget = (target: EventTarget | null) =>
   );
 
 const isFocusLensTarget = (target: EventTarget | null) =>
-  target instanceof Element && Boolean(target.closest('.js-dm-v2-focus-lens'));
+  target instanceof Element &&
+  Boolean(target.closest('.js-dm-v2-focus-lens'));
 
 const isWheelProtectedTarget = (target: EventTarget | null) =>
   target instanceof Element && Boolean(target.closest('input, textarea, select'));
@@ -235,9 +236,54 @@ export const setupDigitalMarketingStory = () => {
   const trackTwo = root.querySelector<HTMLElement>('.js-dm-v2-track-two');
   const pinTwo = root.querySelector<HTMLElement>('.dm-v2-pin-two');
   const secondTarget = root.querySelector<HTMLElement>('.js-dm-v2-second-target');
+  const methodologyTrack = root.querySelector<HTMLElement>('.js-dm-v2-methodology-track');
+  const methodology = root.querySelector<HTMLElement>('.js-dm-v2-methodology');
+  const methodologyWash = root.querySelector<HTMLElement>('.js-dm-v2-methodology-wash');
+  const methodologyShell = root.querySelector<HTMLElement>('.js-dm-v2-methodology-shell');
+  const methodologySteps = Array.from(
+    root.querySelectorAll<HTMLElement>('.js-dm-v2-methodology-step'),
+  );
+  const methodologyTitle =
+    methodologyShell?.querySelector<HTMLElement>('.dm-v2-methodology-heading');
+  const methodologyStepsList = methodologyShell?.querySelector<HTMLElement>(
+    '.dm-v2-methodology-steps',
+  );
+  const methodologyIcons = Array.from(
+    root.querySelectorAll<HTMLElement>('.dm-v2-methodology-step .dm-v2-methodology-icon'),
+  );
+  const methodologyConvergence = root.querySelector<HTMLElement>(
+    '.js-dm-v2-methodology-convergence',
+  );
+  const methodologyFlowNodes = Array.from(
+    root.querySelectorAll<HTMLElement>('.js-dm-v2-methodology-flow-node'),
+  );
+  const methodologyFlowIcons = methodologyFlowNodes
+    .map((node) => node.querySelector<HTMLElement>('.dm-v2-methodology-flow-icon'))
+    .filter((icon): icon is HTMLElement => Boolean(icon));
+  const methodologyCopies = Array.from(
+    root.querySelectorAll<HTMLElement>('.dm-v2-methodology-copy'),
+  );
+  const methodologyConnectors = Array.from(
+    root.querySelectorAll<HTMLElement>('.dm-v2-methodology-connector'),
+  );
+  const methodologyFlow = root.querySelector<HTMLElement>('.dm-v2-methodology-flow');
+  const methodologyFlowSvg = root.querySelector<SVGSVGElement>(
+    '.dm-v2-methodology-flow-lines',
+  );
+  const methodologyFlowLines = Array.from(
+    root.querySelectorAll<SVGPathElement>('.js-dm-v2-methodology-flow-line'),
+  );
+  const methodologyFlowGradients = Array.from(
+    root.querySelectorAll<SVGLinearGradientElement>('.js-dm-v2-methodology-flow-gradient'),
+  );
+  const methodologyFocus = root.querySelector<HTMLElement>('.js-dm-v2-methodology-focus');
+  const methodologyOutcome = root.querySelector<HTMLElement>(
+    '.js-dm-v2-methodology-outcome',
+  );
   const transitionTrack = root.querySelector<HTMLElement>('.js-dm-v2-transition-track');
   const transition = root.querySelector<HTMLElement>('.js-dm-v2-transition');
   const cards = root.querySelector<HTMLElement>('.js-dm-v2-card-section');
+  const contact = root.querySelector<HTMLElement>('.final-contact-section');
   const heart = root.querySelector<HTMLElement>('.js-dm-v2-heart');
 
   if (!orbitHero) return;
@@ -256,9 +302,28 @@ export const setupDigitalMarketingStory = () => {
     !trackTwo ||
     !pinTwo ||
     !secondTarget ||
+    !methodologyTrack ||
+    !methodology ||
+    !methodologyWash ||
+    !methodologyShell ||
+    !methodologyTitle ||
+    !methodologyStepsList ||
+    !methodologyConvergence ||
+    !methodologyFlow ||
+    !methodologyFlowSvg ||
+    !methodologyFocus ||
+    !methodologyOutcome ||
+    methodologySteps.length < 2 ||
+    methodologyIcons.length !== methodologySteps.length ||
+    methodologyFlowNodes.length !== methodologySteps.length ||
+    methodologyFlowIcons.length !== methodologySteps.length ||
+    methodologyCopies.length !== methodologySteps.length ||
+    methodologyFlowLines.length !== methodologySteps.length ||
+    methodologyFlowGradients.length !== methodologySteps.length ||
     !transitionTrack ||
     !transition ||
     !cards ||
+    !contact ||
     !heart
   ) return;
 
@@ -275,6 +340,9 @@ export const setupDigitalMarketingStory = () => {
   let touchStartY: number | null = null;
   let touchHandled = false;
   let whiteExpanded = false;
+  let methodologyIntroComplete = false;
+  let methodologyStep = 0;
+  let methodologyConverged = false;
   let titleCentered = false;
   let resizeTimer = 0;
   let gestureCooldownUntil = 0;
@@ -294,6 +362,11 @@ export const setupDigitalMarketingStory = () => {
       };
     };
 
+    const cardsRange = trackRange(cards);
+    const methodologyRange = trackRange(methodologyTrack);
+    const methodologyDistance =
+      (methodologyRange.end - methodologyRange.start) / (methodologySteps.length + 1);
+
     return {
       orbitHero: top(orbitHero),
       hero: top(hero),
@@ -301,7 +374,15 @@ export const setupDigitalMarketingStory = () => {
       trackOne: trackRange(trackOne),
       trackTwo: trackRange(trackTwo),
       transition: trackRange(transitionTrack),
-      cards: top(cards),
+      cards: cardsRange,
+      methodology: {
+        ...methodologyRange,
+        steps: Array.from(
+          { length: methodologySteps.length + 2 },
+          (_, index) => methodologyRange.start + methodologyDistance * index,
+        ),
+      },
+      contact: top(contact),
     };
   };
 
@@ -759,6 +840,244 @@ export const setupDigitalMarketingStory = () => {
         force3D: true,
       });
 
+    gsap.set(methodologyWash, { autoAlpha: 0, backgroundColor: '#06142b' });
+    gsap.set(methodologyShell, { autoAlpha: 0, y: reduceMotion ? 0 : 18 });
+
+    const methodologyIntroTimeline = gsap
+      .timeline({ paused: true })
+      .to(
+        methodologyShell,
+        {
+          autoAlpha: 1,
+          y: 0,
+          duration: 0.48,
+          ease: 'power2.out',
+        },
+        0,
+      );
+
+    const methodologyStepTimelines = methodologySteps.map((step) => {
+      const icon = step.querySelector<HTMLElement>('.dm-v2-methodology-icon');
+      const copy = step.querySelector<HTMLElement>('.dm-v2-methodology-copy');
+      const connector = step.querySelector<HTMLElement>('.dm-v2-methodology-connector');
+      const timeline = gsap.timeline({ paused: true });
+
+      timeline
+        .to(step, {
+          opacity: 1,
+          filter: 'saturate(1)',
+          duration: 0.36,
+          ease: 'power2.out',
+        })
+        .to(
+          icon,
+          {
+            scale: 1.08,
+            duration: 0.2,
+            ease: 'back.out(2.2)',
+          },
+          '<',
+        )
+        .to(copy, { y: 0, duration: 0.32, ease: 'power2.out' }, '<')
+        .to(icon, { scale: 1, duration: 0.16, ease: 'power1.out' })
+        .add(() => step.classList.add('is-revealed'), 0);
+
+      if (connector) {
+        timeline.to(
+          connector,
+          {
+            scaleX: 1,
+            scaleY: 1,
+            duration: 0.34,
+            ease: 'power2.out',
+          },
+          0,
+        );
+      }
+
+      timeline.eventCallback('onReverseComplete', () => {
+        step.classList.remove('is-revealed');
+      });
+      return timeline;
+    });
+
+    gsap.set(methodologyConvergence, { autoAlpha: 0 });
+    gsap.set(methodologyFlowNodes, { autoAlpha: 1, x: 0, y: 0, scale: 1 });
+    gsap.set(methodologyFlowIcons, { autoAlpha: 0 });
+    const methodologyFlowLabels = methodologyFlowNodes
+      .map((node) => node.querySelector<HTMLElement>(':scope > span:last-child'))
+      .filter((label): label is HTMLElement => Boolean(label));
+    gsap.set(methodologyFlowLabels, { autoAlpha: 0, y: 6 });
+    gsap.set(methodologyFlowLines, { strokeDashoffset: 1 });
+    gsap.set(methodologyFocus, { autoAlpha: 0, scale: 0.25 });
+    gsap.set(methodologyOutcome, { autoAlpha: 0, x: reduceMotion ? 0 : 24 });
+
+    const updateMethodologyFlowGeometry = () => {
+      const flowRect = methodologyFlow.getBoundingClientRect();
+      const focusRect = methodologyFocus.getBoundingClientRect();
+      if (flowRect.width < 1 || flowRect.height < 1) return;
+
+      const endX = focusRect.left + focusRect.width / 2 - flowRect.left;
+      const endY = focusRect.top + focusRect.height / 2 - flowRect.top;
+      methodologyFlowSvg.setAttribute('viewBox', `0 0 ${flowRect.width} ${flowRect.height}`);
+
+      const firstIcon = methodologyFlowNodes[0]?.querySelector<HTMLElement>(
+        '.dm-v2-methodology-flow-icon',
+      );
+      if (!firstIcon) return;
+      const firstIconRect = firstIcon.getBoundingClientRect();
+      const firstIconCenterY = firstIconRect.top + firstIconRect.height / 2 - flowRect.top;
+      const focusIsBelow = endY > firstIconCenterY + firstIconRect.height * 1.25;
+
+      methodologyFlowGradients.forEach((gradient) => {
+        gradient.setAttribute('x1', focusIsBelow ? '50%' : '0%');
+        gradient.setAttribute('y1', focusIsBelow ? '0%' : '50%');
+        gradient.setAttribute('x2', focusIsBelow ? '50%' : '100%');
+        gradient.setAttribute('y2', focusIsBelow ? '100%' : '50%');
+      });
+
+      methodologyFlowLines.forEach((line, index) => {
+        if (focusIsBelow) {
+          const startX =
+            flowRect.width * ((index + 0.5) / methodologyFlowLines.length);
+          const startY = flowRect.height * 0.52;
+          const distanceY = Math.max(40, endY - startY);
+          const controlOneY = startY + distanceY * 0.3;
+          const controlTwoY = endY - distanceY * 0.22;
+          line.setAttribute(
+            'd',
+            `M ${startX} ${startY} C ${startX} ${controlOneY}, ${endX} ${controlTwoY}, ${endX} ${endY}`,
+          );
+          return;
+        }
+
+        const startX = Math.min(endX - 90, flowRect.width * 0.58);
+        const fanPosition =
+          methodologyFlowLines.length > 1
+            ? index / (methodologyFlowLines.length - 1) - 0.5
+            : 0;
+        const startY = endY + flowRect.height * fanPosition * 1.28;
+        const distanceX = Math.max(48, endX - startX);
+        const firstControlX = startX + distanceX * 0.26;
+        const finalControlX = endX - distanceX * 0.2;
+        line.setAttribute(
+          'd',
+          `M ${startX} ${startY} C ${firstControlX} ${startY}, ${finalControlX} ${endY}, ${endX} ${endY}`,
+        );
+      });
+    };
+
+    updateMethodologyFlowGeometry();
+
+    const getMethodologyIconDestination = (index: number) => {
+      const source = methodologyIcons[index];
+      const target = methodologyFlowIcons[index];
+      if (!source || !target) return { x: 0, y: 0, scale: 1 };
+
+      const sourceRect = source.getBoundingClientRect();
+      const targetRect = target.getBoundingClientRect();
+      return {
+        x: targetRect.left + targetRect.width / 2 - (sourceRect.left + sourceRect.width / 2),
+        y: targetRect.top + targetRect.height / 2 - (sourceRect.top + sourceRect.height / 2),
+        scale: targetRect.width / Math.max(1, sourceRect.width),
+      };
+    };
+
+    const prepareMethodologyIconHandoff = () => {
+      gsap.set(methodologyIcons, {
+        autoAlpha: 1,
+        x: 0,
+        y: 0,
+        scale: 1,
+        transformOrigin: '50% 50%',
+      });
+      gsap.set(methodologyFlowIcons, { autoAlpha: 0 });
+      gsap.set(methodologyFlowLabels, { autoAlpha: 0, y: 6 });
+
+      return methodologyIcons.map((_, index) => getMethodologyIconDestination(index));
+    };
+
+    let methodologyIconDestinations = prepareMethodologyIconHandoff();
+
+    const methodologyOutcomeIcon = methodologyOutcome.querySelector<HTMLElement>(
+      '.dm-v2-methodology-outcome-icon',
+    );
+    const methodologyConvergenceTimeline = gsap
+      .timeline({ paused: true, defaults: { ease: 'power3.inOut' } })
+      .to(methodologyTitle, { autoAlpha: 0, y: -22, duration: 0.38 }, 0)
+      .to(methodologyConvergence, { autoAlpha: 1, duration: 0.01 }, 0)
+      .to(
+        methodologyCopies,
+        { autoAlpha: 0, duration: 0.24, ease: 'power2.out' },
+        0.02,
+      )
+      .to(
+        methodologyConnectors,
+        { autoAlpha: 0, duration: 0.24, ease: 'power2.out' },
+        0.02,
+      )
+      .to(
+        methodologyIcons,
+        {
+          x: (index) => methodologyIconDestinations[index]?.x ?? 0,
+          y: (index) => methodologyIconDestinations[index]?.y ?? 0,
+          scale: (index) => methodologyIconDestinations[index]?.scale ?? 1,
+          duration: 0.92,
+          ease: 'power3.inOut',
+        },
+        0.02,
+      )
+      .to(methodologyFlowIcons, { autoAlpha: 1, duration: 0.08, ease: 'none' }, 0.94)
+      .to(methodologyIcons, { autoAlpha: 0, duration: 0.08, ease: 'none' }, 0.94)
+      .to(methodologyStepsList, { autoAlpha: 0, duration: 0.01 }, 1.03)
+      .to(
+        methodologyFlowLabels,
+        {
+          autoAlpha: 1,
+          y: 0,
+          duration: 0.28,
+          stagger: 0.025,
+          ease: 'power2.out',
+        },
+        1.02,
+      )
+      .to(
+        methodologyFlowLines,
+        {
+          strokeDashoffset: 0,
+          duration: 0.7,
+          stagger: 0.025,
+          ease: 'power2.inOut',
+        },
+        1.13,
+      )
+      .to(
+        methodologyFocus,
+        {
+          autoAlpha: 1,
+          scale: 1,
+          duration: 0.32,
+          ease: 'back.out(2.2)',
+        },
+        1.76,
+      )
+      .to(
+        methodologyOutcome,
+        {
+          autoAlpha: 1,
+          x: 0,
+          duration: 0.5,
+          ease: 'power3.out',
+        },
+        1.9,
+      )
+      .fromTo(
+        methodologyOutcomeIcon,
+        { scale: 0.82 },
+        { scale: 1, duration: 0.46, ease: 'back.out(2)', immediateRender: false },
+        1.9,
+      );
+
     const leftTitle = root.querySelector<HTMLElement>('.js-dm-v2-transition-left');
     const rightTitle = root.querySelector<HTMLElement>('.js-dm-v2-transition-right');
     gsap.set(leftTitle, { x: reduceMotion ? 0 : () => -window.innerWidth * 1.08 });
@@ -822,6 +1141,67 @@ export const setupDigitalMarketingStory = () => {
       animatePhase(titleTimeline, forward, (complete) => {
         titleCentered = complete;
       }, onSettled);
+    };
+
+    const animateMethodologyIntro = (forward: boolean, onSettled?: () => void) => {
+      animatePhase(methodologyIntroTimeline, forward, (complete) => {
+        methodologyIntroComplete = complete;
+      }, onSettled);
+    };
+
+    const animateMethodologyStep = (
+      stepNumber: number,
+      forward: boolean,
+      onSettled?: () => void,
+    ) => {
+      const timeline = methodologyStepTimelines[stepNumber - 1];
+      const step = methodologySteps[stepNumber - 1];
+      if (!timeline || !step) {
+        onSettled?.();
+        return;
+      }
+
+      animatePhase(timeline, forward, (complete) => {
+        step.classList.toggle('is-revealed', complete);
+        methodologyStep = complete ? stepNumber : stepNumber - 1;
+      }, onSettled);
+    };
+
+    const animateMethodologyConvergence = (
+      forward: boolean,
+      onSettled?: () => void,
+    ) => {
+      if (forward) {
+        updateMethodologyFlowGeometry();
+        methodologyConvergenceTimeline.progress(0).pause();
+        methodologyIconDestinations = prepareMethodologyIconHandoff();
+        methodologyConvergenceTimeline.invalidate();
+      }
+      animatePhase(methodologyConvergenceTimeline, forward, (complete) => {
+        methodologyConverged = complete;
+        methodology.classList.toggle('is-converged', complete);
+      }, onSettled);
+    };
+
+    const setMethodologyConvergenceState = (complete: boolean) => {
+      updateMethodologyFlowGeometry();
+      methodologyConvergenceTimeline.progress(0).pause();
+      methodologyIconDestinations = prepareMethodologyIconHandoff();
+      methodologyConvergenceTimeline.invalidate().progress(complete ? 1 : 0).pause();
+      methodologyConverged = complete;
+      methodology.classList.toggle('is-converged', complete);
+    };
+
+    const setMethodologyState = (stepNumber: number) => {
+      const nextStep = gsap.utils.clamp(0, methodologySteps.length, stepNumber);
+      methodologyIntroComplete = true;
+      methodologyIntroTimeline.progress(1);
+      methodologyStepTimelines.forEach((timeline, index) => {
+        const complete = index < nextStep;
+        timeline.progress(complete ? 1 : 0);
+        methodologySteps[index]?.classList.toggle('is-revealed', complete);
+      });
+      methodologyStep = nextStep;
     };
 
     const handleDirection = (direction: Direction, projectedDistance = 0) => {
@@ -956,19 +1336,141 @@ export const setupDigitalMarketingStory = () => {
             return true;
           }
 
-          navigateTo(stops.cards);
+          navigateTo(stops.cards.start);
+          return true;
+        }
+
+        if (y >= stops.cards.start - BOUNDARY_TOLERANCE && y <= stops.cards.end + BOUNDARY_TOLERANCE) {
+          if (y < stops.cards.end - BOUNDARY_TOLERANCE) {
+            if (crosses(stops.cards.end)) {
+              navigateTo(stops.cards.end);
+              return true;
+            }
+            return false;
+          }
+
+          navigateTo(stops.methodology.start, () => animateMethodologyIntro(true));
+          return true;
+        }
+
+        if (y > stops.cards.end && y < stops.methodology.start - BOUNDARY_TOLERANCE) {
+          navigateTo(stops.methodology.start, () => animateMethodologyIntro(true));
+          return true;
+        }
+
+        if (
+          y >= stops.methodology.start - BOUNDARY_TOLERANCE &&
+          y <= stops.methodology.end + BOUNDARY_TOLERANCE
+        ) {
+          if (!methodologyIntroComplete) {
+            animateMethodologyIntro(true);
+            return true;
+          }
+
+          if (methodologyStep < methodologySteps.length) {
+            const nextStep = methodologyStep + 1;
+            navigateTo(stops.methodology.steps[nextStep] ?? stops.methodology.end, () => {
+              animateMethodologyStep(nextStep, true);
+            });
+            return true;
+          }
+
+          if (!methodologyConverged) {
+            navigateTo(
+              stops.methodology.steps[methodologySteps.length + 1] ??
+                stops.methodology.end,
+              () => animateMethodologyConvergence(true),
+            );
+            return true;
+          }
+
+          navigateTo(stops.contact);
+          return true;
+        }
+
+        if (y > stops.methodology.end && y < stops.contact - BOUNDARY_TOLERANCE) {
+          setMethodologyState(methodologySteps.length);
+          setMethodologyConvergenceState(true);
+          navigateTo(stops.contact);
           return true;
         }
 
         return false;
       }
 
-      if (near(y, stops.cards)) {
+      if (near(y, stops.contact)) {
+        setMethodologyState(methodologySteps.length);
+        setMethodologyConvergenceState(true);
+        navigateTo(stops.methodology.end);
+        return true;
+      }
+
+      if (y > stops.methodology.end + BOUNDARY_TOLERANCE && y < stops.contact) {
+        setMethodologyState(methodologySteps.length);
+        setMethodologyConvergenceState(true);
+        navigateTo(stops.methodology.end);
+        return true;
+      }
+
+      if (
+        y >= stops.methodology.start - BOUNDARY_TOLERANCE &&
+        y <= stops.methodology.end + BOUNDARY_TOLERANCE
+      ) {
+        if (methodologyConverged) {
+          animateMethodologyConvergence(false, () => {
+            navigateTo(
+              stops.methodology.steps[methodologySteps.length] ?? stops.methodology.start,
+            );
+          });
+          return true;
+        }
+
+        if (methodologyStep > 0) {
+          const currentStep = methodologyStep;
+          animateMethodologyStep(currentStep, false, () => {
+            navigateTo(stops.methodology.steps[currentStep - 1] ?? stops.methodology.start);
+          });
+          return true;
+        }
+
+        if (methodologyIntroComplete) {
+          animateMethodologyIntro(false, () => {
+            navigateTo(stops.cards.end);
+          });
+          return true;
+        }
+
+        navigateTo(stops.cards.end);
+        return true;
+      }
+
+      if (y > stops.cards.end + BOUNDARY_TOLERANCE && y < stops.methodology.start) {
+        navigateTo(stops.cards.end);
+        return true;
+      }
+
+      if (y >= stops.cards.start - BOUNDARY_TOLERANCE && y <= stops.cards.end + BOUNDARY_TOLERANCE) {
+        if (y > stops.cards.start + BOUNDARY_TOLERANCE) {
+          if (crosses(stops.cards.start)) {
+            navigateTo(stops.cards.start);
+            return true;
+          }
+          return false;
+        }
+
         navigateTo(stops.transition.end, () => {
           whiteExpanded = true;
           whiteTimeline.progress(1);
           root.classList.add('is-white-expanded');
           root.classList.add('is-white-passed');
+          titleCentered = true;
+          titleTimeline.progress(1);
+        });
+        return true;
+      }
+
+      if (y > stops.transition.end + BOUNDARY_TOLERANCE && y < stops.cards.start) {
+        navigateTo(stops.transition.end, () => {
           titleCentered = true;
           titleTimeline.progress(1);
         });
@@ -1207,15 +1709,40 @@ export const setupDigitalMarketingStory = () => {
         titleCentered = true;
         titleTimeline.progress(1);
       }
+      if (y >= stops.methodology.start - BOUNDARY_TOLERANCE) {
+        const methodologyPhase = gsap.utils.clamp(
+          0,
+          methodologySteps.length + 1,
+          Math.round(
+            ((y - stops.methodology.start) /
+              Math.max(1, stops.methodology.end - stops.methodology.start)) *
+              (methodologySteps.length + 1),
+          ),
+        );
+        const hasReachedContact = y >= stops.contact - BOUNDARY_TOLERANCE;
+        setMethodologyState(
+          hasReachedContact
+            ? methodologySteps.length
+            : Math.min(methodologySteps.length, methodologyPhase),
+        );
+        setMethodologyConvergenceState(
+          hasReachedContact || methodologyPhase > methodologySteps.length,
+        );
+      }
     };
 
     const refresh = () => {
       window.clearTimeout(resizeTimer);
       resizeTimer = window.setTimeout(() => {
-        const whiteProgress = whiteTimeline.progress();
-        const titleProgress = titleTimeline.progress();
-        whiteTimeline.invalidate().progress(whiteProgress);
-        titleTimeline.invalidate().progress(titleProgress);
+        if (!phaseAnimating) {
+          const whiteProgress = whiteTimeline.progress();
+          const methodologyIntroProgress = methodologyIntroTimeline.progress();
+          const titleProgress = titleTimeline.progress();
+          whiteTimeline.invalidate().progress(whiteProgress);
+          methodologyIntroTimeline.invalidate().progress(methodologyIntroProgress);
+          titleTimeline.invalidate().progress(titleProgress);
+          updateMethodologyFlowGeometry();
+        }
         ScrollTrigger.refresh();
       }, 160);
     };

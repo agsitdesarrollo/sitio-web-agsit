@@ -393,6 +393,10 @@ html.dm-v2-story-active {
 
 .dm-v2-inline-heart {
   z-index: 40;
+  width: 0.68em;
+  height: 0.68em;
+  margin-inline: 0.1em;
+  vertical-align: -0.015em;
 }
 
 .dm-v2-page.is-white-passed .js-dm-v2-heart {
@@ -438,16 +442,24 @@ html.dm-v2-story-active {
   filter: drop-shadow(0 20px 32px rgba(0, 0, 0, 0.28));
 }
 
-.dm-v2-target-arrow {
+.dm-v2-target-arrow-motion {
   position: absolute;
   inset: 0;
   z-index: 2;
+  pointer-events: none;
+  transform-origin: 50% 50%;
+  will-change: transform, opacity;
+}
+
+.dm-v2-target-arrow {
+  position: absolute;
+  inset: 0;
   width: 100%;
   height: 100%;
   display: block;
   pointer-events: none;
   transform-origin: 50% 50%;
-  will-change: transform, opacity;
+  transform: scaleX(1.12);
 }
 
 .dm-v2-target-pulse {

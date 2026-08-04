@@ -1,0 +1,142 @@
+---
+import './DigitalMarketingMethodology.css';
+import type { DigitalMarketingV2Content } from '../../data/digitalMarketingV2';
+import DigitalMarketingMethodologyIcon from './DigitalMarketingMethodologyIcon.astro';
+
+type Props = {
+  content: DigitalMarketingV2Content['methodology'];
+};
+
+const { content } = Astro.props;
+const methodologyColors = {
+  attention: '#49b9ff',
+  trust: '#ca6cff',
+  preference: '#20e6ce',
+  conversion: '#ffb000',
+  retention: '#ff8700',
+  recommendation: '#dce900',
+} as const;
+---
+
+<section
+  class="dm-v2-methodology-track js-dm-v2-methodology-track"
+  data-step-count={content.steps.length}
+  aria-label={content.ariaLabel}
+>
+  <article class="dm-v2-methodology js-dm-v2-methodology">
+    <div class="dm-v2-methodology-wash js-dm-v2-methodology-wash" aria-hidden="true"></div>
+
+    <div class="dm-v2-methodology-shell js-dm-v2-methodology-shell">
+      <header class=dm-v2-methodology-heading>
+        <h2>
+          <span>{content.title.before}</span>
+          <em>{content.title.accent}</em>
+          <span>{content.title.after}</span>
+        </h2>
+        <p>{content.intro}</p>
+        <span class=dm-v2-methodology-heading-beam aria-hidden=true></span>
+      </header>
+
+      <ol class="dm-v2-methodology-steps">
+        {
+          content.steps.map((step, index) => (
+            <li
+              class:list={[
+                'dm-v2-methodology-step',
+                `dm-v2-methodology-step-${step.id}`,
+                'js-dm-v2-methodology-step',
+              ]}
+              data-method-step={index + 1}
+            >
+              {index > 0 && <span class="dm-v2-methodology-connector" aria-hidden="true"></span>}
+              <span class="dm-v2-methodology-icon" aria-hidden="true">
+                <DigitalMarketingMethodologyIcon name={step.id} />
+              </span>
+              <div class="dm-v2-methodology-copy">
+                <span class="dm-v2-methodology-label">{step.label}</span>
+                <p class="dm-v2-methodology-lead">{step.lead}</p>
+                <p class="dm-v2-methodology-detail">{step.copy}</p>
+              </div>
+            </li>
+          ))
+        }
+      </ol>
+
+      <div class="dm-v2-methodology-convergence js-dm-v2-methodology-convergence">
+        <div class="dm-v2-methodology-flow" aria-hidden="true">
+          <ol class="dm-v2-methodology-flow-nodes">
+            {
+              content.steps.map((step) => (
+                <li
+                  class:list={[
+                    'dm-v2-methodology-flow-node',
+                    `dm-v2-methodology-flow-node-${step.id}`,
+                    'js-dm-v2-methodology-flow-node',
+                  ]}
+                >
+                  <span class="dm-v2-methodology-flow-icon">
+                    <DigitalMarketingMethodologyIcon name={step.id} />
+                  </span>
+                  <span>{step.label}</span>
+                </li>
+              ))
+            }
+          </ol>
+
+          <svg
+            class="dm-v2-methodology-flow-lines"
+            viewBox="0 0 100 100"
+            preserveAspectRatio="none"
+            role="presentation"
+          >
+            <defs>
+              {
+                content.steps.map((step) => (
+                  <linearGradient
+                    id={`dm-v2-flow-gradient-${step.id}`}
+                    class="js-dm-v2-methodology-flow-gradient"
+                  >
+                    <stop offset="0" stop-color={methodologyColors[step.id]} stop-opacity="0"></stop>
+                    <stop offset="0.22" stop-color={methodologyColors[step.id]} stop-opacity="0.42"></stop>
+                    <stop offset="1" stop-color={methodologyColors[step.id]} stop-opacity="1"></stop>
+                  </linearGradient>
+                ))
+              }
+            </defs>
+            {
+              content.steps.map((step) => (
+                <path
+                  class:list={[
+                    'dm-v2-methodology-flow-line',
+                    `dm-v2-methodology-flow-line-${step.id}`,
+                    'js-dm-v2-methodology-flow-line',
+                  ]}
+                  pathLength="1"
+                ></path>
+              ))
+            }
+          </svg>
+
+          <span class="dm-v2-methodology-focus js-dm-v2-methodology-focus"></span>
+        </div>
+
+        <div class="dm-v2-methodology-outcome js-dm-v2-methodology-outcome">
+          <span class="dm-v2-methodology-outcome-icon" aria-hidden="true">
+            <DigitalMarketingMethodologyIcon name="advantage" />
+          </span>
+          <h3>{content.outcome.title}</h3>
+          <p>
+            {
+              content.outcome.segments.map((segment) => (
+                <span class:list={segment.tone && `dm-v2-methodology-tone-${segment.tone}`}>
+                  {segment.text}
+                </span>
+              ))
+            }
+          </p>
+        </div>
+      </div>
+
+    </div>
+  </article>
+</section>
