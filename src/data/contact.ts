@@ -28,6 +28,8 @@ export type ContactCopy = {
     label: string;
     title: string;
     copy: string;
+    phoneLabel: string;
+    whatsappLabel: string;
   };
   drawer: {
     closeLabel: string;
@@ -49,6 +51,8 @@ export const contactCopyByLang: Record<SupportedLang, ContactCopy> = {
       label: 'Información de contacto',
       title: 'Contacto directo',
       copy: 'También puedes comunicarte con nuestro equipo por estos canales.',
+      phoneLabel: 'Llamadas y WhatsApp',
+      whatsappLabel: 'Abrir conversación en WhatsApp',
     },
     drawer: {
       closeLabel: 'Cerrar formulario',
@@ -85,6 +89,8 @@ export const contactCopyByLang: Record<SupportedLang, ContactCopy> = {
       label: 'Contact information',
       title: 'Direct contact',
       copy: 'You can also contact our team through these channels.',
+      phoneLabel: 'Calls and WhatsApp',
+      whatsappLabel: 'Open WhatsApp conversation',
     },
     drawer: {
       closeLabel: 'Close form',

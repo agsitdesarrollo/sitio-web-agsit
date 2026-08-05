@@ -250,16 +250,35 @@ body.drawer-open {
   line-height: 1.6;
 }
 
-.contact-direct-card a {
+.contact-direct-channel {
   display: flex;
   align-items: center;
   gap: 12px;
   padding: 14px 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.16);
+}
+
+.contact-direct-details {
+  min-width: 0;
+  display: grid;
+  gap: 3px;
+}
+
+.contact-direct-primary {
   color: #ffffff;
   font-family: 'Inter', 'Segoe UI', Tahoma, sans-serif;
   font-size: 0.92rem;
   font-weight: 700;
-  border-top: 1px solid rgba(255, 255, 255, 0.16);
+  line-height: 1.3;
+  overflow-wrap: anywhere;
+}
+
+.contact-direct-secondary {
+  color: rgba(255, 255, 255, 0.7);
+  font-family: 'Inter', 'Segoe UI', Tahoma, sans-serif;
+  font-size: 0.8rem;
+  font-weight: 500;
+  line-height: 1.35;
 }
 
 .contact-direct-icon {
@@ -274,6 +293,21 @@ body.drawer-open {
   background: rgba(255, 255, 255, 0.08);
 }
 
+a.contact-direct-icon {
+  color: #ffffff;
+  transition:
+    border-color 180ms ease,
+    background-color 180ms ease,
+    transform 180ms ease;
+}
+
+a.contact-direct-icon:hover,
+a.contact-direct-icon:focus-visible {
+  border-color: rgba(255, 255, 255, 0.62);
+  background: rgba(255, 255, 255, 0.14);
+  transform: translateY(-1px);
+}
+
 .contact-direct-icon svg {
   width: 18px;
   height: 18px;
@@ -284,10 +318,10 @@ body.drawer-open {
   stroke-linejoin: round;
 }
 
-.contact-direct-icon .contact-whatsapp-icon {
-  width: 19px;
-  height: 19px;
-  stroke-width: 1.75;
+.contact-direct-icon-phone svg {
+  width: 21px;
+  height: 21px;
+  stroke-width: 1.8;
 }
 
 @media (max-width: 1080px) {

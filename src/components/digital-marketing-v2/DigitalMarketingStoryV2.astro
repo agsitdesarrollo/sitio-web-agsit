@@ -170,9 +170,8 @@ const assetByVisual: Record<StoryInlineVisual, string> = {
                 src={card.srcvideo}
                 muted
                 playsinline
-                preload="metadata"
+                preload={index === 0 ? 'auto' : 'none'}
                 loop
-                autoplay
               ></video>
             </div>
           </li>

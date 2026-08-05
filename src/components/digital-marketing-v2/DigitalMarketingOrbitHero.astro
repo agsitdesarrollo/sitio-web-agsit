@@ -26,9 +26,7 @@ const { text } = Astro.props;
 <script>
   import { setupDigitalMarketingOrbitHero } from './digitalMarketingOrbitHeroController';
 
-  const startOrbitHero = () => {
-    requestAnimationFrame(setupDigitalMarketingOrbitHero);
-  };
+  const startOrbitHero = () => setupDigitalMarketingOrbitHero();
 
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', startOrbitHero, { once: true });

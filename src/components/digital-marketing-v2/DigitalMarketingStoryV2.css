@@ -17,6 +17,7 @@
   position: relative;
   overflow-x: clip;
   overflow-y: visible;
+  overscroll-behavior-y: none;
   background: var(--dm-v2-ink-deep);
   color: var(--dm-v2-white);
 }
@@ -43,10 +44,22 @@ html.dm-v2-story-active {
   will-change: transform;
 }
 
+.dm-v2-panel-slide-frame.is-lightweight {
+  contain: layout paint;
+  backface-visibility: hidden;
+  transform: translateZ(0);
+}
+
+.dm-v2-card-video-snapshot {
+  pointer-events: none;
+}
+
 .dm-v2-panel-slide-frame > .dm-v2-focus,
 .dm-v2-panel-slide-frame > .dm-v2-orbit-hero,
 .dm-v2-panel-slide-frame > .dm-v2-hero,
-.dm-v2-panel-slide-frame > .dm-v2-pin-section {
+.dm-v2-panel-slide-frame > .dm-v2-pin-section,
+.dm-v2-panel-slide-frame > .dm-v2-transition,
+.dm-v2-panel-slide-frame > .dm-v2-methodology {
   position: relative;
   top: auto;
   width: 100%;
@@ -632,7 +645,8 @@ html.dm-v2-story-active {
   font-family: 'Cormorant Garamond', Georgia, serif;
   font-size: clamp(2.6rem, 4.9vw, 6.6rem);
   font-weight: 500;
-  line-height: 0.92;
+  line-height: 1.03;
+  text-wrap: balance;
 }
 
 .dm-v2-card p:not(.dm-v2-card-eyebrow) {
@@ -727,6 +741,10 @@ html.dm-v2-story-active {
 }
 
 @media (max-width: 900px) {
+  .dm-v2-hero-copy {
+    max-width: min(47vw, 360px);
+  }
+
   .dm-v2-focus-shell {
     width: min(760px, 94vw);
   }
@@ -789,7 +807,8 @@ html.dm-v2-story-active {
   }
 
   .dm-v2-card h3 {
-    font-size: clamp(2.4rem, 9vw, 4.8rem);
+    font-size: clamp(2.6rem, 6.8vw, 4.3rem);
+    line-height: 1.04;
   }
 
   .dm-v2-card-visual {
@@ -807,6 +826,10 @@ html.dm-v2-story-active {
   .dm-v2-title-secondary {
     font-size: clamp(2.1rem, 9.5vw, 3rem);
     line-height: 1.06;
+  }
+
+  .dm-v2-hero-copy {
+    max-width: min(66vw, 320px);
   }
 
   .dm-v2-focus-shell {
@@ -889,15 +912,27 @@ html.dm-v2-story-active {
   }
 
   .dm-v2-card {
-    grid-template-rows: auto minmax(150px, 0.58fr);
+    grid-template-rows: auto minmax(0, 1fr);
+    align-items: stretch;
   }
 
   .dm-v2-card h3 {
-    font-size: clamp(2.25rem, 12vw, 4rem);
+    font-size: clamp(2rem, 10vw, 3.3rem);
+    line-height: 1.05;
   }
 
   .dm-v2-card p:not(.dm-v2-card-eyebrow) {
     font-size: 0.96rem;
+  }
+
+  .dm-v2-card-visual {
+    align-self: center;
+    padding-block: clamp(10px, 3vh, 24px);
+  }
+
+  .dm-v2-card-video {
+    max-height: min(34vh, 270px);
+    object-fit: contain;
   }
 }
 
@@ -913,6 +948,7 @@ html.dm-v2-story-active {
   }
 
   .dm-v2-hero-copy {
+    max-width: min(42vw, 390px);
     margin-top: 8px;
     font-size: clamp(0.72rem, 1.55vw, 0.9rem);
     line-height: 1.4;
@@ -946,7 +982,7 @@ html.dm-v2-story-active {
 
   .dm-v2-focus-copy p {
     max-width: 680px;
-    font-size: clamp(1.2rem, 3.25vw, 2.1rem);
+    font-size: clamp(1.7rem, 4.6vw, 2.7rem);
   }
 
   .dm-v2-focus-hint {
@@ -967,8 +1003,8 @@ html.dm-v2-story-active {
 
   .dm-v2-large-copy,
   .dm-v2-pin-two .dm-v2-second-copy .dm-v2-large-copy {
-    font-size: clamp(1.5rem, 4vw, 2.7rem);
-    line-height: 1.02;
+    font-size: clamp(2rem, 5vw, 3.25rem);
+    line-height: 1.04;
   }
 
   .dm-v2-pin-two {
@@ -1016,12 +1052,12 @@ html.dm-v2-story-active {
 
   .dm-v2-card h3 {
     font-size: clamp(1.7rem, 4.5vw, 3.25rem);
-    line-height: 0.96;
+    line-height: 1.04;
   }
 
   .dm-v2-card p:not(.dm-v2-card-eyebrow) {
     margin-top: 8px;
-    font-size: clamp(0.7rem, 1.55vw, 0.84rem);
+    font-size: clamp(0.78rem, 1.7vw, 0.94rem);
     line-height: 1.38;
   }
 

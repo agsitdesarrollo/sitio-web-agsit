@@ -30,6 +30,7 @@ export type DigitalMarketingOrbitApi = {
   collapse: () => Promise<void>;
   expand: () => Promise<void>;
   setCollapsed: (collapsed: boolean) => void;
+  wake: () => void;
 };
 
 export type DigitalMarketingOrbitSection = HTMLElement & {
@@ -285,11 +286,30 @@ export const setupDigitalMarketingOrbitHero = () => {
     };
 
     const render = () => {
-      if (destroyed) return;
+      frameId = 0;
+      if (destroyed || !visible) return;
 
       if (!reduceMotion) phase += SPEED * (1 - state.morphProgress);
-      if (visible) draw();
+      draw();
       frameId = window.requestAnimationFrame(render);
+    };
+
+    const startRenderLoop = () => {
+      if (destroyed || frameId || reduceMotion) return;
+      frameId = window.requestAnimationFrame(render);
+    };
+
+    const stopRenderLoop = () => {
+      if (!frameId) return;
+      window.cancelAnimationFrame(frameId);
+      frameId = 0;
+    };
+
+    const wake = () => {
+      visible = true;
+      resize();
+      draw();
+      startRenderLoop();
     };
 
     const setCollapsed = (collapsed: boolean) => {
@@ -329,7 +349,9 @@ export const setupDigitalMarketingOrbitHero = () => {
       collapse: () => animateMorph(true),
       expand: () => animateMorph(false),
       setCollapsed,
+      wake,
     };
+    window.dispatchEvent(new CustomEvent('agsit:orbit-ready', { detail: { section } }));
 
     const resizeObserver = new ResizeObserver(() => {
       resize();
@@ -338,6 +360,13 @@ export const setupDigitalMarketingOrbitHero = () => {
     const visibilityObserver = new IntersectionObserver(
       ([entry]) => {
         visible = entry.isIntersecting;
+        if (visible) {
+          resize();
+          draw();
+          startRenderLoop();
+        } else {
+          stopRenderLoop();
+        }
       },
       { threshold: 0 },
     );
@@ -346,7 +375,7 @@ export const setupDigitalMarketingOrbitHero = () => {
     visibilityObserver.observe(section);
     resize();
     draw();
-    frameId = window.requestAnimationFrame(render);
+    startRenderLoop();
     brandImage.addEventListener('load', draw, { once: true });
 
     document.fonts?.ready.then(() => {
@@ -358,7 +387,7 @@ export const setupDigitalMarketingOrbitHero = () => {
     const destroy = () => {
       destroyed = true;
       morphTween?.kill();
-      window.cancelAnimationFrame(frameId);
+      stopRenderLoop();
       resizeObserver.disconnect();
       visibilityObserver.disconnect();
       delete (section as DigitalMarketingOrbitSection).dmOrbitApi;

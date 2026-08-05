@@ -11,6 +11,8 @@ type Direction = 1 | -1;
 
 type PanelSlideOptions = {
   onComplete?: () => void;
+  duration?: number;
+  lightweight?: boolean;
   handoff?: {
     source: HTMLElement;
     target: HTMLElement;
@@ -27,7 +29,6 @@ type PanelSlideOptions = {
 };
 
 const BOUNDARY_TOLERANCE = 18;
-const MIN_GESTURE_DISTANCE = 10;
 const WHITE_TRANSITION_DURATION = 0;
 
 const splitWords = (element: HTMLElement) => {
@@ -212,6 +213,34 @@ const setupFocusLens = (
   });
 };
 
+const setupCardVideos = (
+  root: HTMLElement,
+  registerCleanup: (cleanup: () => void) => void,
+) => {
+  const videos = Array.from(root.querySelectorAll<HTMLVideoElement>('.dm-v2-card-video'));
+  if (!videos.length) return;
+
+  const observer = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        const video = entry.target as HTMLVideoElement;
+        if (entry.isIntersecting) {
+          void video.play().catch(() => undefined);
+        } else {
+          video.pause();
+        }
+      });
+    },
+    { rootMargin: '55% 0px', threshold: 0.01 },
+  );
+
+  videos.forEach((video) => observer.observe(video));
+  registerCleanup(() => {
+    observer.disconnect();
+    videos.forEach((video) => video.pause());
+  });
+};
+
 export const setupDigitalMarketingStory = () => {
   const root = document.querySelector<HTMLElement>('.js-dm-v2-page');
   if (!root || root.dataset.storytellingReady === 'true') return;
@@ -283,6 +312,9 @@ export const setupDigitalMarketingStory = () => {
   const transitionTrack = root.querySelector<HTMLElement>('.js-dm-v2-transition-track');
   const transition = root.querySelector<HTMLElement>('.js-dm-v2-transition');
   const cards = root.querySelector<HTMLElement>('.js-dm-v2-card-section');
+  const cardItems = Array.from(root.querySelectorAll<HTMLElement>('.js-dm-v2-card'));
+  const firstCard = cardItems[0];
+  const lastCard = cardItems.at(-1);
   const contact = root.querySelector<HTMLElement>('.final-contact-section');
   const heart = root.querySelector<HTMLElement>('.js-dm-v2-heart');
 
@@ -323,6 +355,8 @@ export const setupDigitalMarketingStory = () => {
     !transitionTrack ||
     !transition ||
     !cards ||
+    !firstCard ||
+    !lastCard ||
     !contact ||
     !heart
   ) return;
@@ -333,12 +367,16 @@ export const setupDigitalMarketingStory = () => {
 
   root.querySelectorAll<HTMLElement>('.js-dm-v2-words').forEach(splitWords);
   setupFocusLens(root, reduceMotion, registerCleanup);
+  setupCardVideos(root, registerCleanup);
 
   let navigationAnimating = false;
   let phaseAnimating = false;
   let activeScrollFrame = 0;
   let touchStartY: number | null = null;
+  let touchLastY: number | null = null;
   let touchHandled = false;
+  let wheelGestureConsumed = false;
+  let wheelGestureTimer = 0;
   let whiteExpanded = false;
   let methodologyIntroComplete = false;
   let methodologyStep = 0;
@@ -347,8 +385,55 @@ export const setupDigitalMarketingStory = () => {
   let resizeTimer = 0;
   let gestureCooldownUntil = 0;
   let panelSlideTimeline: gsap.core.Timeline | null = null;
+  let viewportHandoffDepth = 0;
+  let scrollViewportLocked = false;
+  let panelViewportLocked = false;
   const navigationEase = gsap.parseEase('power3.inOut');
+  const getCardsMethodologyHandoff = (onComplete?: () => void): PanelSlideOptions => {
+    const lightweight = window.matchMedia('(max-width: 1024px)').matches;
+    return {
+      onComplete,
+      lightweight,
+      duration: lightweight ? 0.56 : undefined,
+    };
+  };
   const getOrbitApi = (): DigitalMarketingOrbitApi | undefined => orbitHero.dmOrbitApi;
+  const waitForOrbitApi = (timeout = 1200) =>
+    new Promise<DigitalMarketingOrbitApi | undefined>((resolve) => {
+      const available = getOrbitApi();
+      if (available) {
+        resolve(available);
+        return;
+      }
+
+      let settled = false;
+      const finish = () => {
+        if (settled) return;
+        settled = true;
+        window.clearTimeout(timeoutId);
+        window.removeEventListener('agsit:orbit-ready', onReady);
+        resolve(getOrbitApi());
+      };
+      const onReady = () => finish();
+      const timeoutId = window.setTimeout(finish, timeout);
+      window.addEventListener('agsit:orbit-ready', onReady, { once: true });
+    });
+
+  const settleOrbitMorph = async (
+    orbitApi: DigitalMarketingOrbitApi,
+    collapsed: boolean,
+  ) => {
+    let timeoutId = 0;
+    await Promise.race([
+      collapsed ? orbitApi.collapse() : orbitApi.expand(),
+      new Promise<void>((resolve) => {
+        timeoutId = window.setTimeout(resolve, 1200);
+      }),
+    ]);
+    window.clearTimeout(timeoutId);
+    orbitApi.setCollapsed(collapsed);
+    if (!collapsed) orbitApi.wake();
+  };
 
   const getStops = () => {
     const navHeight = getNavHeight();
@@ -389,12 +474,35 @@ export const setupDigitalMarketingStory = () => {
   const near = (current: number, target: number, tolerance = BOUNDARY_TOLERANCE) =>
     Math.abs(current - target) <= tolerance;
 
+  const lockViewportHandoff = () => {
+    viewportHandoffDepth += 1;
+    if (viewportHandoffDepth === 1) {
+      window.dispatchEvent(new CustomEvent('agsit:handoff-viewport-lock'));
+    }
+  };
+
+  const unlockViewportHandoff = () => {
+    viewportHandoffDepth = Math.max(0, viewportHandoffDepth - 1);
+    if (viewportHandoffDepth === 0) {
+      window.dispatchEvent(new CustomEvent('agsit:handoff-viewport-unlock'));
+    }
+  };
+
+  const cancelActiveScroll = () => {
+    window.cancelAnimationFrame(activeScrollFrame);
+    activeScrollFrame = 0;
+    if (scrollViewportLocked) {
+      scrollViewportLocked = false;
+      unlockViewportHandoff();
+    }
+  };
+
   const navigateTo = (
     destination: number,
     onComplete?: () => void,
     durationOverride?: number,
   ) => {
-    window.cancelAnimationFrame(activeScrollFrame);
+    cancelActiveScroll();
 
     if (reduceMotion || durationOverride === 0) {
       window.scrollTo(0, destination);
@@ -405,6 +513,8 @@ export const setupDigitalMarketingStory = () => {
     }
 
     navigationAnimating = true;
+    scrollViewportLocked = true;
+    lockViewportHandoff();
     const startY = window.scrollY;
     const distance = destination - startY;
     const duration =
@@ -423,6 +533,10 @@ export const setupDigitalMarketingStory = () => {
       window.scrollTo(0, destination);
       activeScrollFrame = 0;
       navigationAnimating = false;
+      if (scrollViewportLocked) {
+        scrollViewportLocked = false;
+        unlockViewportHandoff();
+      }
       gestureCooldownUntil = Date.now() + 220;
       onComplete?.();
     };
@@ -450,8 +564,7 @@ export const setupDigitalMarketingStory = () => {
       return;
     }
 
-    window.cancelAnimationFrame(activeScrollFrame);
-    activeScrollFrame = 0;
+    cancelActiveScroll();
     panelSlideTimeline?.kill();
     root.querySelector('.js-dm-v2-panel-slide')?.remove();
 
@@ -472,8 +585,46 @@ export const setupDigitalMarketingStory = () => {
     const createFrame = (source: HTMLElement, hiddenSelector?: string) => {
       const frame = document.createElement('div');
       frame.className = 'dm-v2-panel-slide-frame';
+      frame.classList.toggle('is-lightweight', Boolean(options.lightweight));
       const clone = source.cloneNode(true) as HTMLElement;
       removeDuplicateIds(clone);
+
+      if (options.lightweight) {
+        const sourceVideos = Array.from(source.querySelectorAll<HTMLVideoElement>('video'));
+        const cloneVideos = Array.from(clone.querySelectorAll<HTMLVideoElement>('video'));
+
+        sourceVideos.forEach((sourceVideo, index) => {
+          const cloneVideo = cloneVideos[index];
+          if (!cloneVideo) return;
+
+          const rect = sourceVideo.getBoundingClientRect();
+          const ratio = Math.min(window.devicePixelRatio || 1, 1.5);
+          const snapshot = document.createElement('canvas');
+          snapshot.className = `${cloneVideo.className} dm-v2-card-video-snapshot`;
+          snapshot.width = Math.max(1, Math.min(1200, Math.round(rect.width * ratio)));
+          snapshot.height = Math.max(1, Math.min(675, Math.round(rect.height * ratio)));
+          snapshot.setAttribute('role', 'presentation');
+
+          if (sourceVideo.readyState >= HTMLMediaElement.HAVE_CURRENT_DATA) {
+            try {
+              snapshot.getContext('2d')?.drawImage(
+                sourceVideo,
+                0,
+                0,
+                snapshot.width,
+                snapshot.height,
+              );
+            } catch {
+              // The card surface remains visible if the current video frame is unavailable.
+            }
+          }
+
+          cloneVideo.replaceWith(snapshot);
+        });
+
+        clone.querySelector<HTMLElement>('.dm-v2-methodology-convergence')?.remove();
+      }
+
       const sourceCanvases = Array.from(source.querySelectorAll('canvas'));
       const cloneCanvases = Array.from(clone.querySelectorAll('canvas'));
       sourceCanvases.forEach((sourceCanvas, index) => {
@@ -511,6 +662,25 @@ export const setupDigitalMarketingStory = () => {
       options.visualHandoff?.targetSelector,
     );
     portal.append(outgoingFrame, incomingFrame);
+
+    const positionCardClone = (frame: HTMLElement, rect?: DOMRect) => {
+      const cardClone = frame.firstElementChild as HTMLElement | null;
+      if (!rect || !cardClone?.classList.contains('dm-v2-card')) return;
+      const cardsSurface = getComputedStyle(cards);
+      frame.style.backgroundColor = cardsSurface.backgroundColor;
+      frame.style.backgroundImage = cardsSurface.backgroundImage;
+      Object.assign(cardClone.style, {
+        position: 'absolute',
+        left: `${rect.left}px`,
+        top: `${rect.top - getNavHeight()}px`,
+        width: `${rect.width}px`,
+        height: `${rect.height}px`,
+        minHeight: `${rect.height}px`,
+        margin: '0',
+      });
+    };
+
+    positionCardClone(outgoingFrame, outgoing.getBoundingClientRect());
 
     let handoffLabel: HTMLElement | null = null;
     if (options.handoff && sourceRect && sourceStyles) {
@@ -578,10 +748,13 @@ export const setupDigitalMarketingStory = () => {
     root.appendChild(portal);
 
     navigationAnimating = true;
+    panelViewportLocked = true;
+    lockViewportHandoff();
     window.scrollTo(0, destination);
     ScrollTrigger.update();
     const targetRect = options.handoff?.target.getBoundingClientRect();
     const visualTargetRect = options.visualHandoff?.target.getBoundingClientRect();
+    positionCardClone(incomingFrame, incoming.getBoundingClientRect());
     const incomingReveal = options.incomingRevealSelector
       ? incomingFrame.querySelector<HTMLElement>(options.incomingRevealSelector)
       : null;
@@ -595,16 +768,41 @@ export const setupDigitalMarketingStory = () => {
       });
     }
 
+    let settled = false;
+    const settlePanelSlide = (completed: boolean) => {
+      if (settled) return;
+      settled = true;
+
+      const finalize = () => {
+        portal.remove();
+        panelSlideTimeline = null;
+        navigationAnimating = false;
+        if (panelViewportLocked) {
+          panelViewportLocked = false;
+          unlockViewportHandoff();
+        }
+        gestureCooldownUntil = Date.now() + 220;
+        if (completed) options.onComplete?.();
+      };
+
+      if (!completed || !options.lightweight) {
+        finalize();
+        return;
+      }
+
+      window.scrollTo(0, destination);
+      ScrollTrigger.update();
+      window.requestAnimationFrame(() => {
+        ScrollTrigger.update();
+        window.requestAnimationFrame(finalize);
+      });
+    };
+
     panelSlideTimeline = gsap
       .timeline({
-        defaults: { duration: 0.72, ease: 'power3.inOut' },
-        onComplete: () => {
-          portal.remove();
-          panelSlideTimeline = null;
-          navigationAnimating = false;
-          gestureCooldownUntil = Date.now() + 220;
-          options.onComplete?.();
-        },
+        defaults: { duration: options.duration ?? 0.72, ease: 'power3.inOut' },
+        onComplete: () => settlePanelSlide(true),
+        onInterrupt: () => settlePanelSlide(false),
       })
       .to(outgoingFrame, { yPercent: direction > 0 ? -100 : 100 }, 0)
       .to(incomingFrame, { yPercent: 0 }, 0);
@@ -1215,19 +1413,9 @@ export const setupDigitalMarketingStory = () => {
 
       if (direction > 0) {
         if (near(y, stops.orbitHero)) {
-          const orbitApi = getOrbitApi();
-          if (!orbitApi) {
-            navigatePanelSlide(stops.hero, orbitHero, hero, 1, {
-              handoff: {
-                source: orbitHandoffLabel,
-                target: heroEyebrow,
-              },
-            });
-            return true;
-          }
-
           navigationAnimating = true;
-          orbitApi.collapse().then(() => {
+          void waitForOrbitApi().then(async (orbitApi) => {
+            if (orbitApi) await settleOrbitMorph(orbitApi, true);
             navigationAnimating = false;
             navigatePanelSlide(stops.hero, orbitHero, hero, 1, {
               handoff: {
@@ -1336,7 +1524,7 @@ export const setupDigitalMarketingStory = () => {
             return true;
           }
 
-          navigateTo(stops.cards.start);
+          navigatePanelSlide(stops.cards.start, transition, firstCard, 1);
           return true;
         }
 
@@ -1349,12 +1537,24 @@ export const setupDigitalMarketingStory = () => {
             return false;
           }
 
-          navigateTo(stops.methodology.start, () => animateMethodologyIntro(true));
+          navigatePanelSlide(
+            stops.methodology.start,
+            lastCard,
+            methodology,
+            1,
+            getCardsMethodologyHandoff(() => animateMethodologyIntro(true)),
+          );
           return true;
         }
 
         if (y > stops.cards.end && y < stops.methodology.start - BOUNDARY_TOLERANCE) {
-          navigateTo(stops.methodology.start, () => animateMethodologyIntro(true));
+          navigatePanelSlide(
+            stops.methodology.start,
+            lastCard,
+            methodology,
+            1,
+            getCardsMethodologyHandoff(() => animateMethodologyIntro(true)),
+          );
           return true;
         }
 
@@ -1435,17 +1635,35 @@ export const setupDigitalMarketingStory = () => {
 
         if (methodologyIntroComplete) {
           animateMethodologyIntro(false, () => {
-            navigateTo(stops.cards.end);
+            navigatePanelSlide(
+              stops.cards.end,
+              methodology,
+              lastCard,
+              -1,
+              getCardsMethodologyHandoff(),
+            );
           });
           return true;
         }
 
-        navigateTo(stops.cards.end);
+        navigatePanelSlide(
+          stops.cards.end,
+          methodology,
+          lastCard,
+          -1,
+          getCardsMethodologyHandoff(),
+        );
         return true;
       }
 
       if (y > stops.cards.end + BOUNDARY_TOLERANCE && y < stops.methodology.start) {
-        navigateTo(stops.cards.end);
+        navigatePanelSlide(
+          stops.cards.end,
+          methodology,
+          lastCard,
+          -1,
+          getCardsMethodologyHandoff(),
+        );
         return true;
       }
 
@@ -1458,21 +1676,25 @@ export const setupDigitalMarketingStory = () => {
           return false;
         }
 
-        navigateTo(stops.transition.end, () => {
-          whiteExpanded = true;
-          whiteTimeline.progress(1);
-          root.classList.add('is-white-expanded');
-          root.classList.add('is-white-passed');
-          titleCentered = true;
-          titleTimeline.progress(1);
+        navigatePanelSlide(stops.transition.end, firstCard, transition, -1, {
+          onComplete: () => {
+            whiteExpanded = true;
+            whiteTimeline.progress(1);
+            root.classList.add('is-white-expanded');
+            root.classList.add('is-white-passed');
+            titleCentered = true;
+            titleTimeline.progress(1);
+          },
         });
         return true;
       }
 
       if (y > stops.transition.end + BOUNDARY_TOLERANCE && y < stops.cards.start) {
-        navigateTo(stops.transition.end, () => {
-          titleCentered = true;
-          titleTimeline.progress(1);
+        navigatePanelSlide(stops.transition.end, firstCard, transition, -1, {
+          onComplete: () => {
+            titleCentered = true;
+            titleTimeline.progress(1);
+          },
         });
         return true;
       }
@@ -1591,17 +1813,21 @@ export const setupDigitalMarketingStory = () => {
       }
 
       if (near(y, stops.hero)) {
+        orbitHero.dataset.orbitState = 'collapsed';
         getOrbitApi()?.setCollapsed(true);
+        const orbitExpansion = waitForOrbitApi().then(async (orbitApi) => {
+          orbitApi?.wake();
+          if (orbitApi) await settleOrbitMorph(orbitApi, false);
+        });
         navigatePanelSlide(stops.orbitHero, hero, orbitHero, -1, {
           handoff: {
             source: heroEyebrow,
             target: orbitHandoffLabel,
           },
           onComplete: () => {
-            const orbitApi = getOrbitApi();
-            if (!orbitApi) return;
+            getOrbitApi()?.wake();
             navigationAnimating = true;
-            orbitApi.expand().then(() => {
+            void orbitExpansion.finally(() => {
               navigationAnimating = false;
               gestureCooldownUntil = Date.now() + 220;
             });
@@ -1614,14 +1840,37 @@ export const setupDigitalMarketingStory = () => {
     };
 
     const onWheel = (event: WheelEvent) => {
-      if (Math.abs(event.deltaY) < MIN_GESTURE_DISTANCE || isWheelProtectedTarget(event.target)) return;
+      if (isWheelProtectedTarget(event.target)) return;
+      const stops = getStops();
+      if (Math.abs(event.deltaY) < 1) return;
+      const direction: Direction = event.deltaY > 0 ? 1 : -1;
+      const controlled =
+        window.scrollY >= stops.orbitHero - BOUNDARY_TOLERANCE &&
+        (window.scrollY < stops.contact - BOUNDARY_TOLERANCE ||
+          (direction < 0 && window.scrollY <= stops.contact + BOUNDARY_TOLERANCE));
+      if (!controlled) return;
+
+      event.preventDefault();
+      window.clearTimeout(wheelGestureTimer);
+      wheelGestureTimer = window.setTimeout(() => {
+        wheelGestureConsumed = false;
+      }, 180);
+      if (wheelGestureConsumed) return;
       if (navigationAnimating || phaseAnimating || Date.now() < gestureCooldownUntil) {
-        gestureCooldownUntil = Math.max(gestureCooldownUntil, Date.now() + 140);
-        event.preventDefault();
         return;
       }
-      const direction: Direction = event.deltaY > 0 ? 1 : -1;
-      if (handleDirection(direction, Math.abs(event.deltaY))) event.preventDefault();
+      const handled = handleDirection(direction, Math.abs(event.deltaY));
+      if (handled) {
+        wheelGestureConsumed = true;
+      } else {
+        const destination = gsap.utils.clamp(
+          stops.orbitHero,
+          stops.methodology.end,
+          window.scrollY + event.deltaY,
+        );
+        window.scrollTo(0, destination);
+        ScrollTrigger.update();
+      }
     };
 
     const onTouchStart = (event: TouchEvent) => {
@@ -1630,26 +1879,46 @@ export const setupDigitalMarketingStory = () => {
         return;
       }
       touchStartY = event.touches[0]?.clientY ?? null;
+      touchLastY = touchStartY;
       touchHandled = false;
     };
 
     const onTouchMove = (event: TouchEvent) => {
-      if (touchStartY === null) return;
+      if (touchStartY === null || touchLastY === null) return;
+      const currentY = event.touches[0]?.clientY ?? touchLastY;
+      const delta = touchLastY - currentY;
+      touchLastY = currentY;
+      if (Math.abs(delta) < 0.5) return;
+
+      const stops = getStops();
+      const direction: Direction = delta > 0 ? 1 : -1;
+      const controlled =
+        window.scrollY >= stops.orbitHero - BOUNDARY_TOLERANCE &&
+        (window.scrollY < stops.contact - BOUNDARY_TOLERANCE ||
+          (direction < 0 && window.scrollY <= stops.contact + BOUNDARY_TOLERANCE));
+      if (!controlled) return;
+
+      event.preventDefault();
       if (touchHandled) {
-        event.preventDefault();
         return;
       }
-      const currentY = event.touches[0]?.clientY ?? touchStartY;
-      const delta = touchStartY - currentY;
-      if (Math.abs(delta) < 26) return;
+      if (navigationAnimating || phaseAnimating || Date.now() < gestureCooldownUntil) return;
 
-      const direction: Direction = delta > 0 ? 1 : -1;
       touchHandled = handleDirection(direction, Math.abs(delta));
-      if (touchHandled) event.preventDefault();
+      if (!touchHandled) {
+        const destination = gsap.utils.clamp(
+          stops.orbitHero,
+          stops.methodology.end,
+          window.scrollY + delta,
+        );
+        window.scrollTo(0, destination);
+        ScrollTrigger.update();
+      }
     };
 
     const onTouchEnd = () => {
       touchStartY = null;
+      touchLastY = null;
       touchHandled = false;
     };
 
@@ -1760,9 +2029,11 @@ export const setupDigitalMarketingStory = () => {
   }, root);
 
   const destroy = () => {
-    window.cancelAnimationFrame(activeScrollFrame);
+    cancelActiveScroll();
+    window.clearTimeout(wheelGestureTimer);
     panelSlideTimeline?.kill();
     root.querySelector('.js-dm-v2-panel-slide')?.remove();
+    while (viewportHandoffDepth > 0) unlockViewportHandoff();
     cleanups.forEach((cleanup) => cleanup());
     context.revert();
     document.documentElement.classList.remove('dm-v2-story-active');
