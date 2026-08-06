@@ -14,6 +14,9 @@ const { content, contactCopy } = Astro.props;
 const orbitText = content.metadata.htmlLang.startsWith('en')
   ? 'Digital Marketing'
   : 'Marketing Digital';
+const videoPlayLabel = content.metadata.htmlLang.startsWith('en')
+  ? 'Play video'
+  : 'Reproducir video';
 
 const assetByVisual: Record<StoryInlineVisual, string> = {
   eye: '/assets/storytelling-v2/brand-eye.svg',
@@ -164,7 +167,7 @@ const assetByVisual: Record<StoryInlineVisual, string> = {
                 )
               }
             </div>
-            <div class="dm-v2-card-visual" aria-hidden="true">
+            <div class="dm-v2-card-visual">
               <video
                 class="dm-v2-card-video"
                 src={card.srcvideo}
@@ -172,7 +175,16 @@ const assetByVisual: Record<StoryInlineVisual, string> = {
                 playsinline
                 preload={index === 0 ? 'auto' : 'none'}
                 loop
+                aria-hidden="true"
               ></video>
+              <button
+                type="button"
+                class="dm-v2-card-video-play js-dm-v2-card-video-play"
+                aria-label={`${videoPlayLabel}: ${card.title}`}
+                hidden
+              >
+                <span aria-hidden="true">▶</span>
+              </button>
             </div>
           </li>
         ))

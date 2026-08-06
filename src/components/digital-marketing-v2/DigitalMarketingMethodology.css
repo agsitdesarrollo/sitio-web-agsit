@@ -269,13 +269,23 @@
   min-width: 0;
   display: grid;
   justify-items: center;
-  gap: 10px;
+  gap: 11px;
   color: var(--method-color);
   font-family: 'Inter', 'Segoe UI', Tahoma, sans-serif;
-  font-size: clamp(0.55rem, 0.68vw, 0.74rem);
+  font-size: clamp(0.66rem, 0.78vw, 0.86rem);
   font-weight: 700;
   text-align: center;
   will-change: opacity, transform;
+}
+
+.dm-v2-methodology-flow-node > span:last-child {
+  width: 100%;
+  min-height: 2.3em;
+  display: grid;
+  place-items: start center;
+  line-height: 1.15;
+  text-wrap: balance;
+  overflow-wrap: anywhere;
 }
 
 .dm-v2-methodology-flow-node-attention { --method-color: #49b9ff; }
@@ -286,7 +296,7 @@
 .dm-v2-methodology-flow-node-recommendation { --method-color: #dce900; }
 
 .dm-v2-methodology-flow-icon {
-  width: clamp(42px, 3.65vw, 58px);
+  width: clamp(50px, 4.25vw, 68px);
   aspect-ratio: 1;
   display: grid;
   place-items: center;
@@ -521,12 +531,12 @@
   }
 
   .dm-v2-methodology-flow-node {
-    gap: 5px;
-    font-size: clamp(0.4rem, 1.65vw, 0.58rem);
+    gap: 7px;
+    font-size: clamp(0.54rem, 1.8vw, 0.7rem);
   }
 
   .dm-v2-methodology-flow-icon {
-    width: clamp(34px, 8vw, 46px);
+    width: clamp(44px, 8.5vw, 58px);
   }
 
   .dm-v2-methodology-focus {
@@ -540,17 +550,60 @@
   }
 
   .dm-v2-methodology-outcome-icon {
-    width: clamp(58px, 16vw, 78px);
+    width: clamp(68px, 17vw, 88px);
   }
 
   .dm-v2-methodology-outcome h3 {
-    font-size: clamp(1.5rem, 7vw, 2.25rem);
+    font-size: clamp(1.8rem, 7.4vw, 2.55rem);
   }
 
   .dm-v2-methodology-outcome p {
     font-size: clamp(0.72rem, 3.3vw, 0.92rem);
   }
 
+}
+
+@media (max-width: 640px) and (orientation: portrait) {
+  .dm-v2-methodology-convergence {
+    grid-template-rows: minmax(280px, 1.18fr) minmax(170px, 0.72fr);
+    gap: clamp(8px, 1.5vh, 14px);
+  }
+
+  .dm-v2-methodology-flow {
+    height: min(360px, 43vh);
+  }
+
+  .dm-v2-methodology-flow-nodes {
+    left: 8%;
+    top: 0;
+    width: 84%;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    row-gap: clamp(14px, 2.2vh, 24px);
+  }
+
+  .dm-v2-methodology-flow-node {
+    gap: 6px;
+    font-size: clamp(0.6rem, 2.7vw, 0.72rem);
+  }
+
+  .dm-v2-methodology-flow-icon {
+    width: clamp(48px, 14vw, 58px);
+  }
+
+  .dm-v2-methodology-focus {
+    left: 50%;
+    top: 96%;
+  }
+
+  .dm-v2-methodology-outcome {
+    gap: 8px;
+  }
+
+  .dm-v2-methodology-outcome p {
+    width: min(340px, 88vw);
+    font-size: clamp(0.78rem, 3.5vw, 0.94rem);
+    line-height: 1.4;
+  }
 }
 
 @media (min-width: 641px) and (max-width: 1024px) and (min-height: 601px) {
@@ -568,7 +621,21 @@
   }
 
   .dm-v2-methodology-flow-node {
-    font-size: clamp(0.62rem, 1.35vw, 0.78rem);
+    gap: clamp(8px, 1.15vw, 12px);
+    font-size: clamp(0.7rem, 1.3vw, 0.86rem);
+  }
+
+  .dm-v2-methodology-flow-node > span:last-child {
+    min-height: 1.2em;
+    display: block;
+    line-height: 1.2;
+    white-space: nowrap;
+    text-wrap: nowrap;
+    overflow-wrap: normal;
+  }
+
+  .dm-v2-methodology-flow-icon {
+    width: clamp(58px, 8vw, 78px);
   }
 
   .dm-v2-methodology-outcome p {
@@ -666,7 +733,7 @@
   }
 
   .dm-v2-methodology-flow-icon {
-    width: clamp(30px, 4.8vw, 42px);
+    width: clamp(36px, 5.4vw, 48px);
   }
 
   .dm-v2-methodology-flow-nodes {
@@ -682,7 +749,8 @@
   }
 
   .dm-v2-methodology-flow-node {
-    font-size: clamp(0.5rem, 1vw, 0.64rem);
+    gap: 5px;
+    font-size: clamp(0.56rem, 1.15vw, 0.72rem);
   }
 
   .dm-v2-methodology-outcome {

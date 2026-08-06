@@ -220,24 +220,87 @@ const setupCardVideos = (
   const videos = Array.from(root.querySelectorAll<HTMLVideoElement>('.dm-v2-card-video'));
   if (!videos.length) return;
 
+  const fallbackByVideo = new Map<HTMLVideoElement, HTMLButtonElement>();
+  const cleanups: Array<() => void> = [];
+
+  const setFallbackVisible = (video: HTMLVideoElement, visible: boolean) => {
+    const fallback = fallbackByVideo.get(video);
+    if (fallback) fallback.hidden = !visible;
+  };
+
+  const prepareVideo = (video: HTMLVideoElement) => {
+    video.muted = true;
+    video.defaultMuted = true;
+    video.playsInline = true;
+    video.setAttribute('muted', '');
+    video.setAttribute('playsinline', '');
+    video.setAttribute('webkit-playsinline', '');
+
+    if (video.preload === 'none') {
+      video.preload = 'auto';
+      video.load();
+    }
+  };
+
+  const playVideo = async (video: HTMLVideoElement) => {
+    prepareVideo(video);
+    try {
+      await video.play();
+      setFallbackVisible(video, false);
+    } catch {
+      if (video.dataset.cardVideoVisible === 'true') {
+        setFallbackVisible(video, true);
+      }
+    }
+  };
+
   const observer = new IntersectionObserver(
     (entries) => {
       entries.forEach((entry) => {
         const video = entry.target as HTMLVideoElement;
+        video.dataset.cardVideoVisible = String(entry.isIntersecting);
         if (entry.isIntersecting) {
-          void video.play().catch(() => undefined);
+          void playVideo(video);
         } else {
           video.pause();
+          setFallbackVisible(video, false);
         }
       });
     },
-    { rootMargin: '55% 0px', threshold: 0.01 },
+    { rootMargin: '70% 0px', threshold: 0.01 },
   );
 
-  videos.forEach((video) => observer.observe(video));
+  videos.forEach((video) => {
+    const fallback = video
+      .closest<HTMLElement>('.dm-v2-card-visual')
+      ?.querySelector<HTMLButtonElement>('.js-dm-v2-card-video-play');
+    if (fallback) {
+      fallbackByVideo.set(video, fallback);
+      const onFallbackClick = () => void playVideo(video);
+      fallback.addEventListener('click', onFallbackClick);
+      cleanups.push(() => fallback.removeEventListener('click', onFallbackClick));
+    }
+
+    const onPlaying = () => setFallbackVisible(video, false);
+    const onError = () => {
+      if (video.dataset.cardVideoVisible === 'true') setFallbackVisible(video, true);
+    };
+    video.addEventListener('playing', onPlaying);
+    video.addEventListener('error', onError);
+    cleanups.push(() => {
+      video.removeEventListener('playing', onPlaying);
+      video.removeEventListener('error', onError);
+    });
+    observer.observe(video);
+  });
+
   registerCleanup(() => {
     observer.disconnect();
-    videos.forEach((video) => video.pause());
+    cleanups.forEach((cleanup) => cleanup());
+    videos.forEach((video) => {
+      video.pause();
+      delete video.dataset.cardVideoVisible;
+    });
   });
 };
 
@@ -1850,6 +1913,12 @@ export const setupDigitalMarketingStory = () => {
           (direction < 0 && window.scrollY <= stops.contact + BOUNDARY_TOLERANCE));
       if (!controlled) return;
 
+      const useNativeCardScroll =
+        window.matchMedia('(max-width: 1024px)').matches &&
+        event.target instanceof Element &&
+        Boolean(event.target.closest('.js-dm-v2-card-section'));
+      if (useNativeCardScroll) return;
+
       event.preventDefault();
       window.clearTimeout(wheelGestureTimer);
       wheelGestureTimer = window.setTimeout(() => {
@@ -1878,6 +1947,18 @@ export const setupDigitalMarketingStory = () => {
         touchStartY = null;
         return;
       }
+
+      const useNativeCardScroll =
+        window.matchMedia('(max-width: 1024px)').matches &&
+        event.target instanceof Element &&
+        Boolean(event.target.closest('.js-dm-v2-card-section'));
+      if (useNativeCardScroll) {
+        touchStartY = null;
+        touchLastY = null;
+        touchHandled = false;
+        return;
+      }
+
       touchStartY = event.touches[0]?.clientY ?? null;
       touchLastY = touchStartY;
       touchHandled = false;
