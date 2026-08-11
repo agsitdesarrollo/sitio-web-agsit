@@ -3,6 +3,7 @@
   position: relative;
   z-index: 55;
   height: calc(var(--dm-v2-panel-h) * (var(--dm-v2-methodology-steps) + 2));
+  overflow: clip;
   background: #06142b;
 }
 
@@ -42,7 +43,8 @@
   width: min(1640px, 94vw);
   height: 100%;
   margin: 0 auto;
-  padding: calc(var(--nav-h, 76px) + clamp(24px, 4vh, 48px)) 0 clamp(28px, 5vh, 58px);
+  padding: var(--dm-v2-safe-top, calc(var(--nav-h, 76px) + 24px)) 0
+    var(--dm-v2-safe-bottom, 24px);
   display: grid;
   grid-template-rows: auto 1fr;
   align-items: center;
@@ -235,7 +237,8 @@
 
 .dm-v2-methodology-convergence {
   position: absolute;
-  inset: calc(var(--nav-h, 76px) + clamp(16px, 3vh, 34px)) 0 clamp(22px, 4vh, 46px);
+  inset: var(--dm-v2-safe-top, calc(var(--nav-h, 76px) + 16px)) 0
+    var(--dm-v2-safe-bottom, 22px);
   display: grid;
   grid-template-columns: minmax(0, 1.7fr) minmax(280px, 0.72fr);
   align-items: center;
@@ -333,11 +336,11 @@
   color: #41c8f6;
   fill: none;
   stroke-width: 1.15;
-  stroke-dasharray: 1;
-  stroke-dashoffset: 1;
   vector-effect: non-scaling-stroke;
   filter: drop-shadow(0 0 4px currentColor);
-  will-change: stroke-dashoffset;
+  opacity: 0;
+  visibility: hidden;
+  will-change: opacity;
 }
 
 .dm-v2-methodology-flow-line-attention { color: #49b9ff; stroke: url('#dm-v2-flow-gradient-attention'); }
@@ -446,7 +449,8 @@
   .dm-v2-methodology-shell {
     --method-row-gap: clamp(7px, 1.7vh, 15px);
     width: min(680px, 91vw);
-    padding: calc(var(--nav-h, 74px) + clamp(16px, 2.5vh, 30px)) 0 clamp(18px, 3vh, 34px);
+    padding: var(--dm-v2-safe-top, calc(var(--nav-h, 74px) + 16px)) 0
+      var(--dm-v2-safe-bottom, 18px);
   }
 
   .dm-v2-methodology-heading h2 {
@@ -511,7 +515,8 @@
   }
 
   .dm-v2-methodology-convergence {
-    inset: calc(var(--nav-h, 74px) + 14px) 0 18px;
+    inset: var(--dm-v2-safe-top, calc(var(--nav-h, 74px) + 14px)) 0
+      var(--dm-v2-safe-bottom, 18px);
     grid-template-columns: 1fr;
     grid-template-rows: minmax(210px, 1fr) minmax(170px, 0.8fr);
     gap: 8px;
@@ -625,6 +630,11 @@
     font-size: clamp(0.7rem, 1.3vw, 0.86rem);
   }
 
+  .dm-v2-methodology-flow-nodes {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    row-gap: clamp(18px, 2.4vh, 28px);
+  }
+
   .dm-v2-methodology-flow-node > span:last-child {
     min-height: 1.2em;
     display: block;
@@ -635,7 +645,7 @@
   }
 
   .dm-v2-methodology-flow-icon {
-    width: clamp(58px, 8vw, 78px);
+    width: clamp(68px, 9vw, 88px);
   }
 
   .dm-v2-methodology-outcome p {
@@ -643,10 +653,25 @@
   }
 }
 
+@media (min-width: 641px) and (max-width: 900px) and (min-height: 601px) {
+  .dm-v2-methodology-flow {
+    height: min(400px, 46vh);
+  }
+
+  .dm-v2-methodology-flow-nodes {
+    top: 0;
+  }
+
+  .dm-v2-methodology-focus {
+    top: 96%;
+  }
+}
+
 @media (max-width: 1024px) and (max-height: 600px) and (orientation: landscape) {
   .dm-v2-methodology-shell {
     width: min(980px, 96vw);
-    padding: calc(var(--nav-h, 56px) + clamp(8px, 2vh, 16px)) 0 clamp(10px, 2vh, 18px);
+    padding: var(--dm-v2-safe-top, calc(var(--nav-h, 56px) + 8px)) 0
+      var(--dm-v2-safe-bottom, 10px);
   }
 
   .dm-v2-methodology-heading h2 {
@@ -721,25 +746,28 @@
   }
 
   .dm-v2-methodology-convergence {
-    inset: calc(var(--nav-h, 56px) + 7px) 0 9px;
+    inset: var(--dm-v2-safe-top, calc(var(--nav-h, 56px) + 7px)) 0
+      var(--dm-v2-safe-bottom, 9px);
     grid-template-columns: minmax(0, 1.7fr) minmax(190px, 0.72fr);
     grid-template-rows: 1fr;
     gap: 12px;
   }
 
   .dm-v2-methodology-flow {
-    height: min(250px, 52vh);
+    height: min(300px, 70vh);
     align-self: center;
   }
 
   .dm-v2-methodology-flow-icon {
-    width: clamp(36px, 5.4vw, 48px);
+    width: clamp(42px, 6.4vw, 58px);
   }
 
   .dm-v2-methodology-flow-nodes {
-    left: 0;
+    left: 2%;
     top: 50%;
-    width: 61%;
+    width: 58%;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    row-gap: clamp(5px, 1.6vh, 10px);
     transform: translateY(-50%);
   }
 
@@ -749,8 +777,13 @@
   }
 
   .dm-v2-methodology-flow-node {
-    gap: 5px;
-    font-size: clamp(0.56rem, 1.15vw, 0.72rem);
+    gap: 3px;
+    font-size: clamp(0.54rem, 1.15vw, 0.7rem);
+  }
+
+  .dm-v2-methodology-flow-node > span:last-child {
+    min-height: 1.15em;
+    line-height: 1.08;
   }
 
   .dm-v2-methodology-outcome {

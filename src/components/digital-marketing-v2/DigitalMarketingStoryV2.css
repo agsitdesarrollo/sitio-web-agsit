@@ -14,12 +14,38 @@
   --dm-v2-body: clamp(0.94rem, 1.18vw, 1.08rem);
   --dm-v2-small: clamp(0.68rem, 0.8vw, 0.78rem);
   --dm-v2-panel-h: var(--app-panel-h, calc(100svh - var(--nav-h, 0px)));
+  --dm-v2-safe-gap: clamp(16px, 2.5vh, 28px);
+  --dm-v2-safe-top: calc(
+    var(--nav-h, 0px) + env(safe-area-inset-top, 0px) + var(--dm-v2-safe-gap)
+  );
+  --dm-v2-safe-bottom: calc(
+    env(safe-area-inset-bottom, 0px) + clamp(12px, 2vh, 24px)
+  );
   position: relative;
   overflow-x: clip;
   overflow-y: visible;
   overscroll-behavior-y: none;
   background: var(--dm-v2-ink-deep);
   color: var(--dm-v2-white);
+}
+
+/* En layouts compactos la escena debe seguir el viewport visible. La variable
+   dinámica evita que aparezca la siguiente sección cuando se oculta la barra
+   del navegador móvil. */
+@media (max-width: 1024px), (max-width: 1366px) and (any-pointer: coarse) {
+  .dm-v2-page {
+    --dm-v2-panel-h: var(--app-vh, 100dvh);
+    --dm-v2-safe-gap: clamp(10px, 1.8vh, 18px);
+  }
+}
+
+@media (orientation: landscape) and (max-height: 600px) {
+  .dm-v2-page {
+    --dm-v2-safe-gap: clamp(6px, 1.5vh, 10px);
+    --dm-v2-safe-bottom: calc(
+      env(safe-area-inset-bottom, 0px) + clamp(6px, 1.5vh, 10px)
+    );
+  }
 }
 
 html.dm-v2-story-active {
@@ -30,7 +56,9 @@ html.dm-v2-story-active {
 .dm-v2-panel-slide {
   position: fixed;
   left: 0;
-  right: 0;
+  right: auto;
+  width: 100%;
+  max-width: 100vw;
   z-index: 110;
   overflow: hidden;
   pointer-events: none;
@@ -59,7 +87,8 @@ html.dm-v2-story-active {
 .dm-v2-panel-slide-frame > .dm-v2-hero,
 .dm-v2-panel-slide-frame > .dm-v2-pin-section,
 .dm-v2-panel-slide-frame > .dm-v2-transition,
-.dm-v2-panel-slide-frame > .dm-v2-methodology {
+.dm-v2-panel-slide-frame > .dm-v2-methodology,
+.dm-v2-panel-slide-frame > .final-contact-section {
   position: relative;
   top: auto;
   width: 100%;
@@ -94,7 +123,7 @@ html.dm-v2-story-active {
 
 .dm-v2-hero {
   position: relative;
-  padding: 2vw;
+  padding: var(--dm-v2-safe-top) 2vw var(--dm-v2-safe-bottom);
   display: grid;
   place-items: center;
   overflow: hidden;
@@ -117,8 +146,18 @@ html.dm-v2-story-active {
   position: relative;
   z-index: 2;
   width: min(880px, 100%);
+  max-width: 100%;
+  margin-inline: auto;
   display: grid;
   justify-items: center;
+  text-align: center;
+}
+
+.dm-v2-hero h1,
+.dm-v2-title-primary,
+.dm-v2-title-secondary {
+  width: 100%;
+  margin-inline: auto;
   text-align: center;
 }
 
@@ -151,7 +190,9 @@ html.dm-v2-story-active {
 }
 
 .dm-v2-hero-copy {
+  width: 100%;
   max-width: 640px;
+  margin-inline: auto;
   margin-top: 16px;
   color: rgba(180, 197, 219, 0.78);
   font-family: 'Inter', 'Segoe UI', Tahoma, sans-serif;
@@ -192,6 +233,7 @@ html.dm-v2-story-active {
 
 .dm-v2-focus {
   position: relative;
+  padding: var(--dm-v2-safe-top) clamp(16px, 2vw, 32px) var(--dm-v2-safe-bottom);
   display: grid;
   place-items: center;
   overflow: hidden;
@@ -337,7 +379,7 @@ html.dm-v2-story-active {
   z-index: 2;
   height: var(--dm-v2-panel-h);
   min-height: var(--dm-v2-panel-h);
-  padding: clamp(44px, 5vw, 80px) clamp(18px, 4vw, 72px);
+  padding: var(--dm-v2-safe-top) clamp(18px, 4vw, 72px) var(--dm-v2-safe-bottom);
   display: grid;
   align-items: center;
   overflow: visible;
@@ -510,7 +552,7 @@ html.dm-v2-story-active {
   position: sticky;
   top: var(--app-track-offset, 0px);
   z-index: 2;
-  padding: clamp(40px, 5vw, 74px) 0;
+  padding: var(--dm-v2-safe-top) 0 var(--dm-v2-safe-bottom);
   display: grid;
   place-items: center;
   overflow: hidden;
@@ -520,6 +562,9 @@ html.dm-v2-story-active {
 }
 
 .dm-v2-transition h2 {
+  width: min(92vw, 1500px);
+  max-width: 100%;
+  margin-inline: auto;
   color: var(--dm-v2-blue);
   text-align: center;
   font-family: 'Cormorant Garamond', Georgia, serif;
@@ -530,6 +575,8 @@ html.dm-v2-story-active {
 
 .dm-v2-transition h2 span {
   display: block;
+  width: 100%;
+  text-align: center;
   will-change: transform;
 }
 
@@ -543,6 +590,8 @@ html.dm-v2-story-active {
 .dm-v2-page > .final-contact-section {
   position: relative;
   z-index: 80;
+  padding-top: max(var(--dm-v2-safe-top), clamp(64px, 8vw, 112px));
+  padding-bottom: max(var(--dm-v2-safe-bottom), clamp(64px, 8vw, 112px));
 }
 
 .dm-v2-card-stack {
@@ -700,41 +749,16 @@ html.dm-v2-story-active {
   width: min(100%, 720px);
   aspect-ratio: 16 / 9;
   display: block;
-  object-fit: cover;
-  border: 1px solid rgba(37, 63, 108, 0.15);
+  object-fit: contain;
+  border: 0;
   border-radius: 8px;
   box-shadow: 0 20px 58px rgba(8, 21, 43, 0.11);
 }
 
-.dm-v2-card-video-play {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  z-index: 3;
-  width: clamp(52px, 5vw, 68px);
-  aspect-ratio: 1;
-  display: grid;
-  place-items: center;
-  padding: 0;
-  border: 1px solid rgba(255, 255, 255, 0.72);
-  border-radius: 50%;
-  background: rgba(8, 21, 43, 0.82);
-  box-shadow: 0 10px 28px rgba(2, 7, 18, 0.28);
-  color: #ffffff;
-  font-size: clamp(1.05rem, 1.8vw, 1.4rem);
-  line-height: 1;
-  transform: translate(-50%, -50%);
-  cursor: pointer;
-  touch-action: manipulation;
-}
-
-.dm-v2-card-video-play[hidden] {
-  display: none;
-}
-
-.dm-v2-card-video-play:focus-visible {
-  outline: 3px solid var(--dm-v2-cyan);
-  outline-offset: 4px;
+.dm-v2-card-video::-webkit-media-controls,
+.dm-v2-card-video::-webkit-media-controls-start-playback-button {
+  display: none !important;
+  -webkit-appearance: none;
 }
 
 @media (pointer: coarse) {
@@ -1051,13 +1075,13 @@ html.dm-v2-story-active {
   }
 
   .dm-v2-pin-section {
-    padding: 12px 4.5vw;
+    padding: var(--dm-v2-safe-top) 4.5vw var(--dm-v2-safe-bottom);
   }
 
   .dm-v2-large-copy,
   .dm-v2-pin-two .dm-v2-second-copy .dm-v2-large-copy {
-    font-size: clamp(2rem, 5vw, 3.25rem);
-    line-height: 1.04;
+    font-size: clamp(1.5rem, 4vw, 2.7rem);
+    line-height: 1.02;
   }
 
   .dm-v2-pin-two {
@@ -1123,6 +1147,182 @@ html.dm-v2-story-active {
     min-height: 0;
     max-height: calc(var(--dm-v2-panel-h) - 42px);
   }
+}
+
+@media (orientation: landscape) and (max-height: 820px) and (hover: none) {
+  .dm-v2-hero-title,
+  .dm-v2-hero h1,
+  .dm-v2-hero-copy,
+  .dm-v2-transition h2,
+  .dm-v2-transition h2 span {
+    justify-self: center;
+    margin-inline: auto;
+    text-align: center;
+  }
+
+  .dm-v2-hero h1,
+  .dm-v2-transition h2 {
+    text-wrap: wrap;
+  }
+
+  .dm-v2-card-section {
+    padding: clamp(10px, 2vh, 18px) clamp(10px, 2vw, 24px) 36px;
+  }
+
+  .dm-v2-card-stack {
+    gap: 8px;
+  }
+
+  .dm-v2-card {
+    top: calc(var(--card-index) * 4px);
+    width: 100%;
+    min-height: calc(var(--dm-v2-panel-h) - 8px);
+    margin-bottom: 14px;
+    padding: clamp(14px, 2.4vw, 28px);
+    grid-template-columns: minmax(0, 0.46fr) minmax(0, 0.54fr);
+    grid-template-rows: 1fr;
+    gap: clamp(14px, 2.8vw, 30px);
+    border-radius: clamp(22px, 3vw, 34px);
+  }
+
+  .dm-v2-card-copy,
+  .dm-v2-card-visual {
+    min-width: 0;
+  }
+
+  .dm-v2-card h3 {
+    font-size: clamp(1.7rem, 4.4vw, 3.8rem);
+    line-height: 1.02;
+  }
+
+  .dm-v2-card p:not(.dm-v2-card-eyebrow) {
+    margin-top: 8px;
+    font-size: clamp(0.76rem, 1.5vw, 1rem);
+    line-height: 1.36;
+  }
+
+  .dm-v2-card-link {
+    min-height: 36px;
+    margin-top: 10px;
+  }
+
+  .dm-v2-card-visual {
+    width: 100%;
+    max-height: calc(var(--dm-v2-panel-h) - 38px);
+    padding: 0;
+    overflow: hidden;
+  }
+
+  .dm-v2-card-video {
+    width: 100%;
+    max-width: 100%;
+    height: 100%;
+    max-height: 100%;
+    object-fit: contain;
+  }
+}
+
+/* En dispositivos táctiles cada tarjeta ocupa una parada estable del track. */
+.dm-v2-page.is-card-track-mode > :is(
+  .dm-v2-orbit-hero,
+  .dm-v2-hero,
+  .dm-v2-focus,
+  .dm-v2-narrative-track,
+  .dm-v2-transition-track,
+  .dm-v2-card-section,
+  .dm-v2-methodology-track
+) {
+  /* Se bloquea únicamente el paneo vertical nativo. El controlador conserva
+     el scrub interno de las narrativas y el navegador mantiene pinch-zoom. */
+  touch-action: pan-x pinch-zoom;
+  overscroll-behavior-y: none;
+}
+
+.dm-v2-page.is-card-track-mode .dm-v2-card-section {
+  height: calc(var(--dm-v2-card-count, 1) * var(--dm-v2-panel-h));
+  min-height: var(--dm-v2-panel-h);
+  padding: 0 clamp(10px, 2vw, 24px);
+  box-sizing: border-box;
+  overflow: clip;
+  isolation: isolate;
+  touch-action: none;
+}
+
+.dm-v2-page.is-card-track-mode .dm-v2-methodology-track,
+.dm-v2-page.is-card-track-mode .dm-v2-transition-track {
+  overscroll-behavior: none;
+  touch-action: none;
+}
+
+.dm-v2-page.is-card-track-mode .dm-v2-card-stack {
+  position: sticky;
+  top: var(--app-track-offset, var(--nav-h, 0px));
+  width: 100%;
+  height: var(--dm-v2-panel-h);
+  margin: 0;
+  display: block;
+  overflow: hidden;
+  perspective: none;
+  contain: layout paint;
+}
+
+.dm-v2-page.is-card-track-mode .dm-v2-card {
+  position: absolute;
+  inset: clamp(8px, 1.4vh, 14px) 0;
+  top: clamp(8px, 1.4vh, 14px);
+  width: 100%;
+  height: calc(100% - clamp(16px, 2.8vh, 28px));
+  min-height: 0;
+  margin: 0;
+  visibility: hidden;
+  opacity: 0;
+  pointer-events: none;
+  transform: none;
+  backface-visibility: hidden;
+  will-change: transform, opacity;
+}
+
+.dm-v2-page.is-card-track-mode .dm-v2-card.is-active,
+.dm-v2-page.is-card-track-mode .dm-v2-card.is-transitioning {
+  visibility: visible;
+}
+
+.dm-v2-page.is-card-track-mode .dm-v2-card.is-active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.dm-v2-page.is-card-track-mode .dm-v2-card-copy,
+.dm-v2-page.is-card-track-mode .dm-v2-card-visual {
+  position: relative;
+  z-index: 1;
+}
+
+.dm-v2-page.is-card-track-mode .dm-v2-card {
+  padding-top: max(var(--dm-v2-safe-top), clamp(16px, 3vw, 42px));
+  padding-bottom: max(var(--dm-v2-safe-bottom), clamp(8px, 2vh, 14px));
+}
+
+.dm-v2-page.is-card-track-mode .dm-v2-card-visual {
+  width: 100%;
+  height: auto;
+  min-height: 0;
+  max-height: 100%;
+  aspect-ratio: 16 / 9;
+  align-self: center;
+  padding: 0;
+}
+
+.dm-v2-page.is-card-track-mode .dm-v2-card-video,
+.dm-v2-page.is-card-track-mode .dm-v2-card-video-snapshot {
+  width: 100%;
+  max-width: none;
+  height: auto;
+  max-height: 100%;
+  aspect-ratio: 16 / 9;
+  display: block;
+  object-fit: contain;
+  border: 0;
 }
 
 @media (prefers-reduced-motion: reduce) {

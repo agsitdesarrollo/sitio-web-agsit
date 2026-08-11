@@ -68,9 +68,13 @@ const splitWords = (element: HTMLElement) => {
 const getNavHeight = () =>
   Number.parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--app-track-offset')) || 0;
 
-const getPanelHeight = () => {
-  const styles = getComputedStyle(document.documentElement);
-  const configured = Number.parseFloat(styles.getPropertyValue('--app-panel-h'));
+const getPanelHeight = (scope?: HTMLElement) => {
+  const styles = getComputedStyle(scope ?? document.documentElement);
+  const localPanelHeight = Number.parseFloat(styles.getPropertyValue('--dm-v2-panel-h'));
+  if (Number.isFinite(localPanelHeight) && localPanelHeight > 0) return localPanelHeight;
+
+  const rootStyles = getComputedStyle(document.documentElement);
+  const configured = Number.parseFloat(rootStyles.getPropertyValue('--app-panel-h'));
   return Number.isFinite(configured) && configured > 0
     ? configured
     : Math.max(1, window.innerHeight);
@@ -220,21 +224,25 @@ const setupCardVideos = (
   const videos = Array.from(root.querySelectorAll<HTMLVideoElement>('.dm-v2-card-video'));
   if (!videos.length) return;
 
-  const fallbackByVideo = new Map<HTMLVideoElement, HTMLButtonElement>();
   const cleanups: Array<() => void> = [];
 
-  const setFallbackVisible = (video: HTMLVideoElement, visible: boolean) => {
-    const fallback = fallbackByVideo.get(video);
-    if (fallback) fallback.hidden = !visible;
+  const configureAutoplay = (video: HTMLVideoElement) => {
+    video.muted = true;
+    video.defaultMuted = true;
+    video.autoplay = true;
+    video.playsInline = true;
+    video.setAttribute('muted', '');
+    video.setAttribute('autoplay', '');
+    video.setAttribute('playsinline', '');
+    video.setAttribute('webkit-playsinline', '');
   };
 
   const prepareVideo = (video: HTMLVideoElement) => {
-    video.muted = true;
-    video.defaultMuted = true;
-    video.playsInline = true;
-    video.setAttribute('muted', '');
-    video.setAttribute('playsinline', '');
-    video.setAttribute('webkit-playsinline', '');
+    configureAutoplay(video);
+
+    if (!video.getAttribute('src') && video.dataset.src) {
+      video.src = video.dataset.src;
+    }
 
     if (video.preload === 'none') {
       video.preload = 'auto';
@@ -242,15 +250,18 @@ const setupCardVideos = (
     }
   };
 
+  const belongsToActiveCard = (video: HTMLVideoElement) => {
+    if (!root.classList.contains('is-card-track-mode')) return true;
+    return Boolean(video.closest('.js-dm-v2-card')?.classList.contains('is-active'));
+  };
+
   const playVideo = async (video: HTMLVideoElement) => {
     prepareVideo(video);
     try {
       await video.play();
-      setFallbackVisible(video, false);
     } catch {
-      if (video.dataset.cardVideoVisible === 'true') {
-        setFallbackVisible(video, true);
-      }
+      // Safari puede posponer la reproducción hasta que existan datos suficientes.
+      // Los eventos canplay/loadeddata vuelven a intentarlo sin mostrar controles.
     }
   };
 
@@ -259,11 +270,10 @@ const setupCardVideos = (
       entries.forEach((entry) => {
         const video = entry.target as HTMLVideoElement;
         video.dataset.cardVideoVisible = String(entry.isIntersecting);
-        if (entry.isIntersecting) {
+        if (entry.isIntersecting && belongsToActiveCard(video)) {
           void playVideo(video);
         } else {
           video.pause();
-          setFallbackVisible(video, false);
         }
       });
     },
@@ -271,27 +281,45 @@ const setupCardVideos = (
   );
 
   videos.forEach((video) => {
-    const fallback = video
-      .closest<HTMLElement>('.dm-v2-card-visual')
-      ?.querySelector<HTMLButtonElement>('.js-dm-v2-card-video-play');
-    if (fallback) {
-      fallbackByVideo.set(video, fallback);
-      const onFallbackClick = () => void playVideo(video);
-      fallback.addEventListener('click', onFallbackClick);
-      cleanups.push(() => fallback.removeEventListener('click', onFallbackClick));
-    }
-
-    const onPlaying = () => setFallbackVisible(video, false);
-    const onError = () => {
-      if (video.dataset.cardVideoVisible === 'true') setFallbackVisible(video, true);
+    configureAutoplay(video);
+    const retryVisibleVideo = () => {
+      if (
+        video.dataset.cardVideoVisible === 'true' &&
+        belongsToActiveCard(video) &&
+        video.paused
+      ) void playVideo(video);
     };
-    video.addEventListener('playing', onPlaying);
-    video.addEventListener('error', onError);
+    video.addEventListener('loadeddata', retryVisibleVideo);
+    video.addEventListener('canplay', retryVisibleVideo);
     cleanups.push(() => {
-      video.removeEventListener('playing', onPlaying);
-      video.removeEventListener('error', onError);
+      video.removeEventListener('loadeddata', retryVisibleVideo);
+      video.removeEventListener('canplay', retryVisibleVideo);
     });
     observer.observe(video);
+  });
+
+  const retryVisibleVideos = () => {
+    if (document.visibilityState === 'hidden') return;
+    videos.forEach((video) => {
+      const activeTrackVideo =
+        root.classList.contains('is-card-track-mode') && belongsToActiveCard(video);
+      if (
+        activeTrackVideo ||
+        (video.dataset.cardVideoVisible === 'true' && belongsToActiveCard(video))
+      ) {
+        if (video.paused) void playVideo(video);
+      } else {
+        video.pause();
+      }
+    });
+  };
+  root.addEventListener('agsit:card-track-change', retryVisibleVideos);
+  window.addEventListener('pageshow', retryVisibleVideos);
+  document.addEventListener('visibilitychange', retryVisibleVideos);
+  cleanups.push(() => {
+    root.removeEventListener('agsit:card-track-change', retryVisibleVideos);
+    window.removeEventListener('pageshow', retryVisibleVideos);
+    document.removeEventListener('visibilitychange', retryVisibleVideos);
   });
 
   registerCleanup(() => {
@@ -427,6 +455,19 @@ export const setupDigitalMarketingStory = () => {
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const cleanups: Array<() => void> = [];
   const registerCleanup = (cleanup: () => void) => cleanups.push(cleanup);
+  const cardTrackMedia = window.matchMedia(
+    '(max-width: 1024px), (max-width: 1366px) and (any-pointer: coarse)',
+  );
+  let cardTrackMode = cardTrackMedia.matches;
+
+  root.classList.toggle('is-card-track-mode', cardTrackMode);
+  cards.style.setProperty('--dm-v2-card-count', String(cardItems.length));
+  if (cardTrackMode) {
+    cardItems.forEach((card, index) => {
+      card.classList.toggle('is-active', index === 0);
+      card.setAttribute('aria-hidden', String(index !== 0));
+    });
+  }
 
   root.querySelectorAll<HTMLElement>('.js-dm-v2-words').forEach(splitWords);
   setupFocusLens(root, reduceMotion, registerCleanup);
@@ -437,9 +478,14 @@ export const setupDigitalMarketingStory = () => {
   let activeScrollFrame = 0;
   let touchStartY: number | null = null;
   let touchLastY: number | null = null;
+  let touchThresholdPassed = false;
   let touchHandled = false;
+  let touchStartedOnStoryControl = false;
   let wheelGestureConsumed = false;
   let wheelGestureTimer = 0;
+  let queuedGestureDirection: Direction | null = null;
+  let queuedGestureDistance = 0;
+  let queuedGestureTimer = 0;
   let whiteExpanded = false;
   let methodologyIntroComplete = false;
   let methodologyStep = 0;
@@ -448,9 +494,13 @@ export const setupDigitalMarketingStory = () => {
   let resizeTimer = 0;
   let gestureCooldownUntil = 0;
   let panelSlideTimeline: gsap.core.Timeline | null = null;
+  let cardSlideTimeline: gsap.core.Timeline | null = null;
+  let activeCardIndex = 0;
+  let cardTrackEngaged = false;
   let viewportHandoffDepth = 0;
   let scrollViewportLocked = false;
   let panelViewportLocked = false;
+  let cardViewportLocked = false;
   const navigationEase = gsap.parseEase('power3.inOut');
   const getCardsMethodologyHandoff = (onComplete?: () => void): PanelSlideOptions => {
     const lightweight = window.matchMedia('(max-width: 1024px)').matches;
@@ -500,7 +550,7 @@ export const setupDigitalMarketingStory = () => {
 
   const getStops = () => {
     const navHeight = getNavHeight();
-    const panelHeight = getPanelHeight();
+    const panelHeight = getPanelHeight(root);
     const top = (element: HTMLElement) => Math.max(0, getDocumentTop(element) - navHeight);
     const trackRange = (element: HTMLElement) => {
       const start = top(element);
@@ -511,6 +561,9 @@ export const setupDigitalMarketingStory = () => {
     };
 
     const cardsRange = trackRange(cards);
+    const cardsDistance = cardTrackMode
+      ? (cardsRange.end - cardsRange.start) / Math.max(1, cardItems.length - 1)
+      : 0;
     const methodologyRange = trackRange(methodologyTrack);
     const methodologyDistance =
       (methodologyRange.end - methodologyRange.start) / (methodologySteps.length + 1);
@@ -522,7 +575,10 @@ export const setupDigitalMarketingStory = () => {
       trackOne: trackRange(trackOne),
       trackTwo: trackRange(trackTwo),
       transition: trackRange(transitionTrack),
-      cards: cardsRange,
+      cards: {
+        ...cardsRange,
+        steps: cardItems.map((_, index) => cardsRange.start + cardsDistance * index),
+      },
       methodology: {
         ...methodologyRange,
         steps: Array.from(
@@ -607,6 +663,117 @@ export const setupDigitalMarketingStory = () => {
     activeScrollFrame = window.requestAnimationFrame(update);
 
   };
+
+  const setCardTrackState = (requestedIndex: number) => {
+    if (!cardTrackMode) return;
+
+    const nextIndex = Math.round(gsap.utils.clamp(0, cardItems.length - 1, requestedIndex));
+    activeCardIndex = nextIndex;
+    cardItems.forEach((card, index) => {
+      const active = index === nextIndex;
+      card.classList.toggle('is-active', active);
+      card.classList.remove('is-transitioning');
+      card.setAttribute('aria-hidden', String(!active));
+      gsap.set(card, {
+        autoAlpha: active ? 1 : 0,
+        yPercent: index < nextIndex ? -100 : index > nextIndex ? 100 : 0,
+        zIndex: active ? 3 : 1,
+        pointerEvents: active ? 'auto' : 'none',
+      });
+    });
+    root.dispatchEvent(new CustomEvent('agsit:card-track-change'));
+  };
+
+  const applyCardTrackMode = (enabled: boolean, requestedIndex = activeCardIndex) => {
+    cardTrackMode = enabled;
+    root.classList.toggle('is-card-track-mode', enabled);
+
+    if (enabled) {
+      setCardTrackState(requestedIndex);
+      return;
+    }
+
+    activeCardIndex = 0;
+    cardTrackEngaged = false;
+    cardItems.forEach((card) => {
+      card.classList.remove('is-active', 'is-transitioning');
+      card.removeAttribute('aria-hidden');
+    });
+    gsap.set(cardItems, {
+      clearProps: 'opacity,visibility,transform,zIndex,pointerEvents',
+    });
+    root.dispatchEvent(new CustomEvent('agsit:card-track-change'));
+  };
+
+  const animateCardTrackStep = (requestedIndex: number, direction: Direction) => {
+    if (!cardTrackMode) return false;
+
+    const nextIndex = Math.round(gsap.utils.clamp(0, cardItems.length - 1, requestedIndex));
+    if (nextIndex === activeCardIndex) return false;
+
+    const outgoing = cardItems[activeCardIndex];
+    const incoming = cardItems[nextIndex];
+    const destination = getStops().cards.steps[nextIndex] ?? getStops().cards.start;
+    if (!outgoing || !incoming) return false;
+
+    cancelActiveScroll();
+    cardSlideTimeline?.kill();
+
+    if (reduceMotion) {
+      window.scrollTo(0, destination);
+      ScrollTrigger.update();
+      setCardTrackState(nextIndex);
+      gestureCooldownUntil = Date.now() + 120;
+      return true;
+    }
+
+    navigationAnimating = true;
+    cardViewportLocked = true;
+    lockViewportHandoff();
+    outgoing.classList.add('is-transitioning');
+    incoming.classList.add('is-transitioning');
+    incoming.setAttribute('aria-hidden', 'false');
+
+    window.scrollTo(0, destination);
+    ScrollTrigger.update();
+    gsap.set(outgoing, { autoAlpha: 1, yPercent: 0, zIndex: 2, pointerEvents: 'none' });
+    gsap.set(incoming, {
+      autoAlpha: 1,
+      yPercent: direction > 0 ? 100 : -100,
+      zIndex: 3,
+      pointerEvents: 'none',
+    });
+
+    let settled = false;
+    const settle = () => {
+      if (settled) return;
+      settled = true;
+      // El scroll ya fue movido a la parada de destino antes de iniciar la
+      // transición. Si GSAP se interrumpe por resize, UI del navegador u otro
+      // refresh, conservar el índice anterior deja estado y scroll desfasados.
+      // La parada es atómica: al completar o interrumpir se consolida destino.
+      setCardTrackState(nextIndex);
+      cardSlideTimeline = null;
+      navigationAnimating = false;
+      if (cardViewportLocked) {
+        cardViewportLocked = false;
+        unlockViewportHandoff();
+      }
+      gestureCooldownUntil = Date.now() + 120;
+    };
+
+    cardSlideTimeline = gsap
+      .timeline({
+        defaults: { duration: 0.4, ease: 'power3.inOut', force3D: true },
+        onComplete: settle,
+        onInterrupt: settle,
+      })
+      .to(outgoing, { yPercent: direction > 0 ? -100 : 100 }, 0)
+      .to(incoming, { yPercent: 0 }, 0);
+
+    return true;
+  };
+
   const removeDuplicateIds = (element: HTMLElement) => {
     element.removeAttribute('id');
     element.querySelectorAll<HTMLElement>('[id]').forEach((child) => {
@@ -635,7 +802,7 @@ export const setupDigitalMarketingStory = () => {
     portal.className = 'dm-v2-panel-slide js-dm-v2-panel-slide';
     portal.setAttribute('aria-hidden', 'true');
     portal.style.top = `${getNavHeight()}px`;
-    portal.style.height = `${getPanelHeight()}px`;
+    portal.style.height = `${getPanelHeight(root)}px`;
     const sourceRect = options.handoff?.source.getBoundingClientRect();
     const sourceStyles = options.handoff
       ? getComputedStyle(options.handoff.source)
@@ -768,7 +935,7 @@ export const setupDigitalMarketingStory = () => {
         lineHeight: sourceStyles.lineHeight,
         textTransform: sourceStyles.textTransform,
         whiteSpace: 'nowrap',
-        transformOrigin: '0 0',
+        transformOrigin: '50% 50%',
         willChange: 'transform',
       });
       portal.appendChild(handoffLabel);
@@ -871,13 +1038,17 @@ export const setupDigitalMarketingStory = () => {
       .to(incomingFrame, { yPercent: 0 }, 0);
 
     if (handoffLabel && sourceRect && targetRect) {
+      const sourceCenterX = sourceRect.left + sourceRect.width / 2;
+      const sourceCenterY = sourceRect.top + sourceRect.height / 2;
+      const targetCenterX = targetRect.left + targetRect.width / 2;
+      const targetCenterY = targetRect.top + targetRect.height / 2;
+      const uniformScale = targetRect.height / Math.max(1, sourceRect.height);
       panelSlideTimeline.to(
         handoffLabel,
         {
-          x: targetRect.left - sourceRect.left,
-          y: targetRect.top - sourceRect.top,
-          scaleX: targetRect.width / Math.max(1, sourceRect.width),
-          scaleY: targetRect.height / Math.max(1, sourceRect.height),
+          x: targetCenterX - sourceCenterX,
+          y: targetCenterY - sourceCenterY,
+          scale: uniformScale,
         },
         0,
       );
@@ -1012,7 +1183,7 @@ export const setupDigitalMarketingStory = () => {
           start: () => getDocumentTop(track) - getNavHeight(),
           end: () => {
             const start = getDocumentTop(track) - getNavHeight();
-            return start + Math.max(1, track.offsetHeight - getPanelHeight());
+            return start + Math.max(1, track.offsetHeight - getPanelHeight(root));
           },
           scrub: 0.38,
           invalidateOnRefresh: true,
@@ -1169,7 +1340,7 @@ export const setupDigitalMarketingStory = () => {
       .map((node) => node.querySelector<HTMLElement>(':scope > span:last-child'))
       .filter((label): label is HTMLElement => Boolean(label));
     gsap.set(methodologyFlowLabels, { autoAlpha: 0, y: 6 });
-    gsap.set(methodologyFlowLines, { strokeDashoffset: 1 });
+    gsap.set(methodologyFlowLines, { autoAlpha: 0 });
     gsap.set(methodologyFocus, { autoAlpha: 0, scale: 0.25 });
     gsap.set(methodologyOutcome, { autoAlpha: 0, x: reduceMotion ? 0 : 24 });
 
@@ -1178,52 +1349,85 @@ export const setupDigitalMarketingStory = () => {
       const focusRect = methodologyFocus.getBoundingClientRect();
       if (flowRect.width < 1 || flowRect.height < 1) return;
 
-      const endX = focusRect.left + focusRect.width / 2 - flowRect.left;
-      const endY = focusRect.top + focusRect.height / 2 - flowRect.top;
+      const clampX = (value: number) =>
+        Math.min(Math.max(value, 1), Math.max(1, flowRect.width - 1));
+      const clampY = (value: number) =>
+        Math.min(Math.max(value, 1), Math.max(1, flowRect.height - 1));
+      const endX = clampX(focusRect.left + focusRect.width / 2 - flowRect.left);
+      const endY = clampY(focusRect.top + focusRect.height / 2 - flowRect.top);
       methodologyFlowSvg.setAttribute('viewBox', `0 0 ${flowRect.width} ${flowRect.height}`);
 
-      const firstIcon = methodologyFlowNodes[0]?.querySelector<HTMLElement>(
-        '.dm-v2-methodology-flow-icon',
-      );
-      if (!firstIcon) return;
-      const firstIconRect = firstIcon.getBoundingClientRect();
-      const firstIconCenterY = firstIconRect.top + firstIconRect.height / 2 - flowRect.top;
-      const focusIsBelow = endY > firstIconCenterY + firstIconRect.height * 1.25;
-
-      methodologyFlowGradients.forEach((gradient) => {
-        gradient.setAttribute('x1', focusIsBelow ? '50%' : '0%');
-        gradient.setAttribute('y1', focusIsBelow ? '0%' : '50%');
-        gradient.setAttribute('x2', focusIsBelow ? '50%' : '100%');
-        gradient.setAttribute('y2', focusIsBelow ? '100%' : '50%');
-      });
+      const availableIconRects = methodologyFlowNodes
+        .map((node) =>
+          node.querySelector<HTMLElement>('.dm-v2-methodology-flow-icon')?.getBoundingClientRect(),
+        )
+        .filter((rect): rect is DOMRect => Boolean(rect));
+      if (!availableIconRects.length) return;
+      const lowestIconBottom = Math.max(...availableIconRects.map((rect) => rect.bottom));
+      const focusIsBelow = focusRect.top > lowestIconBottom;
+      const lowestNodeBottom = focusIsBelow
+        ? Math.max(...methodologyFlowNodes.map((node) => node.getBoundingClientRect().bottom))
+        : 0;
+      const tabletFlowLayout = window.matchMedia(
+        '(min-width: 641px) and (max-width: 1024px) and (min-height: 601px)',
+      ).matches;
 
       methodologyFlowLines.forEach((line, index) => {
+        let startX: number;
+        let startY: number;
+        let controlOneX: number;
+        let controlOneY: number;
+        let controlTwoX: number;
+        let controlTwoY: number;
+
         if (focusIsBelow) {
-          const startX =
-            flowRect.width * ((index + 0.5) / methodologyFlowLines.length);
-          const startY = flowRect.height * 0.52;
-          const distanceY = Math.max(40, endY - startY);
-          const controlOneY = startY + distanceY * 0.3;
-          const controlTwoY = endY - distanceY * 0.22;
-          line.setAttribute(
-            'd',
-            `M ${startX} ${startY} C ${startX} ${controlOneY}, ${endX} ${controlTwoY}, ${endX} ${endY}`,
+          // Portrait: fan the paths from a horizontal axis below the icon grid.
+          startX = clampX(
+            flowRect.width * ((index + 0.5) / methodologyFlowLines.length),
           );
-          return;
+          const safeAxisY = lowestNodeBottom - flowRect.top + 12;
+          const focusClearance = Math.max(18, flowRect.height * 0.06);
+          startY = clampY(
+            Math.min(
+              endY - focusClearance,
+              Math.max(flowRect.height * 0.52, tabletFlowLayout ? safeAxisY : 0),
+            ),
+          );
+          const distanceY = Math.max(40, endY - startY);
+          controlOneX = startX;
+          controlOneY = clampY(startY + distanceY * 0.3);
+          controlTwoX = endX;
+          controlTwoY = clampY(endY - distanceY * 0.22);
+        } else {
+          // Landscape: fan the paths from a vertical axis after the icon grid.
+          const rightmostIconEdge = Math.max(
+            ...availableIconRects.map((rect) => rect.right - flowRect.left),
+          );
+          const safeAxisX = tabletFlowLayout ? rightmostIconEdge + 14 : 0;
+          startX = clampX(
+            Math.min(endX - 90, Math.max(flowRect.width * 0.58, safeAxisX)),
+          );
+          const fanPosition =
+            methodologyFlowLines.length > 1
+              ? index / (methodologyFlowLines.length - 1) - 0.5
+              : 0;
+          startY = clampY(endY + flowRect.height * fanPosition * 1.28);
+          const distanceX = Math.max(48, endX - startX);
+          controlOneX = clampX(startX + distanceX * 0.26);
+          controlOneY = startY;
+          controlTwoX = clampX(endX - distanceX * 0.2);
+          controlTwoY = endY;
         }
 
-        const startX = Math.min(endX - 90, flowRect.width * 0.58);
-        const fanPosition =
-          methodologyFlowLines.length > 1
-            ? index / (methodologyFlowLines.length - 1) - 0.5
-            : 0;
-        const startY = endY + flowRect.height * fanPosition * 1.28;
-        const distanceX = Math.max(48, endX - startX);
-        const firstControlX = startX + distanceX * 0.26;
-        const finalControlX = endX - distanceX * 0.2;
+        const gradient = methodologyFlowGradients[index];
+        gradient?.setAttribute('gradientUnits', 'userSpaceOnUse');
+        gradient?.setAttribute('x1', `${startX}`);
+        gradient?.setAttribute('y1', `${startY}`);
+        gradient?.setAttribute('x2', `${endX}`);
+        gradient?.setAttribute('y2', `${endY}`);
         line.setAttribute(
           'd',
-          `M ${startX} ${startY} C ${firstControlX} ${startY}, ${finalControlX} ${endY}, ${endX} ${endY}`,
+          `M ${startX} ${startY} C ${controlOneX} ${controlOneY}, ${controlTwoX} ${controlTwoY}, ${endX} ${endY}`,
         );
       });
     };
@@ -1305,10 +1509,10 @@ export const setupDigitalMarketingStory = () => {
       .to(
         methodologyFlowLines,
         {
-          strokeDashoffset: 0,
-          duration: 0.7,
+          autoAlpha: 1,
+          duration: 0.38,
           stagger: 0.025,
-          ease: 'power2.inOut',
+          ease: 'power2.out',
         },
         1.13,
       )
@@ -1587,11 +1791,18 @@ export const setupDigitalMarketingStory = () => {
             return true;
           }
 
+          cardTrackEngaged = cardTrackMode;
+          setCardTrackState(0);
           navigatePanelSlide(stops.cards.start, transition, firstCard, 1);
           return true;
         }
 
         if (y >= stops.cards.start - BOUNDARY_TOLERANCE && y <= stops.cards.end + BOUNDARY_TOLERANCE) {
+          cardTrackEngaged = cardTrackMode;
+          if (cardTrackMode && activeCardIndex < cardItems.length - 1) {
+            return animateCardTrackStep(activeCardIndex + 1, 1);
+          }
+
           if (y < stops.cards.end - BOUNDARY_TOLERANCE) {
             if (crosses(stops.cards.end)) {
               navigateTo(stops.cards.end);
@@ -1600,6 +1811,7 @@ export const setupDigitalMarketingStory = () => {
             return false;
           }
 
+          cardTrackEngaged = false;
           navigatePanelSlide(
             stops.methodology.start,
             lastCard,
@@ -1611,6 +1823,7 @@ export const setupDigitalMarketingStory = () => {
         }
 
         if (y > stops.cards.end && y < stops.methodology.start - BOUNDARY_TOLERANCE) {
+          cardTrackEngaged = false;
           navigatePanelSlide(
             stops.methodology.start,
             lastCard,
@@ -1647,14 +1860,28 @@ export const setupDigitalMarketingStory = () => {
             return true;
           }
 
-          navigateTo(stops.contact);
+          if (cardTrackMode) {
+            navigatePanelSlide(stops.contact, methodology, contact, 1, {
+              lightweight: true,
+              duration: 0.46,
+            });
+          } else {
+            navigateTo(stops.contact);
+          }
           return true;
         }
 
         if (y > stops.methodology.end && y < stops.contact - BOUNDARY_TOLERANCE) {
           setMethodologyState(methodologySteps.length);
           setMethodologyConvergenceState(true);
-          navigateTo(stops.contact);
+          if (cardTrackMode) {
+            navigatePanelSlide(stops.contact, methodology, contact, 1, {
+              lightweight: true,
+              duration: 0.46,
+            });
+          } else {
+            navigateTo(stops.contact);
+          }
           return true;
         }
 
@@ -1664,14 +1891,28 @@ export const setupDigitalMarketingStory = () => {
       if (near(y, stops.contact)) {
         setMethodologyState(methodologySteps.length);
         setMethodologyConvergenceState(true);
-        navigateTo(stops.methodology.end);
+        if (cardTrackMode) {
+          navigatePanelSlide(stops.methodology.end, contact, methodology, -1, {
+            lightweight: true,
+            duration: 0.46,
+          });
+        } else {
+          navigateTo(stops.methodology.end);
+        }
         return true;
       }
 
       if (y > stops.methodology.end + BOUNDARY_TOLERANCE && y < stops.contact) {
         setMethodologyState(methodologySteps.length);
         setMethodologyConvergenceState(true);
-        navigateTo(stops.methodology.end);
+        if (cardTrackMode) {
+          navigatePanelSlide(stops.methodology.end, contact, methodology, -1, {
+            lightweight: true,
+            duration: 0.46,
+          });
+        } else {
+          navigateTo(stops.methodology.end);
+        }
         return true;
       }
 
@@ -1698,6 +1939,8 @@ export const setupDigitalMarketingStory = () => {
 
         if (methodologyIntroComplete) {
           animateMethodologyIntro(false, () => {
+            cardTrackEngaged = cardTrackMode;
+            setCardTrackState(cardItems.length - 1);
             navigatePanelSlide(
               stops.cards.end,
               methodology,
@@ -1709,6 +1952,8 @@ export const setupDigitalMarketingStory = () => {
           return true;
         }
 
+        cardTrackEngaged = cardTrackMode;
+        setCardTrackState(cardItems.length - 1);
         navigatePanelSlide(
           stops.cards.end,
           methodology,
@@ -1720,6 +1965,8 @@ export const setupDigitalMarketingStory = () => {
       }
 
       if (y > stops.cards.end + BOUNDARY_TOLERANCE && y < stops.methodology.start) {
+        cardTrackEngaged = cardTrackMode;
+        setCardTrackState(cardItems.length - 1);
         navigatePanelSlide(
           stops.cards.end,
           methodology,
@@ -1731,6 +1978,11 @@ export const setupDigitalMarketingStory = () => {
       }
 
       if (y >= stops.cards.start - BOUNDARY_TOLERANCE && y <= stops.cards.end + BOUNDARY_TOLERANCE) {
+        cardTrackEngaged = cardTrackMode;
+        if (cardTrackMode && activeCardIndex > 0) {
+          return animateCardTrackStep(activeCardIndex - 1, -1);
+        }
+
         if (y > stops.cards.start + BOUNDARY_TOLERANCE) {
           if (crosses(stops.cards.start)) {
             navigateTo(stops.cards.start);
@@ -1739,6 +1991,7 @@ export const setupDigitalMarketingStory = () => {
           return false;
         }
 
+        cardTrackEngaged = false;
         navigatePanelSlide(stops.transition.end, firstCard, transition, -1, {
           onComplete: () => {
             whiteExpanded = true;
@@ -1753,6 +2006,7 @@ export const setupDigitalMarketingStory = () => {
       }
 
       if (y > stops.transition.end + BOUNDARY_TOLERANCE && y < stops.cards.start) {
+        cardTrackEngaged = false;
         navigatePanelSlide(stops.transition.end, firstCard, transition, -1, {
           onComplete: () => {
             titleCentered = true;
@@ -1902,6 +2156,29 @@ export const setupDigitalMarketingStory = () => {
       return false;
     };
 
+    const queueGesture = (direction: Direction, projectedDistance: number) => {
+      queuedGestureDirection = direction;
+      queuedGestureDistance = Math.max(queuedGestureDistance, projectedDistance);
+      window.clearTimeout(queuedGestureTimer);
+
+      const flush = () => {
+        if (queuedGestureDirection === null) return;
+        const cooldownRemaining = gestureCooldownUntil - Date.now();
+        if (navigationAnimating || phaseAnimating || cooldownRemaining > 0) {
+          queuedGestureTimer = window.setTimeout(flush, Math.max(48, cooldownRemaining + 8));
+          return;
+        }
+
+        const pendingDirection = queuedGestureDirection;
+        const pendingDistance = queuedGestureDistance;
+        queuedGestureDirection = null;
+        queuedGestureDistance = 0;
+        handleDirection(pendingDirection, pendingDistance);
+      };
+
+      queuedGestureTimer = window.setTimeout(flush, 48);
+    };
+
     const onWheel = (event: WheelEvent) => {
       if (isWheelProtectedTarget(event.target)) return;
       const stops = getStops();
@@ -1914,6 +2191,7 @@ export const setupDigitalMarketingStory = () => {
       if (!controlled) return;
 
       const useNativeCardScroll =
+        !cardTrackMode &&
         window.matchMedia('(max-width: 1024px)').matches &&
         event.target instanceof Element &&
         Boolean(event.target.closest('.js-dm-v2-card-section'));
@@ -1926,6 +2204,8 @@ export const setupDigitalMarketingStory = () => {
       }, 180);
       if (wheelGestureConsumed) return;
       if (navigationAnimating || phaseAnimating || Date.now() < gestureCooldownUntil) {
+        queueGesture(direction, Math.abs(event.deltaY));
+        wheelGestureConsumed = true;
         return;
       }
       const handled = handleDirection(direction, Math.abs(event.deltaY));
@@ -1943,64 +2223,101 @@ export const setupDigitalMarketingStory = () => {
     };
 
     const onTouchStart = (event: TouchEvent) => {
-      if (isFormOrNavigationTarget(event.target) || isFocusLensTarget(event.target)) {
+      const interactiveTarget = isFormOrNavigationTarget(event.target);
+      const storyControl =
+        interactiveTarget &&
+        event.target instanceof Element &&
+        root.contains(event.target) &&
+        !event.target.closest('.final-contact-section');
+
+      if ((interactiveTarget && !storyControl) || isFocusLensTarget(event.target)) {
         touchStartY = null;
+        touchStartedOnStoryControl = false;
         return;
       }
 
       const useNativeCardScroll =
+        !cardTrackMode &&
         window.matchMedia('(max-width: 1024px)').matches &&
         event.target instanceof Element &&
         Boolean(event.target.closest('.js-dm-v2-card-section'));
       if (useNativeCardScroll) {
         touchStartY = null;
         touchLastY = null;
+        touchThresholdPassed = false;
         touchHandled = false;
+        touchStartedOnStoryControl = false;
         return;
       }
 
       touchStartY = event.touches[0]?.clientY ?? null;
       touchLastY = touchStartY;
+      touchThresholdPassed = false;
       touchHandled = false;
+      touchStartedOnStoryControl = storyControl;
     };
 
     const onTouchMove = (event: TouchEvent) => {
       if (touchStartY === null || touchLastY === null) return;
       const currentY = event.touches[0]?.clientY ?? touchLastY;
       const delta = touchLastY - currentY;
+      const totalDelta = touchStartY - currentY;
       touchLastY = currentY;
-      if (Math.abs(delta) < 0.5) return;
 
+      // Android puede entregar el primer movimiento al compositor antes de que
+      // el gesto supere el umbral. Cancelarlo desde el primer pixel mantiene la
+      // página en la parada actual; el desplazamiento interno de las narrativas
+      // se aplica manualmente más abajo cuando el gesto ya es intencional.
+      const projectedDelta = touchHandled ? delta : totalDelta;
+      const projectedDirection: Direction = projectedDelta >= 0 ? 1 : -1;
       const stops = getStops();
-      const direction: Direction = delta > 0 ? 1 : -1;
       const controlled =
         window.scrollY >= stops.orbitHero - BOUNDARY_TOLERANCE &&
         (window.scrollY < stops.contact - BOUNDARY_TOLERANCE ||
-          (direction < 0 && window.scrollY <= stops.contact + BOUNDARY_TOLERANCE));
+          (projectedDirection < 0 && window.scrollY <= stops.contact + BOUNDARY_TOLERANCE));
+      if (
+        controlled &&
+        (!touchStartedOnStoryControl || Math.abs(totalDelta) >= 18)
+      ) event.preventDefault();
+
+      if (!touchThresholdPassed) {
+        if (Math.abs(totalDelta) < 18) return;
+        touchThresholdPassed = true;
+      }
+      if (Math.abs(delta) < 0.5 && touchHandled) return;
+
+      const effectiveDelta = touchHandled ? delta : totalDelta;
+      const direction: Direction = effectiveDelta > 0 ? 1 : -1;
       if (!controlled) return;
 
-      event.preventDefault();
       if (touchHandled) {
         return;
       }
-      if (navigationAnimating || phaseAnimating || Date.now() < gestureCooldownUntil) return;
+      if (navigationAnimating || phaseAnimating || Date.now() < gestureCooldownUntil) {
+        queueGesture(direction, Math.abs(effectiveDelta));
+        touchHandled = true;
+        return;
+      }
 
-      touchHandled = handleDirection(direction, Math.abs(delta));
+      touchHandled = handleDirection(direction, Math.abs(effectiveDelta));
       if (!touchHandled) {
         const destination = gsap.utils.clamp(
           stops.orbitHero,
           stops.methodology.end,
-          window.scrollY + delta,
+          window.scrollY + effectiveDelta,
         );
         window.scrollTo(0, destination);
         ScrollTrigger.update();
+        touchStartY = currentY;
       }
     };
 
     const onTouchEnd = () => {
       touchStartY = null;
       touchLastY = null;
+      touchThresholdPassed = false;
       touchHandled = false;
+      touchStartedOnStoryControl = false;
     };
 
     const onKeyDown = (event: KeyboardEvent) => {
@@ -2010,7 +2327,12 @@ export const setupDigitalMarketingStory = () => {
       if (!forward && !backward) return;
 
       const direction: Direction = forward ? 1 : -1;
-      if (handleDirection(direction, getPanelHeight())) event.preventDefault();
+      if (navigationAnimating || phaseAnimating || Date.now() < gestureCooldownUntil) {
+        queueGesture(direction, getPanelHeight(root));
+        event.preventDefault();
+        return;
+      }
+      if (handleDirection(direction, getPanelHeight(root))) event.preventDefault();
     };
 
     window.addEventListener('wheel', onWheel, { passive: false });
@@ -2021,6 +2343,7 @@ export const setupDigitalMarketingStory = () => {
     window.addEventListener('keydown', onKeyDown);
 
     registerCleanup(() => {
+      window.clearTimeout(queuedGestureTimer);
       window.removeEventListener('wheel', onWheel);
       window.removeEventListener('touchstart', onTouchStart);
       window.removeEventListener('touchmove', onTouchMove);
@@ -2030,7 +2353,7 @@ export const setupDigitalMarketingStory = () => {
     });
 
     if (!reduceMotion) {
-      gsap.matchMedia().add('(min-width: 901px)', () => {
+      gsap.matchMedia().add('(min-width: 901px) and (hover: hover) and (pointer: fine)', () => {
         gsap.utils.toArray<HTMLElement>('.js-dm-v2-card', root).forEach((card, index) => {
           gsap.to(card, {
             scale: 0.8 + index * 0.04,
@@ -2051,6 +2374,21 @@ export const setupDigitalMarketingStory = () => {
       const stops = getStops();
       const y = window.scrollY;
       getOrbitApi()?.setCollapsed(y >= stops.hero - BOUNDARY_TOLERANCE);
+      if (cardTrackMode) {
+        cardTrackEngaged =
+          y >= stops.cards.start - BOUNDARY_TOLERANCE &&
+          y <= stops.cards.end + BOUNDARY_TOLERANCE;
+        const cardIndex = y <= stops.cards.start
+          ? 0
+          : y >= stops.cards.end
+            ? cardItems.length - 1
+            : Math.round(
+                ((y - stops.cards.start) /
+                  Math.max(1, stops.cards.end - stops.cards.start)) *
+                  (cardItems.length - 1),
+              );
+        setCardTrackState(cardIndex);
+      }
       if (y >= stops.transition.start - BOUNDARY_TOLERANCE) {
         whiteExpanded = true;
         whiteTimeline.progress(1);
@@ -2082,8 +2420,16 @@ export const setupDigitalMarketingStory = () => {
     };
 
     const refresh = () => {
+      const preserveCardStop = cardTrackMode && cardTrackEngaged;
+      const preservedCardIndex = activeCardIndex;
+
       window.clearTimeout(resizeTimer);
       resizeTimer = window.setTimeout(() => {
+        const nextCardTrackMode = cardTrackMedia.matches;
+        if (nextCardTrackMode !== cardTrackMode) {
+          applyCardTrackMode(nextCardTrackMode, preservedCardIndex);
+        }
+
         if (!phaseAnimating) {
           const whiteProgress = whiteTimeline.progress();
           const methodologyIntroProgress = methodologyIntroTimeline.progress();
@@ -2094,15 +2440,28 @@ export const setupDigitalMarketingStory = () => {
           updateMethodologyFlowGeometry();
         }
         ScrollTrigger.refresh();
+
+        if (preserveCardStop && cardTrackMode) {
+          const nextCardStop = getStops().cards.steps[preservedCardIndex];
+          if (Number.isFinite(nextCardStop)) {
+            window.scrollTo(0, nextCardStop);
+            ScrollTrigger.update();
+            setCardTrackState(preservedCardIndex);
+          }
+        }
       }, 160);
     };
 
     window.addEventListener('resize', refresh, { passive: true });
     window.addEventListener('agsit:viewport-change', refresh, { passive: true });
+    window.visualViewport?.addEventListener('resize', refresh, { passive: true });
+    cardTrackMedia.addEventListener('change', refresh);
     registerCleanup(() => {
       window.clearTimeout(resizeTimer);
       window.removeEventListener('resize', refresh);
       window.removeEventListener('agsit:viewport-change', refresh);
+      window.visualViewport?.removeEventListener('resize', refresh);
+      cardTrackMedia.removeEventListener('change', refresh);
     });
 
     syncDeepLinkState();
@@ -2113,10 +2472,13 @@ export const setupDigitalMarketingStory = () => {
     cancelActiveScroll();
     window.clearTimeout(wheelGestureTimer);
     panelSlideTimeline?.kill();
+    cardSlideTimeline?.kill();
     root.querySelector('.js-dm-v2-panel-slide')?.remove();
     while (viewportHandoffDepth > 0) unlockViewportHandoff();
     cleanups.forEach((cleanup) => cleanup());
     context.revert();
+    root.classList.remove('is-card-track-mode');
+    cards.style.removeProperty('--dm-v2-card-count');
     document.documentElement.classList.remove('dm-v2-story-active');
   };
 

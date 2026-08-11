@@ -6,7 +6,8 @@
   display: grid;
   grid-template-rows: minmax(0, 1fr);
   place-items: center;
-  padding-top: var(--nav-h, 0px);
+  padding-top: var(--dm-v2-safe-top, var(--nav-h, 0px));
+  padding-bottom: var(--dm-v2-safe-bottom, 0px);
   padding-inline: clamp(16px, 5.21vw, 100px);
   overflow: hidden;
   isolation: isolate;

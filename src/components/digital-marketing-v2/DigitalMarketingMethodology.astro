@@ -95,9 +95,10 @@ const methodologyColors = {
                   <linearGradient
                     id={`dm-v2-flow-gradient-${step.id}`}
                     class="js-dm-v2-methodology-flow-gradient"
+                    gradientUnits="userSpaceOnUse"
                   >
-                    <stop offset="0" stop-color={methodologyColors[step.id]} stop-opacity="0"></stop>
-                    <stop offset="0.22" stop-color={methodologyColors[step.id]} stop-opacity="0.42"></stop>
+                    <stop offset="0" stop-color={methodologyColors[step.id]} stop-opacity="0.74"></stop>
+                    <stop offset="0.22" stop-color={methodologyColors[step.id]} stop-opacity="0.9"></stop>
                     <stop offset="1" stop-color={methodologyColors[step.id]} stop-opacity="1"></stop>
                   </linearGradient>
                 ))
@@ -111,7 +112,6 @@ const methodologyColors = {
                     `dm-v2-methodology-flow-line-${step.id}`,
                     'js-dm-v2-methodology-flow-line',
                   ]}
-                  pathLength="1"
                 ></path>
               ))
             }
