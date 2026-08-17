@@ -6,6 +6,7 @@ gsap.registerPlugin(ScrollTrigger);
 type TrackDefinition = {
   section: string;
   items: string;
+  variant?: 'default' | 'horizontal';
 };
 
 type PageDefinition = {
@@ -18,6 +19,10 @@ const PAGE_DEFINITIONS: PageDefinition[] = [
     root: '.technology-page',
     tracks: [{ section: '.technology-benefits', items: '.technology-benefit-card' }],
   },
+  {
+    root: '.crm-platform-page',
+    tracks: [{ section: '.crm-pillars', items: '.crm-pillar-card', variant: 'horizontal' }],
+  },
   ...['itg', 'auto', 'dev', 'ops', 'data', 'inn'].map((prefix) => ({
     root: `.${prefix}-page`,
     tracks: [
@@ -26,16 +31,6 @@ const PAGE_DEFINITIONS: PageDefinition[] = [
       { section: `.${prefix}-approach`, items: `.${prefix}-approach-step` },
     ],
   })),
-  {
-    root: '.crm-page',
-    tracks: [
-      { section: '.crm-contrast', items: '.crm-contrast-column' },
-      { section: '.crm-modules', items: '.crm-module-grid article' },
-      { section: '.crm-workflows', items: '.crm-workflow-steps article' },
-      { section: '.crm-ai', items: '.crm-ai-grid article' },
-      { section: '.crm-outcomes', items: '.crm-outcomes li' },
-    ],
-  },
   {
     root: '.quality-page',
     tracks: [
@@ -71,12 +66,18 @@ const clearLegacyReveal = (section: HTMLElement, items: HTMLElement[]) => {
   });
 };
 
-const setupTrack = (section: HTMLElement, items: HTMLElement[], trackIndex: number) => {
+const setupTrack = (
+  section: HTMLElement,
+  items: HTMLElement[],
+  trackIndex: number,
+  variant: TrackDefinition['variant'] = 'default',
+) => {
   if (items.length < 2 || section.dataset.serviceTrackReady === 'true') return;
 
   section.dataset.serviceTrackReady = 'true';
   section.dataset.serviceTrackStops = String(items.length);
   section.classList.add('service-slide-panel', 'service-card-track');
+  section.classList.toggle('service-card-track-horizontal', variant === 'horizontal');
   clearLegacyReveal(section, items);
 
   const matchMedia = gsap.matchMedia();
@@ -104,6 +105,56 @@ const setupTrack = (section: HTMLElement, items: HTMLElement[], trackIndex: numb
 
       section.classList.toggle('service-card-track-desktop', desktop);
       section.classList.toggle('service-card-track-compact', compact);
+
+      if (variant === 'horizontal') {
+        const incomingOffset = compact ? 104 : 24;
+        const outgoingOffset = compact ? -104 : -24;
+
+        gsap.set(items, { autoAlpha: 0, xPercent: incomingOffset });
+        gsap.set(items[0], { autoAlpha: 1, xPercent: 0 });
+        gsap.set(section, { '--crm-pillar-progress': '0%' });
+
+        const timeline = gsap.timeline({
+          defaults: { ease: 'none' },
+          scrollTrigger: {
+            id: `service-card-track-${trackIndex}-horizontal`,
+            trigger: section,
+            start: getStart,
+            end: getEnd,
+            pin: true,
+            pinSpacing: true,
+            scrub: compact ? 0.52 : 0.6,
+            anticipatePin: 1,
+            invalidateOnRefresh: true,
+          },
+        });
+
+        timeline.to({}, { duration: 0.7 });
+        items.slice(1).forEach((item, index) => {
+          const previous = items[index];
+          const progress = (index + 1) / (items.length - 1);
+          const label = `service-track-${trackIndex}-${index + 1}`;
+
+          timeline
+            .addLabel(label)
+            .to(previous, { autoAlpha: 0, xPercent: outgoingOffset, duration: 0.48, ease: 'power1.in' }, label)
+            .fromTo(
+              item,
+              { autoAlpha: 0, xPercent: incomingOffset },
+              { autoAlpha: 1, xPercent: 0, duration: 0.62, ease: 'power2.out', immediateRender: false },
+              label,
+            )
+            .to(section, { '--crm-pillar-progress': `${progress * 100}%`, duration: 0.62, ease: 'none' }, label)
+            .to({}, { duration: 0.38 });
+        });
+
+        return () => {
+          timeline.kill();
+          section.classList.remove('service-card-track-horizontal');
+          section.style.removeProperty('--crm-pillar-progress');
+          gsap.set(items, { clearProps: 'all' });
+        };
+      }
 
       if (desktop) {
         gsap.set(items, { autoAlpha: 0, y: 34, scale: 0.975 });
@@ -240,6 +291,9 @@ const setupLandingTrackNavigation = (root: HTMLElement) => {
   let activeScrollFrame = 0;
   let touchStartY: number | null = null;
   const navigationEase = gsap.parseEase('power2.inOut');
+  const touchThreshold = Number.parseFloat(root.dataset.serviceTouchThreshold ?? '') || 34;
+  const isNavigationSuspended = () =>
+    html.classList.contains('service-slides-footer-free') || html.classList.contains('mobile-menu-open');
 
   const getPinnedStopCount = (section: HTMLElement) => {
     const explicitStops = Number.parseInt(section.dataset.serviceTrackStops ?? '', 10);
@@ -383,7 +437,7 @@ const setupLandingTrackNavigation = (root: HTMLElement) => {
         return;
       }
 
-      if (Math.abs(event.deltaY) < 8 || html.classList.contains('service-slides-footer-free')) {
+      if (Math.abs(event.deltaY) < 8 || isNavigationSuspended()) {
         return;
       }
 
@@ -406,7 +460,7 @@ const setupLandingTrackNavigation = (root: HTMLElement) => {
   window.addEventListener(
     'touchstart',
     (event) => {
-      if (html.classList.contains('service-slides-footer-free') || isInteractiveTarget(event.target)) return;
+      if (isNavigationSuspended() || isInteractiveTarget(event.target)) return;
       touchStartY = event.touches[0]?.clientY ?? null;
     },
     { passive: true },
@@ -415,7 +469,7 @@ const setupLandingTrackNavigation = (root: HTMLElement) => {
   window.addEventListener(
     'touchmove',
     (event) => {
-      if (touchStartY === null || html.classList.contains('service-slides-footer-free')) return;
+      if (touchStartY === null || isNavigationSuspended()) return;
       event.preventDefault();
     },
     { passive: false },
@@ -424,7 +478,7 @@ const setupLandingTrackNavigation = (root: HTMLElement) => {
   window.addEventListener(
     'touchend',
     (event) => {
-      if (touchStartY === null || navigationLocked || html.classList.contains('service-slides-footer-free')) {
+      if (touchStartY === null || navigationLocked || isNavigationSuspended()) {
         touchStartY = null;
         return;
       }
@@ -432,7 +486,7 @@ const setupLandingTrackNavigation = (root: HTMLElement) => {
       const touchEndY = event.changedTouches[0]?.clientY ?? touchStartY;
       const delta = touchStartY - touchEndY;
       touchStartY = null;
-      if (Math.abs(delta) < 34) return;
+      if (Math.abs(delta) < touchThreshold) return;
 
       const direction = delta > 0 ? 1 : -1;
       const navigated = navigateByDirection(direction);
@@ -446,7 +500,7 @@ const setupLandingTrackNavigation = (root: HTMLElement) => {
   window.addEventListener('keydown', (event) => {
     if (
       navigationLocked ||
-      html.classList.contains('service-slides-footer-free') ||
+      isNavigationSuspended() ||
       isInteractiveTarget(event.target)
     ) {
       return;
@@ -482,12 +536,12 @@ export const setupServiceSlides = () => {
     }
   });
 
-  definition.tracks.forEach(({ section: sectionSelector, items: itemSelector }, index) => {
+  definition.tracks.forEach(({ section: sectionSelector, items: itemSelector, variant }, index) => {
     const section = root.querySelector<HTMLElement>(sectionSelector);
     if (!section) return;
 
     const items = gsap.utils.toArray<HTMLElement>(itemSelector, section);
-    setupTrack(section, items, index);
+    setupTrack(section, items, index, variant);
   });
 
   setupPageSnapState(root);

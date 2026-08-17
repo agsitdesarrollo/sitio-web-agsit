@@ -10,6 +10,7 @@
 
     const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     const revealSelectors = [
+      '[data-service-reveal]',
       'section > [class*="-section-heading"]',
       'section > [class*="-hero-copy"]',
       'section > [class*="-hero-content"]',

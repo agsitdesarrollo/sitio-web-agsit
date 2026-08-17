@@ -1,20 +1,16 @@
 import type { SupportedLang } from '../i18n/ui';
 
-export type CrmModule = {
-  code: string;
+export type PlatformCard = {
+  eyebrow: string;
   title: string;
   copy: string;
+  detail: string;
 };
 
-export type CrmWorkflow = {
+export type PlatformStep = {
   label: string;
   title: string;
   copy: string;
-};
-
-export type CrmCapability = {
-  title: string;
-  points: string[];
 };
 
 export type CrmAdministrationContent = {
@@ -28,299 +24,236 @@ export type CrmAdministrationContent = {
   hero: {
     eyebrow: string;
     title: string;
+    titleAccent: string;
     copy: string;
     primaryCta: string;
     secondaryCta: string;
-    coreLabel: string;
-    signals: string[];
+    visualAlt: string;
   };
-  contrast: {
-    eyebrow: string;
-    title: string;
-    beforeLabel: string;
-    afterLabel: string;
-    before: string[];
-    after: string[];
-  };
-  modules: {
+  convergence: {
     eyebrow: string;
     title: string;
     copy: string;
-    items: CrmModule[];
+    states: PlatformStep[];
+    resultLabel: string;
+    resultTitle: string;
+    resultCopy: string;
   };
-  workflows: {
+  pillars: {
     eyebrow: string;
     title: string;
     copy: string;
-    items: CrmWorkflow[];
+    items: PlatformCard[];
   };
-  ai: {
+  journey: {
     eyebrow: string;
     title: string;
     copy: string;
-    capabilities: CrmCapability[];
+    steps: PlatformStep[];
   };
-  outcomes: {
+  collaboration: {
     eyebrow: string;
     title: string;
+    copy: string;
+    visualAlt: string;
+    outcomes: string[];
+  };
+  integrations: {
+    eyebrow: string;
+    title: string;
+    copy: string;
     items: string[];
   };
-  cta: {
+  implementation: {
     eyebrow: string;
     title: string;
     copy: string;
+    steps: PlatformStep[];
   };
 };
 
 export const crmAdministrationByLang: Record<SupportedLang, CrmAdministrationContent> = {
   es: {
     metadata: {
-      title: 'Administración CRM AGSIT | Operación comercial y colaboración 360',
+      title: 'Plataforma integral para tu empresa | AGSIT',
       description:
-        'Administración CRM para centralizar ventas, marketing, tareas, proyectos, colaboración, analítica, automatización e inteligencia artificial en una sola operación.',
+        'Centraliza ventas, proyectos, comunicación, automatización y control operativo en una sola plataforma implementada por AGSIT.',
       canonicalUrl: 'https://agsit.com.mx/administracion-crm/',
       htmlLang: 'es-MX',
       locale: 'es_MX',
     },
     hero: {
-      eyebrow: 'Conexión Empresarial Total 360°',
-      title: 'Un CRM para conectar clientes, equipo y resultados.',
+      eyebrow: 'Plataforma integral para tu empresa',
+      title: 'Toda tu operación.',
+      titleAccent: 'Un solo lugar.',
       copy:
-        'Centralizamos procesos comerciales, tareas, comunicación, analítica y automatización para que cada área deje de trabajar aislada y la experiencia del cliente mejore desde el primer contacto.',
-      primaryCta: 'Solicitar asesoría',
-      secondaryCta: 'Ver plataforma',
-      coreLabel: 'Clientes',
-      signals: ['CRM', 'Tareas', 'Ventas', 'IA'],
+        'Conecta clientes, equipos, proyectos y procesos para que cada área avance con la misma información y sin cambiar de herramienta.',
+      primaryCta: 'Hablar con un especialista',
+      secondaryCta: 'Descubrir la plataforma',
+      visualAlt: 'Laptop y teléfonos con una interfaz genérica de operación empresarial integrada.',
     },
-    contrast: {
-      eyebrow: 'Antes y después',
-      title: 'Cuando todo vive en herramientas separadas, el negocio pierde visibilidad.',
-      beforeLabel: 'Fragmentado',
-      afterLabel: 'Conectado',
-      before: [
-        'Costos excesivos por múltiples plataformas.',
-        'Información duplicada, aislada y sin análisis.',
-        'Comunicación fragmentada entre áreas.',
-        'Dificultad para medir ventas, tareas y resultados.',
-      ],
-      after: [
-        'Herramientas centralizadas en una sola operación.',
-        'Datos unificados con reportes en tiempo real.',
-        'Equipos colaborando con procesos claros.',
-        'Automatización para acelerar seguimiento y respuesta.',
-      ],
-    },
-    modules: {
-      eyebrow: 'Ecosistema CRM',
-      title: 'Todo lo que el equipo necesita para operar con agilidad.',
+    convergence: {
+      eyebrow: 'Cuando todo vive separado',
+      title: 'El trabajo se fragmenta antes de que tu equipo pueda avanzar.',
       copy:
-        'Integramos gestión comercial, proyectos, colaboración, pagos, firma, sitios, seguimiento de tiempo y analítica para reducir fricción y mejorar control.',
+        'Las conversaciones, los clientes, los archivos y las tareas pierden contexto cuando cada uno vive en una aplicación diferente.',
+      states: [
+        { label: '01', title: 'Clientes', copy: 'Seguimientos repartidos entre hojas, correos y notas.' },
+        { label: '02', title: 'Equipos', copy: 'Mensajes que no llegan a convertirse en trabajo claro.' },
+        { label: '03', title: 'Proyectos', copy: 'Responsables, fechas y archivos en lugares distintos.' },
+      ],
+      resultLabel: 'Una operación conectada',
+      resultTitle: 'Cada conversación se convierte en una acción con contexto.',
+      resultCopy: 'La información fluye desde el primer contacto hasta la entrega y el análisis.',
+    },
+    pillars: {
+      eyebrow: 'Todo lo esencial, conectado',
+      title: 'Una plataforma que acompaña a cada área.',
+      copy: 'No son módulos aislados: cada capacidad comparte información con la siguiente para sostener toda la operación.',
       items: [
         {
-          code: 'CRM',
-          title: 'Ventas y seguimiento comercial',
-          copy: 'Control de leads, tablero Kanban, cotizaciones, facturas, catálogo, comunicaciones y reportes por canal.',
+          eyebrow: '01 · CRM y ventas',
+          title: 'Convierte cada oportunidad en un seguimiento claro.',
+          copy: 'Gestiona prospectos, contactos, negociaciones, cotizaciones y canales de atención desde una vista compartida.',
+          detail: 'CRM · embudos · atención omnicanal · reportes',
         },
         {
-          code: 'TASK',
-          title: 'Proyectos y tareas',
-          copy: 'Tableros Kanban, Gantt, listas, subtareas, filtros, recordatorios, carga de trabajo y colaboración móvil.',
+          eyebrow: '02 · Proyectos y tareas',
+          title: 'Del acuerdo al trabajo ejecutado, sin perder el hilo.',
+          copy: 'Organiza responsables, fechas, prioridades y carga de trabajo con vistas que se adaptan a cada equipo.',
+          detail: 'Kanban · Gantt · calendario · seguimiento',
         },
         {
-          code: 'MKT',
-          title: 'Marketing y campañas',
-          copy: 'Campañas por correo, SMS, WhatsApp, segmentación, automatizaciones, plantillas y medición de ROI.',
+          eyebrow: '03 · Colaboración',
+          title: 'Hablen, reúnanse y documenten dentro del mismo flujo.',
+          copy: 'Centraliza chats, videollamadas, archivos, documentos y calendarios para que las decisiones no se queden dispersas.',
+          detail: 'chat · videollamadas · documentos · drive',
         },
         {
-          code: 'HR',
-          title: 'Recursos humanos',
-          copy: 'Directorio, asistencia, ausencias, portal de autoservicio, onboarding y aprobaciones con trazabilidad.',
-        },
-        {
-          code: 'OPS',
-          title: 'Operación conectada',
-          copy: 'Pagos, firma electrónica, videollamadas, documentos, calendario, sitios web y comunicación centralizada.',
-        },
-        {
-          code: 'DATA',
-          title: 'Analítica y control',
-          copy: 'KPIs, reportes de progreso, resultados comerciales, tiempos, desempeño y métricas para dirección.',
+          eyebrow: '04 · Automatización y control',
+          title: 'Haz que los procesos avancen incluso cuando nadie persigue pendientes.',
+          copy: 'Crea reglas, aprobaciones, recordatorios y tableros que dan visibilidad a la operación en tiempo real.',
+          detail: 'flujos · aprobaciones · permisos · analítica',
         },
       ],
     },
-    workflows: {
-      eyebrow: 'Flujo operativo',
-      title: 'De solicitud a resultado, sin perder el hilo.',
+    journey: {
+      eyebrow: 'Un flujo, de punta a punta',
+      title: 'Del primer contacto al resultado medible.',
+      copy: 'Una misma operación conecta comercial, ejecución y dirección sin duplicar información.',
+      steps: [
+        { label: '01', title: 'Captura', copy: 'Un nuevo contacto entra desde el canal que elija tu cliente.' },
+        { label: '02', title: 'Seguimiento', copy: 'El equipo comercial sabe qué hacer, cuándo y con quién.' },
+        { label: '03', title: 'Ejecución', copy: 'La venta se convierte en tareas, proyecto y colaboración.' },
+        { label: '04', title: 'Control', copy: 'Dirección consulta avances, cuellos de botella y resultados.' },
+      ],
+    },
+    collaboration: {
+      eyebrow: 'Trabajo que mantiene el contexto',
+      title: 'Tu equipo no necesita otra aplicación para avanzar.',
       copy:
-        'Diseñamos flujos para que cada solicitud, venta o tarea avance con responsables, estados, evidencia y automatizaciones claras.',
-      items: [
-        { label: '01', title: 'Capturar', copy: 'Centralizar leads, solicitudes, clientes, tareas y comunicaciones desde un solo punto.' },
-        { label: '02', title: 'Asignar', copy: 'Distribuir responsabilidades con roles, permisos, fechas, recordatorios y prioridades.' },
-        { label: '03', title: 'Automatizar', copy: 'Configurar reglas para notificaciones, cambios de estado, seguimientos y tareas recurrentes.' },
-        { label: '04', title: 'Medir', copy: 'Visualizar progreso, embudos, ROI, carga de trabajo y resultados en tiempo real.' },
-      ],
+        'Una conversación puede abrir una tarea, una reunión puede quedar ligada a un cliente y un documento puede vivir dentro del proyecto correcto.',
+      visualAlt: 'Equipo colaborando frente a una interfaz genérica de trabajo, videollamada y calendario.',
+      outcomes: ['Menos cambios de aplicación', 'Decisiones con contexto', 'Información disponible desde cualquier lugar'],
     },
-    ai: {
-      eyebrow: 'Copilot IA',
-      title: 'Más que una plataforma: inteligencia para acelerar la operación.',
-      copy:
-        'La IA ayuda a documentar, resumir, redactar, transcribir y convertir conversaciones en acciones para reducir trabajo manual y mejorar seguimiento.',
-      capabilities: [
-        {
-          title: 'Productividad del equipo',
-          points: ['Descripciones y checklists para tareas.', 'Resúmenes de comentarios y videollamadas.', 'Minutas convertidas en tareas accionables.'],
-        },
-        {
-          title: 'Comunicación comercial',
-          points: ['Redacción, traducción y corrección de textos.', 'Respuestas inteligentes para seguimiento.', 'Completar campos y mejorar registros CRM.'],
-        },
-        {
-          title: 'Mejora operativa',
-          points: ['Detección de ineficiencias.', 'Sugerencias para procesos.', 'Automatización de actividades repetitivas.'],
-        },
-      ],
+    integrations: {
+      eyebrow: 'Conecta lo que ya usas',
+      title: 'Una plataforma abierta a tu operación.',
+      copy: 'Integramos los canales y herramientas que tu empresa ya necesita para seguir trabajando sin fricción.',
+      items: ['WhatsApp', 'Telefonía', 'Correo electrónico', 'Microsoft 365', 'Google Workspace', 'API e integraciones a medida'],
     },
-    outcomes: {
-      eyebrow: 'Impacto 360',
-      title: 'Resultados que deben sentirse en clientes y equipos.',
-      items: [
-        'Respuestas más rápidas a solicitudes y oportunidades de venta.',
-        'Menos costo y menos dispersión tecnológica.',
-        'Mayor productividad en tareas y responsabilidades.',
-        'Mejor experiencia para clientes internos y externos.',
-        'Datos confiables para decisiones comerciales y operativas.',
+    implementation: {
+      eyebrow: 'Implementación AGSIT',
+      title: 'La plataforma es solo el inicio. La adopción es el resultado.',
+      copy: 'Traducimos la forma en que trabaja tu empresa a una operación clara, medible y lista para crecer.',
+      steps: [
+        { label: '01', title: 'Diagnóstico', copy: 'Entendemos los procesos, equipos y puntos de fricción actuales.' },
+        { label: '02', title: 'Diseño y configuración', copy: 'Definimos flujos, permisos, tableros e integraciones a tu medida.' },
+        { label: '03', title: 'Migración y puesta en marcha', copy: 'Preparamos la información y activamos la operación con orden.' },
+        { label: '04', title: 'Adopción', copy: 'Capacitamos a tu equipo para que el sistema se vuelva parte del trabajo diario.' },
+        { label: '05', title: 'Mejora continua', copy: 'Acompañamos la evolución de la plataforma conforme crece tu empresa.' },
       ],
-    },
-    cta: {
-      eyebrow: 'Diagnóstico CRM',
-      title: 'Cuéntanos qué operación quieres centralizar.',
-      copy:
-        'Comparte cómo gestionan hoy clientes, ventas, tareas y comunicación. Revisaremos tu caso para definir el flujo y la plataforma adecuada.',
     },
   },
   en: {
     metadata: {
-      title: 'AGSIT CRM Administration | 360 commercial operation and collaboration',
+      title: 'Integrated business platform | AGSIT',
       description:
-        'CRM administration to centralize sales, marketing, tasks, projects, collaboration, analytics, automation and artificial intelligence in one operation.',
+        'Centralize sales, projects, communication, automation and operating control in one platform implemented by AGSIT.',
       canonicalUrl: 'https://agsit.com.mx/en/crm-administration/',
       htmlLang: 'en',
       locale: 'en_US',
     },
     hero: {
-      eyebrow: 'Total Business Connection 360°',
-      title: 'A CRM to connect clients, teams and results.',
+      eyebrow: 'An integrated platform for your business',
+      title: 'Your entire operation.',
+      titleAccent: 'One place.',
       copy:
-        'We centralize commercial processes, tasks, communication, analytics and automation so each area stops working in isolation and the customer experience improves from first contact.',
-      primaryCta: 'Request consultation',
-      secondaryCta: 'View platform',
-      coreLabel: 'Clients',
-      signals: ['CRM', 'Tasks', 'Sales', 'AI'],
+        'Connect customers, teams, projects and processes so every area moves forward with the same information, without switching tools.',
+      primaryCta: 'Talk to a specialist',
+      secondaryCta: 'Discover the platform',
+      visualAlt: 'Laptop and phones showing a generic integrated business operations interface.',
     },
-    contrast: {
-      eyebrow: 'Before and after',
-      title: 'When everything lives in separate tools, the business loses visibility.',
-      beforeLabel: 'Fragmented',
-      afterLabel: 'Connected',
-      before: [
-        'Excessive costs from multiple platforms.',
-        'Duplicated, isolated and unanalyzed information.',
-        'Fragmented communication across areas.',
-        'Difficulty measuring sales, tasks and results.',
-      ],
-      after: [
-        'Tools centralized in one operation.',
-        'Unified data with real-time reports.',
-        'Teams collaborating with clear processes.',
-        'Automation to accelerate follow-up and response.',
-      ],
-    },
-    modules: {
-      eyebrow: 'CRM ecosystem',
-      title: 'Everything the team needs to operate with agility.',
+    convergence: {
+      eyebrow: 'When everything lives apart',
+      title: 'Work gets fragmented before your team can move forward.',
       copy:
-        'We integrate sales management, projects, collaboration, payments, e-signature, websites, time tracking and analytics to reduce friction and improve control.',
+        'Conversations, customers, files and tasks lose context when each one lives in a different application.',
+      states: [
+        { label: '01', title: 'Customers', copy: 'Follow-ups scattered across spreadsheets, emails and notes.' },
+        { label: '02', title: 'Teams', copy: 'Messages that never become clear, accountable work.' },
+        { label: '03', title: 'Projects', copy: 'Owners, dates and files kept in separate places.' },
+      ],
+      resultLabel: 'One connected operation',
+      resultTitle: 'Every conversation becomes an action with context.',
+      resultCopy: 'Information flows from the first contact through delivery and analysis.',
+    },
+    pillars: {
+      eyebrow: 'Everything essential, connected',
+      title: 'One platform that supports every area.',
+      copy: 'These are not isolated modules: every capability shares information with the next one to support the whole operation.',
       items: [
-        {
-          code: 'CRM',
-          title: 'Sales and commercial follow-up',
-          copy: 'Lead control, Kanban board, quotes, invoices, catalog, communications and channel reports.',
-        },
-        {
-          code: 'TASK',
-          title: 'Projects and tasks',
-          copy: 'Kanban boards, Gantt, lists, subtasks, filters, reminders, workload and mobile collaboration.',
-        },
-        {
-          code: 'MKT',
-          title: 'Marketing and campaigns',
-          copy: 'Email, SMS, WhatsApp campaigns, segmentation, automations, templates and ROI measurement.',
-        },
-        {
-          code: 'HR',
-          title: 'Human resources',
-          copy: 'Directory, attendance, absences, self-service portal, onboarding and approvals with traceability.',
-        },
-        {
-          code: 'OPS',
-          title: 'Connected operation',
-          copy: 'Payments, e-signature, video calls, documents, calendar, websites and centralized communication.',
-        },
-        {
-          code: 'DATA',
-          title: 'Analytics and control',
-          copy: 'KPIs, progress reports, commercial results, time, performance and management metrics.',
-        },
+        { eyebrow: '01 · CRM and sales', title: 'Turn every opportunity into clear follow-up.', copy: 'Manage leads, contacts, deals, quotes and service channels from a shared view.', detail: 'CRM · pipelines · omnichannel service · reports' },
+        { eyebrow: '02 · Projects and tasks', title: 'From agreement to execution, without losing the thread.', copy: 'Organize owners, dates, priorities and workload in views that fit every team.', detail: 'Kanban · Gantt · calendar · tracking' },
+        { eyebrow: '03 · Collaboration', title: 'Talk, meet and document inside the same flow.', copy: 'Centralize chats, video calls, files, documents and calendars so decisions never stay scattered.', detail: 'chat · video calls · documents · drive' },
+        { eyebrow: '04 · Automation and control', title: 'Let processes move even when nobody is chasing tasks.', copy: 'Create rules, approvals, reminders and dashboards that make operations visible in real time.', detail: 'workflows · approvals · permissions · analytics' },
       ],
     },
-    workflows: {
-      eyebrow: 'Operational workflow',
-      title: 'From request to result, without losing the thread.',
-      copy:
-        'We design workflows so every request, sale or task moves forward with owners, status, evidence and clear automations.',
-      items: [
-        { label: '01', title: 'Capture', copy: 'Centralize leads, requests, clients, tasks and communications from one point.' },
-        { label: '02', title: 'Assign', copy: 'Distribute responsibilities with roles, permissions, dates, reminders and priorities.' },
-        { label: '03', title: 'Automate', copy: 'Configure rules for notifications, status changes, follow-ups and recurring tasks.' },
-        { label: '04', title: 'Measure', copy: 'View progress, funnels, ROI, workload and results in real time.' },
+    journey: {
+      eyebrow: 'One end-to-end flow',
+      title: 'From first contact to measurable results.',
+      copy: 'The same operation connects commercial work, execution and leadership without duplicating information.',
+      steps: [
+        { label: '01', title: 'Capture', copy: 'A new contact enters through the channel your customer chooses.' },
+        { label: '02', title: 'Follow-up', copy: 'Your sales team knows what to do, when and with whom.' },
+        { label: '03', title: 'Execution', copy: 'The sale becomes tasks, projects and collaboration.' },
+        { label: '04', title: 'Control', copy: 'Leadership sees progress, bottlenecks and results.' },
       ],
     },
-    ai: {
-      eyebrow: 'AI Copilot',
-      title: 'More than a platform: intelligence to accelerate operations.',
-      copy:
-        'AI helps document, summarize, write, transcribe and turn conversations into actions to reduce manual work and improve follow-up.',
-      capabilities: [
-        {
-          title: 'Team productivity',
-          points: ['Task descriptions and checklists.', 'Comment and video-call summaries.', 'Minutes converted into actionable tasks.'],
-        },
-        {
-          title: 'Commercial communication',
-          points: ['Writing, translation and text correction.', 'Smart follow-up responses.', 'Field completion and better CRM records.'],
-        },
-        {
-          title: 'Operational improvement',
-          points: ['Inefficiency detection.', 'Process suggestions.', 'Automation of repetitive activities.'],
-        },
-      ],
+    collaboration: {
+      eyebrow: 'Work that keeps its context',
+      title: 'Your team does not need another app to move forward.',
+      copy: 'A conversation can open a task, a meeting can remain connected to a customer and a document can live in the right project.',
+      visualAlt: 'Team collaborating in front of a generic work interface with video call and calendar.',
+      outcomes: ['Fewer app switches', 'Decisions with context', 'Information available from anywhere'],
     },
-    outcomes: {
-      eyebrow: '360 impact',
-      title: 'Results that should be felt by clients and teams.',
-      items: [
-        'Faster responses to requests and sales opportunities.',
-        'Lower cost and less technology dispersion.',
-        'Higher productivity in tasks and responsibilities.',
-        'Better experience for internal and external clients.',
-        'Reliable data for commercial and operational decisions.',
-      ],
+    integrations: {
+      eyebrow: 'Connect what you already use',
+      title: 'A platform open to your operation.',
+      copy: 'We integrate the channels and tools your company already needs to keep work moving without friction.',
+      items: ['WhatsApp', 'Telephony', 'Email', 'Microsoft 365', 'Google Workspace', 'Custom API and integrations'],
     },
-    cta: {
-      eyebrow: 'CRM diagnosis',
-      title: 'Tell us which operation you want to centralize.',
-      copy:
-        'Share how you currently manage clients, sales, tasks and communication. We will review your case to define the right workflow and platform.',
+    implementation: {
+      eyebrow: 'AGSIT implementation',
+      title: 'The platform is only the start. Adoption is the outcome.',
+      copy: 'We translate the way your company works into an operation that is clear, measurable and ready to grow.',
+      steps: [
+        { label: '01', title: 'Assessment', copy: 'We understand current processes, teams and friction points.' },
+        { label: '02', title: 'Design and configuration', copy: 'We define tailored flows, permissions, dashboards and integrations.' },
+        { label: '03', title: 'Migration and launch', copy: 'We prepare the information and activate the operation in order.' },
+        { label: '04', title: 'Adoption', copy: 'We train your team so the system becomes part of daily work.' },
+        { label: '05', title: 'Continuous improvement', copy: 'We support the platform as your company evolves.' },
+      ],
     },
   },
 };
