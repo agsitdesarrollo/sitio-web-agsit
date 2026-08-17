@@ -9,6 +9,7 @@
 @import "../components/process-management/ProcessManagement.css";
 @import "../components/project-direction/ProjectDirection.css";
 @import "../components/quality-management/QualityManagement.css";
+@import "./service-landscape.css";
 @import "../components/crm-administration/CrmAdministration.css";
 @import "../components/digital-marketing-v2/DigitalMarketingStoryV2.css";
 /* Marketing Digital V2 uses its own hybrid track controller. */
@@ -24,7 +25,6 @@
 @import "../components/video-story/VideoStory.css";
 @import "../components/final-contact/FinalContact.css";
 @import "../components/footer/Footer.css";
-@import "./service-landscape.css";
 
 :root {
   --nav-h: clamp(76px, 10vh, 96px);
@@ -103,8 +103,8 @@ main {
   .ops-page,
   .data-page,
   .inn-page,
-  .crm-page,
   .quality-page,
+  .crm-platform-page,
   .dm-v2-page
 ) {
   padding-top: 0;
@@ -118,7 +118,6 @@ main {
   .ops-page,
   .data-page,
   .inn-page,
-  .crm-page,
   .quality-page
 ) > .pin-spacer > section {
   min-height: var(--app-panel-h);

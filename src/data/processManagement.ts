@@ -94,7 +94,7 @@ export const processManagementByLang: Record<SupportedLang, ProcessManagementCon
       title: 'Visualiza cómo una operación ordenada cambia los resultados.',
       copy:
         'Integramos el video original de AGSIT como apoyo visual para explicar el alcance del servicio: levantar, analizar, automatizar y medir procesos con una visión completa.',
-      src: 'https://agsit.com.mx/wp-content/uploads/2025/08/AGSIT%20BPM%20360.mp4',
+      src: '/assets/videos-servicios/BPM.mp4',
       label: 'Video de Administración de Procesos BPM 360 de AGSIT',
     },
     pillars: {
@@ -198,7 +198,7 @@ export const processManagementByLang: Record<SupportedLang, ProcessManagementCon
       title: 'See how an organized operation changes results.',
       copy:
         'We integrated AGSIT’s original video as visual support to explain the service scope: mapping, analyzing, automating and measuring processes with a complete view.',
-      src: 'https://agsit.com.mx/wp-content/uploads/2025/08/AGSIT%20BPM%20360.mp4',
+      src: '/assets/videos-servicios/BPM.mp4',
       label: 'AGSIT BPM 360 Process Management video',
     },
     pillars: {

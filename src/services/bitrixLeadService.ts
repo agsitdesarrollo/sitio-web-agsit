@@ -9,6 +9,25 @@ type BitrixLeadResponse = {
   error_description?: string;
 };
 
+export class ContactLeadValidationError extends Error {
+  readonly kind = 'validation';
+}
+
+export class BitrixConfigurationError extends Error {
+  readonly kind = 'configuration';
+}
+
+export class BitrixUpstreamError extends Error {
+  readonly kind = 'upstream';
+
+  constructor(
+    message: string,
+    readonly status?: number,
+  ) {
+    super(message);
+  }
+}
+
 const trim = (value: unknown) => (typeof value === 'string' ? value.trim() : '');
 
 const optionalField = (value: string) => (value ? value : undefined);
@@ -56,7 +75,7 @@ const contactLeadSchema = z.object({
       content: z.string().max(120, 'utm_content no puede superar 120 caracteres.').default(''),
       term: z.string().max(120, 'utm_term no puede superar 120 caracteres.').default(''),
     })
-    .default({}),
+    .default({ source: '', medium: '', campaign: '', content: '', term: '' }),
 });
 
 const removeEmptyFields = (fields: Record<string, unknown>) =>
@@ -101,7 +120,7 @@ export function validateContactLead(input: ContactLeadInput) {
   const result = contactLeadSchema.safeParse(input);
 
   if (!result.success) {
-    throw new Error(result.error.issues[0]?.message || 'Revisa los campos del formulario.');
+    throw new ContactLeadValidationError(result.error.issues[0]?.message || 'Revisa los campos del formulario.');
   }
 }
 
@@ -144,37 +163,46 @@ export async function createBitrixLead(input: ContactLeadInput, webhookUrl: stri
   }
 
   if (!webhookUrl) {
-    throw new Error('Falta configurar BITRIX_WEBHOOK_URL.');
+    throw new BitrixConfigurationError('Falta configurar BITRIX_WEBHOOK_URL.');
   }
 
-  const response = await fetch(buildBitrixMethodUrl(webhookUrl), {
-    method: 'POST',
-    headers: {
-      Accept: 'application/json',
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      fields: buildLeadFields(input),
-      params: {
-        REGISTER_SONET_EVENT: 'Y',
+  let response: Response;
+
+  try {
+    response = await fetch(buildBitrixMethodUrl(webhookUrl), {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
       },
-    }),
-  });
+      body: JSON.stringify({
+        fields: buildLeadFields(input),
+        params: {
+          REGISTER_SONET_EVENT: 'Y',
+        },
+      }),
+      signal: AbortSignal.timeout(10_000),
+    });
+  } catch (error) {
+    const reason = error instanceof Error && error.name === 'TimeoutError' ? 'Bitrix excedio el tiempo de respuesta.' : 'No se pudo conectar con Bitrix.';
+
+    throw new BitrixUpstreamError(reason);
+  }
 
   let data: BitrixLeadResponse;
 
   try {
     data = (await response.json()) as BitrixLeadResponse;
   } catch {
-    throw new Error('Bitrix regreso una respuesta invalida.');
+    throw new BitrixUpstreamError('Bitrix regreso una respuesta invalida.', response.status);
   }
 
   if (!response.ok || data.error) {
-    throw new Error(data.error_description || data.error || 'No se pudo crear el prospecto en Bitrix.');
+    throw new BitrixUpstreamError('Bitrix rechazo la solicitud.', response.status);
   }
 
   if (typeof data.result !== 'number') {
-    throw new Error('Bitrix no regreso el ID del prospecto creado.');
+    throw new BitrixUpstreamError('Bitrix no regreso el ID del prospecto creado.', response.status);
   }
 
   return { leadId: data.result };

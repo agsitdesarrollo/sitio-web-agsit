@@ -1,6 +1,5 @@
 ---
 import FinalContactSection from '../final-contact/FinalContactSection.astro';
-import ServicePageAnimations from '../service-animation/ServicePageAnimations.astro';
 import ServiceSlidesController from '../service-slides/ServiceSlidesController.astro';
 import type { ContactCopy } from '../../data/contact';
 import type { CrmAdministrationContent } from '../../data/crmAdministration';
@@ -13,191 +12,140 @@ type Props = {
 const { content, contactCopy } = Astro.props;
 ---
 
-<main class="crm-page">
-  <section class="crm-hero" aria-labelledby="crm-hero-title">
-    <video class="crm-hero-video" aria-hidden="true" autoplay muted loop playsinline preload="metadata">
-      <source src="/assets/binary-wave-bg.webm" type="video/webm" />
-      <source src="/assets/binary-wave-bg.mp4" type="video/mp4" />
-    </video>
-
-    <div class="crm-hero-copy">
-      <p class="crm-eyebrow">{content.hero.eyebrow}</p>
-      <h1 id="crm-hero-title">{content.hero.title}</h1>
-      <p>{content.hero.copy}</p>
-      <div class="crm-hero-actions">
-        <button type="button" data-contact-trigger>{content.hero.primaryCta}</button>
-        <a href="#plataforma">{content.hero.secondaryCta}</a>
-      </div>
-    </div>
-
-    <div class="crm-command" aria-hidden="true">
-      <div class="crm-command-bar">
-        <span class="crm-command-status"><i></i> CRM / 360</span>
-        <span>AGSIT OS</span>
-      </div>
-      <div class="crm-command-body">
-        <div class="crm-command-orbit">
-          <span class="crm-command-core">
-            <small>CRM</small>
-            <strong>{content.hero.coreLabel}</strong>
-          </span>
-          {
-            content.hero.signals.map((signal, index) => (
-              <span class={`crm-command-signal crm-command-signal-${index + 1}`}>
-                <i></i>
-                {signal}
-              </span>
-            ))
-          }
-        </div>
-        <div class="crm-command-feed">
-          {content.hero.signals.slice(0, 3).map((signal, index) => (
-            <span>
-              <i>{String(index + 1).padStart(2, '0')}</i>
-              {signal}
-              <b></b>
-            </span>
-          ))}
+<main class="crm-platform-page" data-service-touch-threshold="22">
+  <section class="crm-platform-hero" aria-labelledby="crm-platform-title">
+    <div class="crm-shell crm-first-panels-shell crm-platform-hero-layout">
+      <div class="crm-platform-hero-copy">
+        <p class="crm-kicker">{content.hero.eyebrow}</p>
+        <h1 id="crm-platform-title">
+          {content.hero.title}
+          <em>{content.hero.titleAccent}</em>
+        </h1>
+        <p class="crm-platform-lead">{content.hero.copy}</p>
+        <div class="crm-platform-actions">
+          <button type="button" data-contact-trigger>{content.hero.primaryCta}</button>
         </div>
       </div>
+
+      <figure class="crm-hero-visual">
+        <img src="/assets/hero-crm-example.png" alt={content.hero.visualAlt} loading="eager" decoding="async" />
+      </figure>
     </div>
   </section>
 
-  <section class="crm-contrast" aria-labelledby="crm-contrast-title">
-    <div class="crm-section-heading">
-      <p class="crm-eyebrow">{content.contrast.eyebrow}</p>
-      <h2 id="crm-contrast-title">{content.contrast.title}</h2>
-    </div>
-
-    <div class="crm-contrast-board">
-      <article class="crm-contrast-column crm-contrast-column-before">
-        <span>{content.contrast.beforeLabel}</span>
-        <ul>
-          {content.contrast.before.map((item, index) => (
-            <li>
-              <small>{String(index + 1).padStart(2, '0')}</small>
-              {item}
-            </li>
-          ))}
-        </ul>
-      </article>
-
-      <div class="crm-contrast-switch" aria-hidden="true">
-        <span></span>
-        <i></i>
-        <span></span>
+  <section id="plataforma" class="crm-connection-story" aria-labelledby="crm-connection-title">
+    <div class="crm-shell crm-first-panels-shell crm-connection-layout">
+      <div class="crm-section-intro crm-connection-copy">
+        <p class="crm-kicker">{content.convergence.eyebrow}</p>
+        <h2 id="crm-connection-title">{content.convergence.title}</h2>
+        <p>{content.convergence.copy}</p>
+        <div class="crm-connection-actions">
+          <button type="button" data-contact-trigger>{content.hero.primaryCta}</button>
+        </div>
       </div>
-
-      <article class="crm-contrast-column crm-contrast-column-after">
-        <span>{content.contrast.afterLabel}</span>
-        <ul>
-          {content.contrast.after.map((item, index) => (
-            <li>
-              <small>{String(index + 1).padStart(2, '0')}</small>
-              {item}
-            </li>
-          ))}
-        </ul>
-      </article>
+      <figure class="crm-connection-visual" aria-hidden="true">
+        <img src="/assets/apps-example.png" alt="" loading="lazy" decoding="async" />
+      </figure>
     </div>
   </section>
 
-  <section id="plataforma" class="crm-modules" aria-labelledby="crm-modules-title">
-    <div class="crm-section-heading">
-      <p class="crm-eyebrow">{content.modules.eyebrow}</p>
-      <h2 id="crm-modules-title">{content.modules.title}</h2>
-      <p>{content.modules.copy}</p>
-    </div>
-
-    <div class="crm-module-map">
-      <div class="crm-module-axis" aria-hidden="true">
-        <span>CRM</span>
-        <i></i>
-        <strong>360</strong>
+  <section class="crm-pillars" aria-labelledby="crm-pillars-title">
+    <div class="crm-shell">
+      <div class="crm-section-intro crm-section-intro-centered">
+        <p class="crm-kicker">{content.pillars.eyebrow}</p>
+        <h2 id="crm-pillars-title">{content.pillars.title}</h2>
+        <p>{content.pillars.copy}</p>
       </div>
-      <div class="crm-module-grid">
-        {
-          content.modules.items.map((item, index) => (
-            <article>
-              <div class="crm-module-meta">
-                <span>{item.code}</span>
-                <small>{String(index + 1).padStart(2, '0')}</small>
-              </div>
-              <h3>{item.title}</h3>
-              <p>{item.copy}</p>
-            </article>
-          ))
-        }
-      </div>
-    </div>
-  </section>
-
-  <section class="crm-workflows" aria-labelledby="crm-workflows-title">
-    <div class="crm-workflows-copy">
-      <p class="crm-eyebrow">{content.workflows.eyebrow}</p>
-      <h2 id="crm-workflows-title">{content.workflows.title}</h2>
-      <p>{content.workflows.copy}</p>
-    </div>
-    <div class="crm-workflow-steps">
-      {
-        content.workflows.items.map((item) => (
-          <article>
-            <span>{item.label}</span>
-            <div>
+      <div class="crm-pillar-grid">
+        <div class="crm-pillar-rail" aria-hidden="true"><i></i><span></span></div>
+        {content.pillars.items.map((item, index) => (
+          <article class:list={['crm-pillar-card', `crm-pillar-card-${index + 1}`]}>
+            <div class="crm-pillar-card-copy">
+              <span class="crm-pillar-index">{item.eyebrow}</span>
               <h3>{item.title}</h3>
               <p>{item.copy}</p>
             </div>
-            <i aria-hidden="true"></i>
+            <div class="crm-pillar-surface">
+              <div class="crm-pillar-surface-head"><i></i><span></span><b></b></div>
+              <div class="crm-pillar-surface-body"><i></i><i></i><i></i><i></i></div>
+              <small>{item.detail}</small>
+            </div>
           </article>
-        ))
-      }
-    </div>
-  </section>
-
-  <section class="crm-ai" aria-labelledby="crm-ai-title">
-    <div class="crm-ai-copy">
-      <p class="crm-eyebrow">{content.ai.eyebrow}</p>
-      <h2 id="crm-ai-title">{content.ai.title}</h2>
-      <p>{content.ai.copy}</p>
-      <div class="crm-ai-pulse" aria-hidden="true">
-        <span></span>
-        <span></span>
-        <span></span>
-        <i>AI</i>
+        ))}
       </div>
     </div>
-    <div class="crm-ai-grid">
-      {
-        content.ai.capabilities.map((capability, index) => (
-          <article>
-            <span>{String(index + 1).padStart(2, '0')}</span>
-            <h3>{capability.title}</h3>
-            <ul>
-              {capability.points.map((point) => <li>{point}</li>)}
-            </ul>
-          </article>
-        ))
-      }
+  </section>
+
+  <section class="crm-journey" aria-labelledby="crm-journey-title">
+    <div class="crm-shell">
+      <div class="crm-section-intro">
+        <p class="crm-kicker">{content.journey.eyebrow}</p>
+        <h2 id="crm-journey-title">{content.journey.title}</h2>
+        <p>{content.journey.copy}</p>
+      </div>
+      <ol class="crm-journey-list">
+        {content.journey.steps.map((step) => (
+          <li>
+            <span>{step.label}</span>
+            <div><h3>{step.title}</h3><p>{step.copy}</p></div>
+          </li>
+        ))}
+      </ol>
     </div>
   </section>
 
-  <section class="crm-outcomes" aria-labelledby="crm-outcomes-title">
-    <div class="crm-outcomes-heading">
-      <p class="crm-eyebrow">{content.outcomes.eyebrow}</p>
-      <h2 id="crm-outcomes-title">{content.outcomes.title}</h2>
+  <section class="crm-collaboration" aria-labelledby="crm-collaboration-title">
+    <div class="crm-shell crm-collaboration-layout">
+      <div class="crm-collaboration-copy">
+        <p class="crm-kicker">{content.collaboration.eyebrow}</p>
+        <h2 id="crm-collaboration-title">{content.collaboration.title}</h2>
+        <p>{content.collaboration.copy}</p>
+        <ul>
+          {content.collaboration.outcomes.map((outcome) => <li>{outcome}</li>)}
+        </ul>
+      </div>
+      <div class="crm-work-surface" aria-hidden="true">
+        <div class="crm-work-surface-head"><i></i><span></span><b></b></div>
+        <div class="crm-work-message crm-work-message-primary"><b></b><span></span><span></span></div>
+        <div class="crm-work-message crm-work-message-secondary"><b></b><span></span></div>
+        <div class="crm-work-task"><i></i><div><b></b><span></span></div><em></em></div>
+        <div class="crm-work-call"><i></i><span></span><span></span><span></span></div>
+      </div>
     </div>
-    <ol>
-      {content.outcomes.items.map((item, index) => (
-        <li>
-          <span>{String(index + 1).padStart(2, '0')}</span>
-          <p>{item}</p>
-        </li>
-      ))}
-    </ol>
+  </section>
+
+  <section class="crm-integrations" aria-labelledby="crm-integrations-title">
+    <div class="crm-shell crm-integrations-layout">
+      <div class="crm-section-intro">
+        <p class="crm-kicker">{content.integrations.eyebrow}</p>
+        <h2 id="crm-integrations-title">{content.integrations.title}</h2>
+        <p>{content.integrations.copy}</p>
+      </div>
+      <ul class="crm-integration-list">
+        {content.integrations.items.map((item) => <li>{item}</li>)}
+      </ul>
+    </div>
+  </section>
+
+  <section class="crm-implementation" aria-labelledby="crm-implementation-title">
+    <div class="crm-shell">
+      <div class="crm-section-intro crm-section-intro-centered">
+        <p class="crm-kicker">{content.implementation.eyebrow}</p>
+        <h2 id="crm-implementation-title">{content.implementation.title}</h2>
+        <p>{content.implementation.copy}</p>
+      </div>
+      <ol class="crm-implementation-list">
+        {content.implementation.steps.map((step) => (
+          <li>
+            <span>{step.label}</span>
+            <h3>{step.title}</h3>
+            <p>{step.copy}</p>
+          </li>
+        ))}
+      </ol>
+    </div>
   </section>
 
   <FinalContactSection copy={contactCopy} />
-
-  <ServicePageAnimations />
   <ServiceSlidesController />
 </main>
