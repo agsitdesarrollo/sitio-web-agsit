@@ -288,9 +288,9 @@
   min-height: 54px;
   padding: 0 30px;
   cursor: pointer;
-  border: 1px solid #c62828;
+  border: 1px solid #287ca1;
   border-radius: 3px;
-  background: #c62828;
+  background: #287ca1;
   color: #ffffff;
   font-family: 'Inter', 'Segoe UI', Tahoma, sans-serif;
   font-size: clamp(0.78rem, 0.85vw, 0.92rem);
@@ -311,14 +311,14 @@
 
 .hero-contact-button:hover,
 .hero-contact-button:focus-visible {
-  border-color: #e53935;
-  background: #e53935;
+  border-color: #35a4cc;
+  background: #35a4cc;
   color: #ffffff;
   transform: translateY(-2px);
 }
 
 .hero-contact-button:focus-visible {
-  outline: 3px solid rgba(198, 40, 40, 0.42);
+  outline: 3px solid rgba(40, 124, 161, 0.42);
   outline-offset: 4px;
 }
 
