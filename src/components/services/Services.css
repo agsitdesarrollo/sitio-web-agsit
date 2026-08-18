@@ -481,6 +481,35 @@
   }
 }
 
+/* El personaje debe despejar el título de la tarjeta sin acercar ésta al CTA.
+   Su rectángulo es el destino que mide el handoff hero→servicios, por lo que
+   el mismo desplazamiento se aplica de forma continua durante la transición. */
+@media (max-width: 640px) and (orientation: portrait) {
+  .services-section {
+    --services-person-portrait-y: clamp(-56px, -6.7svh, -36px);
+  }
+
+  .services-person {
+    transform: translate(-50%, var(--services-person-portrait-y));
+  }
+
+  .services-background::before {
+    top: calc(
+      clamp(250px, 39svh, 334px) + min(210px, 25svh) - clamp(64px, 10svh, 96px) + var(--services-person-portrait-y)
+    );
+    height: calc(clamp(260px, 42vh, 380px) - var(--services-person-portrait-y));
+  }
+}
+
+@media (max-width: 640px) and (max-height: 720px) and (orientation: portrait) {
+  .services-background::before {
+    top: calc(
+      clamp(222px, 37svh, 280px) + min(178px, 24svh) - clamp(54px, 9svh, 74px) + var(--services-person-portrait-y)
+    );
+    height: calc(clamp(236px, 40svh, 330px) - var(--services-person-portrait-y));
+  }
+}
+
 /* ─── Tablet apaisada (táctil, landscape, poca altura) ───────────────────── */
 /* El min-height fijo de 760px hace la sección más alta que el viewport
    (corta el CTA y desalinea el snap). El resto ya escala por vh. Gate por

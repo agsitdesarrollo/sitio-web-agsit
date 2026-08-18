@@ -145,6 +145,7 @@ const iconPath = (icon: ServicePoint['icon']) => {
     ).matches;
     const isTablet = window.matchMedia('(min-width: 641px) and (max-width: 1024px)').matches;
     const usesSingleCardLifecycle = isMobile || isShortLandscape;
+    const usesSequentialCardLifecycle = isMobile && window.matchMedia('(orientation: portrait)').matches;
     // La introducción es la primera parada. Las tarjetas empiezan tras la
     // caja sticky, por lo que el progreso móvil debe descontar esa altura.
     const trackProgress = (-sectionTop - getServicesStickyFlowHeight()) / panelHeight;
@@ -161,14 +162,16 @@ const iconPath = (icon: ServicePoint['icon']) => {
 
     serviceCards.forEach((card, index) => {
       const side = card.dataset.cardSide === 'left' ? -1 : 1;
-      // Cada tarjeta queda completamente visible al terminar su snap. El
-      // crossfade ocurre únicamente durante el trayecto a la siguiente.
-      const enterProgress = usesSingleCardLifecycle
+      // En portrait móvil la salida termina antes de iniciar la entrada de la
+      // siguiente tarjeta. Los demás modos mantienen su crossfade actual.
+      const enterProgress = usesSequentialCardLifecycle
+        ? clamp((progress - index + 0.1) / 0.1, 0, 1)
+        : usesSingleCardLifecycle
         ? clamp((progress - index + 0.22) / 0.22, 0, 1)
         : clamp((progress - index - 0.18) / 0.82, 0, 1);
       const enter = easeOutCubic(enterProgress);
-      const exitStart = index + (usesSingleCardLifecycle ? 0.78 : 1.82);
-      const exitDuration = usesSingleCardLifecycle ? 0.22 : 0.18;
+      const exitStart = index + (usesSequentialCardLifecycle ? 0.72 : usesSingleCardLifecycle ? 0.78 : 1.82);
+      const exitDuration = usesSequentialCardLifecycle ? 0.18 : usesSingleCardLifecycle ? 0.22 : 0.18;
       const exitProgress = index < totalCards - 1 ? clamp((progress - exitStart) / exitDuration, 0, 1) : 0;
       const exit = easeInCubic(exitProgress);
       const startX = side * (isShortLandscape ? Math.min(window.innerWidth * 0.38, 280) : isMobile ? 78 : isTablet ? 140 : 340);
