@@ -328,6 +328,15 @@
   }
 }
 
+/* En el cruce de ancho tablet y altura escasa, el copy auxiliar no tenía una
+   zona de seguridad frente al personaje. Se limita solo ese renglón, sin
+   modificar la composición portrait ni la de escritorio. */
+@media (max-height: 760px) and (min-width: 901px) and (max-width: 1024px) {
+  .hero-support-copy {
+    max-width: min(360px, 100%);
+  }
+}
+
 @media (max-width: 1080px) {
   .hero-subcopy-grid {
     grid-template-columns: 1fr;
