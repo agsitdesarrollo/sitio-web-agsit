@@ -442,6 +442,17 @@ html[data-scroll-handoff]:not([data-scroll-handoff='video-framed']):not([data-sc
   }
 }
 
+/* En portrait el viewport fullscreen participa primero en el flujo y el track
+   usa la altura útil (viewport menos navegación). Sin compensación, la primera
+   parada queda una barra de navegación después de la posición que la timeline
+   interpreta como el estado 1. Alineamos ambos sistemas únicamente aquí:
+   0 = fullscreen; 1, 2 y 3 = una frase por gesto. */
+@media (max-width: 599px) and (orientation: portrait) {
+  .video-story-track {
+    margin-top: calc(-1 * var(--nav-h));
+  }
+}
+
 @media (pointer: coarse) and (orientation: landscape) and (max-width: 932px) and (max-height: 520px) {
   .video-story-section {
     --video-panel-h: var(--handoff-vh, var(--app-vh, 100svh));
