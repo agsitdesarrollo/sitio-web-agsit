@@ -328,12 +328,12 @@
   }
 }
 
-/* En el cruce de ancho tablet y altura escasa, el copy auxiliar no tenía una
-   zona de seguridad frente al personaje. Se limita solo ese renglón, sin
-   modificar la composición portrait ni la de escritorio. */
-@media (max-height: 760px) and (min-width: 901px) and (max-width: 1024px) {
+/* Las tabletas landscape pueden tener más de 1024px CSS (por ejemplo 1138 o
+   1280). La detección se basa en el dispositivo táctil, no en un ancho de
+   escritorio, y mantiene una franja de seguridad antes del personaje. */
+@media (pointer: coarse) and (hover: none) and (orientation: landscape) and (min-width: 901px) and (max-width: 1366px) and (max-height: 900px) {
   .hero-support-copy {
-    max-width: min(360px, 100%);
+    max-width: min(410px, 32vw, 100%);
   }
 }
 
