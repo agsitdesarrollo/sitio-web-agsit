@@ -66,40 +66,33 @@ export const strategicPlanningTemplateByLang: Record<SupportedLang, TechnologySo
         'Integramos servicios estratégicos y tácticos para que la dirección pueda tomar decisiones con visión completa del negocio.',
       items: [
         {
-          code: 'ADN',
-          title: 'Diagnóstico ADN empresarial',
-          copy:
-            'Analizamos cultura, estructura, capacidades, fortalezas y debilidades para entender la realidad de la organización.',
+          code: 'STRAT',
+          title: 'Planeación Estratégica Corporativa',
+          copy: 'Definimos el rumbo de tu empresa y lo convertimos en objetivos y acciones claras que guíen su crecimiento.',
         },
         {
-          code: 'MVV',
-          title: 'Misión, visión y valores',
+          code: 'ASSESS',
+          title: 'Diagnóstico Estratégico',
           copy:
-            'Definimos y socializamos los principios institucionales que dan dirección y compromiso a todos los niveles.',
+            'Analizamos la situación actual de tu empresa para identificar oportunidades y definir prioridades que orienten las siguientes decisiones.',
         },
         {
-          code: 'FODA',
-          title: 'Análisis interno y externo',
+          code: 'GOV',
+          title: 'Gobierno Corporativo',
           copy:
-            'Evaluamos oportunidades, amenazas, fortalezas y debilidades para formular estrategias realistas.',
+            'Fortalecemos la estructura de dirección de tu empresa para facilitar decisiones claras, responsabilidades definidas y seguimiento a los objetivos.',
         },
         {
-          code: 'PLAN',
-          title: 'Plan estratégico corporativo',
+          code: 'GROWTH',
+          title: 'Crecimiento Empresarial',
           copy:
-            'Creamos objetivos, rutas, responsables e indicadores para guiar el negocio en corto, mediano y largo plazo.',
+            'Diseñamos estrategias de crecimiento para ampliar las oportunidades de tu empresa, desarrollar nuevos mercados y fortalecer su modelo de negocio.',
         },
         {
-          code: 'GOB',
-          title: 'Gobierno corporativo',
+          code: 'TRANS',
+          title: 'Transformación Empresarial',
           copy:
-            'Implementamos políticas, órganos de gobierno, reglas de decisión y mecanismos de administración transparente.',
-        },
-        {
-          code: 'KPI',
-          title: 'Tableros de control ejecutivos',
-          copy:
-            'Diseñamos dashboards con indicadores relevantes para revisar resultados con datos duros y seguimiento continuo.',
+            'Acompañamos la transformación de tu empresa integrando estrategia, innovación y cambio para prepararla ante nuevas oportunidades.',
         },
       ],
     },
@@ -202,40 +195,33 @@ export const strategicPlanningTemplateByLang: Record<SupportedLang, TechnologySo
         'We integrate strategic and tactical services so leadership can make decisions with a complete view of the business.',
       items: [
         {
-          code: 'DNA',
-          title: 'Company DNA diagnosis',
-          copy:
-            'We analyze culture, structure, capabilities, strengths and weaknesses to understand the organization reality.',
+          code: 'STRAT',
+          title: 'Corporate Strategic Planning',
+          copy: 'We define your company direction and turn it into clear objectives and actions that guide its growth.',
         },
         {
-          code: 'MVV',
-          title: 'Mission, vision and values',
+          code: 'ASSESS',
+          title: 'Strategic Diagnosis',
           copy:
-            'We define and socialize the institutional principles that give direction and commitment at every level.',
-        },
-        {
-          code: 'SWOT',
-          title: 'Internal and external analysis',
-          copy:
-            'We assess opportunities, threats, strengths and weaknesses to formulate realistic strategies.',
-        },
-        {
-          code: 'PLAN',
-          title: 'Corporate strategic plan',
-          copy:
-            'We create objectives, routes, owners and indicators to guide the business in the short, medium and long term.',
+            'We analyze your company’s current situation to identify opportunities and define priorities that guide the next decisions.',
         },
         {
           code: 'GOV',
-          title: 'Corporate governance',
+          title: 'Corporate Governance',
           copy:
-            'We implement policies, governance bodies, decision rules and transparent management mechanisms.',
+            'We strengthen your company’s leadership structure to enable clear decisions, defined responsibilities and follow-up on objectives.',
         },
         {
-          code: 'KPI',
-          title: 'Executive dashboards',
+          code: 'GROWTH',
+          title: 'Business Growth',
           copy:
-            'We design dashboards with relevant indicators to review results with hard data and continuous follow-up.',
+            'We design growth strategies to expand your company’s opportunities, develop new markets and strengthen its business model.',
+        },
+        {
+          code: 'TRANS',
+          title: 'Business Transformation',
+          copy:
+            'We support your company’s transformation by integrating strategy, innovation and change to prepare it for new opportunities.',
         },
       ],
     },
@@ -341,40 +327,34 @@ export const projectManagementTemplateByLang: Record<SupportedLang, TechnologySo
         'Acompañamos desde el diagnóstico hasta la administración profesional de proyectos, programas, portafolios y oficinas de proyecto.',
       items: [
         {
-          code: 'DIAG',
-          title: 'Diagnóstico empresarial',
+          code: 'GOV',
+          title: 'PMO & Project Governance',
           copy:
-            'Identificamos áreas de oportunidad en estructura, gobierno, procesos, documentación, perfiles y capacidades.',
+            'Establecemos una dirección clara para tus proyectos, alineando prioridades, responsables y objetivos para mantener el control de principio a fin.',
         },
         {
-          code: 'AUD',
-          title: 'Auditoría de proyectos',
+          code: 'DELIV',
+          title: 'Strategic Project Delivery',
           copy:
-            'Dictaminamos el estado de proyectos en cualquier fase para definir soluciones y acciones correctivas.',
-        },
-        {
-          code: 'OPM3',
-          title: 'Madurez organizacional',
-          copy:
-            'Evaluamos estandarización, métricas, control y mejora continua en portafolios, programas y proyectos.',
-        },
-        {
-          code: 'PMO',
-          title: 'Implementación y operación de PMO',
-          copy:
-            'Diseñamos estructura, roles, procesos, lineamientos y tableros para administrar el portafolio.',
-        },
-        {
-          code: 'PM',
-          title: 'Administración de proyectos',
-          copy:
-            'Gestionamos proyectos tecnológicos, financieros, operativos, industriales, comerciales o estratégicos.',
+            'Dirigimos tus proyectos con una ejecución estructurada para cumplir objetivos y convertir la estrategia en resultados.',
         },
         {
           code: 'AGILE',
-          title: 'Agile, Scrum y capacitación',
+          title: 'Agile Project Delivery',
           copy:
-            'Implementamos metodologías ágiles y formamos equipos en planeación, control y comunicación ejecutiva.',
+            'Impulsamos una gestión ágil que facilita la colaboración, adaptación y entrega continua de valor durante el proyecto.',
+        },
+        {
+          code: 'REC',
+          title: 'Auditoría y Recuperación de Proyectos',
+          copy:
+            'Evaluamos el estado de tus proyectos y definimos acciones para recuperar el control, fortalecer su ejecución y encaminarlos hacia sus objetivos.',
+        },
+        {
+          code: 'ASSESS',
+          title: 'Diagnóstico y Madurez en Gestión de Proyectos',
+          copy:
+            'Evaluamos la forma en que tu empresa gestiona sus proyectos para identificar oportunidades y fortalecer sus capacidades de gestión.',
         },
       ],
     },
@@ -477,40 +457,34 @@ export const projectManagementTemplateByLang: Record<SupportedLang, TechnologySo
         'We support everything from diagnosis to professional management of projects, programs, portfolios and project offices.',
       items: [
         {
-          code: 'DIAG',
-          title: 'Business diagnosis',
+          code: 'GOV',
+          title: 'PMO & Project Governance',
           copy:
-            'We identify improvement areas in structure, governance, processes, documentation, profiles and capabilities.',
+            'We establish clear direction for your projects, aligning priorities, owners and objectives to maintain control from start to finish.',
         },
         {
-          code: 'AUD',
-          title: 'Project auditing',
+          code: 'DELIV',
+          title: 'Strategic Project Delivery',
           copy:
-            'We assess project status in any phase to define solutions and corrective actions.',
-        },
-        {
-          code: 'OPM3',
-          title: 'Organizational maturity',
-          copy:
-            'We evaluate standardization, metrics, control and continuous improvement across portfolios, programs and projects.',
-        },
-        {
-          code: 'PMO',
-          title: 'PMO implementation and operation',
-          copy:
-            'We design structure, roles, processes, guidelines and dashboards to manage the portfolio.',
-        },
-        {
-          code: 'PM',
-          title: 'Project administration',
-          copy:
-            'We manage technology, financial, operational, industrial, commercial or strategic projects.',
+            'We lead your projects through structured execution to meet objectives and turn strategy into results.',
         },
         {
           code: 'AGILE',
-          title: 'Agile, Scrum and training',
+          title: 'Agile Project Delivery',
           copy:
-            'We implement agile methodologies and train teams in planning, control and executive communication.',
+            'We drive agile management that enables collaboration, adaptation and continuous value delivery throughout the project.',
+        },
+        {
+          code: 'REC',
+          title: 'Project Audit & Recovery',
+          copy:
+            'We assess your projects and define actions to regain control, strengthen execution and guide them toward their objectives.',
+        },
+        {
+          code: 'ASSESS',
+          title: 'Project Management Diagnosis & Maturity',
+          copy:
+            'We assess how your company manages projects to identify opportunities and strengthen its management capabilities.',
         },
       ],
     },
@@ -616,40 +590,34 @@ export const processManagementTemplateByLang: Record<SupportedLang, TechnologySo
         'Ordenamos la operación antes de automatizar: procesos, documentación, indicadores, controles y mecanismos de mejora.',
       items: [
         {
-          code: 'BPM',
-          title: 'Administración de procesos',
+          code: 'DESIGN',
+          title: 'Modelado y Optimización de Procesos',
           copy:
-            'Implementamos modelos de madurez, diagnóstico, capacitación, mejora continua y reingeniería operativa.',
-        },
-        {
-          code: 'MAP',
-          title: 'Mapeo y modelado',
-          copy:
-            'Representamos procesos con BPMN, EPC, UML u otras notaciones entendibles para negocio y tecnología.',
-        },
-        {
-          code: 'ANA',
-          title: 'Análisis y control',
-          copy:
-            'Revisamos estructura documental, indicadores, parámetros de calidad, controles y riesgos operativos.',
-        },
-        {
-          code: 'DSN',
-          title: 'Diseño AS-IS / TO-BE',
-          copy:
-            'Diseñamos macroprocesos, subprocesos, simulaciones, políticas, procedimientos y control de cambios.',
+            'Diseñamos procesos más claros y eficientes para fortalecer la operación y facilitar el crecimiento de tu empresa.',
         },
         {
           code: 'AUTO',
-          title: 'Automatización BPMS',
+          title: 'Automatización Inteligente de Procesos',
           copy:
-            'Definimos reglas de negocio, flujos administrativos, tableros y evidencias para operar con seguimiento real.',
+            'Automatizamos y conectamos procesos para agilizar la operación y aprovechar mejor el tiempo de tus equipos.',
         },
         {
-          code: 'KPI',
-          title: 'Monitoreo y mejora continua',
+          code: 'INTEL',
+          title: 'Inteligencia y Gobierno de Procesos',
           copy:
-            'Instalamos KPIs, auditorías, tableros gerenciales y ciclos de mejora para sostener resultados.',
+            'Convertimos la información de tus procesos en visibilidad y control para tomar decisiones con mayor claridad.',
+        },
+        {
+          code: 'OPS',
+          title: 'Excelencia Operativa',
+          copy:
+            'Fortalecemos tu operación para aprovechar mejor los recursos, elevar la productividad y sostener mejores resultados.',
+        },
+        {
+          code: 'ASSESS',
+          title: 'Diagnóstico y Auditoría de Procesos',
+          copy:
+            'Evaluamos tus procesos para descubrir oportunidades y definir acciones que impulsen la mejora de tu operación.',
         },
       ],
     },
@@ -752,40 +720,34 @@ export const processManagementTemplateByLang: Record<SupportedLang, TechnologySo
         'We organize operations before automating: processes, documentation, indicators, controls and improvement mechanisms.',
       items: [
         {
-          code: 'BPM',
-          title: 'Process management',
+          code: 'DESIGN',
+          title: 'Process Modeling and Optimization',
           copy:
-            'We implement maturity models, diagnosis, training, continuous improvement and operational reengineering.',
-        },
-        {
-          code: 'MAP',
-          title: 'Mapping and modeling',
-          copy:
-            'We represent processes with BPMN, EPC, UML or other notations that business and technology can use.',
-        },
-        {
-          code: 'ANA',
-          title: 'Analysis and control',
-          copy:
-            'We review documentation structure, indicators, quality parameters, controls and operational risks.',
-        },
-        {
-          code: 'DSN',
-          title: 'AS-IS / TO-BE design',
-          copy:
-            'We design macroprocesses, subprocesses, simulations, policies, procedures and change control.',
+            'We design clearer, more efficient processes to strengthen operations and facilitate your company’s growth.',
         },
         {
           code: 'AUTO',
-          title: 'BPMS automation',
+          title: 'Intelligent Process Automation',
           copy:
-            'We define business rules, administrative flows, dashboards and evidence for traceable operations.',
+            'We automate and connect processes to streamline operations and make better use of your teams’ time.',
         },
         {
-          code: 'KPI',
-          title: 'Monitoring and continuous improvement',
+          code: 'INTEL',
+          title: 'Process Intelligence & Governance',
           copy:
-            'We install KPIs, audits, executive dashboards and improvement cycles to sustain results.',
+            'We turn your process information into visibility and control for clearer decision-making.',
+        },
+        {
+          code: 'OPS',
+          title: 'Operational Excellence',
+          copy:
+            'We strengthen your operations to make better use of resources, improve productivity and sustain stronger results.',
+        },
+        {
+          code: 'ASSESS',
+          title: 'Process Diagnosis & Audit',
+          copy:
+            'We assess your processes to uncover opportunities and define actions that drive operational improvement.',
         },
       ],
     },

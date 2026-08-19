@@ -12,6 +12,10 @@ type Props = {
 
 const { content, contactCopy, capabilityLinkCodes } = Astro.props;
 const shouldShowCapabilityLink = (code: string) => !capabilityLinkCodes || capabilityLinkCodes.includes(code);
+const capabilityPages = Array.from(
+  { length: Math.ceil(content.capabilities.items.length / 4) },
+  (_, pageIndex) => content.capabilities.items.slice(pageIndex * 4, pageIndex * 4 + 4),
+);
 ---
 
 <main class="technology-page">
@@ -64,7 +68,10 @@ const shouldShowCapabilityLink = (code: string) => !capabilityLinkCodes || capab
   </section>
 
   <section id="capacidades" class="technology-capabilities" aria-labelledby="technology-capabilities-title">
-    <div class="technology-capabilities-stage">
+    <div
+      class="technology-capabilities-stage"
+      style={`--technology-capability-panel-count: ${capabilityPages.length + 1}`}
+    >
       <div class="technology-capabilities-panel technology-capabilities-panel-intro">
         <div class="technology-capabilities-intro">
           <p class="technology-eyebrow js-technology-capabilities-intro-fade">{content.capabilities.eyebrow}</p>
@@ -75,27 +82,36 @@ const shouldShowCapabilityLink = (code: string) => !capabilityLinkCodes || capab
         </div>
       </div>
 
-      <div class="technology-capabilities-panel technology-capabilities-panel-grid">
-        <div class="technology-capability-grid">
-          {
-            content.capabilities.items.map((item) => (
-              <article class="technology-capability">
-                <div>
-                  <span class="technology-capability-code">{item.code}</span>
-                  <h3>{item.title}</h3>
-                  <p>{item.copy}</p>
-                </div>
-                {shouldShowCapabilityLink(item.code) && item.href && (
-                  <a class="technology-capability-link" href={item.href}>
-                    <span class="technology-capability-link-text">{item.cta}</span>
-                    <span class="technology-capability-arrow" aria-hidden="true"></span>
-                  </a>
-                )}
-              </article>
-            ))
-          }
-        </div>
-      </div>
+      {
+        capabilityPages.map((items, pageIndex) => (
+          <div class="technology-capabilities-panel technology-capabilities-panel-grid" data-capability-page={pageIndex + 1}>
+            <div class="technology-capability-grid" data-capability-count={items.length}>
+              {
+                items.map((item) => (
+                  <article class="technology-capability">
+                    <div class="technology-capability-content">
+                      <span class="technology-capability-code">{item.code}</span>
+                      <h3>{item.title}</h3>
+                      <p>{item.copy}</p>
+                    </div>
+                    <div class="technology-capability-action">
+                      {shouldShowCapabilityLink(item.code) && item.href && (
+                        <a class="technology-capability-link" href={item.href}>
+                          <span class="technology-capability-link-text">{item.cta}</span>
+                          <span class="technology-capability-arrow" aria-hidden="true"></span>
+                        </a>
+                      )}
+                    </div>
+                  </article>
+                ))
+              }
+            </div>
+            <p class="technology-capability-progress" aria-hidden="true">
+              {pageIndex + 1} / {capabilityPages.length}
+            </p>
+          </div>
+        ))
+      }
     </div>
   </section>
 
@@ -137,9 +153,11 @@ const shouldShowCapabilityLink = (code: string) => !capabilityLinkCodes || capab
       getComputedStyle(document.documentElement).getPropertyValue('--app-stable-vh'),
     );
 
-    return Number.isFinite(stableViewportHeight) && stableViewportHeight > 0
+    const viewportHeight = Number.isFinite(stableViewportHeight) && stableViewportHeight > 0
       ? stableViewportHeight
       : window.innerHeight;
+
+    return Math.max(1, viewportHeight);
   };
 
   const setupTechnologyMethodScroll = () => {
@@ -246,16 +264,20 @@ const shouldShowCapabilityLink = (code: string) => !capabilityLinkCodes || capab
     const capabilities = root.querySelector('.technology-capabilities');
     const stage = root.querySelector('.technology-capabilities-stage');
     const introItems = gsap.utils.toArray<HTMLElement>('.js-technology-capabilities-intro-fade', capabilities);
-    const cards = gsap.utils.toArray<HTMLElement>('.technology-capability', capabilities);
+    const gridPanels = gsap.utils.toArray<HTMLElement>('.technology-capabilities-panel-grid', capabilities);
+    const cardGroups = gridPanels.map((panel) => gsap.utils.toArray<HTMLElement>('.technology-capability', panel));
+    const cards = cardGroups.flat();
 
-    if (!(capabilities instanceof HTMLElement) || !(stage instanceof HTMLElement) || cards.length === 0) return;
+    if (!(capabilities instanceof HTMLElement) || !(stage instanceof HTMLElement) || cards.length === 0 || gridPanels.length === 0) return;
 
     root.setAttribute('data-technology-capabilities-ready', 'true');
 
     const matchMedia = gsap.matchMedia();
-    const getDesktopSequenceEnd = () => `+=${Math.round(getTechnologyViewportHeight() * (cards.length * 0.68 + 2.25))}`;
+    const getDesktopSequenceEnd = () => `+=${Math.round(getTechnologyViewportHeight() * gridPanels.length)}`;
     const getMobileSequenceEnd = () => `+=${Math.round(getTechnologyViewportHeight() * (cards.length * 0.92 + 2.4))}`;
     const getPinStart = () => `top top+=${getTechnologyNavOffset()}`;
+    const getStagePosition = (panelIndex: number) =>
+      -((panelIndex / (gridPanels.length + 1)) * 100);
 
     matchMedia.add('(prefers-reduced-motion: no-preference) and (min-width: 680px) and (min-height: 521px)', () => {
       capabilities.classList.add('is-horizontal-sequence');
@@ -278,14 +300,11 @@ const shouldShowCapabilityLink = (code: string) => !capabilityLinkCodes || capab
         },
       });
 
-      timeline
-        .to(stage, { xPercent: -50, duration: 0.55, ease: 'power1.inOut' })
-        .to(cards[0], { autoAlpha: 1, y: 0, scale: 1, duration: 0.45, ease: 'power2.out' });
-
-      cards.slice(1).forEach((card) => {
+      cardGroups.forEach((group, pageIndex) => {
         timeline
-          .to(card, { autoAlpha: 1, y: 0, scale: 1, duration: 0.62, ease: 'power2.out' })
-          .to({}, { duration: 0.38 });
+          .to(stage, { xPercent: getStagePosition(pageIndex + 1), duration: 0.38, ease: 'power1.inOut' })
+          .to(group, { autoAlpha: 1, y: 0, scale: 1, duration: 0.3, stagger: 0.02, ease: 'power2.out' })
+          .to({}, { duration: 0.22 });
       });
 
       return () => {
@@ -324,31 +343,24 @@ const shouldShowCapabilityLink = (code: string) => !capabilityLinkCodes || capab
           },
         });
 
-        timeline
-          .addLabel('mobile-intro')
-          .to(stage, { xPercent: -50, duration: 0.45 }, 'mobile-intro')
-          .fromTo(
-            cards[0],
-            { autoAlpha: 0, xPercent: 115 },
-            { autoAlpha: 1, xPercent: 0, duration: 0.55, immediateRender: false },
-            '>',
-          )
-          .to({}, { duration: 0 });
+        cardGroups.forEach((group, pageIndex) => {
+          timeline.to(stage, { xPercent: getStagePosition(pageIndex + 1), duration: 0.45 });
 
-        cards.slice(1).forEach((card, index) => {
-          const previousCard = cards[index];
-          const label = `mobile-card-${index + 2}`;
+          group.forEach((card, cardIndex) => {
+            const previousCard = group[cardIndex - 1];
 
-          timeline
-            .addLabel(label)
-            .to(previousCard, { autoAlpha: 0, xPercent: -115, duration: 0.45 }, label)
-            .fromTo(
-              card,
-              { autoAlpha: 0, xPercent: 115 },
-              { autoAlpha: 1, xPercent: 0, duration: 0.55, immediateRender: false },
-              label,
-            )
-            .to({}, { duration: 0.45 });
+            if (previousCard) {
+              timeline.to(previousCard, { autoAlpha: 0, xPercent: -115, duration: 0.45 });
+            }
+
+            timeline
+              .fromTo(
+                card,
+                { autoAlpha: 0, xPercent: 115 },
+                { autoAlpha: 1, xPercent: 0, duration: 0.55, immediateRender: false },
+              )
+              .to({}, { duration: 0.45 });
+          });
         });
 
         return () => {
