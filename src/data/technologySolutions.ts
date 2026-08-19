@@ -131,62 +131,49 @@ export const technologySolutionsByLang: Record<SupportedLang, TechnologySolution
         'Agrupamos los servicios por objetivo operativo para que identifiques con rapidez qué frente tecnológico necesita tu empresa.',
       items: [
         {
-          code: 'CRM',
-          title: 'Administración CRM',
+          code: 'BIZ',
+          title: 'Plataformas Empresariales Inteligentes',
           copy:
-            'Centralizamos ventas, tareas, colaboración, analítica y automatización para conectar clientes, equipos y resultados.',
+            'Implementamos plataformas empresariales que centralizan la información, optimizan procesos y fortalecen la colaboración entre áreas.',
           cta: 'Ver servicios',
           href: '/administracion-crm/',
         },
         {
-          code: 'GTI',
-          title: 'Gestión y Gobierno TI',
+          code: 'SW',
+          title: 'Fábrica de Software / Desarrollo de Software a la Medida',
           copy:
-            'Ordenamos la operación tecnológica con prácticas de control, soporte y mejora continua para equipos de TI.',
-          cta: 'Ver servicios',
-          href: '/soluciones-tecnologicas/gestion-gobierno-ti/',
+            'Diseñamos y desarrollamos soluciones de software a la medida que responden a las necesidades operativas de tu empresa, desde aplicaciones especializadas hasta sistemas empresariales.',
         },
         {
           code: 'AUTO',
-          title: 'Automatización y Optimización',
+          title: 'Automatización Inteligente de Procesos',
           copy:
-            'Detectamos fricciones operativas y diseñamos soluciones que reducen trabajo manual, errores y tiempos de ciclo.',
-          cta: 'Ver servicios',
-          href: '/soluciones-tecnologicas/automatizacion-y-optimizacion/',
-        },
-        {
-          code: 'DEV',
-          title: 'Desarrollo de Software',
-          copy:
-            'Construimos aplicaciones alineadas a la operación real del negocio, con validación funcional antes de escalar.',
-          cta: 'Ver servicios',
-          href: '/soluciones-tecnologicas/desarrollo-de-software/',
-        },
-        {
-          code: 'OPS',
-          title: 'Infraestructura y nube',
-          copy:
-            'Diseñamos bases tecnológicas estables para operar, integrar y crecer con continuidad en entornos locales o nube.',
-          cta: 'Ver servicios',
-          href: '/soluciones-tecnologicas/infraestructura-y-nube/',
+            'Automatizamos procesos e integramos sistemas para reducir tareas manuales, acelerar la operación y mejorar la eficiencia del negocio.',
         },
         {
           code: 'DATA',
-          title: 'Datos e Inteligencia Empresarial',
+          title: 'Ingeniería de Datos y Analítica Estratégica',
           copy:
-            'Conectamos datos y sistemas para convertir información dispersa en control, trazabilidad y decisiones oportunas.',
-          cta: 'Ver servicios',
-          href: '/soluciones-tecnologicas/datos-e-inteligencia-empresarial/',
+            'Convertimos los datos en información estratégica mediante soluciones de analítica, inteligencia de negocio y visualización ejecutiva.',
         },
-        // Servicio reservado para una ampliación futura del catálogo.
-        // {
-        //   code: 'INN',
-        //   title: 'Innovación Tecnológica',
-        //   copy:
-        //     'Aterrizamos tecnologías emergentes en casos de uso viables para modernizar procesos y habilitar nuevos modelos.',
-        //   cta: 'Ver servicios',
-        //   href: '/soluciones-tecnologicas/innovacion-tecnologica/',
-        // },
+        {
+          code: 'AI',
+          title: 'Soluciones de Inteligencia Artificial',
+          copy:
+            'Aplicamos inteligencia artificial para automatizar procesos, fortalecer la toma de decisiones y crear nuevas capacidades para el negocio.',
+        },
+        {
+          code: 'CONS',
+          title: 'Consultoría y Transformación Tecnológica',
+          copy:
+            'Acompañamos la evolución tecnológica de tu empresa mediante consultoría especializada, diseño de soluciones y arquitectura tecnológica.',
+        },
+        {
+          code: 'CLOUD',
+          title: 'Infraestructura Cloud y Servicios TI',
+          copy:
+            'Integramos infraestructura, nube y soporte para brindar una base tecnológica sólida que acompañe el crecimiento de tu empresa.',
+        },
       ],
     },
     benefits: {
@@ -288,62 +275,49 @@ export const technologySolutionsByLang: Record<SupportedLang, TechnologySolution
         'We group services by operational goal so you can quickly identify which technology front your company needs.',
       items: [
         {
-          code: 'CRM',
-          title: 'CRM Administration',
+          code: 'BIZ',
+          title: 'Intelligent Business Platforms',
           copy:
-            'We centralize sales, tasks, collaboration, analytics and automation to connect clients, teams and results.',
+            'We implement business platforms that centralize information, optimize processes and strengthen collaboration across teams.',
           cta: 'View services',
           href: '/en/crm-administration/',
         },
         {
-          code: 'ITG',
-          title: 'IT Management and Governance',
+          code: 'SW',
+          title: 'Software Factory / Custom Software Development',
           copy:
-            'We structure technology operations with control, support and continuous improvement practices for IT teams.',
-          cta: 'View services',
-          href: '/en/technology-solutions/it-management-governance/',
+            'We design and develop custom software solutions that address your company’s operational needs, from specialized applications to enterprise systems.',
         },
         {
           code: 'AUTO',
-          title: 'Automation and Optimization',
+          title: 'Intelligent Process Automation',
           copy:
-            'We identify operational friction and design solutions that reduce manual work, errors and cycle times.',
-          cta: 'View services',
-          href: '/en/technology-solutions/automation-and-optimization/',
-        },
-        {
-          code: 'DEV',
-          title: 'Software Development',
-          copy:
-            'We build applications aligned with real business operations, with functional validation before scaling.',
-          cta: 'View services',
-          href: '/en/technology-solutions/software-development/',
-        },
-        {
-          code: 'OPS',
-          title: 'Infrastructure and Cloud',
-          copy:
-            'We design stable technology foundations to operate, integrate and grow with continuity on-premise or in cloud environments.',
-          cta: 'View services',
-          href: '/en/technology-solutions/infrastructure-and-cloud/',
+            'We automate processes and integrate systems to reduce manual tasks, accelerate operations and improve business efficiency.',
         },
         {
           code: 'DATA',
-          title: 'Data and Business Intelligence',
+          title: 'Data Engineering and Strategic Analytics',
           copy:
-            'We connect data and systems to turn scattered information into control, traceability and timely decisions.',
-          cta: 'View services',
-          href: '/en/technology-solutions/data-and-business-intelligence/',
+            'We turn data into strategic information through analytics, business intelligence and executive visualization solutions.',
         },
-        // Service reserved for a future catalogue expansion.
-        // {
-        //   code: 'INN',
-        //   title: 'Technology Innovation',
-        //   copy:
-        //     'We bring emerging technologies into viable use cases to modernize processes and enable new operating models.',
-        //   cta: 'View services',
-        //   href: '/en/technology-solutions/technological-innovation/',
-        // },
+        {
+          code: 'AI',
+          title: 'Artificial Intelligence Solutions',
+          copy:
+            'We apply artificial intelligence to automate processes, strengthen decision-making and create new capabilities for the business.',
+        },
+        {
+          code: 'CONS',
+          title: 'Technology Consulting and Transformation',
+          copy:
+            'We guide your company’s technology evolution through specialized consulting, solution design and technology architecture.',
+        },
+        {
+          code: 'CLOUD',
+          title: 'Cloud Infrastructure and IT Services',
+          copy:
+            'We integrate infrastructure, cloud and support to provide a solid technology foundation that supports your company’s growth.',
+        },
       ],
     },
     benefits: {

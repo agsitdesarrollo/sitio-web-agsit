@@ -14,6 +14,11 @@ type PageDefinition = {
   tracks: TrackDefinition[];
 };
 
+type TrackDestination = {
+  position: number;
+  owner: Element;
+};
+
 const PAGE_DEFINITIONS: PageDefinition[] = [
   {
     root: '.technology-page',
@@ -235,6 +240,7 @@ const setupTrack = (
 const setupPageSnapState = (root: HTMLElement) => {
   const html = document.documentElement;
   const activeTracks = new Set<Element>();
+  let contactHandoffFrame = 0;
   const getStart = () => `top top+=${getNavOffset()}`;
   const syncTrackState = () => {
     html.classList.toggle('service-track-active', activeTracks.size > 0);
@@ -269,6 +275,40 @@ const setupPageSnapState = (root: HTMLElement) => {
   const contact = root.querySelector<HTMLElement>('.final-contact-section');
   if (!contact) return;
 
+  const getPreviousTrackEnd = () => {
+    let previousSibling = contact.previousElementSibling;
+
+    while (previousSibling) {
+      if (previousSibling instanceof HTMLElement && previousSibling.matches('.pin-spacer')) {
+        const section = previousSibling.querySelector<HTMLElement>(':scope > section');
+        const track = ScrollTrigger.getAll().find(
+          (trigger) => trigger.trigger === section && Boolean(trigger.vars.pin),
+        );
+
+        if (track) return Math.round(track.end);
+      }
+
+      previousSibling = previousSibling.previousElementSibling;
+    }
+
+    return null;
+  };
+
+  const resumePreviousTrack = () => {
+    window.cancelAnimationFrame(contactHandoffFrame);
+    contactHandoffFrame = window.requestAnimationFrame(() => {
+      contactHandoffFrame = 0;
+      const trackEnd = getPreviousTrackEnd();
+
+      // La zona libre del formulario termina después del spacer del pin. Al
+      // volver, aterrizamos en el último estado del track anterior en vez de
+      // recorrer ese spacer con Contacto aún visible bajo el menú fijo.
+      if (trackEnd !== null && window.scrollY > trackEnd + 2) {
+        window.scrollTo(0, trackEnd);
+      }
+    });
+  };
+
   ScrollTrigger.create({
     id: 'service-page-contact-state',
     trigger: contact,
@@ -277,7 +317,10 @@ const setupPageSnapState = (root: HTMLElement) => {
     invalidateOnRefresh: true,
     onEnter: () => html.classList.add('service-slides-footer-free'),
     onEnterBack: () => html.classList.add('service-slides-footer-free'),
-    onLeaveBack: () => html.classList.remove('service-slides-footer-free'),
+    onLeaveBack: () => {
+      html.classList.remove('service-slides-footer-free');
+      resumePreviousTrack();
+    },
   });
 };
 
@@ -300,7 +343,7 @@ const setupLandingTrackNavigation = (root: HTMLElement) => {
     if (Number.isFinite(explicitStops) && explicitStops > 0) return explicitStops;
 
     if (section.matches('.technology-capabilities')) {
-      return section.querySelectorAll('.technology-capability').length + 1;
+      return section.querySelectorAll('.technology-capabilities-panel-grid').length + 1;
     }
 
     if (section.matches('[class*="-method"]')) {
@@ -310,14 +353,17 @@ const setupLandingTrackNavigation = (root: HTMLElement) => {
     return 1;
   };
 
-  const getDestinations = () => {
-    const destinations: number[] = [];
+  const getDestinations = (): TrackDestination[] => {
+    const destinations: TrackDestination[] = [];
     const navOffset = getNavOffset();
+    const rootTop = root.getBoundingClientRect().top + window.scrollY;
 
     Array.from(root.children).forEach((child) => {
       if (!(child instanceof HTMLElement)) return;
 
-      const childTop = Math.max(0, child.getBoundingClientRect().top + window.scrollY - navOffset);
+      // Un pin desplaza visualmente su spacer mientras está activo. offsetTop
+      // conserva la coordenada del documento y evita que una parada se mueva.
+      const childTop = Math.max(0, rootTop + child.offsetTop - navOffset);
 
       if (child.matches('.pin-spacer')) {
         const section = child.querySelector<HTMLElement>(':scope > section');
@@ -329,30 +375,35 @@ const setupLandingTrackNavigation = (root: HTMLElement) => {
         const trackDistance = Math.max(0, spacerHeight - panelHeight);
 
         if (stops <= 1 || trackDistance <= 1) {
-          destinations.push(Math.round(childTop));
+          destinations.push({ position: Math.round(childTop), owner: child });
           return;
         }
 
         for (let index = 0; index < stops; index += 1) {
-          destinations.push(Math.round(childTop + (trackDistance * index) / (stops - 1)));
+          destinations.push({
+            position: Math.round(childTop + (trackDistance * index) / (stops - 1)),
+            owner: child,
+          });
         }
         return;
       }
 
       if (child.matches('section.service-slide-panel')) {
-        destinations.push(Math.round(childTop));
+        destinations.push({ position: Math.round(childTop), owner: child });
       }
     });
 
-    return destinations.filter((destination, index) => index === 0 || Math.abs(destination - destinations[index - 1]) > 2);
+    return destinations.filter(
+      (destination, index) => index === 0 || Math.abs(destination.position - destinations[index - 1].position) > 2,
+    );
   };
 
-  const getClosestIndex = (destinations: number[]) => {
+  const getClosestIndex = (destinations: TrackDestination[]) => {
     let closestIndex = 0;
     let closestDistance = Number.POSITIVE_INFINITY;
 
     destinations.forEach((destination, index) => {
-      const distance = Math.abs(destination - window.scrollY);
+      const distance = Math.abs(destination.position - window.scrollY);
       if (distance >= closestDistance) return;
       closestDistance = distance;
       closestIndex = index;
@@ -373,13 +424,14 @@ const setupLandingTrackNavigation = (root: HTMLElement) => {
     }, delay);
   };
 
-  const navigateTo = (destination: number) => {
+  const navigateTo = (destination: number, instant = false) => {
     navigationLocked = true;
     navigationAnimating = !reduceMotion;
     window.cancelAnimationFrame(activeScrollFrame);
 
-    if (reduceMotion) {
+    if (reduceMotion || instant) {
       window.scrollTo(0, destination);
+      navigationAnimating = false;
       scheduleNavigationUnlock();
       return;
     }
@@ -415,7 +467,9 @@ const setupLandingTrackNavigation = (root: HTMLElement) => {
     const nextIndex = Math.max(0, Math.min(destinations.length - 1, currentIndex + direction));
     if (nextIndex === currentIndex) return false;
 
-    navigateTo(destinations[nextIndex]);
+    const currentDestination = destinations[currentIndex];
+    const nextDestination = destinations[nextIndex];
+    navigateTo(nextDestination.position, currentDestination.owner !== nextDestination.owner);
     return true;
   };
 
