@@ -148,6 +148,27 @@
     padding-top: 0;
   }
 
+  /* El encabezado móvil es fijo. El Hero de Soluciones Tecnológicas debe
+     distribuir su contenido dentro del alto restante para que el eyebrow no
+     quede detrás de la barra al reducirse la pantalla en landscape. */
+  .technology-page > .technology-hero {
+    min-height: var(--app-panel-h);
+    height: var(--app-panel-h);
+    display: block;
+    padding: 0 clamp(24px, 6vw, 64px);
+    box-sizing: border-box;
+  }
+
+  .technology-page > .technology-hero .technology-hero-content {
+    height: 100%;
+    padding: calc(var(--nav-h) + clamp(20px, 5vh, 32px)) 0 14px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+
   :is(
     .technology-hero-content,
     .auto-hero-content,
