@@ -14,6 +14,7 @@ export type TechnologyStep = {
 
 export type TechnologyCapability = {
   code: string;
+  label?: string;
   title: string;
   copy: string;
   cta?: string;
@@ -132,6 +133,7 @@ export const technologySolutionsByLang: Record<SupportedLang, TechnologySolution
       items: [
         {
           code: 'BIZ',
+          label: 'Business Platforms',
           title: 'Plataformas Empresariales Inteligentes',
           copy:
             'Implementamos plataformas empresariales que centralizan la información, optimizan procesos y fortalecen la colaboración entre áreas.',
@@ -140,36 +142,42 @@ export const technologySolutionsByLang: Record<SupportedLang, TechnologySolution
         },
         {
           code: 'SW',
+          label: 'Software',
           title: 'Fábrica de Software / Desarrollo de Software a la Medida',
           copy:
             'Diseñamos y desarrollamos soluciones de software a la medida que responden a las necesidades operativas de tu empresa, desde aplicaciones especializadas hasta sistemas empresariales.',
         },
         {
           code: 'AUTO',
+          label: 'Automation',
           title: 'Automatización Inteligente de Procesos',
           copy:
             'Automatizamos procesos e integramos sistemas para reducir tareas manuales, acelerar la operación y mejorar la eficiencia del negocio.',
         },
         {
           code: 'DATA',
+          label: 'Data & Analytics',
           title: 'Ingeniería de Datos y Analítica Estratégica',
           copy:
             'Convertimos los datos en información estratégica mediante soluciones de analítica, inteligencia de negocio y visualización ejecutiva.',
         },
         {
           code: 'AI',
+          label: 'AI',
           title: 'Soluciones de Inteligencia Artificial',
           copy:
             'Aplicamos inteligencia artificial para automatizar procesos, fortalecer la toma de decisiones y crear nuevas capacidades para el negocio.',
         },
         {
           code: 'CONS',
+          label: 'Consulting',
           title: 'Consultoría y Transformación Tecnológica',
           copy:
             'Acompañamos la evolución tecnológica de tu empresa mediante consultoría especializada, diseño de soluciones y arquitectura tecnológica.',
         },
         {
           code: 'CLOUD',
+          label: 'Cloud',
           title: 'Infraestructura Cloud y Servicios TI',
           copy:
             'Integramos infraestructura, nube y soporte para brindar una base tecnológica sólida que acompañe el crecimiento de tu empresa.',
@@ -276,6 +284,7 @@ export const technologySolutionsByLang: Record<SupportedLang, TechnologySolution
       items: [
         {
           code: 'BIZ',
+          label: 'Business Platforms',
           title: 'Intelligent Business Platforms',
           copy:
             'We implement business platforms that centralize information, optimize processes and strengthen collaboration across teams.',
@@ -284,36 +293,42 @@ export const technologySolutionsByLang: Record<SupportedLang, TechnologySolution
         },
         {
           code: 'SW',
+          label: 'Software',
           title: 'Software Factory / Custom Software Development',
           copy:
             'We design and develop custom software solutions that address your company’s operational needs, from specialized applications to enterprise systems.',
         },
         {
           code: 'AUTO',
+          label: 'Automation',
           title: 'Intelligent Process Automation',
           copy:
             'We automate processes and integrate systems to reduce manual tasks, accelerate operations and improve business efficiency.',
         },
         {
           code: 'DATA',
+          label: 'Data & Analytics',
           title: 'Data Engineering and Strategic Analytics',
           copy:
             'We turn data into strategic information through analytics, business intelligence and executive visualization solutions.',
         },
         {
           code: 'AI',
+          label: 'AI',
           title: 'Artificial Intelligence Solutions',
           copy:
             'We apply artificial intelligence to automate processes, strengthen decision-making and create new capabilities for the business.',
         },
         {
           code: 'CONS',
+          label: 'Consulting',
           title: 'Technology Consulting and Transformation',
           copy:
             'We guide your company’s technology evolution through specialized consulting, solution design and technology architecture.',
         },
         {
           code: 'CLOUD',
+          label: 'Cloud',
           title: 'Cloud Infrastructure and IT Services',
           copy:
             'We integrate infrastructure, cloud and support to provide a solid technology foundation that supports your company’s growth.',

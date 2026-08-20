@@ -67,29 +67,34 @@ export const strategicPlanningTemplateByLang: Record<SupportedLang, TechnologySo
       items: [
         {
           code: 'STRAT',
+          label: 'Strategy',
           title: 'Planeación Estratégica Corporativa',
           copy: 'Definimos el rumbo de tu empresa y lo convertimos en objetivos y acciones claras que guíen su crecimiento.',
         },
         {
           code: 'ASSESS',
+          label: 'Assessment',
           title: 'Diagnóstico Estratégico',
           copy:
             'Analizamos la situación actual de tu empresa para identificar oportunidades y definir prioridades que orienten las siguientes decisiones.',
         },
         {
           code: 'GOV',
+          label: 'Governance',
           title: 'Gobierno Corporativo',
           copy:
             'Fortalecemos la estructura de dirección de tu empresa para facilitar decisiones claras, responsabilidades definidas y seguimiento a los objetivos.',
         },
         {
           code: 'GROWTH',
+          label: 'Growth',
           title: 'Crecimiento Empresarial',
           copy:
             'Diseñamos estrategias de crecimiento para ampliar las oportunidades de tu empresa, desarrollar nuevos mercados y fortalecer su modelo de negocio.',
         },
         {
           code: 'TRANS',
+          label: 'Transformation',
           title: 'Transformación Empresarial',
           copy:
             'Acompañamos la transformación de tu empresa integrando estrategia, innovación y cambio para prepararla ante nuevas oportunidades.',
@@ -196,29 +201,34 @@ export const strategicPlanningTemplateByLang: Record<SupportedLang, TechnologySo
       items: [
         {
           code: 'STRAT',
+          label: 'Strategy',
           title: 'Corporate Strategic Planning',
           copy: 'We define your company direction and turn it into clear objectives and actions that guide its growth.',
         },
         {
           code: 'ASSESS',
+          label: 'Assessment',
           title: 'Strategic Diagnosis',
           copy:
             'We analyze your company’s current situation to identify opportunities and define priorities that guide the next decisions.',
         },
         {
           code: 'GOV',
+          label: 'Governance',
           title: 'Corporate Governance',
           copy:
             'We strengthen your company’s leadership structure to enable clear decisions, defined responsibilities and follow-up on objectives.',
         },
         {
           code: 'GROWTH',
+          label: 'Growth',
           title: 'Business Growth',
           copy:
             'We design growth strategies to expand your company’s opportunities, develop new markets and strengthen its business model.',
         },
         {
           code: 'TRANS',
+          label: 'Transformation',
           title: 'Business Transformation',
           copy:
             'We support your company’s transformation by integrating strategy, innovation and change to prepare it for new opportunities.',
@@ -328,30 +338,35 @@ export const projectManagementTemplateByLang: Record<SupportedLang, TechnologySo
       items: [
         {
           code: 'GOV',
+          label: 'Governance',
           title: 'PMO & Project Governance',
           copy:
             'Establecemos una dirección clara para tus proyectos, alineando prioridades, responsables y objetivos para mantener el control de principio a fin.',
         },
         {
           code: 'DELIV',
+          label: 'Delivery',
           title: 'Strategic Project Delivery',
           copy:
             'Dirigimos tus proyectos con una ejecución estructurada para cumplir objetivos y convertir la estrategia en resultados.',
         },
         {
           code: 'AGILE',
+          label: 'Agile',
           title: 'Agile Project Delivery',
           copy:
             'Impulsamos una gestión ágil que facilita la colaboración, adaptación y entrega continua de valor durante el proyecto.',
         },
         {
           code: 'REC',
+          label: 'Recovery',
           title: 'Auditoría y Recuperación de Proyectos',
           copy:
             'Evaluamos el estado de tus proyectos y definimos acciones para recuperar el control, fortalecer su ejecución y encaminarlos hacia sus objetivos.',
         },
         {
           code: 'ASSESS',
+          label: 'Assessment',
           title: 'Diagnóstico y Madurez en Gestión de Proyectos',
           copy:
             'Evaluamos la forma en que tu empresa gestiona sus proyectos para identificar oportunidades y fortalecer sus capacidades de gestión.',
@@ -458,30 +473,35 @@ export const projectManagementTemplateByLang: Record<SupportedLang, TechnologySo
       items: [
         {
           code: 'GOV',
+          label: 'Governance',
           title: 'PMO & Project Governance',
           copy:
             'We establish clear direction for your projects, aligning priorities, owners and objectives to maintain control from start to finish.',
         },
         {
           code: 'DELIV',
+          label: 'Delivery',
           title: 'Strategic Project Delivery',
           copy:
             'We lead your projects through structured execution to meet objectives and turn strategy into results.',
         },
         {
           code: 'AGILE',
+          label: 'Agile',
           title: 'Agile Project Delivery',
           copy:
             'We drive agile management that enables collaboration, adaptation and continuous value delivery throughout the project.',
         },
         {
           code: 'REC',
+          label: 'Recovery',
           title: 'Project Audit & Recovery',
           copy:
             'We assess your projects and define actions to regain control, strengthen execution and guide them toward their objectives.',
         },
         {
           code: 'ASSESS',
+          label: 'Assessment',
           title: 'Project Management Diagnosis & Maturity',
           copy:
             'We assess how your company manages projects to identify opportunities and strengthen its management capabilities.',
@@ -591,30 +611,35 @@ export const processManagementTemplateByLang: Record<SupportedLang, TechnologySo
       items: [
         {
           code: 'DESIGN',
+          label: 'Process Design',
           title: 'Modelado y Optimización de Procesos',
           copy:
             'Diseñamos procesos más claros y eficientes para fortalecer la operación y facilitar el crecimiento de tu empresa.',
         },
         {
           code: 'AUTO',
+          label: 'Process Automation',
           title: 'Automatización Inteligente de Procesos',
           copy:
             'Automatizamos y conectamos procesos para agilizar la operación y aprovechar mejor el tiempo de tus equipos.',
         },
         {
           code: 'INTEL',
+          label: 'Process Intelligence',
           title: 'Inteligencia y Gobierno de Procesos',
           copy:
             'Convertimos la información de tus procesos en visibilidad y control para tomar decisiones con mayor claridad.',
         },
         {
           code: 'OPS',
+          label: 'Operational Excellence',
           title: 'Excelencia Operativa',
           copy:
             'Fortalecemos tu operación para aprovechar mejor los recursos, elevar la productividad y sostener mejores resultados.',
         },
         {
           code: 'ASSESS',
+          label: 'Process Assessment',
           title: 'Diagnóstico y Auditoría de Procesos',
           copy:
             'Evaluamos tus procesos para descubrir oportunidades y definir acciones que impulsen la mejora de tu operación.',
@@ -721,30 +746,35 @@ export const processManagementTemplateByLang: Record<SupportedLang, TechnologySo
       items: [
         {
           code: 'DESIGN',
+          label: 'Process Design',
           title: 'Process Modeling and Optimization',
           copy:
             'We design clearer, more efficient processes to strengthen operations and facilitate your company’s growth.',
         },
         {
           code: 'AUTO',
+          label: 'Process Automation',
           title: 'Intelligent Process Automation',
           copy:
             'We automate and connect processes to streamline operations and make better use of your teams’ time.',
         },
         {
           code: 'INTEL',
+          label: 'Process Intelligence',
           title: 'Process Intelligence & Governance',
           copy:
             'We turn your process information into visibility and control for clearer decision-making.',
         },
         {
           code: 'OPS',
+          label: 'Operational Excellence',
           title: 'Operational Excellence',
           copy:
             'We strengthen your operations to make better use of resources, improve productivity and sustain stronger results.',
         },
         {
           code: 'ASSESS',
+          label: 'Process Assessment',
           title: 'Process Diagnosis & Audit',
           copy:
             'We assess your processes to uncover opportunities and define actions that drive operational improvement.',

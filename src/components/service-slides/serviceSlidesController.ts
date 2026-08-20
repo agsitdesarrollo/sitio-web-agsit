@@ -343,6 +343,13 @@ const setupLandingTrackNavigation = (root: HTMLElement) => {
     if (Number.isFinite(explicitStops) && explicitStops > 0) return explicitStops;
 
     if (section.matches('.technology-capabilities')) {
+      const usesMobileCapabilitySequence = window.matchMedia(
+        '(max-width: 679px), (max-width: 1024px) and (max-height: 520px)',
+      ).matches;
+
+      if (usesMobileCapabilitySequence) {
+        return Math.ceil(section.querySelectorAll('.technology-capability').length / 2) + 1;
+      }
       return section.querySelectorAll('.technology-capabilities-panel-grid').length + 1;
     }
 

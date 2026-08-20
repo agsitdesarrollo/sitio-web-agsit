@@ -12,6 +12,20 @@ type Props = {
 
 const { content, contactCopy, capabilityLinkCodes } = Astro.props;
 const shouldShowCapabilityLink = (code: string) => !capabilityLinkCodes || capabilityLinkCodes.includes(code);
+const isEnglishPage = Astro.url.pathname.startsWith('/en/');
+const mobileCapabilityOverrides: Record<string, { title: string; copy: string }> = isEnglishPage
+  ? {}
+  : {
+      BIZ: {
+        title: 'Plataformas Empresariales Inteligentes',
+        copy: 'Implementamos plataformas que centralizan la información, optimizan procesos y facilitan la colaboración entre áreas.',
+      },
+      SW: {
+        title: 'Desarrollo de Software a la Medida',
+        copy: 'Desarrollamos software a la medida que optimiza la operación y responde a las necesidades de tu empresa.',
+      },
+    };
+const mobileCapabilityCta = isEnglishPage ? 'Learn more' : 'Conocer servicio';
 const capabilityPages = Array.from(
   { length: Math.ceil(content.capabilities.items.length / 4) },
   (_, pageIndex) => content.capabilities.items.slice(pageIndex * 4, pageIndex * 4 + 4),
@@ -87,28 +101,41 @@ const capabilityPages = Array.from(
           <div class="technology-capabilities-panel technology-capabilities-panel-grid" data-capability-page={pageIndex + 1}>
             <div class="technology-capability-grid" data-capability-count={items.length}>
               {
-                items.map((item) => (
-                  <article class="technology-capability">
-                    <div class="technology-capability-content">
-                      <span class="technology-capability-code">{item.code}</span>
-                      <h3>{item.title}</h3>
-                      <p>{item.copy}</p>
-                    </div>
-                    <div class="technology-capability-action">
-                      {shouldShowCapabilityLink(item.code) && item.href && (
-                        <a class="technology-capability-link" href={item.href}>
-                          <span class="technology-capability-link-text">{item.cta}</span>
-                          <span class="technology-capability-arrow" aria-hidden="true"></span>
-                        </a>
-                      )}
-                    </div>
-                  </article>
-                ))
+                items.map((item) => {
+                  const mobileOverride = mobileCapabilityOverrides[item.code];
+
+                  return (
+                    <article class="technology-capability">
+                      <div class="technology-capability-content">
+                        <span class="technology-capability-code">{item.label ?? item.code}</span>
+                        <h3>
+                          <span class:list={{ 'technology-capability-default-copy': Boolean(mobileOverride) }}>{item.title}</span>
+                          {mobileOverride && <span class="technology-capability-mobile-copy">{mobileOverride.title}</span>}
+                        </h3>
+                        <p>
+                          <span class:list={{ 'technology-capability-default-copy': Boolean(mobileOverride) }}>{item.copy}</span>
+                          {mobileOverride && <span class="technology-capability-mobile-copy">{mobileOverride.copy}</span>}
+                        </p>
+                      </div>
+                      <div class="technology-capability-action">
+                        {shouldShowCapabilityLink(item.code) && item.href ? (
+                          <a class="technology-capability-link" href={item.href}>
+                            <span class="technology-capability-link-text technology-capability-desktop-cta">{item.cta}</span>
+                            <span class="technology-capability-link-text technology-capability-mobile-cta">{mobileCapabilityCta}</span>
+                            <span class="technology-capability-arrow" aria-hidden="true"></span>
+                          </a>
+                        ) : (
+                          <span class="technology-capability-link technology-capability-link-static technology-capability-mobile-only" aria-hidden="true">
+                            <span class="technology-capability-link-text">{mobileCapabilityCta}</span>
+                            <span class="technology-capability-arrow" aria-hidden="true"></span>
+                          </span>
+                        )}
+                      </div>
+                    </article>
+                  );
+                })
               }
             </div>
-            <p class="technology-capability-progress" aria-hidden="true">
-              {pageIndex + 1} / {capabilityPages.length}
-            </p>
           </div>
         ))
       }
@@ -267,6 +294,10 @@ const capabilityPages = Array.from(
     const gridPanels = gsap.utils.toArray<HTMLElement>('.technology-capabilities-panel-grid', capabilities);
     const cardGroups = gridPanels.map((panel) => gsap.utils.toArray<HTMLElement>('.technology-capability', panel));
     const cards = cardGroups.flat();
+    const mobileCardGroups = Array.from(
+      { length: Math.ceil(cards.length / 2) },
+      (_, groupIndex) => cards.slice(groupIndex * 2, groupIndex * 2 + 2),
+    );
 
     if (!(capabilities instanceof HTMLElement) || !(stage instanceof HTMLElement) || cards.length === 0 || gridPanels.length === 0) return;
 
@@ -274,10 +305,16 @@ const capabilityPages = Array.from(
 
     const matchMedia = gsap.matchMedia();
     const getDesktopSequenceEnd = () => `+=${Math.round(getTechnologyViewportHeight() * gridPanels.length)}`;
-    const getMobileSequenceEnd = () => `+=${Math.round(getTechnologyViewportHeight() * (cards.length * 0.92 + 2.4))}`;
+    const getMobileSequenceEnd = () => `+=${Math.round(getTechnologyViewportHeight() * (mobileCardGroups.length * 0.92 + 2.4))}`;
     const getPinStart = () => `top top+=${getTechnologyNavOffset()}`;
     const getStagePosition = (panelIndex: number) =>
       -((panelIndex / (gridPanels.length + 1)) * 100);
+    const getPanelIndexForMobileGroup = (group: HTMLElement[]) => {
+      const firstCard = group[0];
+      if (!firstCard) return 0;
+
+      return gridPanels.findIndex((panel) => panel.contains(firstCard)) + 1;
+    };
 
     matchMedia.add('(prefers-reduced-motion: no-preference) and (min-width: 680px) and (min-height: 521px)', () => {
       capabilities.classList.add('is-horizontal-sequence');
@@ -326,7 +363,7 @@ const capabilityPages = Array.from(
         gsap.set(capabilities, { padding: 0 });
         gsap.set(stage, { xPercent: 0 });
         gsap.set(introItems, { autoAlpha: 1, y: 0 });
-        gsap.set(cards, { autoAlpha: 0, xPercent: 115 });
+        gsap.set(cards, { autoAlpha: 0, yPercent: 18, scale: 0.98 });
 
         const timeline = gsap.timeline({
           defaults: { ease: 'none' },
@@ -343,24 +380,37 @@ const capabilityPages = Array.from(
           },
         });
 
-        cardGroups.forEach((group, pageIndex) => {
-          timeline.to(stage, { xPercent: getStagePosition(pageIndex + 1), duration: 0.45 });
+        mobileCardGroups.forEach((group, groupIndex) => {
+          const previousGroup = mobileCardGroups[groupIndex - 1];
+          const panelIndex = getPanelIndexForMobileGroup(group);
+          const previousPanelIndex = previousGroup ? getPanelIndexForMobileGroup(previousGroup) : 0;
 
-          group.forEach((card, cardIndex) => {
-            const previousCard = group[cardIndex - 1];
+          if (!previousGroup || panelIndex !== previousPanelIndex) {
+            timeline.to(stage, { xPercent: getStagePosition(panelIndex), duration: 0.22 });
 
-            if (previousCard) {
-              timeline.to(previousCard, { autoAlpha: 0, xPercent: -115, duration: 0.45 });
+            if (previousGroup) {
+              timeline.to(previousGroup, { autoAlpha: 0, yPercent: -18, duration: 0.22 }, '<');
             }
 
             timeline
               .fromTo(
-                card,
-                { autoAlpha: 0, xPercent: 115 },
-                { autoAlpha: 1, xPercent: 0, duration: 0.55, immediateRender: false },
+                group,
+                { autoAlpha: 0, yPercent: 18, scale: 0.98 },
+                { autoAlpha: 1, yPercent: 0, scale: 1, duration: 0.55, stagger: 0.06, immediateRender: false },
               )
-              .to({}, { duration: 0.45 });
-          });
+              .to({}, { duration: 0.23 });
+            return;
+          }
+
+          timeline
+            .to(previousGroup, { autoAlpha: 0, yPercent: -18, duration: 0.55 })
+            .fromTo(
+              group,
+              { autoAlpha: 0, yPercent: 18, scale: 0.98 },
+              { autoAlpha: 1, yPercent: 0, scale: 1, duration: 0.55, stagger: 0.06, immediateRender: false },
+              '<',
+            )
+            .to({}, { duration: 0.45 });
         });
 
         return () => {
