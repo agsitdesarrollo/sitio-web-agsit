@@ -1470,6 +1470,15 @@
     grid-template-rows: minmax(0, 1fr);
   }
 
+  .technology-capabilities.is-horizontal-sequence .technology-capability-grid[data-capability-count='1'] .technology-capability {
+    width: calc((100% - clamp(10px, 1.2vw, 16px)) / 2);
+    height: calc((100% - clamp(10px, 1.2vw, 16px)) / 2);
+    grid-column: 1 / -1;
+    grid-row: 1 / -1;
+    justify-self: center;
+    align-self: center;
+  }
+
   .technology-capabilities.is-horizontal-sequence .technology-capability-grid[data-capability-count='3'] .technology-capability:last-child {
     width: 50%;
     grid-column: 1 / -1;

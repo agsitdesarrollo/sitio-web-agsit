@@ -476,7 +476,19 @@ const setupLandingTrackNavigation = (root: HTMLElement) => {
 
     const currentDestination = destinations[currentIndex];
     const nextDestination = destinations[nextIndex];
-    navigateTo(nextDestination.position, currentDestination.owner !== nextDestination.owner);
+    const currentSection = currentDestination.owner.querySelector<HTMLElement>(':scope > section');
+    const nextSection = nextDestination.owner.querySelector<HTMLElement>(':scope > section');
+    const isTechnologyMethodCatalogHandoff =
+      (currentSection?.matches('.technology-method') && nextSection?.matches('.technology-capabilities')) ||
+      (currentSection?.matches('.technology-capabilities') && nextSection?.matches('.technology-method'));
+
+    // La metodología y el catálogo forman una secuencia visual continua. Al
+    // cruzar entre ambos preservamos el desplazamiento interpolado para que la
+    // última lámina de uno y la introducción del otro no se perciban como un salto.
+    const shouldJumpAcrossTracks =
+      currentDestination.owner !== nextDestination.owner && !isTechnologyMethodCatalogHandoff;
+
+    navigateTo(nextDestination.position, shouldJumpAcrossTracks);
     return true;
   };
 
