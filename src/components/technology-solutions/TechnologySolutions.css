@@ -1382,11 +1382,16 @@
     margin: 0;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     grid-template-rows: repeat(2, minmax(0, 1fr));
+    gap: clamp(10px, 1.4vw, 16px);
+    border: 0;
   }
 
   .technology-capabilities.is-horizontal-sequence .technology-capability {
     min-height: 0;
     padding: clamp(16px, 2.2vw, 22px);
+    border: 1px solid rgba(37, 63, 108, 0.15);
+    border-radius: 8px;
+    overflow: hidden;
   }
 
   .technology-capabilities.is-horizontal-sequence .technology-capability-code {
@@ -1437,12 +1442,17 @@
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     grid-template-rows: repeat(2, minmax(0, 1fr));
+    gap: clamp(10px, 1.2vw, 16px);
+    border: 0;
   }
 
   .technology-capabilities.is-horizontal-sequence .technology-capability {
     min-height: 0;
     display: grid;
     grid-template-rows: minmax(0, 1fr) auto;
+    border: 1px solid rgba(37, 63, 108, 0.15);
+    border-radius: 8px;
+    overflow: hidden;
   }
 
   .technology-capabilities.is-horizontal-sequence .technology-capability-content {
@@ -1464,6 +1474,23 @@
     width: 50%;
     grid-column: 1 / -1;
     justify-self: center;
+  }
+}
+
+/* En tablet horizontal el contenido utiliza su altura real: así la
+   descripción termina antes de la fila reservada para el CTA. */
+@media (min-width: 680px) and (max-width: 1079px) and (min-height: 521px) and (orientation: landscape) {
+  .technology-capabilities.is-horizontal-sequence .technology-capability {
+    padding: clamp(12px, 1.8vw, 18px);
+  }
+
+  .technology-capabilities.is-horizontal-sequence .technology-capability-content {
+    grid-template-rows: auto auto auto;
+  }
+
+  .technology-capabilities.is-horizontal-sequence .technology-capability-action,
+  .technology-capabilities.is-horizontal-sequence .technology-capability-link {
+    min-height: 36px;
   }
 }
 
