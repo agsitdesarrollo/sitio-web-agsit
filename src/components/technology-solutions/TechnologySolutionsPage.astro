@@ -11,7 +11,7 @@ type Props = {
 };
 
 const { content, contactCopy, capabilityLinkCodes } = Astro.props;
-const shouldShowCapabilityLink = (code: string) => !capabilityLinkCodes || capabilityLinkCodes.includes(code);
+const shouldShowCapabilityLink = (code: string) => capabilityLinkCodes?.includes(code) ?? false;
 const isEnglishPage = Astro.url.pathname.startsWith('/en/');
 const mobileCapabilityOverrides: Record<string, { title: string; copy: string }> = isEnglishPage
   ? {}
@@ -103,6 +103,7 @@ const capabilityPages = Array.from(
               {
                 items.map((item) => {
                   const mobileOverride = mobileCapabilityOverrides[item.code];
+                  const hasCapabilityLink = shouldShowCapabilityLink(item.code) && Boolean(item.href);
 
                   return (
                     <article class="technology-capability">
@@ -117,20 +118,15 @@ const capabilityPages = Array.from(
                           {mobileOverride && <span class="technology-capability-mobile-copy">{mobileOverride.copy}</span>}
                         </p>
                       </div>
-                      <div class="technology-capability-action">
-                        {shouldShowCapabilityLink(item.code) && item.href ? (
+                      <div class="technology-capability-action" aria-hidden={hasCapabilityLink ? undefined : 'true'}>
+                        {hasCapabilityLink && (
                           <a class="technology-capability-link" href={item.href}>
                             <span class="technology-capability-link-text technology-capability-desktop-cta">{item.cta}</span>
                             <span class="technology-capability-link-text technology-capability-mobile-cta">{mobileCapabilityCta}</span>
                             <span class="technology-capability-arrow" aria-hidden="true"></span>
                           </a>
-                        ) : (
-                          <span class="technology-capability-link technology-capability-link-static technology-capability-mobile-only" aria-hidden="true">
-                            <span class="technology-capability-link-text">{mobileCapabilityCta}</span>
-                            <span class="technology-capability-arrow" aria-hidden="true"></span>
-                          </span>
                         )}
-                      </div>
+                        </div>
                     </article>
                   );
                 })

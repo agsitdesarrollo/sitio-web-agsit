@@ -1222,6 +1222,31 @@
   }
 }
 
+/* La lámina conserva el alto de pantalla para el track, mientras que una
+   tarjeta sin pareja mantiene la misma escala visual que las tarjetas dobles. */
+@media (max-width: 679px) {
+  .technology-capabilities.is-mobile-horizontal-sequence .technology-capability-grid[data-capability-count='1'] .technology-capability,
+  .technology-capabilities.is-mobile-horizontal-sequence .technology-capability-grid[data-capability-count='3'] .technology-capability:last-child {
+    height: calc((100% - 12px) / 2);
+    align-self: center;
+  }
+}
+
+/* En teléfonos horizontales las tarjetas permanecen compactas dentro de la
+   lámina. El espacio de acción se reserva aunque todavía no exista un CTA. */
+@media (max-width: 1024px) and (max-height: 520px) {
+  .technology-capabilities.is-mobile-horizontal-sequence .technology-capability-grid {
+    height: min(250px, calc(var(--app-stable-vh, 100svh) - var(--nav-h) - 16px));
+  }
+
+  .technology-capabilities.is-mobile-horizontal-sequence .technology-capability-grid[data-capability-count='1'] .technology-capability,
+  .technology-capabilities.is-mobile-horizontal-sequence .technology-capability-grid[data-capability-count='3'] .technology-capability:last-child {
+    width: calc((100% - 14px) / 2);
+    grid-column: 1 / -1;
+    justify-self: center;
+  }
+}
+
 @media (min-width: 680px) {
   .technology-actions {
     display: flex;
