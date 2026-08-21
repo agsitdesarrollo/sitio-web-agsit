@@ -307,7 +307,15 @@ export function initScrollExperience(): (() => void) | undefined {
     const VIDEO_STORY_READY_STOP = 0;
     const VIDEO_STORY_MAX_TIME = Math.max(storyLineEls.length, 1);
 
+    // El progreso conserva el área útil. La etapa visual se expande únicamente
+    // mientras el handoff posee el encabezado; nunca como reacción a un gesto
+    // aislado que oculte/muestre el menú.
     const getVideoStoryPanelHeight = () => Math.max(getViewportHeight() - getVisualNavHeight(), 1);
+    const getVideoStoryFrameHeight = () => Math.max(
+      getViewportHeight() - (handoff.isHeaderLocked ? 0 : getVisualNavHeight()),
+      1,
+    );
+    const usesMobileVideoStoryStops = () => isMobile() || isShortLandscape();
 
     const videoStoryTimeline = gsap.timeline({ paused: true });
 
@@ -322,7 +330,7 @@ export function initScrollExperience(): (() => void) | undefined {
         left: '50%',
         xPercent: -50,
         width: () => window.innerWidth,
-        height: () => getVideoStoryPanelHeight(),
+        height: () => getVideoStoryFrameHeight(),
         borderRadius: 0,
         boxShadow: '0 0 0 rgba(8, 21, 43, 0)',
       },
@@ -379,7 +387,7 @@ export function initScrollExperience(): (() => void) | undefined {
         left: '50%',
         xPercent: -50,
         width: window.innerWidth,
-        height: getVideoStoryPanelHeight(),
+        height: getVideoStoryFrameHeight(),
         borderRadius: 0,
         boxShadow: '0 0 0 rgba(8, 21, 43, 0)',
       });
@@ -393,10 +401,6 @@ export function initScrollExperience(): (() => void) | undefined {
       videoStoryHydrated = true;
       hydrateVideo(videoStoryVideo);
     };
-
-    // Start loading before Alliance is reached. Visibility still remains gated
-    // by a decoded frame during the actual handoff.
-    hydrateVideoStory();
 
     const debugScroll = new URLSearchParams(window.location.search).get('debugScroll') === '1';
     const logScrollSnapshot = (reason: string) => {
@@ -450,6 +454,23 @@ export function initScrollExperience(): (() => void) | undefined {
         return VIDEO_STORY_READY_STOP;
       }
 
+      // El snap nativo puede terminar unos píxeles antes o después de la
+      // coordenada calculada, sobre todo tras una reversa táctil. En móvil se
+      // normaliza únicamente ese pequeño margen al estado entero más cercano:
+      // evita conservar un frame/una frase intermedia sin alterar el recorrido
+      // continuo entre paradas.
+      if (usesMobileVideoStoryStops()) {
+        const nearestStop = Math.round(progress);
+        const snapTolerance = Math.min(
+          0.22,
+          Math.max(0.04, getVisualNavHeight() / panelHeight + 0.015),
+        );
+
+        if (Math.abs(progress - nearestStop) <= snapTolerance) {
+          return nearestStop;
+        }
+      }
+
       return progress;
     };
 
@@ -458,10 +479,6 @@ export function initScrollExperience(): (() => void) | undefined {
       videoStorySyncFrame = 0;
       if (!videoStorySection) {
         return;
-      }
-
-      if (videoStorySection.getBoundingClientRect().top < getViewportHeight() * 1.5) {
-        hydrateVideoStory();
       }
 
       const distanceFromReadyStop = getNavHeight() - videoStorySection.getBoundingClientRect().top;
@@ -648,6 +665,45 @@ export function initScrollExperience(): (() => void) | undefined {
       }
     };
 
+    // En una pantalla táctil el snap y la inercia comienzan antes de que el
+    // listener de scroll pueda detectar la intención. Reclamar el gesto en la
+    // parada fullscreen reproduce la ruta de la rueda: el primer gesto desde
+    // una frase solo vuelve el video a fullscreen; el siguiente inicia la
+    // reversa del logo sin que el navegador mezcle ambas secciones.
+    let videoStoryTouchStartY: number | null = null;
+    let videoStoryTouchClaimed = false;
+    const onVideoStoryTouchStart = (event: TouchEvent) => {
+      videoStoryTouchStartY = event.touches[0]?.clientY ?? null;
+      videoStoryTouchClaimed = false;
+    };
+    const onVideoStoryTouchMove = (event: TouchEvent) => {
+      const currentY = event.touches[0]?.clientY;
+      if (currentY === undefined || videoStoryTouchStartY === null) return;
+
+      if (videoStoryTouchClaimed) {
+        event.preventDefault();
+        return;
+      }
+
+      // El dedo se mueve hacia abajo para regresar en la página. Un umbral
+      // pequeño evita activar el handoff con ajustes accidentales del dedo.
+      if (currentY - videoStoryTouchStartY < 16 || isReturningToAlliance) return;
+
+      const videoStoryTop = videoStorySection?.getBoundingClientRect().top ?? Number.POSITIVE_INFINITY;
+      const isAtVideoStoryStart = Math.abs(videoStoryTop - getNavHeight()) <= 10;
+      const aboutIsDone = document.querySelector<HTMLElement>('.js-about-snap')?.dataset.aboutState === 'done';
+      if (!isAtVideoStoryStart || !aboutIsDone) return;
+
+      if (returnVideoStoryToAlliance()) {
+        videoStoryTouchClaimed = true;
+        event.preventDefault();
+      }
+    };
+    const onVideoStoryTouchEnd = () => {
+      videoStoryTouchStartY = null;
+      videoStoryTouchClaimed = false;
+    };
+
     const showVideoStoryReady = async (event: Event) => {
       event.preventDefault();
 
@@ -660,12 +716,13 @@ export function initScrollExperience(): (() => void) | undefined {
 
       resetVideoStoryFullscreen();
 
+      // La fuente ya fue precargada en Alianzas. Solo aquí, con el velo aún
+      // activo, se inicia la reproducción para que su primer cuadro exista al
+      // aterrizar visualmente en la sección de video.
+      ensureVideoAutoplay(videoStoryVideo);
+
       const frameDecoded = await handoff.waitForVideoFrame(videoStoryVideo);
       if (handoff.snapshot.state !== 'waiting-video-frame') return;
-
-      if (!frameDecoded) {
-        ensureVideoAutoplay(videoStoryVideo);
-      }
 
       handoff.beginMoveToVideo();
       // En dispositivos lentos el tween del zoom se estira (lagSmoothing) y el
@@ -678,16 +735,16 @@ export function initScrollExperience(): (() => void) | undefined {
       // sticky antiguas o un frame blanco en iOS.
       let moveApplied = false;
       let arrivalApplied = false;
-      let arrivalRetryTimeout = 0;
-      let readyStopStableAt = 0;
+      let correctionApplied = false;
+      let arrivalFallbackTimeout = 0;
       const requiresExactVideoStop = isCompact() || window.matchMedia('(pointer: coarse)').matches;
-      const cleanupArrivalRetry = () => {
-        window.clearTimeout(arrivalRetryTimeout);
+      const cleanupArrival = () => {
+        window.clearTimeout(arrivalFallbackTimeout);
         window.removeEventListener('scrollend', arriveAtVideo);
       };
       const arriveAtVideo = () => {
         if (arrivalApplied || handoff.snapshot.state !== 'moving-to-video') {
-          cleanupArrivalRetry();
+          cleanupArrival();
           return;
         }
 
@@ -695,33 +752,17 @@ export function initScrollExperience(): (() => void) | undefined {
         const videoTop = videoStorySection.getBoundingClientRect().top;
         const isAtReadyStop = Math.abs(videoTop - navHeight) <= 10;
 
-        // iOS ignora scrollTo mientras el gesto o su inercia siguen activos.
-        // No ocultes About hasta comprobar geométricamente que el video está
-        // realmente bajo la navegación; reintenta sin pedir otro gesto.
-        if (requiresExactVideoStop && !isAtReadyStop) {
-          readyStopStableAt = 0;
+        // Safari puede ignorar el primer scrollTo mientras termina la inercia.
+        // Se permite una sola corrección al finalizar el gesto; una cadena de
+        // reintentos compite con el snap nativo y era la causa de los saltos.
+        if (requiresExactVideoStop && !isAtReadyStop && !correctionApplied) {
+          correctionApplied = true;
           window.scrollTo({ top: window.scrollY + videoTop - navHeight, left: 0, behavior: 'auto' });
-          window.clearTimeout(arrivalRetryTimeout);
-          arrivalRetryTimeout = window.setTimeout(arriveAtVideo, 140);
           return;
         }
 
-        if (requiresExactVideoStop) {
-          const now = performance.now();
-          if (!readyStopStableAt) {
-            readyStopStableAt = now;
-          }
-
-          const stableFor = now - readyStopStableAt;
-          if (stableFor < 450) {
-            window.clearTimeout(arrivalRetryTimeout);
-            arrivalRetryTimeout = window.setTimeout(arriveAtVideo, Math.max(450 - stableFor, 80));
-            return;
-          }
-        }
-
         arrivalApplied = true;
-        cleanupArrivalRetry();
+        cleanupArrival();
         handoff.arriveVideoFullscreen();
         syncVideoStoryToScroll();
       };
@@ -739,9 +780,8 @@ export function initScrollExperience(): (() => void) | undefined {
         syncVideoStoryToScroll();
         window.addEventListener('scrollend', arriveAtVideo, { passive: true });
         requestAnimationFrame(arriveAtVideo);
-        // WebKit puede posponer RAF durante el asentamiento de un gesto. Este
-        // respaldo evita que el velo quede esperando otro tap para ceder.
-        arrivalRetryTimeout = window.setTimeout(arriveAtVideo, 140);
+        // Respaldo único para navegadores que no publican scrollend.
+        arrivalFallbackTimeout = window.setTimeout(arriveAtVideo, 360);
       };
 
       requestAnimationFrame(moveToVideo);
@@ -751,12 +791,20 @@ export function initScrollExperience(): (() => void) | undefined {
     // Capture guarantees the upward wheel is claimed before the browser starts
     // scrolling back into the About section.
     window.addEventListener('wheel', onVideoStoryWheel, { passive: false, capture: true });
+    window.addEventListener('touchstart', onVideoStoryTouchStart, { passive: true, capture: true });
+    window.addEventListener('touchmove', onVideoStoryTouchMove, { passive: false, capture: true });
+    window.addEventListener('touchend', onVideoStoryTouchEnd, { passive: true, capture: true });
+    window.addEventListener('touchcancel', onVideoStoryTouchEnd, { passive: true, capture: true });
     cleanupVideoStoryReadyNavigation = () => {
       window.removeEventListener('agsit:show-video-story-ready', showVideoStoryReady);
       cleanupVideoStoryWheelReturn?.();
     };
     cleanupVideoStoryWheelReturn = () => {
       window.removeEventListener('wheel', onVideoStoryWheel, { capture: true });
+      window.removeEventListener('touchstart', onVideoStoryTouchStart, { capture: true });
+      window.removeEventListener('touchmove', onVideoStoryTouchMove, { capture: true });
+      window.removeEventListener('touchend', onVideoStoryTouchEnd, { capture: true });
+      window.removeEventListener('touchcancel', onVideoStoryTouchEnd, { capture: true });
     };
   }, root);
 

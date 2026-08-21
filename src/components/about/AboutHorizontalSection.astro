@@ -481,11 +481,9 @@ const getVideoRatioKind = (image: string) => (image.endsWith('/servicios.mp4') ?
     slide.querySelectorAll<HTMLVideoElement>('video').forEach((v) => v.pause());
   };
 
-  // Warm the next section's video (video-story) as soon as the user starts the
-  // alliance zoom, not when they land on it. iOS only allows autoplay to survive
-  // Low Power Mode when play() runs inside a real user-gesture handler, and
-  // starting it this early gives the video the most possible time to buffer
-  // before the zoom's black veil finishes fading in.
+  // Prepara el siguiente video al entrar en Alianzas, sin reproducirlo. Así el
+  // archivo y su primer frame se descargan bajo el velo, pero el movimiento del
+  // video solo inicia cuando la transición ya llegó a su propia sección.
   let videoStoryWarmed = false;
   const warmVideoStoryVideo = () => {
     if (videoStoryWarmed) return;
@@ -494,9 +492,10 @@ const getVideoRatioKind = (image: string) => (image.endsWith('/servicios.mp4') ?
     if (!video) return;
     if (video.dataset.src && !video.currentSrc) {
       video.src = video.dataset.src;
+      video.preload = 'auto';
       video.load();
     }
-    ensureVideoAutoplay(video);
+    video.pause();
   };
 
   const renderStage = (slideIdx: number) => {
@@ -1210,7 +1209,9 @@ const getVideoRatioKind = (image: string) => (image.endsWith('/servicios.mp4') ?
   const playZoomForwardToVideo = () => {
     if (zoomHandoffState === 'forward' || zoomHandoffState === 'done') return;
 
-    if (!handoff.beginAllianceZoom()) return;
+    // El bloqueo de viewport/encabezado es una compensación para los
+    // navegadores táctiles. Escritorio conserva su recorrido original.
+    if (!handoff.beginAllianceZoom(isMobile() || isTablet())) return;
     consumeUserScrollIntent(1);
 
     if (!allianceScrubTl || !isAllianceScrubbing) {
@@ -1277,14 +1278,16 @@ const getVideoRatioKind = (image: string) => (image.endsWith('/servicios.mp4') ?
     );
   };
 
-  const playZoomReverseToAlliance = () => {
+  const playZoomReverseToAlliance = (timelinePrepared = false) => {
     if (zoomHandoffState === 'reverse') return;
 
     window.clearTimeout(forwardHandoffTimeout);
     forwardHandoffTimeout = 0;
 
     section.dataset.aboutState = 'active';
-    ensureAllianceScrub(allianceScrubTl?.duration() ?? Number.POSITIVE_INFINITY);
+    if (!timelinePrepared) {
+      ensureAllianceScrub(allianceScrubTl?.duration() ?? Number.POSITIVE_INFINITY);
+    }
     if (!allianceScrubTl) return;
 
     zoomHandoffState = 'reverse';
@@ -1302,6 +1305,7 @@ const getVideoRatioKind = (image: string) => (image.endsWith('/servicios.mp4') ?
       gsap.set(slides[ALLIANCE_SLIDE].querySelector('.js-about-transition-veil'), { autoAlpha: 0 });
       handoff.finishReturn();
       scrollToAboutStep(CENTERED_ALLIANCE_STEP);
+      requestAnimationFrame(() => handoff.releaseHeaderLock());
     };
     // Espejo VISIBLE del zoom de ida: la propia timeline desvanece el velo y
     // encoge el logo gigante sobre el panel blanco (las franjas blancas que
@@ -1337,24 +1341,43 @@ const getVideoRatioKind = (image: string) => (image.endsWith('/servicios.mp4') ?
 
     document.documentElement.classList.add('home-snap-active');
 
-    requestAnimationFrame(() => {
-      if (handoff.snapshot.state !== 'returning-alliance') return;
-      // El primer frame pinta el overlay fijo negro; después se corrige scroll
-      // debajo de él. Separar ambas escrituras evita el flash de capas sticky
-      // que WebKit produce cuando scrollTo coincide con un cambio de layout.
-      scrollToAboutStep(VIDEO_HANDOFF_STEP);
+    // En escritorio se conserva el orden original, que no necesita la capa
+    // fija táctil y evita dejar el velo activo al alejarse de la sección.
+    if (!isMobile() && !isTablet()) {
       requestAnimationFrame(() => {
-        // Otro disparo pudo ganar la carrera (rueda + sync de scroll): no
-        // reconstruyas la timeline debajo del tween en curso.
-        if (zoomHandoffState === 'reverse') {
-          return;
-        }
-        ensureAllianceScrub(allianceScrubTl?.duration() ?? Number.POSITIVE_INFINITY);
-        if (allianceScrubTl) {
+        if (handoff.snapshot.state !== 'returning-alliance') return;
+        scrollToAboutStep(VIDEO_HANDOFF_STEP);
+        requestAnimationFrame(() => {
+          if (zoomHandoffState === 'reverse') return;
+          ensureAllianceScrub(allianceScrubTl?.duration() ?? Number.POSITIVE_INFINITY);
+          if (!allianceScrubTl) return;
           allianceScrubTime = allianceScrubTl.duration();
           allianceScrubTl.time(allianceScrubTime);
-        }
-        playZoomReverseToAlliance();
+          playZoomReverseToAlliance(true);
+        });
+      });
+      return;
+    }
+
+    requestAnimationFrame(() => {
+      if (handoff.snapshot.state !== 'returning-alliance') return;
+
+      // Primero se construye y pinta el final opaco del zoom sobre el video
+      // actual. Antes se hacía scroll y, hasta el frame siguiente, se armaba
+      // el overlay: Android/iOS exponían entonces el hueco azul/blanco entre
+      // ambas secciones.
+      ensureAllianceScrub(allianceScrubTl?.duration() ?? Number.POSITIVE_INFINITY);
+      if (!allianceScrubTl) return;
+      allianceScrubTime = allianceScrubTl.duration();
+      allianceScrubTl.time(allianceScrubTime);
+
+      requestAnimationFrame(() => {
+        if (handoff.snapshot.state !== 'returning-alliance' || zoomHandoffState === 'reverse') return;
+
+        // Con el velo ya compuesto, se asienta el track bajo él y comienza la
+        // misma timeline en reversa. El reposicionamiento deja de ser visible.
+        scrollToAboutStep(VIDEO_HANDOFF_STEP);
+        playZoomReverseToAlliance(true);
       });
     });
   };
@@ -1371,6 +1394,25 @@ const getVideoRatioKind = (image: string) => (image.endsWith('/servicios.mp4') ?
     const isWithinSection = rect.top <= trackOffset + getActivationLead() && rect.bottom > trackOffset;
 
     if (!isWithinSection) {
+      // Failsafe para una reversa interrumpida (por ejemplo, un scroll rápido
+      // que sale hacia Hero): no permitas que el viewport fijo y su velo se
+      // queden montados sobre el resto de la página.
+      if (
+        handoff.snapshot.state === 'returning-alliance' &&
+        rect.top > trackOffset + getActivationLead()
+      ) {
+        allianceScrubTween?.kill();
+        allianceScrubTween = undefined;
+        window.clearTimeout(forwardHandoffTimeout);
+        forwardHandoffTimeout = 0;
+        gsap.set(slides[ALLIANCE_SLIDE].querySelector('.js-about-transition-veil'), { autoAlpha: 0 });
+        zoomHandoffState = 'idle';
+        isAnimating = false;
+        isAllianceScrubbing = false;
+        handoff.reset();
+        document.documentElement.classList.remove('home-snap-active');
+      }
+
       if (isActive && rect.bottom <= trackOffset) {
         section.dataset.aboutState = 'done';
       } else if (isActive) {
