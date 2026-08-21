@@ -18,7 +18,10 @@ const { title, description, canonicalUrl, htmlLang = 'es-MX', locale, alternates
 <html lang={htmlLang}>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <!-- Evita que WebKit/Chrome para iOS reduzca todo el documento para
+         acomodar contenido ancho en landscape. Conservar el viewport real
+         hace que los breakpoints se calculen sobre el espacio disponible. -->
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, shrink-to-fit=no" />
     <meta name="generator" content={Astro.generator} />
     <link rel="preload" href="/fonts/inter-normal-latin.woff2" as="font" type="font/woff2" crossorigin />
     <link rel="preload" href="/fonts/cormorant-garamond-normal-latin.woff2" as="font" type="font/woff2" crossorigin />
