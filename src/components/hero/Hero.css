@@ -630,19 +630,19 @@
     padding: calc(var(--nav-h) + clamp(14px, 3vh, 24px)) clamp(24px, 4vw, 44px) 0;
     align-items: flex-start;
     justify-content: flex-start;
-    gap: clamp(10px, 2.8vh, 16px);
+    gap: clamp(14px, 3vh, 22px);
     background: linear-gradient(90deg, rgba(2, 7, 18, 0.92) 0%, rgba(2, 7, 18, 0.72) 64%, rgba(2, 7, 18, 0.08) 100%);
     text-align: left;
   }
 
   .hero-copy-block {
-    width: min(390px, 38vw);
-    gap: 4px;
+    width: min(400px, 39vw);
+    gap: clamp(8px, 1.8vh, 12px);
     justify-items: start;
   }
 
   .hero-side-titles {
-    width: min(390px, 38vw);
+    width: min(400px, 39vw);
     font-size: clamp(1.5rem, 7vh, 2.25rem);
     line-height: 0.9;
     gap: 0;
@@ -651,7 +651,7 @@
   }
 
   .hero-support-copy {
-    width: min(370px, 36vw);
+    width: min(380px, 37vw);
     display: block;
     font-size: clamp(0.58rem, 2.3vh, 0.76rem);
     line-height: 1.28;
@@ -678,7 +678,7 @@
     width: min(290px, 36vw);
     transform: none;
     justify-content: flex-start;
-    margin-top: clamp(4px, 1.4vh, 8px);
+    margin-top: 0;
   }
 
   .hero-contact-button {
@@ -686,5 +686,33 @@
     padding-inline: 13px;
     font-size: clamp(0.5rem, 1.8vh, 0.6rem);
     letter-spacing: 0.08em;
+  }
+}
+
+/* En teléfonos horizontales muy bajos se conserva la misma jerarquía, pero
+   se reduce la escala antes de que el contenido pierda su separación. */
+@media (pointer: coarse) and (orientation: landscape) and (max-width: 932px) and (max-height: 380px) {
+  .hero-left-panel {
+    padding-top: calc(var(--nav-h) + 10px);
+    gap: 10px;
+  }
+
+  .hero-copy-block {
+    gap: 6px;
+  }
+
+  .hero-side-titles {
+    font-size: clamp(1.3rem, 6.2vh, 1.75rem);
+  }
+
+  .hero-support-copy {
+    font-size: clamp(0.54rem, 2vh, 0.66rem);
+    line-height: 1.22;
+  }
+
+  .hero-contact-button {
+    min-height: 28px;
+    padding-inline: 10px;
+    font-size: clamp(0.45rem, 1.6vh, 0.54rem);
   }
 }
