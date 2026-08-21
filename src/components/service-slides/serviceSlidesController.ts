@@ -6,7 +6,7 @@ gsap.registerPlugin(ScrollTrigger);
 type TrackDefinition = {
   section: string;
   items: string;
-  variant?: 'default' | 'horizontal';
+  variant?: 'default' | 'vertical';
 };
 
 type PageDefinition = {
@@ -26,7 +26,7 @@ const PAGE_DEFINITIONS: PageDefinition[] = [
   },
   {
     root: '.crm-platform-page',
-    tracks: [{ section: '.crm-pillars', items: '.crm-pillar-card', variant: 'horizontal' }],
+    tracks: [],
   },
   ...['itg', 'auto', 'dev', 'ops', 'data', 'inn'].map((prefix) => ({
     root: `.${prefix}-page`,
@@ -82,7 +82,7 @@ const setupTrack = (
   section.dataset.serviceTrackReady = 'true';
   section.dataset.serviceTrackStops = String(items.length);
   section.classList.add('service-slide-panel', 'service-card-track');
-  section.classList.toggle('service-card-track-horizontal', variant === 'horizontal');
+  section.classList.toggle('service-card-track-vertical', variant === 'vertical');
   clearLegacyReveal(section, items);
 
   const matchMedia = gsap.matchMedia();
@@ -111,18 +111,18 @@ const setupTrack = (
       section.classList.toggle('service-card-track-desktop', desktop);
       section.classList.toggle('service-card-track-compact', compact);
 
-      if (variant === 'horizontal') {
-        const incomingOffset = compact ? 104 : 24;
-        const outgoingOffset = compact ? -104 : -24;
+      if (variant === 'vertical') {
+        const incomingOffset = compact ? 78 : 16;
+        const outgoingOffset = compact ? -78 : -16;
 
-        gsap.set(items, { autoAlpha: 0, xPercent: incomingOffset });
-        gsap.set(items[0], { autoAlpha: 1, xPercent: 0 });
+        gsap.set(items, { autoAlpha: 0, yPercent: incomingOffset });
+        gsap.set(items[0], { autoAlpha: 1, yPercent: 0 });
         gsap.set(section, { '--crm-pillar-progress': '0%' });
 
         const timeline = gsap.timeline({
           defaults: { ease: 'none' },
           scrollTrigger: {
-            id: `service-card-track-${trackIndex}-horizontal`,
+            id: `service-card-track-${trackIndex}-vertical`,
             trigger: section,
             start: getStart,
             end: getEnd,
@@ -142,11 +142,11 @@ const setupTrack = (
 
           timeline
             .addLabel(label)
-            .to(previous, { autoAlpha: 0, xPercent: outgoingOffset, duration: 0.48, ease: 'power1.in' }, label)
+            .to(previous, { autoAlpha: 0, yPercent: outgoingOffset, duration: 0.48, ease: 'power1.in' }, label)
             .fromTo(
               item,
-              { autoAlpha: 0, xPercent: incomingOffset },
-              { autoAlpha: 1, xPercent: 0, duration: 0.62, ease: 'power2.out', immediateRender: false },
+              { autoAlpha: 0, yPercent: incomingOffset },
+              { autoAlpha: 1, yPercent: 0, duration: 0.62, ease: 'power2.out', immediateRender: false },
               label,
             )
             .to(section, { '--crm-pillar-progress': `${progress * 100}%`, duration: 0.62, ease: 'none' }, label)
@@ -155,7 +155,7 @@ const setupTrack = (
 
         return () => {
           timeline.kill();
-          section.classList.remove('service-card-track-horizontal');
+          section.classList.remove('service-card-track-vertical');
           section.style.removeProperty('--crm-pillar-progress');
           gsap.set(items, { clearProps: 'all' });
         };
@@ -350,6 +350,7 @@ const setupLandingTrackNavigation = (root: HTMLElement) => {
       if (usesMobileCapabilitySequence) {
         return Math.ceil(section.querySelectorAll('.technology-capability').length / 2) + 1;
       }
+
       return section.querySelectorAll('.technology-capabilities-panel-grid').length + 1;
     }
 
@@ -592,6 +593,68 @@ const setupLandingTrackNavigation = (root: HTMLElement) => {
   });
 };
 
+const setupCrmPillarPathProgress = (root: HTMLElement) => {
+  if (!root.matches('.crm-platform-page')) return;
+
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const entries = Array.from(root.querySelectorAll<HTMLElement>('.crm-pillar-step')).flatMap((step) => {
+    const progressFill = step.querySelector<SVGRectElement>('.crm-pillar-path-fill');
+    if (!progressFill) return [];
+
+    const fillStop = Number.parseFloat(progressFill.dataset.pillarFillStop ?? '') || 0;
+    const marker = step.querySelector<HTMLElement>('.crm-pillar-path-marker');
+    gsap.set(progressFill, { attr: { height: 0 } });
+
+    const setFill = (height: number, immediate = false) => {
+      if (reduceMotion) {
+        gsap.set(progressFill, { attr: { height } });
+        return;
+      }
+
+      const timeline = gsap.timeline({ defaults: { overwrite: 'auto' } });
+      timeline.to(progressFill, { attr: { height }, duration: immediate ? 0 : 0.46, ease: 'power2.out' });
+      if (marker) {
+        timeline.fromTo(marker, { scale: 0.82 }, { scale: 1, duration: 0.34, ease: 'back.out(2)' }, 0.18);
+      }
+    };
+
+    return [{ step, fillStop, setFill }];
+  });
+
+  let activeIndex = -1;
+  const syncPathProgress = (immediate = false) => {
+    const firstEntry = entries[0];
+    if (!firstEntry) return;
+
+    const threshold = window.scrollY + getNavOffset() + 2;
+    const firstTop = firstEntry.step.getBoundingClientRect().top + window.scrollY;
+
+    if (threshold < firstTop) {
+      if (activeIndex !== -1) {
+        entries.forEach(({ setFill }) => setFill(0, immediate));
+        activeIndex = -1;
+      }
+      return;
+    }
+
+    const nextIndex = entries.reduce((currentIndex, { step }, index) => {
+      const top = step.getBoundingClientRect().top + window.scrollY;
+      return threshold >= top ? index : currentIndex;
+    }, 0);
+
+    if (nextIndex === activeIndex) return;
+
+    entries.forEach(({ fillStop, setFill }, index) => {
+      const target = index < nextIndex ? 100 : index === nextIndex ? fillStop : 0;
+      setFill(target, immediate);
+    });
+    activeIndex = nextIndex;
+  };
+
+  syncPathProgress(true);
+  window.addEventListener('scroll', () => syncPathProgress(), { passive: true });
+};
+
 export const setupServiceSlides = () => {
   const definition = PAGE_DEFINITIONS.find(({ root }) => document.querySelector(root));
   if (!definition) return;
@@ -617,6 +680,7 @@ export const setupServiceSlides = () => {
     setupTrack(section, items, index, variant);
   });
 
+  setupCrmPillarPathProgress(root);
   setupPageSnapState(root);
   setupLandingTrackNavigation(root);
 

@@ -135,6 +135,18 @@ export const crmAdministrationByLang: Record<SupportedLang, CrmAdministrationCon
           copy: 'Crea reglas, aprobaciones, recordatorios y tableros que dan visibilidad a la operación en tiempo real.',
           detail: 'flujos · aprobaciones · permisos · analítica',
         },
+        {
+          eyebrow: '05 · Comunicación y reuniones',
+          title: 'Mantén las conversaciones y reuniones dentro del trabajo.',
+          copy: 'Convierte mensajes, llamadas y reuniones en acuerdos que permanecen junto a los clientes, tareas y proyectos correctos.',
+          detail: 'chat · videollamadas · calendario · notificaciones',
+        },
+        {
+          eyebrow: '06 · Documentos y conocimiento',
+          title: 'Da a cada archivo un contexto y un lugar seguro.',
+          copy: 'Comparte documentos, controla accesos y conserva la información disponible para que el equipo encuentre lo que necesita.',
+          detail: 'drive · permisos · archivos compartidos · búsqueda',
+        },
       ],
     },
     journey: {
@@ -217,6 +229,8 @@ export const crmAdministrationByLang: Record<SupportedLang, CrmAdministrationCon
         { eyebrow: '02 · Projects and tasks', title: 'From agreement to execution, without losing the thread.', copy: 'Organize owners, dates, priorities and workload in views that fit every team.', detail: 'Kanban · Gantt · calendar · tracking' },
         { eyebrow: '03 · Collaboration', title: 'Talk, meet and document inside the same flow.', copy: 'Centralize chats, video calls, files, documents and calendars so decisions never stay scattered.', detail: 'chat · video calls · documents · drive' },
         { eyebrow: '04 · Automation and control', title: 'Let processes move even when nobody is chasing tasks.', copy: 'Create rules, approvals, reminders and dashboards that make operations visible in real time.', detail: 'workflows · approvals · permissions · analytics' },
+        { eyebrow: '05 · Communication and meetings', title: 'Keep conversations and meetings inside the work.', copy: 'Turn messages, calls and meetings into agreements that stay connected to the right customers, tasks and projects.', detail: 'chat · video calls · calendar · notifications' },
+        { eyebrow: '06 · Documents and knowledge', title: 'Give every file context and a secure place.', copy: 'Share documents, control access and keep information available so every team member can find what they need.', detail: 'drive · permissions · shared files · search' },
       ],
     },
     journey: {

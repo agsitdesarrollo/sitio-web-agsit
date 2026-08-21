@@ -49,32 +49,65 @@ const { content, contactCopy } = Astro.props;
     </div>
   </section>
 
-  <section class="crm-pillars" aria-labelledby="crm-pillars-title">
-    <div class="crm-shell">
+  <section class="crm-pillars crm-pillar-step crm-pillar-step-1" aria-labelledby="crm-pillars-title">
+    <svg class="crm-pillar-path crm-pillar-path-to-left" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+      <defs><clipPath id="crm-pillar-mask-1"><rect class="crm-pillar-path-fill" data-pillar-fill-stop="33" x="0" y="0" width="100" height="0" /></clipPath></defs>
+      <path class="crm-pillar-path-base" d="M52 0V50C52 68 47 78 47 100" />
+      <path class="crm-pillar-path-progress" d="M52 0V50C52 68 47 78 47 100" clip-path="url(#crm-pillar-mask-1)" />
+    </svg>
+    <span class="crm-pillar-path-marker crm-pillar-path-marker-center" aria-hidden="true"></span>
+    <div class="crm-shell crm-pillar-step-shell">
       <div class="crm-section-intro crm-section-intro-centered">
         <p class="crm-kicker">{content.pillars.eyebrow}</p>
         <h2 id="crm-pillars-title">{content.pillars.title}</h2>
         <p>{content.pillars.copy}</p>
       </div>
-      <div class="crm-pillar-grid">
-        <div class="crm-pillar-rail" aria-hidden="true"><i></i><span></span></div>
-        {content.pillars.items.map((item, index) => (
-          <article class:list={['crm-pillar-card', `crm-pillar-card-${index + 1}`]}>
+      {content.pillars.items.slice(0, 1).map((item) => (
+        <article class="crm-pillar-card crm-pillar-card-1">
+          <figure class="crm-pillar-media"><img src="/assets/example1.png" alt="" loading="lazy" decoding="async" /></figure>
+          <div class="crm-pillar-card-copy">
+            <span class="crm-pillar-index">{item.eyebrow}</span>
+            <h3 id="crm-pillar-item-1">{item.title}</h3>
+            <p>{item.copy}</p>
+            <small>{item.detail}</small>
+          </div>
+        </article>
+      ))}
+    </div>
+  </section>
+
+  {content.pillars.items.slice(1).map((item, index) => {
+    const itemNumber = index + 2;
+    const pathDirection = index % 2 === 0 ? 'crm-pillar-path-to-right' : 'crm-pillar-path-to-left';
+    const markerDirection = index % 2 === 0 ? 'crm-pillar-path-marker-left' : 'crm-pillar-path-marker-center';
+    const imageSource = itemNumber % 2 === 1 ? '/assets/example1.png' : '/assets/example2.png';
+    const pathData = itemNumber === 6
+      ? 'M47 0V50'
+      : index % 2 === 0 ? 'M47 0V50C47 68 52 78 52 100' : 'M52 0V50C52 68 47 78 47 100';
+    const maskId = `crm-pillar-mask-${itemNumber}`;
+
+    return (
+      <section class:list={['crm-pillar-step', `crm-pillar-step-${itemNumber}`]} aria-labelledby={`crm-pillar-item-${itemNumber}`}>
+        <svg class:list={['crm-pillar-path', pathDirection]} viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+          <defs><clipPath id={maskId}><rect class="crm-pillar-path-fill" data-pillar-fill-stop="50" x="0" y="0" width="100" height="0" /></clipPath></defs>
+          <path class="crm-pillar-path-base" d={pathData} />
+          <path class="crm-pillar-path-progress" d={pathData} clip-path={`url(#${maskId})`} />
+        </svg>
+        <span class:list={['crm-pillar-path-marker', markerDirection]} aria-hidden="true"></span>
+        <div class="crm-shell crm-pillar-step-shell">
+          <article class:list={['crm-pillar-card', `crm-pillar-card-${itemNumber}`]}>
+            <figure class="crm-pillar-media"><img src={imageSource} alt="" loading="lazy" decoding="async" /></figure>
             <div class="crm-pillar-card-copy">
               <span class="crm-pillar-index">{item.eyebrow}</span>
-              <h3>{item.title}</h3>
+              <h3 id={`crm-pillar-item-${itemNumber}`}>{item.title}</h3>
               <p>{item.copy}</p>
-            </div>
-            <div class="crm-pillar-surface">
-              <div class="crm-pillar-surface-head"><i></i><span></span><b></b></div>
-              <div class="crm-pillar-surface-body"><i></i><i></i><i></i><i></i></div>
               <small>{item.detail}</small>
             </div>
           </article>
-        ))}
-      </div>
-    </div>
-  </section>
+        </div>
+      </section>
+    );
+  })}
 
   <section class="crm-journey" aria-labelledby="crm-journey-title">
     <div class="crm-shell">
