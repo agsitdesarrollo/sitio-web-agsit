@@ -7,6 +7,8 @@
   --transition-blue: #020712;
   --video-panel-h: var(--handoff-vh, var(--app-stable-vh, 100svh));
   --video-content-h: calc(var(--video-panel-h) - var(--nav-h));
+  --video-stage-top: var(--nav-h);
+  --video-stage-h: var(--video-content-h);
   position: relative;
   margin-top: 0;
   min-height: var(--video-panel-h);
@@ -42,12 +44,20 @@
 
 .video-story-stage {
   position: absolute;
-  top: var(--nav-h);
+  top: var(--video-stage-top);
   right: 0;
   bottom: auto;
   left: 0;
-  height: var(--video-content-h);
+  height: var(--video-stage-h);
   background: var(--transition-blue);
+}
+
+/* El handoff es el único dueño de esta geometría. No depende de que un gesto
+   muestre u oculte el encabezado: durante ida y vuelta la etapa se mantiene
+   estable a pantalla completa y se libera hasta restaurar Alianzas. */
+html[data-scroll-handoff-header-lock='hidden'] .video-story-section {
+  --video-stage-top: 0px;
+  --video-stage-h: var(--video-panel-h);
 }
 
 .partners-screen {
@@ -442,12 +452,13 @@ html[data-scroll-handoff]:not([data-scroll-handoff='video-framed']):not([data-sc
   }
 }
 
-/* En portrait el viewport fullscreen participa primero en el flujo y el track
+/* En teléfonos el viewport fullscreen participa primero en el flujo y el track
    usa la altura útil (viewport menos navegación). Sin compensación, la primera
    parada queda una barra de navegación después de la posición que la timeline
-   interpreta como el estado 1. Alineamos ambos sistemas únicamente aquí:
+   interpreta como el estado 1. Se alinea en ambas orientaciones:
    0 = fullscreen; 1, 2 y 3 = una frase por gesto. */
-@media (max-width: 599px) and (orientation: portrait) {
+@media (pointer: coarse) and (max-width: 599px) and (orientation: portrait),
+  (pointer: coarse) and (orientation: landscape) and (max-width: 932px) and (max-height: 520px) {
   .video-story-track {
     margin-top: calc(-1 * var(--nav-h));
   }

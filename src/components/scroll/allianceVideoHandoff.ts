@@ -11,6 +11,7 @@ export type AllianceVideoHandoffState =
 type HandoffSnapshot = {
   state: AllianceVideoHandoffState;
   viewportHeight: number | null;
+  headerLocked: boolean;
 };
 
 const getViewportHeight = () => {
@@ -33,9 +34,14 @@ class AllianceVideoHandoff {
   private videoFramePromise: Promise<boolean> | null = null;
   private firstVideoFrameDecoded = false;
   private videoFullscreenAt = 0;
+  private headerLocked = false;
 
   get snapshot(): HandoffSnapshot {
-    return { state: this.state, viewportHeight: this.viewportHeight };
+    return {
+      state: this.state,
+      viewportHeight: this.viewportHeight,
+      headerLocked: this.headerLocked,
+    };
   }
 
   get isActive() {
@@ -48,6 +54,10 @@ class AllianceVideoHandoff {
 
   get hasDecodedVideoFrame() {
     return this.firstVideoFrameDecoded;
+  }
+
+  get isHeaderLocked() {
+    return this.headerLocked;
   }
 
   get isVideoFullscreenSettled() {
@@ -65,9 +75,12 @@ class AllianceVideoHandoff {
     window.dispatchEvent(new CustomEvent('agsit:handoff-state', { detail: this.snapshot }));
   }
 
-  beginAllianceZoom() {
+  beginAllianceZoom(lockHeader = true) {
     if (this.isActive && this.state !== 'alliance-centering') return false;
 
+    if (lockHeader) {
+      this.setHeaderLock(true);
+    }
     this.viewportHeight = getViewportHeight();
     document.documentElement.style.setProperty('--handoff-vh', `${this.viewportHeight}px`);
     window.dispatchEvent(new CustomEvent('agsit:handoff-viewport-lock', { detail: this.snapshot }));
@@ -161,9 +174,29 @@ class AllianceVideoHandoff {
     this.releaseViewport();
   }
 
+  releaseHeaderLock() {
+    this.setHeaderLock(false);
+  }
+
   reset() {
     this.setState('alliance-rest');
     this.releaseViewport();
+    this.releaseHeaderLock();
+  }
+
+  private setHeaderLock(isLocked: boolean) {
+    if (this.headerLocked === isLocked) return;
+    this.headerLocked = isLocked;
+
+    if (isLocked) {
+      document.documentElement.dataset.scrollHandoffHeaderLock = 'hidden';
+    } else {
+      delete document.documentElement.dataset.scrollHandoffHeaderLock;
+    }
+
+    window.dispatchEvent(
+      new CustomEvent('agsit:handoff-header-lock', { detail: { isLocked } }),
+    );
   }
 
   private releaseViewport() {

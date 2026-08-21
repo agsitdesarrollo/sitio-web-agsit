@@ -2,14 +2,14 @@ import type { SupportedLang } from '../i18n/ui';
 
 export const storyLinesByLang: Record<SupportedLang, string[]> = {
   es: [
-    'Nuestro compromiso con resultados tangibles.',
-    'Calidad garantizada con respaldo internacional.',
-    '¿Listo para alcanzar el siguiente nivel?',
+    'Transformamos estrategia en resultados.',
+    'Calidad respaldada por estándares internacionales.',
+    'Construyendo el futuro de las empresas.',
   ],
   en: [
-    'Our commitment to tangible results.',
-    'Guaranteed quality with international backing.',
-    'Ready to reach the next level?',
+    'We turn strategy into results.',
+    'Quality backed by international standards.',
+    'Building the future of businesses.',
   ],
 };
 

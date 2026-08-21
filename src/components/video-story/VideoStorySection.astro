@@ -21,12 +21,11 @@ const videoScrollSteps = Array.from({ length: Math.max(lines.length, 1) });
         <div class="video-story-frame js-video-story-frame">
           <video
             class="video-story-media"
-            src="/assets/AGSIT%20Presentaci%C3%B3n%20Corporativa%20-%20AGSIT%20Consultor%C3%ADa%20Especializada%20en%20Soluciones%20Empresariales.mp4"
-            autoplay
+            data-src="/assets/AGSIT%20Presentaci%C3%B3n%20Corporativa%20-%20AGSIT%20Consultor%C3%ADa%20Especializada%20en%20Soluciones%20Empresariales.mp4"
             muted
             loop
             playsinline
-            preload="auto"
+            preload="none"
             aria-label={label}
           ></video>
         </div>

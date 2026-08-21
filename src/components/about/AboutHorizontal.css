@@ -1385,12 +1385,14 @@ a.about-service-link:focus-visible {
   }
 
   body:has(.about-snap-section[data-current-slide='7']) .scroll-consult-logo {
-    width: clamp(40px, 4.8vh, 52px);
+    /* Conserva el tamaño de Servicios y Clientes al llegar a Alianzas. */
+    width: 54px;
     margin-top: -14px;
   }
 
   .about-alliance-cta {
-    bottom: 6px;
+    /* Se separa de la barra y de su logo flotante sin invadir las métricas. */
+    bottom: calc(var(--snap-bar-h) + 10px);
     padding: 8px 14px;
     font-size: clamp(0.5rem, 1.9vh, 0.62rem);
   }

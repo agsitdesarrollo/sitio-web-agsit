@@ -52,17 +52,29 @@ const alternateLangPath = alternateHref ?? getAlternateLangPath(lang);
       let previousScrollY = Math.max(window.scrollY, 0);
       let touchStartY: number | null = null;
       let ticking = false;
+      let handoffHeaderLocked = document.documentElement.dataset.scrollHandoffHeaderLock === 'hidden';
 
       const canHide = () =>
         !mobileNavigation?.classList.contains('is-open') &&
         !document.body.classList.contains('drawer-open');
 
-      const showHeader = () => header.classList.remove('is-scroll-hidden');
+      const setHeaderVisibility = (isHidden: boolean) => {
+        const wasHidden = header.classList.contains('is-scroll-hidden');
+        if (wasHidden === isHidden) return;
+
+        header.classList.toggle('is-scroll-hidden', isHidden);
+      };
+
+      const showHeader = () => {
+        if (!handoffHeaderLocked) setHeaderVisibility(false);
+      };
       const hideHeader = () => {
-        if (canHide()) header.classList.add('is-scroll-hidden');
+        if (canHide()) setHeaderVisibility(true);
       };
 
       const respondToDirection = (direction: number) => {
+        if (handoffHeaderLocked) return;
+
         if (direction > 0) {
           hideHeader();
         } else if (direction < 0) {
@@ -120,9 +132,22 @@ const alternateLangPath = alternateHref ?? getAlternateLangPath(lang);
         { passive: true },
       );
       window.addEventListener('scroll', requestScrollUpdate, { passive: true });
+      window.addEventListener('agsit:handoff-header-lock', (event) => {
+        handoffHeaderLocked = (event as CustomEvent<{ isLocked: boolean }>).detail.isLocked;
+
+        if (handoffHeaderLocked) {
+          setHeaderVisibility(true);
+        } else {
+          setHeaderVisibility(false);
+        }
+      });
       window.addEventListener('pageshow', () => {
         previousScrollY = Math.max(window.scrollY, 0);
-        showHeader();
+        if (handoffHeaderLocked) {
+          setHeaderVisibility(true);
+        } else {
+          showHeader();
+        }
       });
       header.addEventListener('focusin', showHeader);
 
