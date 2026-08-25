@@ -1,6 +1,6 @@
 import gsap from 'gsap';
 import { ALLIANCE_LOGO_OVERSAMPLE } from '../../animations/allianceLogoZoom';
-import { getAllianceVideoHandoff } from './allianceVideoHandoff';
+import { initAllianceVideoExperience } from './allianceVideoExperience';
 import { ensureVideoAutoplay } from '../../scripts/videoAutoplay';
 
 export function initScrollExperience(): (() => void) | undefined {
@@ -10,11 +10,9 @@ export function initScrollExperience(): (() => void) | undefined {
     return undefined;
   }
 
-  let cleanupViewportRefresh: (() => void) | undefined;
   let cleanupServicesAnchorNavigation: (() => void) | undefined;
   let cleanupAboutServiceVideoPlayback: (() => void) | undefined;
-  let cleanupVideoStoryReadyNavigation: (() => void) | undefined;
-  let cleanupVideoStorySync: (() => void) | undefined;
+  let cleanupAllianceVideoExperience: (() => void) | undefined;
   let cleanupFloatingPersonSync: (() => void) | undefined;
 
   const context = gsap.context(() => {
@@ -24,96 +22,32 @@ export function initScrollExperience(): (() => void) | undefined {
     // cross all three breakpoints after it rotates.
     const isCompact = () => window.matchMedia('(max-width: 1024px)').matches;
     const isMobile = () => window.matchMedia('(max-width: 599px)').matches;
-    const isTablet = () => isCompact() && !isMobile();
     const isShortLandscape = () =>
       window.matchMedia('(pointer: coarse) and (orientation: landscape) and (max-width: 932px) and (max-height: 520px)').matches;
     // Sólo teléfonos: el puente hero→servicios necesita conservar su capa
     // fixed mientras Safari resuelve el snap entre ambas secciones.
     const isPhoneHeroBridge = () => isMobile() || isShortLandscape();
     const getHeroRestYPercent = () => (isShortLandscape() ? 0 : -5);
-    const shouldReduceMotion = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
     const getRootPixelValue = (name: string, fallback: number) => {
       const value = Number.parseFloat(getComputedStyle(document.documentElement).getPropertyValue(name));
       return Number.isFinite(value) && value > 0 ? value : fallback;
     };
-    const handoff = getAllianceVideoHandoff();
     const getViewportHeight = () => {
-      if (handoff.snapshot.viewportHeight) {
-        return handoff.getViewportHeight();
-      }
       if (isShortLandscape()) {
         return getRootPixelValue('--app-vh', window.innerHeight);
       }
 
       return isCompact() ? getRootPixelValue('--app-stable-vh', window.innerHeight) : window.innerHeight;
     };
-    const getNavHeight = () =>
-      Number.parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--app-track-offset')) || 0;
     const getVisualNavHeight = () =>
       document.querySelector<HTMLElement>('.site-nav')?.getBoundingClientRect().height
       ?? getRootPixelValue('--nav-h', 0);
-    const getVideoStoryInset = () => (isShortLandscape() ? 10 : isMobile() ? 22 : isTablet() ? 24 : isCompact() ? 28 : 34);
-
     const setIfFound = (selector: string, vars: gsap.TweenVars) => {
       const targets = gsap.utils.toArray<HTMLElement>(selector);
 
       if (targets.length) {
         gsap.set(targets, vars);
-      }
-    };
-    const getVideoStoryWidth = () => {
-      const ratio = isShortLandscape() ? 0.76 : isMobile() ? 0.92 : isTablet() ? 0.94 : isCompact() ? 0.92 : 0.68;
-      const base = window.innerWidth * ratio;
-
-      if (isShortLandscape()) {
-        return Math.min(base, getViewportHeight() * 0.44 * (16 / 9));
-      }
-
-      if (isTablet()) {
-        // En tablet apaisada la altura manda: el marco 16:9 no debe pasar de
-        // ~52% del viewport de alto o aplasta la frase contra la barra.
-        return Math.min(base, getViewportHeight() * 0.52 * (16 / 9));
-      }
-
-      return base;
-    };
-    const getVideoStoryHeight = () => {
-      if (isShortLandscape()) {
-        return getViewportHeight() * 0.44;
-      }
-
-      if (isMobile()) {
-        return getViewportHeight() * 0.32;
-      }
-
-      if (isTablet()) {
-        return getVideoStoryWidth() * 0.5625;
-      }
-
-      return getViewportHeight() * (isCompact() ? 0.34 : 0.44);
-    };
-    const hydrateVideo = (video: HTMLVideoElement | null | undefined) => {
-      if (!video) {
-        return;
-      }
-
-      if (isMobile() && video.dataset.mobile === 'static') {
-        video.pause();
-        video.removeAttribute('src');
-        video.load();
-        return;
-      }
-
-      const src = video.dataset.src;
-
-      if (src && !video.currentSrc) {
-        video.src = src;
-        video.load();
-      }
-
-      if (video.autoplay) {
-        ensureVideoAutoplay(video);
       }
     };
     const getAboutServiceVideos = () =>
@@ -136,7 +70,6 @@ export function initScrollExperience(): (() => void) | undefined {
       ensureVideoAutoplay(heroVideo);
     }
 
-    gsap.set('.js-video-story-line', { autoAlpha: 0, y: 0 });
     setIfFound('.js-floating-person', { y: 0, yPercent: getHeroRestYPercent(), scale: 1.08, autoAlpha: 1 });
     setIfFound('.js-services-person', { autoAlpha: 0 });
     setIfFound('.js-scroll-consult-logo', {
@@ -295,285 +228,8 @@ export function initScrollExperience(): (() => void) | undefined {
     };
     syncFloatingPersonToScroll();
 
-    // ── Video story: timeline pausada dirigida por la posición real de scroll ──
-    // Igual que Servicios/About: la sección es un track de pasos con viewport
-    // sticky; un paso de scroll = un estado. time == progreso en pasos.
-    const videoStorySection = document.querySelector<HTMLElement>('.js-video-story');
-    const videoStoryVideo = document.querySelector<HTMLVideoElement>('.js-video-story-frame video');
-    const storyLineEls = gsap.utils.toArray<HTMLElement>('.js-video-story-line');
-    // Paradas: 0 video fullscreen (sin texto, aterrizaje del zoom de alianza),
-    // 1 video enmarcado + primera línea, 2.. una por línea restante. La subida
-    // es el espejo: enmarcado → fullscreen → (rueda arriba) zoom inverso.
-    const VIDEO_STORY_READY_STOP = 0;
-    const VIDEO_STORY_MAX_TIME = Math.max(storyLineEls.length, 1);
-
-    // El progreso conserva el área útil. La etapa visual se expande únicamente
-    // mientras el handoff posee el encabezado; nunca como reacción a un gesto
-    // aislado que oculte/muestre el menú.
-    const getVideoStoryPanelHeight = () => Math.max(getViewportHeight() - getVisualNavHeight(), 1);
-    const getVideoStoryFrameHeight = () => Math.max(
-      getViewportHeight() - (handoff.isHeaderLocked ? 0 : getVisualNavHeight()),
-      1,
-    );
-    const usesMobileVideoStoryStops = () => isMobile() || isShortLandscape();
-
-    const videoStoryTimeline = gsap.timeline({ paused: true });
-
-    // fromTo en posición 0: GSAP revierte los targets al estado previo cuando el
-    // playhead queda antes del inicio de un tween normal (gotcha de timelines
-    // scrubeadas), y además fija el estado fullscreen inicial.
-    videoStoryTimeline.fromTo(
-      '.js-video-story-frame',
-      {
-        autoAlpha: 1,
-        top: 0,
-        left: '50%',
-        xPercent: -50,
-        width: () => window.innerWidth,
-        height: () => getVideoStoryFrameHeight(),
-        borderRadius: 0,
-        boxShadow: '0 0 0 rgba(8, 21, 43, 0)',
-      },
-      {
-        top: () => getVideoStoryInset(),
-        width: () => getVideoStoryWidth(),
-        height: () => getVideoStoryHeight(),
-        borderRadius: isMobile() ? 10 : 14,
-        boxShadow: '0 28px 60px rgba(8, 21, 43, 0.2)',
-        ease: 'none',
-        duration: 1,
-      },
-      0,
-    );
-    videoStoryTimeline.fromTo(
-      '.js-video-story-stage',
-      { backgroundColor: '#020712' },
-      { backgroundColor: '#ffffff', ease: 'none', duration: 1 },
-      0,
-    );
-
-    storyLineEls.forEach((line, index) => {
-      const stopAt = index + 1;
-      videoStoryTimeline.fromTo(
-        line,
-        { autoAlpha: 0 },
-        { autoAlpha: 1, duration: 0.6, ease: 'power2.out', immediateRender: false },
-        stopAt - 0.65,
-      );
-
-      if (index < storyLineEls.length - 1) {
-        videoStoryTimeline.to(
-          line,
-          { autoAlpha: 0, duration: 0.45, ease: 'power1.inOut' },
-          stopAt + 0.15,
-        );
-      }
-    });
-
-    if (videoStoryTimeline.duration() < VIDEO_STORY_MAX_TIME) {
-      videoStoryTimeline.to({}, { duration: VIDEO_STORY_MAX_TIME - videoStoryTimeline.duration() });
-    }
-
-    // This is also used on the reverse handoff. Timeline time alone is not
-    // enough after a native snap: GSAP may keep an already-visible line's
-    // inline opacity until the following render. Set the visual stop first.
-    const resetVideoStoryFullscreen = () => {
-      gsap.set(storyLineEls, { autoAlpha: 0, y: 0 });
-      videoStoryTimeline.time(VIDEO_STORY_READY_STOP, false);
-      gsap.set('.js-video-story-stage', { backgroundColor: '#020712' });
-      gsap.set('.js-video-story-frame', {
-        autoAlpha: 1,
-        top: 0,
-        left: '50%',
-        xPercent: -50,
-        width: window.innerWidth,
-        height: getVideoStoryFrameHeight(),
-        borderRadius: 0,
-        boxShadow: '0 0 0 rgba(8, 21, 43, 0)',
-      });
-    };
-
-    let videoStoryHydrated = false;
-    const hydrateVideoStory = () => {
-      if (videoStoryHydrated) {
-        return;
-      }
-      videoStoryHydrated = true;
-      hydrateVideo(videoStoryVideo);
-    };
-
-    const debugScroll = new URLSearchParams(window.location.search).get('debugScroll') === '1';
-    const logScrollSnapshot = (reason: string) => {
-      if (!debugScroll) return;
-      const about = document.querySelector<HTMLElement>('.js-about-snap');
-      const timeline = { allianceTime: null as number | null };
-      window.dispatchEvent(new CustomEvent('agsit:debug-scroll-snapshot', { detail: timeline }));
-      const rootStyles = getComputedStyle(document.documentElement);
-      console.debug('[agsit scroll]', {
-        reason,
-        timestamp: performance.now(),
-        scrollY: window.scrollY,
-        visualViewportHeight: window.visualViewport?.height ?? null,
-        innerHeight: window.innerHeight,
-        appVh: rootStyles.getPropertyValue('--app-vh').trim(),
-        appStableVh: rootStyles.getPropertyValue('--app-stable-vh').trim(),
-        handoff: handoff.snapshot,
-        aboutRect: about?.getBoundingClientRect().toJSON(),
-        videoStoryRect: videoStorySection?.getBoundingClientRect().toJSON(),
-        aboutProgress: about ? (getNavHeight() - about.getBoundingClientRect().top) / Math.max(getVideoStoryPanelHeight(), 1) : null,
-        videoProgress: getVideoStoryProgress(),
-        allianceTimelineTime: timeline.allianceTime,
-        videoTimelineTime: videoStoryTimeline.time(),
-        video: videoStoryVideo ? {
-          readyState: videoStoryVideo.readyState,
-          currentTime: videoStoryVideo.currentTime,
-          paused: videoStoryVideo.paused,
-          firstFrameDecoded: handoff.hasDecodedVideoFrame,
-        } : null,
-      });
-    };
-
-    const getVideoStoryProgress = () => {
-      if (!videoStorySection) {
-        return 0;
-      }
-      const rect = videoStorySection.getBoundingClientRect();
-      const panelHeight = getVideoStoryPanelHeight();
-      const distanceFromReadyStop = getNavHeight() - rect.top;
-      const progress = gsap.utils.clamp(
-        0,
-        VIDEO_STORY_MAX_TIME,
-        distanceFromReadyStop / panelHeight,
-      );
-
-      // La rueda ya reconoce la parada fullscreen con una tolerancia de 6px.
-      // En escritorio fijamos también la timeline a 0 dentro de ese mismo
-      // margen: sin ello el frame conserva una fracción de su reducción y el
-      // primer scroll de regreso deja el overlay apenas incompleto.
-      if (handoff.isFullscreenLocked || Math.abs(distanceFromReadyStop) <= 10) {
-        return VIDEO_STORY_READY_STOP;
-      }
-
-      // El snap nativo puede terminar unos píxeles antes o después de la
-      // coordenada calculada, sobre todo tras una reversa táctil. En móvil se
-      // normaliza únicamente ese pequeño margen al estado entero más cercano:
-      // evita conservar un frame/una frase intermedia sin alterar el recorrido
-      // continuo entre paradas.
-      if (usesMobileVideoStoryStops()) {
-        const nearestStop = Math.round(progress);
-        const snapTolerance = Math.min(
-          0.22,
-          Math.max(0.04, getVisualNavHeight() / panelHeight + 0.015),
-        );
-
-        if (Math.abs(progress - nearestStop) <= snapTolerance) {
-          return nearestStop;
-        }
-      }
-
-      return progress;
-    };
-
-    let videoStorySyncFrame = 0;
-    const syncVideoStoryToScroll = () => {
-      videoStorySyncFrame = 0;
-      if (!videoStorySection) {
-        return;
-      }
-
-      const distanceFromReadyStop = getNavHeight() - videoStorySection.getBoundingClientRect().top;
-      if (handoff.snapshot.state === 'returning-alliance') {
-        resetVideoStoryFullscreen();
-        return;
-      }
-      if (handoff.snapshot.state === 'video-fullscreen' && distanceFromReadyStop > 10) {
-        handoff.beginVideoFrame();
-      }
-
-      const progress = getVideoStoryProgress();
-      videoStoryTimeline.time(progress);
-      // Mismo gotcha que resetVideoStoryFullscreen: en un salto del snap
-      // nativo hacia arriba (parada N → N-1), GSAP no revierte los fromTo con
-      // immediateRender:false cuyo inicio queda por delante del playhead y la
-      // línea conserva su opacidad inline. Una línea cuyo fade-in aún no
-      // comienza a este progreso debe estar oculta SIEMPRE; se fuerza tras el
-      // render (solo oculta, nunca muestra, así no pisa la timeline).
-      storyLineEls.forEach((line, index) => {
-        if (progress < index + 1 - 0.65) {
-          gsap.set(line, { autoAlpha: 0 });
-        }
-      });
-      logScrollSnapshot('sync');
-    };
-    const requestVideoStorySync = () => {
-      if (videoStorySyncFrame) {
-        return;
-      }
-      videoStorySyncFrame = requestAnimationFrame(syncVideoStoryToScroll);
-    };
-
-    window.addEventListener('scroll', requestVideoStorySync, { passive: true });
-    window.addEventListener('resize', requestVideoStorySync, { passive: true });
-    cleanupVideoStorySync = () => {
-      cancelAnimationFrame(videoStorySyncFrame);
-      window.removeEventListener('scroll', requestVideoStorySync);
-      window.removeEventListener('resize', requestVideoStorySync);
-    };
-    syncVideoStoryToScroll();
-    window.addEventListener('agsit:handoff-state', (event) => {
-      const state = (event as CustomEvent<{ state: string }>).detail.state;
-      if (state === 'returning-alliance') {
-        resetVideoStoryFullscreen();
-      }
-      logScrollSnapshot(`state:${state}`);
-    });
-
-    let viewportRefreshFrame = 0;
-    let viewportRefreshTimeout = 0;
-    const requestViewportRefresh = (event?: Event) => {
-      const viewportEvent = event as CustomEvent<{ stableChanged?: boolean; dynamicChanged?: boolean }> | undefined;
-
-      // En landscape corto --video-panel-h sigue a --app-vh (dinámico): cuando
-      // la barra de Chrome cambia el alto, el marco debe invalidarse o se queda
-      // con las dimensiones horneadas del alto anterior.
-      const dynamicLandscapeChange = isShortLandscape() && viewportEvent?.detail?.dynamicChanged;
-
-      if (
-        isCompact() &&
-        event?.type === 'agsit:viewport-change' &&
-        !viewportEvent?.detail?.stableChanged &&
-        !dynamicLandscapeChange
-      ) {
-        return;
-      }
-
-      if (handoff.isActive) {
-        return;
-      }
-
-      cancelAnimationFrame(viewportRefreshFrame);
-      window.clearTimeout(viewportRefreshTimeout);
-      viewportRefreshTimeout = window.setTimeout(
-        () => {
-          viewportRefreshFrame = requestAnimationFrame(() => {
-            // Re-lee los getters de dimensiones del marco y re-aplica el estado
-            // que corresponde a la posición actual de scroll.
-            videoStoryTimeline.invalidate();
-            syncVideoStoryToScroll();
-          });
-        },
-        isCompact() ? 180 : 0,
-      );
-    };
-
-    window.addEventListener('orientationchange', requestViewportRefresh, { passive: true });
-    window.addEventListener('agsit:viewport-change', requestViewportRefresh, { passive: true });
-    cleanupViewportRefresh = () => {
-      cancelAnimationFrame(viewportRefreshFrame);
-      window.clearTimeout(viewportRefreshTimeout);
-      window.removeEventListener('orientationchange', requestViewportRefresh);
-      window.removeEventListener('agsit:viewport-change', requestViewportRefresh);
-    };
+    // La secuencia Alianza → Video → Frases → Contacto tiene un solo propietario.
+    cleanupAllianceVideoExperience = initAllianceVideoExperience();
 
     const navigateToServices = (event: Event) => {
       event.preventDefault();
@@ -606,214 +262,12 @@ export function initScrollExperience(): (() => void) | undefined {
       });
     }
 
-    let isReturningToAlliance = false;
-    let cleanupVideoStoryWheelReturn: (() => void) | undefined;
-
-    const returnVideoStoryToAlliance = () => {
-      if (isReturningToAlliance) {
-        return false;
-      }
-
-      if (handoff.snapshot.state === 'video-fullscreen' && !handoff.isVideoFullscreenSettled) {
-        return false;
-      }
-
-      const about = document.querySelector<HTMLElement>('.js-about-snap');
-
-      if (about?.dataset.aboutState !== 'done') {
-        return false;
-      }
-
-      // Claim this handoff before dispatching: scrolling during the custom
-      // event must not allow a second wheel event to start a competing
-      // reverse sequence.
-      if (!handoff.beginReturn()) {
-        return false;
-      }
-      resetVideoStoryFullscreen();
-      isReturningToAlliance = true;
-      const returnEvent = new CustomEvent('agsit:return-about-alliance', { cancelable: true });
-      const wasHandled = !window.dispatchEvent(returnEvent);
-
-      if (!wasHandled) {
-        isReturningToAlliance = false;
-        handoff.arriveVideoFullscreen();
-        return false;
-      }
-
-      window.setTimeout(() => {
-        isReturningToAlliance = false;
-      }, shouldReduceMotion() ? 0 : 1250);
-
-      return true;
-    };
-
-    const onVideoStoryWheel = (event: WheelEvent) => {
-      if (event.deltaY >= 0 || isReturningToAlliance) {
-        return;
-      }
-
-      const videoStoryTop = videoStorySection?.getBoundingClientRect().top ?? Number.POSITIVE_INFINITY;
-      const isAtVideoStoryStart = Math.abs(videoStoryTop - getNavHeight()) <= 6;
-      const aboutIsDone = document.querySelector<HTMLElement>('.js-about-snap')?.dataset.aboutState === 'done';
-      if (!isAtVideoStoryStart || !aboutIsDone) {
-        return;
-      }
-
-      if (returnVideoStoryToAlliance()) {
-        event.preventDefault();
-      }
-    };
-
-    // En una pantalla táctil el snap y la inercia comienzan antes de que el
-    // listener de scroll pueda detectar la intención. Reclamar el gesto en la
-    // parada fullscreen reproduce la ruta de la rueda: el primer gesto desde
-    // una frase solo vuelve el video a fullscreen; el siguiente inicia la
-    // reversa del logo sin que el navegador mezcle ambas secciones.
-    let videoStoryTouchStartY: number | null = null;
-    let videoStoryTouchClaimed = false;
-    const onVideoStoryTouchStart = (event: TouchEvent) => {
-      videoStoryTouchStartY = event.touches[0]?.clientY ?? null;
-      videoStoryTouchClaimed = false;
-    };
-    const onVideoStoryTouchMove = (event: TouchEvent) => {
-      const currentY = event.touches[0]?.clientY;
-      if (currentY === undefined || videoStoryTouchStartY === null) return;
-
-      if (videoStoryTouchClaimed) {
-        event.preventDefault();
-        return;
-      }
-
-      // El dedo se mueve hacia abajo para regresar en la página. Un umbral
-      // pequeño evita activar el handoff con ajustes accidentales del dedo.
-      if (currentY - videoStoryTouchStartY < 16 || isReturningToAlliance) return;
-
-      const videoStoryTop = videoStorySection?.getBoundingClientRect().top ?? Number.POSITIVE_INFINITY;
-      const isAtVideoStoryStart = Math.abs(videoStoryTop - getNavHeight()) <= 10;
-      const aboutIsDone = document.querySelector<HTMLElement>('.js-about-snap')?.dataset.aboutState === 'done';
-      if (!isAtVideoStoryStart || !aboutIsDone) return;
-
-      if (returnVideoStoryToAlliance()) {
-        videoStoryTouchClaimed = true;
-        event.preventDefault();
-      }
-    };
-    const onVideoStoryTouchEnd = () => {
-      videoStoryTouchStartY = null;
-      videoStoryTouchClaimed = false;
-    };
-
-    const showVideoStoryReady = async (event: Event) => {
-      event.preventDefault();
-
-      if (!videoStorySection) {
-        return;
-      }
-
-      hydrateVideoStory();
-      if (!videoStoryVideo) return;
-
-      resetVideoStoryFullscreen();
-
-      // La fuente ya fue precargada en Alianzas. Solo aquí, con el velo aún
-      // activo, se inicia la reproducción para que su primer cuadro exista al
-      // aterrizar visualmente en la sección de video.
-      ensureVideoAutoplay(videoStoryVideo);
-
-      const frameDecoded = await handoff.waitForVideoFrame(videoStoryVideo);
-      if (handoff.snapshot.state !== 'waiting-video-frame') return;
-
-      handoff.beginMoveToVideo();
-      // En dispositivos lentos el tween del zoom se estira (lagSmoothing) y el
-      // usuario puede haber seguido scrolleando dentro del video mientras
-      // tanto. Solo recoloca en la parada fullscreen si aún no la pasó; si ya
-      // va en las frases, se respeta su posición y el sync lo pasa a
-      // 'video-framed' en el siguiente frame.
-      // Deja que Safari pinte primero el overlay fijo negro. scrollTo en el
-      // mismo frame que un cambio de layout/composición puede mostrar capas
-      // sticky antiguas o un frame blanco en iOS.
-      let moveApplied = false;
-      let arrivalApplied = false;
-      let correctionApplied = false;
-      let arrivalFallbackTimeout = 0;
-      const requiresExactVideoStop = isCompact() || window.matchMedia('(pointer: coarse)').matches;
-      const cleanupArrival = () => {
-        window.clearTimeout(arrivalFallbackTimeout);
-        window.removeEventListener('scrollend', arriveAtVideo);
-      };
-      const arriveAtVideo = () => {
-        if (arrivalApplied || handoff.snapshot.state !== 'moving-to-video') {
-          cleanupArrival();
-          return;
-        }
-
-        const navHeight = getNavHeight();
-        const videoTop = videoStorySection.getBoundingClientRect().top;
-        const isAtReadyStop = Math.abs(videoTop - navHeight) <= 10;
-
-        // Safari puede ignorar el primer scrollTo mientras termina la inercia.
-        // Se permite una sola corrección al finalizar el gesto; una cadena de
-        // reintentos compite con el snap nativo y era la causa de los saltos.
-        if (requiresExactVideoStop && !isAtReadyStop && !correctionApplied) {
-          correctionApplied = true;
-          window.scrollTo({ top: window.scrollY + videoTop - navHeight, left: 0, behavior: 'auto' });
-          return;
-        }
-
-        arrivalApplied = true;
-        cleanupArrival();
-        handoff.arriveVideoFullscreen();
-        syncVideoStoryToScroll();
-      };
-      const moveToVideo = () => {
-        if (moveApplied || handoff.snapshot.state !== 'moving-to-video') return;
-        moveApplied = true;
-
-        const videoTop = videoStorySection.getBoundingClientRect().top;
-        // En móvil/tablet la inercia puede rebasar la parada mientras el velo
-        // está fijo. Siempre aterriza en el inicio fullscreen; escritorio
-        // conserva la posibilidad de continuar hacia las frases.
-        if (requiresExactVideoStop || getNavHeight() - videoTop < 10) {
-          window.scrollTo({ top: window.scrollY + videoTop - getNavHeight(), left: 0, behavior: 'auto' });
-        }
-        syncVideoStoryToScroll();
-        window.addEventListener('scrollend', arriveAtVideo, { passive: true });
-        requestAnimationFrame(arriveAtVideo);
-        // Respaldo único para navegadores que no publican scrollend.
-        arrivalFallbackTimeout = window.setTimeout(arriveAtVideo, 360);
-      };
-
-      requestAnimationFrame(moveToVideo);
-      window.setTimeout(moveToVideo, 140);
-    };
-    window.addEventListener('agsit:show-video-story-ready', showVideoStoryReady);
-    // Capture guarantees the upward wheel is claimed before the browser starts
-    // scrolling back into the About section.
-    window.addEventListener('wheel', onVideoStoryWheel, { passive: false, capture: true });
-    window.addEventListener('touchstart', onVideoStoryTouchStart, { passive: true, capture: true });
-    window.addEventListener('touchmove', onVideoStoryTouchMove, { passive: false, capture: true });
-    window.addEventListener('touchend', onVideoStoryTouchEnd, { passive: true, capture: true });
-    window.addEventListener('touchcancel', onVideoStoryTouchEnd, { passive: true, capture: true });
-    cleanupVideoStoryReadyNavigation = () => {
-      window.removeEventListener('agsit:show-video-story-ready', showVideoStoryReady);
-      cleanupVideoStoryWheelReturn?.();
-    };
-    cleanupVideoStoryWheelReturn = () => {
-      window.removeEventListener('wheel', onVideoStoryWheel, { capture: true });
-      window.removeEventListener('touchstart', onVideoStoryTouchStart, { capture: true });
-      window.removeEventListener('touchmove', onVideoStoryTouchMove, { capture: true });
-      window.removeEventListener('touchend', onVideoStoryTouchEnd, { capture: true });
-      window.removeEventListener('touchcancel', onVideoStoryTouchEnd, { capture: true });
-    };
   }, root);
 
   return () => {
-    cleanupViewportRefresh?.();
     cleanupServicesAnchorNavigation?.();
     cleanupAboutServiceVideoPlayback?.();
-    cleanupVideoStoryReadyNavigation?.();
-    cleanupVideoStorySync?.();
+    cleanupAllianceVideoExperience?.();
     cleanupFloatingPersonSync?.();
     context.revert();
   };

@@ -8,16 +8,36 @@ type Props = {
 
 const { lines, lang } = Astro.props;
 const label = lang === 'es' ? 'Presentación corporativa AGSIT' : 'AGSIT corporate presentation';
-// Paradas: 0 video fullscreen (el propio viewport sticky, aterrizaje del zoom
-// de alianza), 1 enmarcado + primera línea, luego una por línea restante.
-// El track agrega las paradas después de la 0.
-const videoScrollSteps = Array.from({ length: Math.max(lines.length, 1) });
 ---
 
 <div class="video-story-overlap">
+  <!-- Este lienzo fijo es el único propietario visual desde el final del zoom
+       del logotipo hasta Contacto. El documento se mueve oculto debajo. -->
+  <div class="video-handoff-scene js-video-handoff-scene" data-canvas-state="idle" aria-hidden="true">
+    <!-- El mismo lienzo posee el logo y el video. La lámina de Alianzas solo
+         entrega su rectángulo de reposo; nunca pinta el tramo inmersivo. -->
+    <div class="video-handoff-logo js-video-handoff-logo" aria-hidden="true">
+      <img class="video-handoff-logo-mark js-video-handoff-logo-mark" src="/assets/logo-agsit.svg" alt="" />
+    </div>
+
+    <div class="video-handoff-shell js-video-handoff-shell">
+      <div class="video-handoff-host js-video-handoff-host"></div>
+    </div>
+
+    <div class="video-handoff-copy js-video-handoff-copy" aria-live="polite">
+      {
+        lines.map((line, index) => (
+          <p class="video-handoff-line js-video-handoff-line" data-handoff-line={index}>{line}</p>
+        ))
+      }
+    </div>
+  </div>
+
+  <!-- La sección conserva una parada real en el documento y sirve como hogar
+       del video fuera de la experiencia. Nunca compite por los gestos. -->
   <section class="video-story-section js-video-story" aria-label={label}>
-    <div class="video-story-viewport">
-      <div class="video-story-stage js-video-story-stage">
+    <div class="video-story-viewport" aria-hidden="true">
+      <div class="video-story-stage">
         <div class="video-story-frame js-video-story-frame">
           <video
             class="video-story-media"
@@ -29,19 +49,7 @@ const videoScrollSteps = Array.from({ length: Math.max(lines.length, 1) });
             aria-label={label}
           ></video>
         </div>
-
-        <div class="video-story-copy">
-          {
-            lines.map((line) => (
-              <p class="video-story-line js-video-story-line">{line}</p>
-            ))
-          }
-        </div>
       </div>
-    </div>
-
-    <div class="video-story-track" aria-hidden="true">
-      {videoScrollSteps.map(() => <div class="video-story-step"></div>)}
     </div>
   </section>
 </div>

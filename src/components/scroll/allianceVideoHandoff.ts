@@ -6,6 +6,7 @@ export type AllianceVideoHandoffState =
   | 'moving-to-video'
   | 'video-fullscreen'
   | 'video-framed'
+  | 'contact'
   | 'returning-alliance';
 
 type HandoffSnapshot = {
@@ -45,7 +46,7 @@ class AllianceVideoHandoff {
   }
 
   get isActive() {
-    return !['alliance-rest', 'alliance-centering', 'video-framed'].includes(this.state);
+    return !['alliance-rest', 'alliance-centering', 'contact'].includes(this.state);
   }
 
   get isFullscreenLocked() {
@@ -155,7 +156,26 @@ class AllianceVideoHandoff {
   beginVideoFrame() {
     if (this.state !== 'video-fullscreen') return;
     this.setState('video-framed');
+  }
+
+  resumeVideoExperience() {
+    this.setHeaderLock(true);
+    this.viewportHeight = Math.round(window.visualViewport?.height || window.innerHeight);
+    document.documentElement.style.setProperty('--handoff-vh', `${this.viewportHeight}px`);
+    window.dispatchEvent(new CustomEvent('agsit:handoff-viewport-lock', { detail: this.snapshot }));
+    this.setState('video-framed');
+  }
+
+  refreshViewportHeight() {
+    if (!this.viewportHeight) return;
+    this.viewportHeight = Math.round(window.visualViewport?.height || window.innerHeight);
+    document.documentElement.style.setProperty('--handoff-vh', `${this.viewportHeight}px`);
+  }
+
+  arriveContact() {
+    this.setState('contact');
     this.releaseViewport();
+    this.releaseHeaderLock();
   }
 
   beginReturn() {
@@ -171,6 +191,8 @@ class AllianceVideoHandoff {
 
   finishReturn() {
     this.setState('alliance-centering');
+    this.restoreVideoToStory();
+    this.resetStoryVideo();
     this.releaseViewport();
   }
 
@@ -180,8 +202,30 @@ class AllianceVideoHandoff {
 
   reset() {
     this.setState('alliance-rest');
+    window.dispatchEvent(new CustomEvent('agsit:alliance-video-canvas-reset'));
+    this.restoreVideoToStory();
+    this.resetStoryVideo();
     this.releaseViewport();
     this.releaseHeaderLock();
+  }
+
+  private restoreVideoToStory() {
+    const scene = document.querySelector<HTMLElement>('.js-video-handoff-scene');
+    const video = scene?.querySelector<HTMLVideoElement>('video');
+    const frame = document.querySelector<HTMLElement>('.js-video-story-frame');
+
+    if (video && frame) {
+      frame.append(video);
+    }
+
+    scene?.classList.remove('is-active');
+  }
+
+  private resetStoryVideo() {
+    const video = document.querySelector<HTMLVideoElement>('.js-video-story-frame video');
+    if (!video) return;
+    video.pause();
+    video.currentTime = 0;
   }
 
   private setHeaderLock(isLocked: boolean) {

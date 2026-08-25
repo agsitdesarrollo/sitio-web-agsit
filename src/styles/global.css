@@ -48,17 +48,28 @@
 
 html {
   background: var(--bg-dark);
-  scrollbar-gutter: stable;
+  scrollbar-gutter: auto;
 }
 
 html.home-snap-active {
   scroll-padding-top: 0;
   scroll-snap-type: y mandatory;
+  scrollbar-width: none;
+}
+
+html.home-snap-active::-webkit-scrollbar,
+html[data-alliance-video-canvas='active']::-webkit-scrollbar {
+  display: none;
+}
+
+html[data-alliance-video-canvas='active'] {
+  scrollbar-width: none;
 }
 
 /* El handoff Alianza↔Video realiza su propia navegación atómica. Desactivar el
    snap únicamente mientras el overlay negro está al frente evita que WebKit
    vuelva a una parada anterior en respuesta a un scrollTo programático. */
+html.home-snap-active[data-alliance-video-canvas='active'],
 html.home-snap-active[data-scroll-handoff='alliance-zoom'],
 html.home-snap-active[data-scroll-handoff='waiting-video-frame'],
 html.home-snap-active[data-scroll-handoff='moving-to-video'],
@@ -70,14 +81,16 @@ html,
 body {
   margin: 0;
   width: 100%;
+  max-width: 100%;
   min-height: 100%;
+  overflow-x: clip;
 }
 
 body {
   font-family: 'Inter', 'Segoe UI', Tahoma, sans-serif;
   background: linear-gradient(180deg, #f3f7fb 0%, #ddeef4 65%, #f6fafe 100%);
   color: #0d1522;
-  overflow-x: hidden;
+  overflow-x: clip;
 }
 
 a {

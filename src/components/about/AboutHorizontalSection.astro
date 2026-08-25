@@ -201,7 +201,7 @@ const getVideoRatioKind = (image: string) => (image.endsWith('/servicios.mp4') ?
 
 <script>
   import gsap from 'gsap';
-  import { ALLIANCE_LOGO_OVERSAMPLE, initAllianceLogoZoom } from '../../animations/allianceLogoZoom';
+  import { ALLIANCE_LOGO_OVERSAMPLE } from '../../animations/allianceLogoZoom';
   import { getAllianceVideoHandoff } from '../scroll/allianceVideoHandoff';
   import { ensureVideoAutoplay } from '../../scripts/videoAutoplay';
   // ── Constants ─────────────────────────────────────────────────────────────
@@ -255,7 +255,6 @@ const getVideoRatioKind = (image: string) => (image.endsWith('/servicios.mp4') ?
   let alliancePlayed = false;
   let allianceScrubTl: gsap.core.Timeline | undefined;
   let allianceScrubTween: gsap.core.Tween | undefined;
-  let forwardHandoffTimeout = 0;
   let allianceScrubTime = 0;
   let isAllianceScrubbing = false;
 
@@ -485,10 +484,12 @@ const getVideoRatioKind = (image: string) => (image.endsWith('/servicios.mp4') ?
   // archivo y su primer frame se descargan bajo el velo, pero el movimiento del
   // video solo inicia cuando la transición ya llegó a su propia sección.
   let videoStoryWarmed = false;
+  const getVideoStoryVideo = () =>
+    document.querySelector<HTMLVideoElement>('.js-video-story-frame video');
   const warmVideoStoryVideo = () => {
     if (videoStoryWarmed) return;
     videoStoryWarmed = true;
-    const video = document.querySelector<HTMLVideoElement>('.js-video-story-frame video');
+    const video = getVideoStoryVideo();
     if (!video) return;
     if (video.dataset.src && !video.currentSrc) {
       video.src = video.dataset.src;
@@ -496,6 +497,34 @@ const getVideoRatioKind = (image: string) => (image.endsWith('/servicios.mp4') ?
       video.load();
     }
     video.pause();
+  };
+
+  const primeVideoStoryFromTouch = () => {
+    warmVideoStoryVideo();
+    const video = getVideoStoryVideo();
+    if (!video) return;
+
+    video.muted = true;
+    video.playsInline = true;
+    try {
+      video.currentTime = 0;
+    } catch {
+      // Metadata can still be pending; the fixed experience resets it again.
+    }
+
+    // This runs inside the physical touchstart. It silently grants iOS the
+    // media gesture before the asynchronous logo zoom starts.
+    void video.play().then(() => {
+      if (zoomHandoffState !== 'idle') return;
+      video.pause();
+      try {
+        video.currentTime = 0;
+      } catch {
+        // The next activation will reset once metadata is available.
+      }
+    }).catch(() => {
+      ensureVideoAutoplay(video);
+    });
   };
 
   const renderStage = (slideIdx: number) => {
@@ -702,7 +731,6 @@ const getVideoRatioKind = (image: string) => (image.endsWith('/servicios.mp4') ?
   // floating logo docked at the bar).
   const ALLIANCE_ZOOM_START = 0.16;
   const ALLIANCE_CENTER_TIME = ALLIANCE_ZOOM_START + 0.82;
-  const ALLIANCE_ZOOM_READY_TIME = ALLIANCE_ZOOM_START + 2.05;
   const CENTERED_ALLIANCE_STEP = 8;
   const VIDEO_HANDOFF_STEP = 9;
 
@@ -725,7 +753,7 @@ const getVideoRatioKind = (image: string) => (image.endsWith('/servicios.mp4') ?
     const allianceCta     = Array.from(allianceSlide.querySelectorAll<HTMLElement>('.js-about-alliance-cta'));
     const logoVars        = getLogoVars(ALLIANCE_SLIDE);
 
-    if (!floatingLogo || !transitionLogo || !transitionVeil || !logoVars) return undefined;
+    if (!floatingLogo || !transitionLogo || !logoVars) return undefined;
     gsap.killTweensOf([
       stage,
       floatingLogo,
@@ -775,20 +803,34 @@ const getVideoRatioKind = (image: string) => (image.endsWith('/servicios.mp4') ?
       immediateRender: false,
     }, 0);
 
-    const zoomDuration = initAllianceLogoZoom({
-      timeline: tl,
-      startAt: ALLIANCE_ZOOM_START,
-      panelEl: allianceSlide,
-      floatingLogoEl: floatingLogo,
-      transitionLogoEl: transitionLogo,
-      veilEl: transitionVeil,
-      metricsEls,
-      contentEls: [...allianceCopy, ...allianceCta],
-      // Before the handoff starts, preserve About's native dynamic viewport.
-      // Once it starts, every participant reads the captured height.
-      getViewportHeight: () => handoff.snapshot.viewportHeight ?? getDynamicViewportHeight(),
-    });
-    tl.to({}, { duration: zoomDuration }, ALLIANCE_ZOOM_START);
+    // About owns only the trip from the progress bar to the centered logo.
+    // The fixed VideoStory canvas owns the entire immersive zoom in both
+    // directions, exactly like the isolated proof project.
+    tl.call(() => floatingLogo.classList.remove('is-tooltip-visible'), [], ALLIANCE_ZOOM_START);
+    tl.set(transitionLogo, {
+      autoAlpha: 0,
+      scale: 1 / ALLIANCE_LOGO_OVERSAMPLE,
+      xPercent: -50,
+      yPercent: -50,
+      left: '50%',
+      top: () => (handoff.snapshot.viewportHeight ?? getDynamicViewportHeight()) / 2,
+      pointerEvents: 'none',
+    }, ALLIANCE_ZOOM_START);
+    tl.to(floatingLogo, {
+      autoAlpha: 1,
+      pointerEvents: 'none',
+      left: '50%',
+      top: () => getNavH() + (handoff.snapshot.viewportHeight ?? getDynamicViewportHeight()) / 2,
+      scale: 1,
+      duration: 0.72,
+      ease: 'power2.inOut',
+    }, ALLIANCE_ZOOM_START + 0.08);
+    tl.set(transitionLogo, {
+      autoAlpha: 1,
+      scale: 1 / ALLIANCE_LOGO_OVERSAMPLE,
+    }, ALLIANCE_CENTER_TIME);
+    tl.set(floatingLogo, { autoAlpha: 0 }, ALLIANCE_CENTER_TIME);
+    tl.to({}, { duration: ALLIANCE_CENTER_TIME }, 0);
 
     return tl;
   };
@@ -906,6 +948,7 @@ const getVideoRatioKind = (image: string) => (image.endsWith('/servicios.mp4') ?
   // ── Real-scroll sync ──────────────────────────────────────────────────────
   let aboutSyncFrame = 0;
   let zoomHandoffState: 'idle' | 'forward' | 'done' | 'reverse' = 'idle';
+  let isReverseHandoffPreparing = false;
   let isAllianceAtCenter = false;
   let isAllianceTravelPlaying = false;
   type UserScrollDirection = -1 | 0 | 1;
@@ -913,6 +956,10 @@ const getVideoRatioKind = (image: string) => (image.endsWith('/servicios.mp4') ?
   let userScrollIntent: UserScrollDirection = 0;
   let userScrollIntentAt = 0;
   let lastTouchY: number | null = null;
+  let touchStartY: number | null = null;
+  let allianceTouchClaimed = false;
+  let allianceWheelConsumed = false;
+  let allianceWheelEndTimer = 0;
 
   const rememberUserScrollIntent = (direction: Exclude<UserScrollDirection, 0>) => {
     userScrollIntent = direction;
@@ -931,6 +978,8 @@ const getVideoRatioKind = (image: string) => (image.endsWith('/servicios.mp4') ?
 
   const onTouchStart = (event: TouchEvent) => {
     lastTouchY = event.touches[0]?.clientY ?? null;
+    touchStartY = lastTouchY;
+    allianceTouchClaimed = false;
     userScrollIntent = 0;
     userScrollIntentAt = 0;
 
@@ -942,7 +991,7 @@ const getVideoRatioKind = (image: string) => (image.endsWith('/servicios.mp4') ?
       isAllianceAtCenter &&
       section.dataset.aboutState === 'active'
     ) {
-      warmVideoStoryVideo();
+      primeVideoStoryFromTouch();
     }
   };
 
@@ -953,10 +1002,54 @@ const getVideoRatioKind = (image: string) => (image.endsWith('/servicios.mp4') ?
     lastTouchY = currentY;
     if (Math.abs(delta) < 4) return;
     rememberUserScrollIntent(delta > 0 ? 1 : -1);
+
+    if (document.documentElement.dataset.allianceVideoCanvas === 'active') return;
+
+    if (zoomHandoffState === 'forward' || zoomHandoffState === 'reverse') {
+      event.preventDefault();
+      return;
+    }
+
+    if (section.dataset.aboutState !== 'active' || touchStartY === null) return;
+    const totalDelta = touchStartY - currentY;
+    const threshold = Math.max(40, getDynamicViewportHeight() * 0.055);
+    const rect = section.getBoundingClientRect();
+    const progress = getLogicalAboutProgress(rect);
+    const isAtDockedAlliance = !isAllianceAtCenter && Math.abs(progress - ALLIANCE_SLIDE) < 0.12;
+    const isAtCenteredAlliance = isAllianceAtCenter && Math.abs(progress - CENTERED_ALLIANCE_STEP) < 0.12;
+
+    if (isAllianceTravelPlaying || allianceTouchClaimed) {
+      if (isAllianceTravelPlaying || isAtDockedAlliance || isAtCenteredAlliance) {
+        event.preventDefault();
+      }
+      return;
+    }
+
+    if (isAtDockedAlliance && totalDelta > 0) {
+      event.preventDefault();
+      if (totalDelta >= threshold) {
+        allianceTouchClaimed = true;
+        playAllianceCenterTravel(1);
+      }
+      return;
+    }
+
+    if (isAtCenteredAlliance) {
+      event.preventDefault();
+      if (Math.abs(totalDelta) < threshold) return;
+      allianceTouchClaimed = true;
+      if (totalDelta > 0) {
+        playZoomForwardToVideo();
+      } else {
+        playAllianceCenterTravel(-1);
+      }
+    }
   };
 
   const onTouchEnd = () => {
     lastTouchY = null;
+    touchStartY = null;
+    allianceTouchClaimed = false;
   };
 
   const onScrollIntentKeyDown = (event: KeyboardEvent) => {
@@ -971,7 +1064,7 @@ const getVideoRatioKind = (image: string) => (image.endsWith('/servicios.mp4') ?
   };
 
   window.addEventListener('touchstart', onTouchStart, { passive: true, capture: true });
-  window.addEventListener('touchmove', onTouchMove, { passive: true, capture: true });
+  window.addEventListener('touchmove', onTouchMove, { passive: false, capture: true });
   window.addEventListener('touchend', onTouchEnd, { passive: true, capture: true });
   window.addEventListener('touchcancel', onTouchEnd, { passive: true, capture: true });
   window.addEventListener('keydown', onScrollIntentKeyDown, { capture: true });
@@ -992,11 +1085,19 @@ const getVideoRatioKind = (image: string) => (image.endsWith('/servicios.mp4') ?
     return Math.max(viewportHeight - getNavH(), 1);
   };
 
+  // El track empieza debajo de un viewport sticky de alto completo, mientras
+  // cada paso mide solo el área útil (viewport - navegación). Por eso las
+  // paradas nativas llevan un desfase exacto de navH. Restarlo aquí mantiene
+  // slide 7 y la parada centrada en las mismas coordenadas lógicas en portrait,
+  // landscape, tablet y escritorio.
+  const getLogicalAboutProgress = (rect = section.getBoundingClientRect()) =>
+    (getTrackOffset() - rect.top - getNavH()) / getAboutPanelHeight();
+
   const getAboutScrollStart = () => window.scrollY + section.getBoundingClientRect().top - getTrackOffset();
 
   const scrollToAboutStep = (step: number, behavior: ScrollBehavior = 'auto') => {
     window.scrollTo({
-      top: getAboutScrollStart() + getAboutPanelHeight() * step,
+      top: getAboutScrollStart() + getNavH() + getAboutPanelHeight() * step,
       left: 0,
       behavior,
     });
@@ -1167,6 +1268,7 @@ const getVideoRatioKind = (image: string) => (image.endsWith('/servicios.mp4') ?
           scrollToAboutStep(CENTERED_ALLIANCE_STEP);
         } else {
           isAllianceAtCenter = false;
+          handoff.setState('alliance-rest');
           scrollToAboutStep(ALLIANCE_SLIDE);
         }
       },
@@ -1176,8 +1278,22 @@ const getVideoRatioKind = (image: string) => (image.endsWith('/servicios.mp4') ?
   const onAllianceWheel = (event: WheelEvent) => {
     if (event.deltaY === 0) return;
     rememberUserScrollIntent(event.deltaY > 0 ? 1 : -1);
+    window.clearTimeout(allianceWheelEndTimer);
+    allianceWheelEndTimer = window.setTimeout(() => {
+      allianceWheelConsumed = false;
+    }, 180);
     if (zoomHandoffState !== 'idle') return;
     if (section.dataset.aboutState !== 'active') return;
+
+    const rect = section.getBoundingClientRect();
+    const progress = getLogicalAboutProgress(rect);
+    const isAtDockedAlliance = !isAllianceAtCenter && Math.abs(progress - ALLIANCE_SLIDE) < 0.12;
+    const isAtCenteredAlliance = isAllianceAtCenter && Math.abs(progress - CENTERED_ALLIANCE_STEP) < 0.12;
+
+    if (allianceWheelConsumed && (isAllianceTravelPlaying || isAtDockedAlliance || isAtCenteredAlliance)) {
+      event.preventDefault();
+      return;
+    }
 
     if (isAllianceTravelPlaying) {
       // Lockout: la animación en curso es dueña del gesto.
@@ -1185,23 +1301,31 @@ const getVideoRatioKind = (image: string) => (image.endsWith('/servicios.mp4') ?
       return;
     }
 
-    const rect = section.getBoundingClientRect();
-    const progress = (getTrackOffset() - rect.top) / getAboutPanelHeight();
-
     // Bajada: en reposo en la lámina de alianza con el logo anclado a la barra.
-    if (event.deltaY > 0 && !isAllianceAtCenter && Math.abs(progress - ALLIANCE_SLIDE) < 0.05) {
+    if (event.deltaY > 0 && isAtDockedAlliance) {
       const currentTime = isAllianceScrubbing && allianceScrubTl ? allianceScrubTl.time() : 0;
 
       if (currentTime < ALLIANCE_CENTER_TIME - 0.005) {
         event.preventDefault();
+        allianceWheelConsumed = true;
         playAllianceCenterTravel(1);
       }
       return;
     }
 
-    // Subida: centrado en la parada 8, un scroll regresa el logo a la barra.
-    if (event.deltaY < 0 && isAllianceAtCenter && Math.abs(progress - CENTERED_ALLIANCE_STEP) < 0.05) {
+    // La parada centrada también pertenece a esta máquina. El documento no se
+    // mueve al paso 9: el siguiente gesto inicia el zoom con la página quieta.
+    if (event.deltaY > 0 && isAtCenteredAlliance) {
       event.preventDefault();
+      allianceWheelConsumed = true;
+      playZoomForwardToVideo();
+      return;
+    }
+
+    // Subida: centrado en la parada 8, un scroll regresa el logo a la barra.
+    if (event.deltaY < 0 && isAtCenteredAlliance) {
+      event.preventDefault();
+      allianceWheelConsumed = true;
       playAllianceCenterTravel(-1);
     }
   };
@@ -1209,9 +1333,7 @@ const getVideoRatioKind = (image: string) => (image.endsWith('/servicios.mp4') ?
   const playZoomForwardToVideo = () => {
     if (zoomHandoffState === 'forward' || zoomHandoffState === 'done') return;
 
-    // El bloqueo de viewport/encabezado es una compensación para los
-    // navegadores táctiles. Escritorio conserva su recorrido original.
-    if (!handoff.beginAllianceZoom(isMobile() || isTablet())) return;
+    if (!handoff.beginAllianceZoom(true)) return;
     consumeUserScrollIntent(1);
 
     if (!allianceScrubTl || !isAllianceScrubbing) {
@@ -1226,158 +1348,54 @@ const getVideoRatioKind = (image: string) => (image.endsWith('/servicios.mp4') ?
     if (!allianceScrubTl) return;
 
     isAllianceAtCenter = true;
-    allianceScrubTime = ALLIANCE_ZOOM_READY_TIME;
-    allianceScrubTl.time(ALLIANCE_ZOOM_READY_TIME);
-
+    allianceScrubTime = ALLIANCE_CENTER_TIME;
+    allianceScrubTl.time(ALLIANCE_CENTER_TIME);
     zoomHandoffState = 'forward';
     isAnimating = true;
     warmVideoStoryVideo();
     allianceScrubTween?.kill();
-    const completeForwardHandoff = () => {
-      if (zoomHandoffState !== 'forward') return;
-      window.clearTimeout(forwardHandoffTimeout);
-      forwardHandoffTimeout = 0;
-      const videoStory = document.querySelector<HTMLElement>('.js-video-story');
-      zoomHandoffState = 'done';
-      isAnimating = false;
-      isAllianceScrubbing = false;
-      allianceDone = true;
-      alliancePlayed = true;
-      section.dataset.aboutState = 'done';
-      hideFloatingLogo();
-
-      if (videoStory) {
-        const handoffEvent = new CustomEvent('agsit:show-video-story-ready', { cancelable: true });
-        window.dispatchEvent(handoffEvent);
-      }
-    };
-    const forceCompleteForwardHandoff = () => {
-      if (zoomHandoffState !== 'forward' || !allianceScrubTl) return;
-
-      // Mobile Safari puede dormir el ticker de GSAP mientras termina el
-      // desplazamiento táctil. El tiempo real del handoff no debe depender de
-      // otro tap: asienta el último frame visual y continúa hacia el video.
-      allianceScrubTween?.kill();
-      allianceScrubTween = undefined;
-      allianceScrubTime = allianceScrubTl.duration();
-      allianceScrubTl.time(allianceScrubTime);
-      completeForwardHandoff();
-    };
-    allianceScrubTween = gsap.to(allianceScrubTl, {
-      time: allianceScrubTl.duration(),
-      duration: shouldReduceMotion() ? 0 : 0.95,
-      ease: 'power1.inOut',
-      onComplete: () => {
-        completeForwardHandoff();
-      },
-    });
-    window.clearTimeout(forwardHandoffTimeout);
-    forwardHandoffTimeout = window.setTimeout(
-      forceCompleteForwardHandoff,
-      shouldReduceMotion() ? 0 : 1250,
-    );
+    allianceScrubTween = undefined;
+    hideFloatingLogo();
+    window.dispatchEvent(new CustomEvent('agsit:alliance-video-canvas-forward'));
   };
 
-  const playZoomReverseToAlliance = (timelinePrepared = false) => {
-    if (zoomHandoffState === 'reverse') return;
-
-    window.clearTimeout(forwardHandoffTimeout);
-    forwardHandoffTimeout = 0;
-
-    section.dataset.aboutState = 'active';
-    if (!timelinePrepared) {
-      ensureAllianceScrub(allianceScrubTl?.duration() ?? Number.POSITIVE_INFINITY);
-    }
-    if (!allianceScrubTl) return;
-
-    zoomHandoffState = 'reverse';
-    isAnimating = true;
-    isAllianceAtCenter = true;
-    allianceScrubTween?.kill();
-
-    const completeReverseHandoff = () => {
-      if (zoomHandoffState !== 'reverse') return;
-      lockAllianceAtCenter();
-      // Defensive final state for Android/Safari compositors: the timeline is
-      // already at ALLIANCE_CENTER_TIME, but a previously promoted veil layer
-      // can otherwise remain painted for one or more frames.
-      gsap.set(slides[ALLIANCE_SLIDE], { backgroundColor: '#ffffff' });
-      gsap.set(slides[ALLIANCE_SLIDE].querySelector('.js-about-transition-veil'), { autoAlpha: 0 });
-      handoff.finishReturn();
-      scrollToAboutStep(CENTERED_ALLIANCE_STEP);
-      requestAnimationFrame(() => handoff.releaseHeaderLock());
-    };
-    // Espejo VISIBLE del zoom de ida: la propia timeline desvanece el velo y
-    // encoge el logo gigante sobre el panel blanco (las franjas blancas que
-    // antes obligaban a mantener el velo sólido eran el desfase de alturas,
-    // ya congeladas con --handoff-vh). Dos fases: el tramo del zoom a la
-    // misma velocidad que la ida (0.95s por unidad) y un asentamiento corto
-    // por la zona muerta hasta el centro.
-    allianceScrubTween = gsap.to(allianceScrubTl, {
-      time: ALLIANCE_ZOOM_READY_TIME,
-      duration: shouldReduceMotion() ? 0 : 0.95,
-      ease: 'power1.inOut',
-      onComplete: () => {
-        if (zoomHandoffState !== 'reverse' || !allianceScrubTl) return;
-        allianceScrubTween = gsap.to(allianceScrubTl, {
-          time: ALLIANCE_CENTER_TIME,
-          duration: shouldReduceMotion() ? 0 : 0.35,
-          ease: 'power1.out',
-          onComplete: completeReverseHandoff,
-        });
-      },
-    });
-  };
-
-  // Arranque compartido de la reversa video→alianza (rueda en el tope del video
-  // o re-entrada con estado 'done'). SIEMPRE fija primero el scroll en la parada
-  // 9: la timeline hornea coordenadas de pantalla del logo flotante (posición
-  // de la barra) y si se construye con el viewport sticky aún desplazado hacia
-  // el video, el reposo del logo queda arriba en vez de anclado a la barra.
+  // El lienzo fijo permanece opaco mientras el documento vuelve exactamente a
+  // la parada centrada. About solo prepara ese frame; el lienzo anima el logo
+  // gigante hasta él y libera la página después del último paint.
   const beginReverseHandoffFromVideo = () => {
-    if (zoomHandoffState === 'reverse') return;
+    if (zoomHandoffState === 'reverse' || isReverseHandoffPreparing) return;
 
     if (handoff.snapshot.state !== 'returning-alliance' && !handoff.beginReturn()) return;
+    isReverseHandoffPreparing = true;
+    zoomHandoffState = 'reverse';
+    isAnimating = true;
 
     document.documentElement.classList.add('home-snap-active');
-
-    // En escritorio se conserva el orden original, que no necesita la capa
-    // fija táctil y evita dejar el velo activo al alejarse de la sección.
-    if (!isMobile() && !isTablet()) {
-      requestAnimationFrame(() => {
-        if (handoff.snapshot.state !== 'returning-alliance') return;
-        scrollToAboutStep(VIDEO_HANDOFF_STEP);
-        requestAnimationFrame(() => {
-          if (zoomHandoffState === 'reverse') return;
-          ensureAllianceScrub(allianceScrubTl?.duration() ?? Number.POSITIVE_INFINITY);
-          if (!allianceScrubTl) return;
-          allianceScrubTime = allianceScrubTl.duration();
-          allianceScrubTl.time(allianceScrubTime);
-          playZoomReverseToAlliance(true);
-        });
-      });
-      return;
-    }
-
+    scrollToAboutStep(CENTERED_ALLIANCE_STEP);
     requestAnimationFrame(() => {
-      if (handoff.snapshot.state !== 'returning-alliance') return;
-
-      // Primero se construye y pinta el final opaco del zoom sobre el video
-      // actual. Antes se hacía scroll y, hasta el frame siguiente, se armaba
-      // el overlay: Android/iOS exponían entonces el hueco azul/blanco entre
-      // ambas secciones.
-      ensureAllianceScrub(allianceScrubTl?.duration() ?? Number.POSITIVE_INFINITY);
-      if (!allianceScrubTl) return;
-      allianceScrubTime = allianceScrubTl.duration();
-      allianceScrubTl.time(allianceScrubTime);
+      if (handoff.snapshot.state !== 'returning-alliance') {
+        isReverseHandoffPreparing = false;
+        zoomHandoffState = 'done';
+        isAnimating = false;
+        return;
+      }
+      ensureAllianceScrub(ALLIANCE_CENTER_TIME);
+      if (!allianceScrubTl) {
+        isReverseHandoffPreparing = false;
+        zoomHandoffState = 'done';
+        isAnimating = false;
+        return;
+      }
+      allianceScrubTime = ALLIANCE_CENTER_TIME;
+      allianceScrubTl.time(ALLIANCE_CENTER_TIME);
+      isAllianceAtCenter = true;
+      section.dataset.aboutState = 'active';
+      gsap.set(slides[ALLIANCE_SLIDE], { backgroundColor: '#ffffff' });
 
       requestAnimationFrame(() => {
-        if (handoff.snapshot.state !== 'returning-alliance' || zoomHandoffState === 'reverse') return;
-
-        // Con el velo ya compuesto, se asienta el track bajo él y comienza la
-        // misma timeline en reversa. El reposicionamiento deja de ser visible.
-        scrollToAboutStep(VIDEO_HANDOFF_STEP);
-        playZoomReverseToAlliance(true);
+        if (handoff.snapshot.state !== 'returning-alliance' || zoomHandoffState !== 'reverse') return;
+        isReverseHandoffPreparing = false;
+        window.dispatchEvent(new CustomEvent('agsit:alliance-video-underlay-ready'));
       });
     });
   };
@@ -1403,10 +1421,9 @@ const getVideoRatioKind = (image: string) => (image.endsWith('/servicios.mp4') ?
       ) {
         allianceScrubTween?.kill();
         allianceScrubTween = undefined;
-        window.clearTimeout(forwardHandoffTimeout);
-        forwardHandoffTimeout = 0;
         gsap.set(slides[ALLIANCE_SLIDE].querySelector('.js-about-transition-veil'), { autoAlpha: 0 });
         zoomHandoffState = 'idle';
+        isReverseHandoffPreparing = false;
         isAnimating = false;
         isAllianceScrubbing = false;
         handoff.reset();
@@ -1427,7 +1444,7 @@ const getVideoRatioKind = (image: string) => (image.endsWith('/servicios.mp4') ?
 
     isActive = true;
     section.dataset.aboutState = 'active';
-    const progress = gsap.utils.clamp(0, VIDEO_HANDOFF_STEP, (trackOffset - rect.top) / getAboutPanelHeight());
+    const progress = gsap.utils.clamp(0, VIDEO_HANDOFF_STEP, getLogicalAboutProgress(rect));
 
     if (zoomHandoffState === 'forward' || zoomHandoffState === 'reverse') {
       return;
@@ -1511,6 +1528,26 @@ const getVideoRatioKind = (image: string) => (image.endsWith('/servicios.mp4') ?
   window.addEventListener('resize', requestAboutSync, { passive: true });
   window.addEventListener('agsit:viewport-change', requestAboutSync, { passive: true });
   window.addEventListener('agsit:return-about-alliance', returnFromVideoStoryToAlliance);
+  window.addEventListener('agsit:alliance-video-canvas-entered', () => {
+    if (zoomHandoffState !== 'forward') return;
+    handoff.arriveVideoFullscreen();
+    zoomHandoffState = 'done';
+    isAnimating = false;
+    isAllianceScrubbing = false;
+    allianceDone = true;
+    alliancePlayed = true;
+    section.dataset.aboutState = 'done';
+  });
+  window.addEventListener('agsit:alliance-video-canvas-return', () => {
+    beginReverseHandoffFromVideo();
+  });
+  window.addEventListener('agsit:alliance-video-canvas-returned', () => {
+    if (handoff.snapshot.state !== 'alliance-centering') return;
+    isReverseHandoffPreparing = false;
+    lockAllianceAtCenter();
+    scrollToAboutStep(CENTERED_ALLIANCE_STEP);
+    requestAnimationFrame(() => handoff.releaseHeaderLock());
+  });
   // Capture: reclama el tick antes de que el snap nativo arranque el viaje 7⇄8.
   window.addEventListener('wheel', onAllianceWheel, { passive: false, capture: true });
 
