@@ -542,10 +542,24 @@
   }
 
   .services-content-viewport {
-    --services-cta-bottom: 10px;
-    --services-cta-height: 36px;
-    --services-card-cta-gap: 12px;
-    --services-card-reserved-h: 92px;
+    --services-cta-bottom: clamp(8px, 2.5vh, 12px);
+    --services-cta-bottom: clamp(8px, 2.5dvh, 12px);
+    --services-cta-height: clamp(38px, 10vh, 42px);
+    --services-cta-height: clamp(38px, 10dvh, 42px);
+    --services-card-cta-gap: clamp(10px, 3vh, 14px);
+    --services-card-cta-gap: clamp(10px, 3dvh, 14px);
+    --services-card-reserved-h: clamp(112px, 34vh, 142px);
+    --services-card-reserved-h: clamp(112px, 34dvh, 142px);
+    --services-person-top: clamp(82px, 24vh, 106px);
+    --services-person-top: clamp(82px, 24dvh, 106px);
+    --services-person-cta-gap: 8px;
+    transition: top 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  /* Al ocultarse el menú fijo, la composición recupera ese espacio sin
+     mover el CTA de su zona segura inferior. */
+  .site-nav.is-scroll-hidden + .home-page .services-content-viewport {
+    top: 0;
   }
 
   .services-intro {
@@ -555,45 +569,63 @@
   }
 
   .services-intro h2 {
-    max-width: min(650px, 86vw);
-    font-size: clamp(1.62rem, 7vh, 2.25rem);
-    font-size: clamp(1.62rem, 7dvh, 2.25rem);
-    line-height: 0.98;
+    max-width: min(720px, 88vw);
+    font-size: clamp(1.72rem, 8vh, 2.55rem);
+    font-size: clamp(1.72rem, 8dvh, 2.55rem);
+    line-height: 0.96;
   }
 
   .services-intro p {
-    max-width: min(620px, 82vw);
-    margin-top: 4px;
-    font-size: clamp(0.7rem, 2.35vh, 0.84rem);
-    font-size: clamp(0.7rem, 2.35dvh, 0.84rem);
-    line-height: 1.28;
+    max-width: min(680px, 86vw);
+    margin-top: 5px;
+    font-size: clamp(0.76rem, 3vh, 0.94rem);
+    font-size: clamp(0.76rem, 3dvh, 0.94rem);
+    line-height: 1.22;
   }
 
   .services-background::before {
-    top: clamp(66px, 18vh, 82px);
-    top: clamp(66px, 18dvh, 82px);
-    width: min(170px, 22vw);
-    height: min(170px, 46vh);
-    height: min(170px, 46dvh);
+    top: calc(var(--services-person-top) - 5px);
+    width: min(226px, 27vw);
+    height: min(226px, 56vh);
+    height: min(226px, 56dvh);
   }
 
   .services-person {
-    top: clamp(70px, 20vh, 84px);
-    top: clamp(70px, 20dvh, 84px);
+    top: var(--services-person-top);
     bottom: auto;
     display: block;
-    height: min(122px, 33vh);
-    height: min(122px, 33dvh);
+    height: min(
+      220px,
+      56vh,
+      calc(
+        100% - var(--services-person-top) - var(--services-cta-bottom) - var(--services-cta-height) -
+          var(--services-person-cta-gap)
+      )
+    );
+    height: min(
+      220px,
+      56dvh,
+      calc(
+        100% - var(--services-person-top) - var(--services-cta-bottom) - var(--services-cta-height) -
+          var(--services-person-cta-gap)
+      )
+    );
   }
 
   .services-cards-layer {
-    top: min(
-      clamp(82px, 24vh, 100px),
-      calc(100% - var(--services-cta-bottom) - var(--services-cta-height) - var(--services-card-cta-gap) - var(--services-card-reserved-h))
+    top: max(
+      84px,
+      min(
+        clamp(104px, 29vh, 128px),
+        calc(100% - var(--services-cta-bottom) - var(--services-cta-height) - var(--services-card-cta-gap) - var(--services-card-reserved-h))
+      )
     );
-    top: min(
-      clamp(82px, 24dvh, 100px),
-      calc(100% - var(--services-cta-bottom) - var(--services-cta-height) - var(--services-card-cta-gap) - var(--services-card-reserved-h))
+    top: max(
+      84px,
+      min(
+        clamp(104px, 29dvh, 128px),
+        calc(100% - var(--services-cta-bottom) - var(--services-cta-height) - var(--services-card-cta-gap) - var(--services-card-reserved-h))
+      )
     );
     width: calc(100vw - 48px);
     min-height: 0;
@@ -602,10 +634,10 @@
   .service-card,
   .service-card.left,
   .service-card.right {
-    width: min(310px, 33vw);
-    grid-template-columns: 34px 1fr;
-    gap: 10px;
-    padding-bottom: 9px;
+    width: min(340px, 33vw);
+    grid-template-columns: 38px 1fr;
+    gap: 12px;
+    padding-bottom: 11px;
     transform: translate3d(var(--service-card-x, 0px), var(--service-card-y, 0), 0)
       scale(var(--service-card-scale, 1));
   }
@@ -621,26 +653,26 @@
   }
 
   .service-card-icon {
-    width: 34px;
-    height: 34px;
+    width: 38px;
+    height: 38px;
   }
 
   .service-card-icon svg {
-    width: 18px;
-    height: 18px;
+    width: 20px;
+    height: 20px;
   }
 
   .service-card-copy h3 {
-    font-size: clamp(0.98rem, 3.8vh, 1.24rem);
-    font-size: clamp(0.98rem, 3.8dvh, 1.24rem);
-    line-height: 1;
+    font-size: clamp(1.22rem, 6.2vh, 1.68rem);
+    font-size: clamp(1.22rem, 6.2dvh, 1.68rem);
+    line-height: 1.04;
   }
 
   .service-card-copy p {
-    margin-top: 4px;
-    font-size: clamp(0.58rem, 2.05vh, 0.7rem);
-    font-size: clamp(0.58rem, 2.05dvh, 0.7rem);
-    line-height: 1.22;
+    margin-top: 7px;
+    font-size: clamp(0.74rem, 3.35vh, 0.92rem);
+    font-size: clamp(0.74rem, 3.35dvh, 0.92rem);
+    line-height: 1.3;
     text-align: left;
   }
 
@@ -654,10 +686,83 @@
 
   .services-advice-cta {
     bottom: var(--services-cta-bottom);
-    width: min(286px, calc(100vw - 44px));
+    width: min(304px, calc(100vw - 44px));
     min-height: var(--services-cta-height);
-    padding-inline: 14px;
-    font-size: clamp(0.56rem, 2.1vh, 0.66rem);
-    font-size: clamp(0.56rem, 2.1dvh, 0.66rem);
+    padding-inline: 16px;
+    font-size: clamp(0.64rem, 2.7vh, 0.74rem);
+    font-size: clamp(0.64rem, 2.7dvh, 0.74rem);
+  }
+}
+
+/* En alturas extremas la prioridad es conservar todos los textos completos y
+   una separación real respecto al CTA. Sigue siendo exclusivamente landscape
+   móvil y no altera portrait, tablet ni escritorio. */
+@media (pointer: coarse) and (orientation: landscape) and (max-width: 932px) and (max-height: 300px) {
+  .services-content-viewport {
+    --services-cta-bottom: 6px;
+    --services-cta-height: 36px;
+    --services-card-cta-gap: 8px;
+    --services-card-reserved-h: 100px;
+    --services-person-top: 52px;
+    --services-person-cta-gap: 8px;
+  }
+
+  .services-intro {
+    margin-top: 5px;
+  }
+
+  .services-intro h2 {
+    max-width: 92vw;
+    font-size: clamp(1.25rem, 7dvh, 1.5rem);
+    line-height: 0.94;
+  }
+
+  .services-intro p {
+    max-width: 90vw;
+    margin-top: 3px;
+    font-size: clamp(0.62rem, 3.4dvh, 0.72rem);
+    line-height: 1.12;
+  }
+
+  .services-background::before {
+    top: 48px;
+    width: min(164px, 24vw);
+    height: min(164px, 54dvh);
+  }
+
+  .services-person {
+    top: var(--services-person-top);
+    height: min(
+      136px,
+      47dvh,
+      calc(
+        100% - var(--services-person-top) - var(--services-cta-bottom) - var(--services-cta-height) -
+          var(--services-person-cta-gap)
+      )
+    );
+  }
+
+  .services-cards-layer {
+    top: max(
+      48px,
+      min(
+        clamp(68px, 26dvh, 82px),
+        calc(100% - var(--services-cta-bottom) - var(--services-cta-height) - var(--services-card-cta-gap) - var(--services-card-reserved-h))
+      )
+    );
+  }
+
+  .service-card-copy h3 {
+    font-size: clamp(1.04rem, 6dvh, 1.2rem);
+  }
+
+  .service-card-copy p {
+    margin-top: 4px;
+    font-size: clamp(0.64rem, 3.6dvh, 0.76rem);
+    line-height: 1.22;
+  }
+
+  .services-advice-cta {
+    font-size: 0.6rem;
   }
 }
