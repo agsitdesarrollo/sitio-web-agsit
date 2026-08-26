@@ -312,42 +312,60 @@ const capabilityPages = Array.from(
       return gridPanels.findIndex((panel) => panel.contains(firstCard)) + 1;
     };
 
-    matchMedia.add('(prefers-reduced-motion: no-preference) and (min-width: 680px) and (min-height: 521px)', () => {
-      capabilities.classList.add('is-horizontal-sequence');
-      gsap.set(stage, { xPercent: 0 });
-      gsap.set(introItems, { autoAlpha: 1, y: 0 });
-      gsap.set(cards, { autoAlpha: 0, y: 38, scale: 0.96 });
+    matchMedia.add(
+      {
+        fullViewport: '(prefers-reduced-motion: no-preference) and (min-width: 680px) and (min-height: 521px)',
+        touchTabletLandscape:
+          '(prefers-reduced-motion: no-preference) and (min-width: 680px) and (max-width: 1366px) and (min-height: 521px) and (orientation: landscape) and (pointer: coarse) and (hover: none)',
+      },
+      (context) => {
+        const { fullViewport, touchTabletLandscape } = context.conditions as {
+          fullViewport: boolean;
+          touchTabletLandscape: boolean;
+        };
 
-      const timeline = gsap.timeline({
-        defaults: { ease: 'none' },
-        scrollTrigger: {
-          id: 'technology-capabilities-sequence',
-          trigger: capabilities,
-          start: getPinStart,
-          end: getDesktopSequenceEnd,
-          pin: true,
-          pinSpacing: true,
-          scrub: 0.75,
-          anticipatePin: 1,
-          invalidateOnRefresh: true,
-        },
-      });
+        if (!fullViewport) return;
 
-      cardGroups.forEach((group, pageIndex) => {
-        timeline
-          .to(stage, { xPercent: getStagePosition(pageIndex + 1), duration: 0.38, ease: 'power1.inOut' })
-          .to(group, { autoAlpha: 1, y: 0, scale: 1, duration: 0.3, stagger: 0.02, ease: 'power2.out' })
-          .to({}, { duration: 0.22 });
-      });
+        capabilities.classList.add('is-horizontal-sequence');
+        gsap.set(stage, { xPercent: 0 });
+        gsap.set(introItems, { autoAlpha: 1, y: 0 });
+        gsap.set(cards, { autoAlpha: 0, y: 38, scale: 0.96 });
 
-      return () => {
-        timeline.kill();
-        capabilities.classList.remove('is-horizontal-sequence');
-        gsap.set(stage, { clearProps: 'all' });
-        gsap.set(introItems, { clearProps: 'all' });
-        gsap.set(cards, { clearProps: 'all' });
-      };
-    });
+        const timeline = gsap.timeline({
+          defaults: { ease: 'none' },
+          scrollTrigger: {
+            id: 'technology-capabilities-sequence',
+            trigger: capabilities,
+            start: getPinStart,
+            end: getDesktopSequenceEnd,
+            pin: true,
+            pinSpacing: true,
+            scrub: touchTabletLandscape ? true : 0.75,
+            anticipatePin: 1,
+            invalidateOnRefresh: true,
+          },
+        });
+
+        cardGroups.forEach((group, pageIndex) => {
+          timeline
+            .to(stage, {
+              xPercent: getStagePosition(pageIndex + 1),
+              duration: 0.38,
+              ease: touchTabletLandscape ? 'none' : 'power1.inOut',
+            })
+            .to(group, { autoAlpha: 1, y: 0, scale: 1, duration: 0.3, stagger: 0.02, ease: 'power2.out' })
+            .to({}, { duration: 0.22 });
+        });
+
+        return () => {
+          timeline.kill();
+          capabilities.classList.remove('is-horizontal-sequence');
+          gsap.set(stage, { clearProps: 'all' });
+          gsap.set(introItems, { clearProps: 'all' });
+          gsap.set(cards, { clearProps: 'all' });
+        };
+      },
+    );
 
     matchMedia.add(
       [

@@ -1503,6 +1503,115 @@
   }
 }
 
+/* Las tablets tactiles en landscape conservan cuatro tarjetas por lamina.
+   Las filas igualan su altura dentro de cada lamina sin separar el texto de la
+   fila reservada para el CTA; escritorios y laptops no coinciden con este modo. */
+@media (min-width: 680px) and (max-width: 1366px) and (min-height: 521px) and (orientation: landscape) and (pointer: coarse) and (hover: none) {
+  .technology-capabilities.is-horizontal-sequence {
+    padding-inline: 0;
+  }
+
+  .technology-capabilities.is-horizontal-sequence .technology-capabilities-panel {
+    padding: calc(var(--nav-h) + clamp(10px, 2vh, 14px)) clamp(20px, 3vw, 42px) clamp(10px, 2vh, 14px);
+  }
+
+  .technology-capabilities.is-horizontal-sequence .technology-capability-grid {
+    gap: clamp(8px, 1vw, 12px);
+    height: auto;
+    grid-template-rows: repeat(2, minmax(max-content, 1fr));
+    align-content: center;
+    align-items: stretch;
+  }
+
+  .technology-capabilities.is-horizontal-sequence .technology-capability {
+    padding: clamp(10px, 1.1vw, 14px);
+    height: auto;
+    align-self: stretch;
+    grid-template-rows: auto auto;
+    align-content: start;
+  }
+
+  .technology-capabilities.is-horizontal-sequence .technology-capability-content {
+    grid-template-rows: auto auto auto;
+  }
+
+  .technology-capabilities.is-horizontal-sequence .technology-capability-code {
+    min-height: 28px;
+    height: auto;
+    padding-block: 4px;
+  }
+
+  .technology-capabilities.is-horizontal-sequence .technology-capability h3 {
+    margin-top: 4px;
+    line-height: 1.04;
+  }
+
+  .technology-capabilities.is-horizontal-sequence .technology-capability p {
+    margin-top: 5px;
+    line-height: 1.36;
+  }
+
+  .technology-capabilities.is-horizontal-sequence .technology-capability-action {
+    min-height: 44px;
+    margin-top: 8px;
+    display: flex;
+  }
+
+  .technology-capabilities.is-horizontal-sequence .technology-capability-link {
+    min-height: 44px;
+  }
+
+  .technology-capabilities.is-horizontal-sequence .technology-capability-grid[data-capability-count='1'],
+  .technology-capabilities.is-horizontal-sequence .technology-capability-grid[data-capability-count='2'] {
+    height: auto;
+    grid-template-rows: minmax(max-content, 1fr);
+  }
+
+  .technology-capabilities.is-horizontal-sequence
+    .technology-capability-grid[data-capability-count='1']
+    .technology-capability {
+    height: auto;
+    align-self: stretch;
+  }
+}
+
+/* El extremo corto del rango tablet conserva dos filas iguales sin reducir la
+   reserva tactil de 44 px ni recortar el contenido mas largo. */
+@media (min-width: 680px) and (max-width: 1366px) and (min-height: 521px) and (max-height: 600px) and (orientation: landscape) and (pointer: coarse) and (hover: none) {
+  .technology-capabilities.is-horizontal-sequence .technology-capabilities-panel {
+    padding: calc(var(--nav-h) + 6px) clamp(16px, 2.5vw, 24px) 6px;
+  }
+
+  .technology-capabilities.is-horizontal-sequence .technology-capability-grid {
+    gap: 6px;
+  }
+
+  .technology-capabilities.is-horizontal-sequence .technology-capability {
+    padding: 6px 8px;
+  }
+
+  .technology-capabilities.is-horizontal-sequence .technology-capability-code {
+    min-height: 24px;
+    padding: 3px 6px;
+  }
+
+  .technology-capabilities.is-horizontal-sequence .technology-capability h3 {
+    margin-top: 3px;
+    font-size: clamp(1rem, 2.1vw, 1.18rem);
+    line-height: 1.02;
+  }
+
+  .technology-capabilities.is-horizontal-sequence .technology-capability p {
+    margin-top: 4px;
+    font-size: clamp(0.75rem, 1.5vw, 0.84rem);
+    line-height: 1.25;
+  }
+
+  .technology-capabilities.is-horizontal-sequence .technology-capability-action {
+    margin-top: 4px;
+  }
+}
+
 @media (min-width: 1080px) {
   .technology-page {
     --technology-title-xl: clamp(4.35rem, 5.2vw, 6.75rem);
