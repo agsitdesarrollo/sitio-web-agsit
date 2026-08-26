@@ -21,7 +21,7 @@
 
 .video-handoff-logo {
   position: absolute;
-  z-index: 4;
+  z-index: 5;
   top: 0;
   left: 0;
   visibility: hidden;
@@ -70,9 +70,37 @@
   background: #020712;
 }
 
-.video-handoff-copy {
+.video-handoff-cover {
   position: absolute;
   z-index: 3;
+  inset: 0;
+  background: #ffffff;
+  pointer-events: none;
+  will-change: opacity;
+}
+
+.video-handoff-loading {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 34px;
+  height: 34px;
+  margin: -17px 0 0 -17px;
+  border: 2px solid rgb(255 255 255 / 24%);
+  border-top-color: #ffffff;
+  border-radius: 50%;
+  visibility: hidden;
+  opacity: 0;
+  animation: video-handoff-loading-spin 0.8s linear infinite;
+}
+
+@keyframes video-handoff-loading-spin {
+  to { transform: rotate(360deg); }
+}
+
+.video-handoff-copy {
+  position: absolute;
+  z-index: 4;
   top: 0;
   left: 50%;
   width: min(900px, 88vw);
@@ -171,7 +199,7 @@ html[data-alliance-video-canvas='active'] .video-story-viewport {
 @media (pointer: coarse) and (orientation: landscape) and (max-width: 932px) and (max-height: 520px) {
   .video-story-section,
   .video-story-viewport {
-    --video-panel-h: var(--app-vh, 100svh);
+    --video-panel-h: var(--app-stable-vh, 100svh);
   }
 }
 

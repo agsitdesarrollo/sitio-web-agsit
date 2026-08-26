@@ -27,15 +27,15 @@
 }
 
 .about-snap-section[data-about-state='active'] .about-snap-viewport {
-  height: var(--app-vh, var(--app-stable-vh, 100vh));
-  /* dvh tracks the browser UI natively (no JS lag) so the bottom bar stays
-     glued to the visible edge while the section is active. */
+  /* La cubierta y la barra inferior siguen el viewport visible. La geometría
+     de las láminas permanece estable en .about-snap-stage, de modo que mostrar
+     u ocultar las barras del navegador no mueve el contenido de Alianzas. */
   height: 100dvh;
   min-height: 0;
 }
 
 .about-snap-section[data-about-state='active'] .about-snap-stage {
-  height: calc(100dvh - var(--nav-h));
+  height: var(--about-content-h);
 }
 
 /* El zoom inmersivo vive por completo en el lienzo fijo de VideoStory. About
@@ -1111,11 +1111,10 @@ a.about-service-link:focus-visible {
    columnas, conservando los mismos slides y el mismo track de animación. */
 @media (pointer: coarse) and (orientation: landscape) and (max-width: 932px) and (max-height: 520px) {
   .about-snap-section {
-    /* Igual que --video-panel-h en landscape: durante el handoff manda la
-       altura congelada (--handoff-vh). Sin ella, la barra de Chrome cambia
-       --app-vh a mitad del zoom y el viewport de About queda más corto que la
-       pantalla, mostrando el fondo blanco de la sección bajo el velo/logo. */
-    --about-panel-h: var(--handoff-vh, var(--app-vh, 100svh));
+    /* La barra del navegador puede cambiar --app-vh varias veces durante un
+       swipe. Alianzas conserva la altura estable (o la congelada del handoff)
+       para que su contenido y sus paradas nunca se recalculen a medio gesto. */
+    --about-panel-h: var(--handoff-vh, var(--app-stable-vh, 100svh));
   }
 
   .about-snap-slide--intro {
@@ -1337,18 +1336,19 @@ a.about-service-link:focus-visible {
 
   .about-transition-logo {
     --logo-base-w: clamp(40px, 4.8vh, 52px);
-    margin-top: -14px;
+    margin-top: 0;
   }
 
   body:has(.about-snap-section[data-current-slide='7']) .scroll-consult-logo {
     /* Conserva el tamaño de Servicios y Clientes al llegar a Alianzas. */
     width: 54px;
-    margin-top: -14px;
+    margin-top: 0;
   }
 
   .about-alliance-cta {
-    /* Se separa de la barra y de su logo flotante sin invadir las métricas. */
-    bottom: calc(var(--snap-bar-h) + 10px);
+    /* Su borde inferior coincide con el inicio de la barra: baja 10px sin
+       invadir el área del logo de progreso. */
+    bottom: var(--snap-bar-h);
     padding: 8px 14px;
     font-size: clamp(0.5rem, 1.9vh, 0.62rem);
   }

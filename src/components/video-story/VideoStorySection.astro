@@ -24,6 +24,12 @@ const label = lang === 'es' ? 'Presentación corporativa AGSIT' : 'AGSIT corpora
       <div class="video-handoff-host js-video-handoff-host"></div>
     </div>
 
+    <!-- WebKit detiene medios ocultos con visibility/opacity. El video queda
+         visible para el motor, pero este velo evita revelarlo antes del frame. -->
+    <div class="video-handoff-cover js-video-handoff-cover" aria-hidden="true">
+      <span class="video-handoff-loading js-video-handoff-loading"></span>
+    </div>
+
     <div class="video-handoff-copy js-video-handoff-copy" aria-live="polite">
       {
         lines.map((line, index) => (
@@ -44,6 +50,7 @@ const label = lang === 'es' ? 'Presentación corporativa AGSIT' : 'AGSIT corpora
             data-src="/assets/AGSIT%20Presentaci%C3%B3n%20Corporativa%20-%20AGSIT%20Consultor%C3%ADa%20Especializada%20en%20Soluciones%20Empresariales.mp4"
             muted
             loop
+            autoplay
             playsinline
             preload="none"
             aria-label={label}

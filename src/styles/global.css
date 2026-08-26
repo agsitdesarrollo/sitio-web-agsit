@@ -70,6 +70,7 @@ html[data-alliance-video-canvas='active'] {
    snap únicamente mientras el overlay negro está al frente evita que WebKit
    vuelva a una parada anterior en respuesta a un scrollTo programático. */
 html.home-snap-active[data-alliance-video-canvas='active'],
+html.home-snap-active[data-scroll-handoff='alliance-centering'],
 html.home-snap-active[data-scroll-handoff='alliance-zoom'],
 html.home-snap-active[data-scroll-handoff='waiting-video-frame'],
 html.home-snap-active[data-scroll-handoff='moving-to-video'],

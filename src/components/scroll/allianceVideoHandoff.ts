@@ -18,11 +18,7 @@ type HandoffSnapshot = {
 const getViewportHeight = () => {
   const root = document.documentElement;
   const rootStyles = getComputedStyle(root);
-  const isShortLandscape = window.matchMedia(
-    '(pointer: coarse) and (orientation: landscape) and (max-width: 932px) and (max-height: 520px)',
-  ).matches;
-  const viewportVariable = isShortLandscape ? '--app-vh' : '--app-stable-vh';
-  const measured = Number.parseFloat(rootStyles.getPropertyValue(viewportVariable));
+  const measured = Number.parseFloat(rootStyles.getPropertyValue('--app-stable-vh'));
 
   return Number.isFinite(measured) && measured > 0
     ? Math.round(measured)
@@ -32,8 +28,6 @@ const getViewportHeight = () => {
 class AllianceVideoHandoff {
   private state: AllianceVideoHandoffState = 'alliance-rest';
   private viewportHeight: number | null = null;
-  private videoFramePromise: Promise<boolean> | null = null;
-  private firstVideoFrameDecoded = false;
   private videoFullscreenAt = 0;
   private headerLocked = false;
 
@@ -51,10 +45,6 @@ class AllianceVideoHandoff {
 
   get isFullscreenLocked() {
     return ['waiting-video-frame', 'moving-to-video', 'video-fullscreen', 'returning-alliance'].includes(this.state);
-  }
-
-  get hasDecodedVideoFrame() {
-    return this.firstVideoFrameDecoded;
   }
 
   get isHeaderLocked() {
@@ -91,57 +81,73 @@ class AllianceVideoHandoff {
 
   async waitForVideoFrame(video: HTMLVideoElement) {
     this.setState('waiting-video-frame');
+    const minimumMediaTime = Math.max(0.32, video.currentTime + 0.08);
 
-    if (this.firstVideoFrameDecoded) {
-      return true;
-    }
+    return new Promise<boolean>((resolve) => {
+      let settled = false;
+      let animationFrame = 0;
+      let videoFrame = 0;
+      let timeout = 0;
 
-    if (!this.videoFramePromise) {
-      this.videoFramePromise = new Promise<boolean>((resolve) => {
-        let waitSettled = false;
+      const cleanup = () => {
+        cancelAnimationFrame(animationFrame);
+        if (videoFrame && typeof video.cancelVideoFrameCallback === 'function') {
+          video.cancelVideoFrameCallback(videoFrame);
+        }
+        window.clearTimeout(timeout);
+        video.removeEventListener('playing', inspectCurrentTime);
+        video.removeEventListener('timeupdate', inspectCurrentTime);
+        video.removeEventListener('loadeddata', inspectCurrentTime);
+        video.removeEventListener('canplay', inspectCurrentTime);
+        video.removeEventListener('error', releaseWait);
+      };
 
-        const markReady = () => {
-          if (this.firstVideoFrameDecoded) return;
-          this.firstVideoFrameDecoded = true;
-          if (!waitSettled) {
-            waitSettled = true;
-            resolve(true);
-          }
-        };
+      const finish = (didAdvance: boolean) => {
+        if (settled) return;
+        settled = true;
+        cleanup();
+        resolve(didAdvance);
+      };
 
-        const releaseWait = () => {
-          if (waitSettled) return;
-          waitSettled = true;
-          resolve(false);
-        };
+      const isPresentedAndAdvancing = (mediaTime: number) =>
+        !video.paused
+        && video.readyState >= HTMLMediaElement.HAVE_CURRENT_DATA
+        && mediaTime >= minimumMediaTime;
 
-        const requestFrame = () => {
-          if ('requestVideoFrameCallback' in video) {
-            video.requestVideoFrameCallback(() => markReady());
-          } else {
-            // loadeddata guarantees current media data. One paint frame gives
-            // engines without requestVideoFrameCallback a chance to composite it.
-            requestAnimationFrame(markReady);
-          }
-        };
+      const inspectCurrentTime = () => {
+        if (isPresentedAndAdvancing(video.currentTime)) finish(true);
+      };
 
-        if (video.readyState >= HTMLMediaElement.HAVE_CURRENT_DATA) {
-          requestFrame();
-        } else {
-          video.addEventListener('loadeddata', requestFrame, { once: true });
-          video.addEventListener('canplay', requestFrame, { once: true });
+      const releaseWait = () => finish(false);
+
+      const requestPresentedFrame = () => {
+        if (settled) return;
+
+        if (typeof video.requestVideoFrameCallback === 'function') {
+          videoFrame = video.requestVideoFrameCallback((_now, metadata) => {
+            if (isPresentedAndAdvancing(metadata.mediaTime)) finish(true);
+            else requestPresentedFrame();
+          });
+          return;
         }
 
-        // El velo puede ceder tras el timeout para no bloquear la página, pero
-        // un timeout NO equivale a un frame decodificado. Los callbacks de video
-        // permanecen activos y marcan el frame si llega después en iOS.
-        video.addEventListener('error', releaseWait, { once: true });
-        window.setTimeout(releaseWait, 2000);
-      });
-    }
+        animationFrame = requestAnimationFrame(() => {
+          inspectCurrentTime();
+          requestPresentedFrame();
+        });
+      };
 
-    const decoded = await this.videoFramePromise;
-    return decoded || this.firstVideoFrameDecoded;
+      video.addEventListener('playing', inspectCurrentTime);
+      video.addEventListener('timeupdate', inspectCurrentTime);
+      video.addEventListener('loadeddata', inspectCurrentTime);
+      video.addEventListener('canplay', inspectCurrentTime);
+      video.addEventListener('error', releaseWait, { once: true });
+      requestPresentedFrame();
+
+      // La precarga debería resolver antes. El límite evita bloquear toda la
+      // navegación si el sistema operativo rechaza definitivamente el medio.
+      timeout = window.setTimeout(releaseWait, 2800);
+    });
   }
 
   beginMoveToVideo() {
@@ -160,7 +166,7 @@ class AllianceVideoHandoff {
 
   resumeVideoExperience() {
     this.setHeaderLock(true);
-    this.viewportHeight = Math.round(window.visualViewport?.height || window.innerHeight);
+    this.viewportHeight = getViewportHeight();
     document.documentElement.style.setProperty('--handoff-vh', `${this.viewportHeight}px`);
     window.dispatchEvent(new CustomEvent('agsit:handoff-viewport-lock', { detail: this.snapshot }));
     this.setState('video-framed');
@@ -168,7 +174,7 @@ class AllianceVideoHandoff {
 
   refreshViewportHeight() {
     if (!this.viewportHeight) return;
-    this.viewportHeight = Math.round(window.visualViewport?.height || window.innerHeight);
+    this.viewportHeight = getViewportHeight();
     document.documentElement.style.setProperty('--handoff-vh', `${this.viewportHeight}px`);
   }
 
@@ -189,9 +195,17 @@ class AllianceVideoHandoff {
     return true;
   }
 
+  prepareReturnViewport() {
+    if (this.state !== 'returning-alliance') return;
+
+    // El lienzo fijo todavía cubre toda la pantalla. Liberar aquí la altura
+    // congelada permite que una rotación o un cambio pendiente del navegador
+    // recalcule el documento antes de revelar de nuevo Alianzas.
+    this.releaseViewport();
+  }
+
   finishReturn() {
     this.setState('alliance-centering');
-    this.restoreVideoToStory();
     this.resetStoryVideo();
     this.releaseViewport();
   }
@@ -203,26 +217,15 @@ class AllianceVideoHandoff {
   reset() {
     this.setState('alliance-rest');
     window.dispatchEvent(new CustomEvent('agsit:alliance-video-canvas-reset'));
-    this.restoreVideoToStory();
     this.resetStoryVideo();
     this.releaseViewport();
     this.releaseHeaderLock();
   }
 
-  private restoreVideoToStory() {
-    const scene = document.querySelector<HTMLElement>('.js-video-handoff-scene');
-    const video = scene?.querySelector<HTMLVideoElement>('video');
-    const frame = document.querySelector<HTMLElement>('.js-video-story-frame');
-
-    if (video && frame) {
-      frame.append(video);
-    }
-
-    scene?.classList.remove('is-active');
-  }
-
   private resetStoryVideo() {
-    const video = document.querySelector<HTMLVideoElement>('.js-video-story-frame video');
+    const video = document.querySelector<HTMLVideoElement>(
+      '.js-video-handoff-host video, .js-video-story-frame video',
+    );
     if (!video) return;
     video.pause();
     video.currentTime = 0;

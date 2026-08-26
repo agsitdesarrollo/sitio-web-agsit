@@ -39,13 +39,16 @@ export function initAllianceVideoExperience(): (() => void) | undefined {
   const scene = document.querySelector<HTMLElement>('.js-video-handoff-scene');
   const shell = scene?.querySelector<HTMLElement>('.js-video-handoff-shell');
   const host = scene?.querySelector<HTMLElement>('.js-video-handoff-host');
+  const cover = scene?.querySelector<HTMLElement>('.js-video-handoff-cover');
+  const loading = scene?.querySelector<HTMLElement>('.js-video-handoff-loading');
   const logoLayer = scene?.querySelector<HTMLElement>('.js-video-handoff-logo');
   const logoMark = scene?.querySelector<HTMLElement>('.js-video-handoff-logo-mark');
   const story = document.querySelector<HTMLElement>('.js-video-story');
   const storyFrame = document.querySelector<HTMLElement>('.js-video-story-frame');
   const contact = document.querySelector<HTMLElement>('.final-contact-section');
   const transitionLogo = document.querySelector<HTMLElement>('.js-about-transition-logo');
-  const video = storyFrame?.querySelector<HTMLVideoElement>('video');
+  const video = host?.querySelector<HTMLVideoElement>('video')
+    ?? storyFrame?.querySelector<HTMLVideoElement>('video');
   const copy = scene?.querySelector<HTMLElement>('.js-video-handoff-copy');
   const lines = scene
     ? Array.from(scene.querySelectorAll<HTMLElement>('.js-video-handoff-line'))
@@ -55,6 +58,8 @@ export function initAllianceVideoExperience(): (() => void) | undefined {
     !scene
     || !shell
     || !host
+    || !cover
+    || !loading
     || !logoLayer
     || !logoMark
     || !story
@@ -66,6 +71,13 @@ export function initAllianceVideoExperience(): (() => void) | undefined {
     || !lines.length
   ) {
     return undefined;
+  }
+
+  // El elemento de video se mueve una sola vez, antes de cargar el recurso.
+  // Reparentarlo en cada ida y vuelta reinicia el pipeline de composición en
+  // Safari/iPadOS y deja cuadros negros aunque play() ya se haya resuelto.
+  if (video.parentElement !== host) {
+    host.append(video);
   }
 
   const handoff = getAllianceVideoHandoff();
@@ -87,20 +99,108 @@ export function initAllianceVideoExperience(): (() => void) | undefined {
   let keyConsumed = false;
   let viewportFrame = 0;
   let pendingViewportSync = false;
+  let playbackRetryTimer = 0;
+  let shouldKeepPlaying = false;
+  let lastPlaybackTime = 0;
+  let lastPlaybackProgressAt = 0;
+  let lastPlaybackReloadAt = 0;
+  let waitingForFirstFrame = false;
+  let canRevealFirstFrame = false;
+  let minimumFirstFrameTime = 0.32;
+  let lastLayoutWidth = Math.round(scene.getBoundingClientRect().width);
+  let lastLayoutOrientation = window.matchMedia('(orientation: portrait)').matches;
 
   const animationDuration = (seconds: number) => (reduceMotion.matches ? 0 : seconds);
   const isCanvasActive = () => ['to-video', 'canvas', 'to-contact', 'to-logo'].includes(phase);
 
+  const hasAdvancingVideoFrame = () =>
+    !video.paused
+    && video.readyState >= HTMLMediaElement.HAVE_CURRENT_DATA
+    && video.currentTime >= minimumFirstFrameTime;
+
+  const revealVideoCoverIfReady = () => {
+    if (
+      phase !== 'canvas'
+      || !waitingForFirstFrame
+      || !canRevealFirstFrame
+      || !hasAdvancingVideoFrame()
+    ) return false;
+
+    waitingForFirstFrame = false;
+    canRevealFirstFrame = false;
+    gsap.killTweensOf([cover, loading]);
+    gsap.set(loading, { autoAlpha: 0 });
+    gsap.to(cover, {
+      autoAlpha: 0,
+      duration: animationDuration(0.18),
+      ease: 'none',
+      overwrite: true,
+    });
+    if (scene.dataset.canvasState === 'video-loading') {
+      scene.dataset.canvasState = 'video-full';
+    }
+    return true;
+  };
+
+  const resetFirstFrameGate = () => {
+    waitingForFirstFrame = false;
+    canRevealFirstFrame = false;
+    minimumFirstFrameTime = 0.32;
+    gsap.killTweensOf([cover, loading]);
+    gsap.set(loading, { autoAlpha: 0 });
+  };
+
   const hydrateVideo = () => {
     const source = video.dataset.src;
     video.muted = true;
+    video.defaultMuted = true;
     video.playsInline = true;
+    video.autoplay = true;
     video.preload = 'auto';
+    video.setAttribute('muted', '');
+    video.setAttribute('playsinline', '');
+    video.setAttribute('webkit-playsinline', '');
+    video.setAttribute('autoplay', '');
 
-    if (source && !video.currentSrc) {
+    if (source && !video.currentSrc && !video.getAttribute('src')) {
       video.src = source;
       video.load();
+      lastPlaybackReloadAt = performance.now();
+    } else if (
+      source
+      && video.error
+      && performance.now() - lastPlaybackReloadAt >= 5000
+    ) {
+      // Recupera errores transitorios de red/decodificación sin reiniciar el
+      // recurso en cada tick del watchdog.
+      video.src = source;
+      video.load();
+      lastPlaybackReloadAt = performance.now();
     }
+  };
+
+  const keepVideoPlaying = () => {
+    window.clearTimeout(playbackRetryTimer);
+    if (!shouldKeepPlaying) return;
+
+    hydrateVideo();
+    const now = performance.now();
+    const currentTime = video.currentTime;
+    if (currentTime > lastPlaybackTime + 0.02 || currentTime < lastPlaybackTime - 0.1) {
+      lastPlaybackTime = currentTime;
+      lastPlaybackProgressAt = now;
+    }
+
+    revealVideoCoverIfReady();
+
+    // `paused === false` no garantiza reproducción: varios WebView quedan en
+    // waiting sin avanzar currentTime. El watchdog vuelve a solicitar play().
+    if (video.paused || now - lastPlaybackProgressAt > 1100) {
+      ensureVideoAutoplay(video);
+    }
+    playbackRetryTimer = window.setTimeout(() => {
+      if (shouldKeepPlaying) keepVideoPlaying();
+    }, 650);
   };
 
   const playVideo = (fromStart = false) => {
@@ -112,7 +212,26 @@ export function initAllianceVideoExperience(): (() => void) | undefined {
         // Metadata can still be pending. The decoded-frame gate retries it.
       }
     }
+    shouldKeepPlaying = true;
+    lastPlaybackTime = video.currentTime;
+    lastPlaybackProgressAt = performance.now();
     ensureVideoAutoplay(video);
+    keepVideoPlaying();
+  };
+
+  const stopVideo = (resetTime = false) => {
+    shouldKeepPlaying = false;
+    window.clearTimeout(playbackRetryTimer);
+    video.pause();
+    if (!resetTime) return;
+
+    try {
+      video.currentTime = 0;
+    } catch {
+      // El recurso puede estar descargándose; ya inicia en cero por defecto.
+    }
+    lastPlaybackTime = 0;
+    lastPlaybackProgressAt = 0;
   };
 
   const setRootActive = (isActive: boolean) => {
@@ -242,6 +361,11 @@ export function initAllianceVideoExperience(): (() => void) | undefined {
     });
     gsap.set(copy, { autoAlpha: 0, y: 0 });
     setLines(undefined);
+    if (waitingForFirstFrame) {
+      scene.dataset.canvasState = 'video-loading';
+      gsap.set(cover, { autoAlpha: 1, backgroundColor: DARK_BACKGROUND });
+      gsap.set(loading, { autoAlpha: 1 });
+    }
   };
 
   const setCompactGeometry = (lineIndex: number) => {
@@ -258,6 +382,11 @@ export function initAllianceVideoExperience(): (() => void) | undefined {
     });
     gsap.set(copy, { autoAlpha: 1, y: geometry.copyY });
     setLines(lineIndex);
+    if (waitingForFirstFrame) {
+      scene.dataset.canvasState = 'video-loading';
+      gsap.set(cover, { autoAlpha: 1, backgroundColor: '#ffffff' });
+      gsap.set(loading, { autoAlpha: 0 });
+    }
   };
 
   const renderCurrentStop = () => {
@@ -275,7 +404,19 @@ export function initAllianceVideoExperience(): (() => void) | undefined {
     });
   };
 
-  const requestViewportSync = () => {
+  const requestViewportSync = (force = false) => {
+    const nextWidth = Math.round(scene.getBoundingClientRect().width);
+    const nextOrientation = window.matchMedia('(orientation: portrait)').matches;
+    const layoutChanged = Math.abs(nextWidth - lastLayoutWidth) > 1
+      || nextOrientation !== lastLayoutOrientation;
+
+    // En móvil visualViewport emite resize cuando aparecen las barras. El
+    // lienzo usa una altura congelada, por lo que ese evento no debe matar ni
+    // reconstruir la animación que está en pantalla.
+    if (!force && !layoutChanged) return;
+
+    lastLayoutWidth = nextWidth;
+    lastLayoutOrientation = nextOrientation;
     cancelAnimationFrame(viewportFrame);
     viewportFrame = requestAnimationFrame(() => {
       viewportFrame = 0;
@@ -292,7 +433,7 @@ export function initAllianceVideoExperience(): (() => void) | undefined {
   const finishAnimation = () => {
     activeTimeline = undefined;
     animating = false;
-    if (pendingViewportSync) requestViewportSync();
+    if (pendingViewportSync) requestViewportSync(true);
   };
 
   const animateBetweenStops = (nextStop: number) => {
@@ -314,6 +455,18 @@ export function initAllianceVideoExperience(): (() => void) | undefined {
         duration: animationDuration(1.05),
         ease: 'power3.inOut',
       }, 0);
+      if (waitingForFirstFrame) {
+        activeTimeline.to(cover, {
+          backgroundColor: '#ffffff',
+          duration: animationDuration(1.05),
+          ease: 'power3.inOut',
+        }, 0);
+        activeTimeline.to(loading, {
+          autoAlpha: 0,
+          duration: animationDuration(0.2),
+          ease: 'none',
+        }, 0);
+      }
       activeTimeline.to(shell, {
         x: geometry.x,
         y: geometry.y,
@@ -356,6 +509,18 @@ export function initAllianceVideoExperience(): (() => void) | undefined {
         duration: animationDuration(1.05),
         ease: 'power3.inOut',
       }, 0);
+      if (waitingForFirstFrame) {
+        activeTimeline.to(cover, {
+          backgroundColor: DARK_BACKGROUND,
+          duration: animationDuration(1.05),
+          ease: 'power3.inOut',
+        }, 0);
+        activeTimeline.to(loading, {
+          autoAlpha: 1,
+          duration: animationDuration(0.2),
+          ease: 'none',
+        }, animationDuration(0.85));
+      }
       activeTimeline.to(shell, {
         x: 0,
         y: 0,
@@ -393,8 +558,14 @@ export function initAllianceVideoExperience(): (() => void) | undefined {
     scene.dataset.canvasState = 'idle';
     setRootActive(false);
     gsap.set(scene, { autoAlpha: 0 });
-    video.pause();
+    stopVideo(false);
     handoff.arriveContact();
+    // El scroll programático hacia Contacto puede publicar un último delta
+    // descendente después de liberar el header. Se muestra de nuevo al cerrar
+    // el handoff para que Contacto siempre reserve el espacio que realmente usa.
+    requestAnimationFrame(() => {
+      document.querySelector<HTMLElement>('.site-nav')?.classList.remove('is-scroll-hidden');
+    });
   };
 
   const moveToContact = () => {
@@ -427,6 +598,8 @@ export function initAllianceVideoExperience(): (() => void) | undefined {
     setRootActive(false);
     gsap.set(scene, { autoAlpha: 0 });
     gsap.set(logoLayer, { autoAlpha: 0 });
+    resetFirstFrameGate();
+    stopVideo(true);
     handoff.finishReturn();
     window.dispatchEvent(new CustomEvent('agsit:alliance-video-canvas-returned'));
   };
@@ -473,12 +646,14 @@ export function initAllianceVideoExperience(): (() => void) | undefined {
       duration: animationDuration(LOGO_ZOOM_DURATION),
       ease: 'power2.inOut',
     }, 0);
-    activeTimeline.set(transitionLogo, { autoAlpha: 1 }, animationDuration(LOGO_ZOOM_DURATION));
-    activeTimeline.to(scene, {
-      autoAlpha: 0,
-      duration: animationDuration(0.08),
-      ease: 'none',
-    }, animationDuration(LOGO_ZOOM_DURATION));
+    // Entrega atómica: ambos logos tienen la misma geometría y cambian de
+    // propietario dentro del mismo callback, sin un frame con dos logotipos ni
+    // una franja del documento expuesta.
+    activeTimeline.call(() => {
+      gsap.set(transitionLogo, { autoAlpha: 1 });
+      gsap.set(logoLayer, { autoAlpha: 0 });
+      gsap.set(scene, { autoAlpha: 0 });
+    }, undefined, animationDuration(LOGO_ZOOM_DURATION));
   };
 
   const returnToLogo = () => {
@@ -515,28 +690,38 @@ export function initAllianceVideoExperience(): (() => void) | undefined {
     stop = 1;
     animating = true;
     setRootActive(true);
-    host.append(video);
     scene.dataset.canvasState = 'logo-zoom';
     gsap.set(scene, { autoAlpha: 1, backgroundColor: '#ffffff' });
     gsap.set(shell, {
-      autoAlpha: 0,
+      autoAlpha: 1,
       x: 0,
       y: 0,
       scale: 1,
       clipPath: 'inset(0px 0px 0px 0px round 0px)',
     });
+    gsap.set(cover, { autoAlpha: 1, backgroundColor: '#ffffff' });
+    resetFirstFrameGate();
+    waitingForFirstFrame = true;
+    minimumFirstFrameTime = 0.32;
     setLogoGeometry(geometry, 1);
     gsap.set(logoMark, { autoAlpha: 1 });
     gsap.set(copy, { autoAlpha: 0 });
     setLines(undefined);
     gsap.set(transitionLogo, { autoAlpha: 0 });
+    // Se solicita play() al entrar desde el gesto real. El velo mantiene el
+    // video fuera de la vista hasta que WebKit confirme un frame presentado.
     playVideo(true);
 
-    const videoFramePromise = handoff.waitForVideoFrame(video);
+    let videoFramePromise: Promise<boolean> = Promise.resolve(false);
     const zoomPromise = new Promise<void>((resolve) => {
       activeTimeline?.kill();
-      activeTimeline = gsap.timeline({ onComplete: resolve });
+      activeTimeline = gsap.timeline({ onComplete: resolve, onInterrupt: resolve });
       activeTimeline.to(scene, {
+        backgroundColor: DARK_BACKGROUND,
+        duration: animationDuration(LOGO_ZOOM_DURATION),
+        ease: 'power2.inOut',
+      }, 0);
+      activeTimeline.to(cover, {
         backgroundColor: DARK_BACKGROUND,
         duration: animationDuration(LOGO_ZOOM_DURATION),
         ease: 'power2.inOut',
@@ -551,30 +736,37 @@ export function initAllianceVideoExperience(): (() => void) | undefined {
         duration: animationDuration(0.22),
         ease: 'none',
       }, animationDuration(LOGO_ZOOM_DURATION - 0.22));
+      activeTimeline.call(() => {
+        if (activationId !== currentActivation || phase !== 'to-video') return;
+        playVideo(true);
+        videoFramePromise = handoff.waitForVideoFrame(video);
+      }, undefined, animationDuration(Math.max(0, LOGO_ZOOM_DURATION - 0.42)));
     });
 
-    await Promise.all([zoomPromise, videoFramePromise]);
+    await zoomPromise;
     if (activationId !== currentActivation || phase !== 'to-video') return;
+
+    // El final del zoom no espera un timeout de red: entrega de inmediato una
+    // parada navegable. El velo solo desaparece si hay avance real del medio;
+    // la promesa y el watchdog pueden confirmarlo después sin bloquear gestos.
+    void videoFramePromise.then(() => {
+      if (activationId !== currentActivation || phase !== 'canvas') return;
+      revealVideoCoverIfReady();
+    });
 
     handoff.beginMoveToVideo();
     activeTimeline?.kill();
-    activeTimeline = gsap.timeline({
-      onComplete: () => {
-        activeTimeline = undefined;
-        phase = 'canvas';
-        animating = false;
-        scene.dataset.canvasState = 'video-full';
-        scrollElementToTop(story);
-        window.dispatchEvent(new CustomEvent('agsit:alliance-video-canvas-entered'));
-        if (pendingViewportSync) requestViewportSync();
-      },
-    });
-    activeTimeline.to(shell, {
-      autoAlpha: 1,
-      duration: animationDuration(0.18),
-      ease: 'none',
-    }, 0);
-    activeTimeline.set(logoLayer, { autoAlpha: 0 }, animationDuration(0.18));
+    activeTimeline = undefined;
+    phase = 'canvas';
+    animating = false;
+    canRevealFirstFrame = true;
+    scene.dataset.canvasState = 'video-loading';
+    gsap.set(logoLayer, { autoAlpha: 0 });
+    const didRevealFrame = revealVideoCoverIfReady();
+    if (!didRevealFrame) gsap.set(loading, { autoAlpha: 1 });
+    scrollElementToTop(story);
+    window.dispatchEvent(new CustomEvent('agsit:alliance-video-canvas-entered'));
+    if (pendingViewportSync) requestViewportSync(true);
   };
 
   const isContactAtEntry = () => {
@@ -590,7 +782,6 @@ export function initAllianceVideoExperience(): (() => void) | undefined {
     stop = maxStop;
     animating = false;
     setRootActive(true);
-    host.append(video);
     renderCurrentStop();
     gsap.set(scene, { autoAlpha: 1 });
     scrollElementToTop(story);
@@ -708,10 +899,26 @@ export function initAllianceVideoExperience(): (() => void) | undefined {
     setRootActive(false);
     gsap.set(scene, { autoAlpha: 0 });
     gsap.set(logoLayer, { autoAlpha: 0 });
-    if (video.parentElement === host) storyFrame.append(video);
+    resetFirstFrameGate();
+    gsap.set(cover, { autoAlpha: 0 });
+    stopVideo(true);
+  };
+
+  const retryPlayback = () => {
+    if (!shouldKeepPlaying) return;
+    ensureVideoAutoplay(video);
+    keepVideoPlaying();
+    revealVideoCoverIfReady();
+  };
+
+  const syncViewportOnResize = () => requestViewportSync(false);
+  const syncViewportOnOrientation = () => requestViewportSync(true);
+  const syncPlaybackOnVisibility = () => {
+    if (!document.hidden) retryPlayback();
   };
 
   gsap.set(scene, { autoAlpha: 0 });
+  gsap.set(cover, { autoAlpha: 0 });
   gsap.set(shell, { transformOrigin: '0 0', force3D: true });
   gsap.set(logoLayer, { transformOrigin: '50% 50%', force3D: true, autoAlpha: 0 });
   gsap.set(copy, { xPercent: -50, autoAlpha: 0 });
@@ -727,12 +934,22 @@ export function initAllianceVideoExperience(): (() => void) | undefined {
   window.addEventListener('touchcancel', onTouchEnd, { passive: true, capture: true });
   window.addEventListener('keydown', onKeyDown, { capture: true });
   window.addEventListener('keyup', onKeyUp, { capture: true });
-  window.addEventListener('resize', requestViewportSync, { passive: true });
-  window.visualViewport?.addEventListener('resize', requestViewportSync, { passive: true });
-  window.addEventListener('orientationchange', requestViewportSync, { passive: true });
+  video.addEventListener('pause', retryPlayback);
+  video.addEventListener('stalled', retryPlayback);
+  video.addEventListener('waiting', retryPlayback);
+  video.addEventListener('canplay', retryPlayback);
+  video.addEventListener('error', retryPlayback);
+  video.addEventListener('playing', revealVideoCoverIfReady);
+  video.addEventListener('timeupdate', revealVideoCoverIfReady);
+  video.addEventListener('loadeddata', revealVideoCoverIfReady);
+  document.addEventListener('visibilitychange', syncPlaybackOnVisibility);
+  window.addEventListener('resize', syncViewportOnResize, { passive: true });
+  window.visualViewport?.addEventListener('resize', syncViewportOnResize, { passive: true });
+  window.addEventListener('orientationchange', syncViewportOnOrientation, { passive: true });
 
   return () => {
     window.clearTimeout(wheelEndTimer);
+    window.clearTimeout(playbackRetryTimer);
     cancelAnimationFrame(viewportFrame);
     activeTimeline?.kill();
     window.removeEventListener('agsit:alliance-video-canvas-forward', activateForward);
@@ -745,9 +962,18 @@ export function initAllianceVideoExperience(): (() => void) | undefined {
     window.removeEventListener('touchcancel', onTouchEnd, { capture: true });
     window.removeEventListener('keydown', onKeyDown, { capture: true });
     window.removeEventListener('keyup', onKeyUp, { capture: true });
-    window.removeEventListener('resize', requestViewportSync);
-    window.visualViewport?.removeEventListener('resize', requestViewportSync);
-    window.removeEventListener('orientationchange', requestViewportSync);
+    video.removeEventListener('pause', retryPlayback);
+    video.removeEventListener('stalled', retryPlayback);
+    video.removeEventListener('waiting', retryPlayback);
+    video.removeEventListener('canplay', retryPlayback);
+    video.removeEventListener('error', retryPlayback);
+    video.removeEventListener('playing', revealVideoCoverIfReady);
+    video.removeEventListener('timeupdate', revealVideoCoverIfReady);
+    video.removeEventListener('loadeddata', revealVideoCoverIfReady);
+    document.removeEventListener('visibilitychange', syncPlaybackOnVisibility);
+    window.removeEventListener('resize', syncViewportOnResize);
+    window.visualViewport?.removeEventListener('resize', syncViewportOnResize);
+    window.removeEventListener('orientationchange', syncViewportOnOrientation);
     resetCanvas();
   };
 }

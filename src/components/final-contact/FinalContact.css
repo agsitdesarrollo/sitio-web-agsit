@@ -165,6 +165,10 @@
     padding: calc(var(--nav-h) + 38px) 18px 64px;
   }
 
+  html.mobile-menu-open .final-contact-section {
+    padding-top: calc(var(--nav-h) + var(--mobile-menu-open-h, 0px) + 38px);
+  }
+
   .final-contact-heading h2 {
     font-size: clamp(2.55rem, 12vw, 3.65rem);
     line-height: 1.02;
@@ -188,6 +192,10 @@
 @media (pointer: coarse) and (orientation: landscape) and (max-width: 932px) and (max-height: 520px) {
   .final-contact-section {
     padding: calc(var(--nav-h) + 20px) 20px 38px;
+  }
+
+  html.mobile-menu-open .final-contact-section {
+    padding-top: calc(var(--nav-h) + var(--mobile-menu-open-h, 0px) + 20px);
   }
 
   .final-contact-content {
