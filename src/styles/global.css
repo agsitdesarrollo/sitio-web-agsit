@@ -66,10 +66,11 @@ html[data-alliance-video-canvas='active'] {
   scrollbar-width: none;
 }
 
-/* El handoff Alianza↔Video realiza su propia navegación atómica. Desactivar el
-   snap únicamente mientras el overlay negro está al frente evita que WebKit
-   vuelva a una parada anterior en respuesta a un scrollTo programático. */
+/* Los handoffs atómicos realizan su propia navegación. Desactivar el snap solo
+   mientras cada propietario confirma su parada física evita que WebKit vuelva
+   a una ancla anterior en respuesta a un scrollTo programático. */
 html.home-snap-active[data-alliance-video-canvas='active'],
+html.home-snap-active[data-about-reverse-lock],
 html.home-snap-active[data-scroll-handoff='alliance-centering'],
 html.home-snap-active[data-scroll-handoff='alliance-zoom'],
 html.home-snap-active[data-scroll-handoff='waiting-video-frame'],
