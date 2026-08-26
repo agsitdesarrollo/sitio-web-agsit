@@ -1033,14 +1033,22 @@ const getVideoRatioKind = (image: string) => (image.endsWith('/servicios.mp4') ?
   let touchStartY: number | null = null;
   let touchStartSlide: number | null = null;
   let touchGestureActive = false;
-  let atomicReverseTarget: typeof LAST_SERVICE_SLIDE | typeof CLIENTS_SLIDE | null = null;
-  let atomicReverseFrame = 0;
-  let atomicReverseStableFrames = 0;
-  let atomicReverseLastCorrectionAt = 0;
-  let requestAtomicReverseStopSync = () => {};
-  let cancelAtomicReverseStop = () => {};
+  type AtomicAboutTarget =
+    | typeof LAST_SERVICE_SLIDE
+    | typeof CLIENTS_SLIDE
+    | typeof ALLIANCE_SLIDE;
+  type AtomicAboutPhase = 'locked' | 'releasing';
+  let atomicAboutTarget: AtomicAboutTarget | null = null;
+  let atomicAboutPhase: AtomicAboutPhase = 'locked';
+  let atomicAboutFrame = 0;
+  let atomicAboutStableFrames = 0;
+  let atomicAboutLastCorrectionAt = 0;
+  let atomicAboutReleaseStartedAt = 0;
+  let requestAtomicAboutStopSync = () => {};
+  let cancelAtomicAboutStop = () => {};
   let allianceTouchClaimed = false;
   let allianceWheelConsumed = false;
+  let wheelGestureActive = false;
   let allianceWheelEndTimer = 0;
 
   const rememberUserScrollIntent = (direction: Exclude<UserScrollDirection, 0>) => {
@@ -1103,10 +1111,21 @@ const getVideoRatioKind = (image: string) => (image.endsWith('/servicios.mp4') ?
     const threshold = Math.max(40, getDynamicViewportHeight() * 0.055);
     const rect = section.getBoundingClientRect();
     const progress = getLogicalAboutProgress(rect);
+    const isAllianceVisualOwner = current === ALLIANCE_SLIDE
+      && pendingSlideTarget < 0
+      && !isAnimating;
     const isAtDockedAlliance = allianceAnchor === 'dock'
-      || (!isAllianceAtCenter && Math.abs(progress - ALLIANCE_SLIDE) < 0.12);
+      || (
+        isAllianceVisualOwner
+        && !isAllianceAtCenter
+        && Math.abs(progress - ALLIANCE_SLIDE) < 0.12
+      );
     const isAtCenteredAlliance = allianceAnchor === 'center'
-      || (isAllianceAtCenter && Math.abs(progress - CENTERED_ALLIANCE_STEP) < 0.12);
+      || (
+        isAllianceVisualOwner
+        && isAllianceAtCenter
+        && Math.abs(progress - CENTERED_ALLIANCE_STEP) < 0.12
+      );
 
     if (isAllianceExitPlaying) {
       event.preventDefault();
@@ -1124,13 +1143,13 @@ const getVideoRatioKind = (image: string) => (image.endsWith('/servicios.mp4') ?
       return;
     }
 
-    if (atomicReverseTarget !== null) {
+    if (atomicAboutTarget !== null) {
       event.preventDefault();
       // Si el usuario encadena un gesto nuevo mientras Clientes todavía está
       // confirmando su ancla física, conserva una sola intención hacia
       // Servicio 5. Ningún movimiento nativo puede recuperar Alianzas.
       if (
-        atomicReverseTarget === CLIENTS_SLIDE
+        atomicAboutTarget === CLIENTS_SLIDE
         && touchStartSlide === CLIENTS_SLIDE
         && !allianceTouchClaimed
         && totalDelta <= -threshold
@@ -1149,6 +1168,23 @@ const getVideoRatioKind = (image: string) => (image.endsWith('/servicios.mp4') ?
         || section.dataset.currentSlide === String(CLIENTS_SLIDE)
         || Math.abs(progress - CLIENTS_SLIDE) < 0.18
       );
+
+    // La salida descendente de Clientes se reclama desde el gesto, antes de
+    // que el scroll nativo alcance la zona 7→8. El listener de scroll conserva
+    // una ruta de respaldo para scrollbar, teclado y navegación programática.
+    if (
+      isAtClients
+      && current === CLIENTS_SLIDE
+      && pendingSlideTarget < 0
+      && !isAnimating
+      && totalDelta > 0
+    ) {
+      event.preventDefault();
+      if (totalDelta < threshold) return;
+      allianceTouchClaimed = true;
+      enterAllianceAtDock();
+      return;
+    }
 
     // Safari puede desechar el primer swipe después de un scrollTo + snap. La
     // parada de Clientes es dueña explícita de ESE gesto hacia Servicio 5; al
@@ -1206,7 +1242,7 @@ const getVideoRatioKind = (image: string) => (image.endsWith('/servicios.mp4') ?
     touchStartSlide = null;
     touchGestureActive = false;
     allianceTouchClaimed = false;
-    requestAtomicReverseStopSync();
+    requestAtomicAboutStopSync();
   };
 
   const onScrollIntentKeyDown = (event: KeyboardEvent) => {
@@ -1268,32 +1304,31 @@ const getVideoRatioKind = (image: string) => (image.endsWith('/servicios.mp4') ?
   let pendingSlideTarget = -1;
   let slideSettleTimeout = 0;
 
-  const finishAtomicReverseStop = () => {
-    const settledTarget = atomicReverseTarget;
-    cancelAnimationFrame(atomicReverseFrame);
-    atomicReverseFrame = 0;
-    atomicReverseTarget = null;
-    atomicReverseStableFrames = 0;
-    atomicReverseLastCorrectionAt = 0;
-    delete document.documentElement.dataset.aboutReverseLock;
-
-    if (settledTarget === CLIENTS_SLIDE && clientsToLastServiceRequested) {
-      requestAnimationFrame(() => navigateClientsToLastService());
-    }
-  };
-
-  cancelAtomicReverseStop = () => {
-    cancelAnimationFrame(atomicReverseFrame);
-    atomicReverseFrame = 0;
-    atomicReverseTarget = null;
-    atomicReverseStableFrames = 0;
-    atomicReverseLastCorrectionAt = 0;
+  const finishAtomicAboutStop = () => {
+    cancelAnimationFrame(atomicAboutFrame);
+    atomicAboutFrame = 0;
+    atomicAboutTarget = null;
+    atomicAboutPhase = 'locked';
+    atomicAboutStableFrames = 0;
+    atomicAboutLastCorrectionAt = 0;
+    atomicAboutReleaseStartedAt = 0;
     delete document.documentElement.dataset.aboutReverseLock;
   };
 
-  const inspectAtomicReverseStop = () => {
-    atomicReverseFrame = 0;
-    const target = atomicReverseTarget;
+  cancelAtomicAboutStop = () => {
+    cancelAnimationFrame(atomicAboutFrame);
+    atomicAboutFrame = 0;
+    atomicAboutTarget = null;
+    atomicAboutPhase = 'locked';
+    atomicAboutStableFrames = 0;
+    atomicAboutLastCorrectionAt = 0;
+    atomicAboutReleaseStartedAt = 0;
+    delete document.documentElement.dataset.aboutReverseLock;
+  };
+
+  const inspectAtomicAboutStop = () => {
+    atomicAboutFrame = 0;
+    const target = atomicAboutTarget;
     if (target === null) return;
 
     const progress = getLogicalAboutProgress();
@@ -1301,38 +1336,81 @@ const getVideoRatioKind = (image: string) => (image.endsWith('/servicios.mp4') ?
     const isVisuallySettled = current === target
       && pendingSlideTarget < 0
       && !isAnimating;
+    const isGestureActive = touchGestureActive || wheelGestureActive;
     const now = performance.now();
 
-    if (!isPhysicallySettled && now - atomicReverseLastCorrectionAt >= 80) {
-      atomicReverseLastCorrectionAt = now;
+    // Si WebKit intenta recuperar el ancla anterior al reactivar scroll-snap,
+    // vuelve a cerrar la operación antes de que ese desplazamiento alcance a
+    // la máquina visual. La liberación solo termina después de comprobar que
+    // la parada permanece estable con el snap ya encendido.
+    if (atomicAboutPhase === 'releasing' && (!isPhysicallySettled || isGestureActive)) {
+      atomicAboutPhase = 'locked';
+      atomicAboutStableFrames = 0;
+      atomicAboutReleaseStartedAt = 0;
+      document.documentElement.dataset.aboutReverseLock = String(target);
+    }
+
+    if (!isPhysicallySettled && now - atomicAboutLastCorrectionAt >= 80) {
+      atomicAboutLastCorrectionAt = now;
       scrollToAboutStep(target);
     }
 
-    if (isPhysicallySettled && isVisuallySettled && !touchGestureActive) {
-      atomicReverseStableFrames += 1;
-      if (atomicReverseStableFrames >= 2) {
-        finishAtomicReverseStop();
+    if (isPhysicallySettled && isVisuallySettled && !isGestureActive) {
+      // Un segundo gesto iniciado realmente en Clientes se encadena sin
+      // reactivar el snap entre ambas paradas. Servicio 5 se libera después y
+      // desde ahí Servicio 4 vuelve a usar el recorrido nativo de siempre.
+      if (target === CLIENTS_SLIDE && clientsToLastServiceRequested) {
+        clientsToLastServiceRequested = false;
+        atomicAboutTarget = LAST_SERVICE_SLIDE;
+        atomicAboutPhase = 'locked';
+        atomicAboutStableFrames = 0;
+        atomicAboutLastCorrectionAt = 0;
+        atomicAboutReleaseStartedAt = 0;
+        document.documentElement.dataset.aboutReverseLock = String(LAST_SERVICE_SLIDE);
+        setNormalSlideFromScroll(LAST_SERVICE_SLIDE);
+        scrollToAboutStep(LAST_SERVICE_SLIDE);
+        requestAtomicAboutStopSync();
+        return;
+      }
+
+      atomicAboutStableFrames += 1;
+      if (atomicAboutPhase === 'locked' && atomicAboutStableFrames >= 4) {
+        atomicAboutPhase = 'releasing';
+        atomicAboutStableFrames = 0;
+        atomicAboutReleaseStartedAt = now;
+        delete document.documentElement.dataset.aboutReverseLock;
+        // Reafirma la misma parada ya con snap activo para que el navegador la
+        // adopte como ancla actual, en lugar de restaurar la anterior.
+        scrollToAboutStep(target);
+      } else if (
+        atomicAboutPhase === 'releasing'
+        && atomicAboutStableFrames >= 10
+        && now - atomicAboutReleaseStartedAt >= 160
+      ) {
+        finishAtomicAboutStop();
         return;
       }
     } else {
-      atomicReverseStableFrames = 0;
+      atomicAboutStableFrames = 0;
     }
 
-    requestAtomicReverseStopSync();
+    requestAtomicAboutStopSync();
   };
 
-  requestAtomicReverseStopSync = () => {
-    if (atomicReverseTarget === null || atomicReverseFrame) return;
-    atomicReverseFrame = requestAnimationFrame(inspectAtomicReverseStop);
+  requestAtomicAboutStopSync = () => {
+    if (atomicAboutTarget === null || atomicAboutFrame) return;
+    atomicAboutFrame = requestAnimationFrame(inspectAtomicAboutStop);
   };
 
-  const beginAtomicReverseStop = (target: typeof LAST_SERVICE_SLIDE | typeof CLIENTS_SLIDE) => {
-    if (atomicReverseTarget !== null && atomicReverseTarget !== target) return false;
-    atomicReverseTarget = target;
-    atomicReverseStableFrames = 0;
-    atomicReverseLastCorrectionAt = 0;
+  const beginAtomicAboutStop = (target: AtomicAboutTarget) => {
+    if (atomicAboutTarget !== null) return atomicAboutTarget === target;
+    atomicAboutTarget = target;
+    atomicAboutPhase = 'locked';
+    atomicAboutStableFrames = 0;
+    atomicAboutLastCorrectionAt = 0;
+    atomicAboutReleaseStartedAt = 0;
     document.documentElement.dataset.aboutReverseLock = String(target);
-    requestAtomicReverseStopSync();
+    requestAtomicAboutStopSync();
     return true;
   };
 
@@ -1362,7 +1440,7 @@ const getVideoRatioKind = (image: string) => (image.endsWith('/servicios.mp4') ?
     if (!isAllianceScrubbing) {
       onSlideArrival(current, false);
     }
-    requestAtomicReverseStopSync();
+    requestAtomicAboutStopSync();
   };
 
   const setNormalSlideFromScroll = (target: number) => {
@@ -1421,12 +1499,29 @@ const getVideoRatioKind = (image: string) => (image.endsWith('/servicios.mp4') ?
     slideSettleTimeout = window.setTimeout(settlePendingSlide, shouldReduceMotion() ? 0 : ANIM_MS);
   };
 
+  const enterAllianceAtDock = () => {
+    if (
+      isAllianceScrubbing
+      || isAllianceTravelPlaying
+      || isAllianceExitPlaying
+      || zoomHandoffState !== 'idle'
+      || (current !== CLIENTS_SLIDE && pendingSlideTarget !== ALLIANCE_SLIDE)
+    ) return;
+
+    if (!beginAtomicAboutStop(ALLIANCE_SLIDE)) return;
+    isAllianceAtCenter = false;
+    allianceAnchor = 'none';
+    setNormalSlideFromScroll(ALLIANCE_SLIDE);
+    scrollToAboutStep(ALLIANCE_SLIDE);
+    requestAtomicAboutStopSync();
+  };
+
   leaveAllianceToClients = () => {
     if (
       isAllianceExitPlaying
       || isAllianceTravelPlaying
       || isAnimating
-      || atomicReverseTarget !== null
+      || atomicAboutTarget !== null
       || zoomHandoffState !== 'idle'
     ) return;
 
@@ -1437,7 +1532,7 @@ const getVideoRatioKind = (image: string) => (image.endsWith('/servicios.mp4') ?
     handoff.setState('alliance-rest');
     isAllianceExitPlaying = true;
     clientsToLastServiceRequested = false;
-    if (!beginAtomicReverseStop(CLIENTS_SLIDE)) return;
+    if (!beginAtomicAboutStop(CLIENTS_SLIDE)) return;
 
     // La animación visual inicia antes de mover el documento. Mientras está en
     // vuelo, syncAboutToScroll ignora el progreso transitorio del snap.
@@ -1449,10 +1544,10 @@ const getVideoRatioKind = (image: string) => (image.endsWith('/servicios.mp4') ?
     if (
       isAllianceExitPlaying
       || pendingSlideTarget === CLIENTS_SLIDE
-      || atomicReverseTarget === CLIENTS_SLIDE
+      || atomicAboutTarget === CLIENTS_SLIDE
     ) {
       clientsToLastServiceRequested = true;
-      requestAtomicReverseStopSync();
+      requestAtomicAboutStopSync();
       return;
     }
 
@@ -1461,15 +1556,15 @@ const getVideoRatioKind = (image: string) => (image.endsWith('/servicios.mp4') ?
       || isAnimating
       || isAllianceScrubbing
       || isAllianceTravelPlaying
-      || atomicReverseTarget !== null
+      || atomicAboutTarget !== null
       || zoomHandoffState !== 'idle'
     ) return;
 
     clientsToLastServiceRequested = false;
-    if (!beginAtomicReverseStop(LAST_SERVICE_SLIDE)) return;
+    if (!beginAtomicAboutStop(LAST_SERVICE_SLIDE)) return;
     setNormalSlideFromScroll(LAST_SERVICE_SLIDE);
     scrollToAboutStep(LAST_SERVICE_SLIDE);
-    requestAtomicReverseStopSync();
+    requestAtomicAboutStopSync();
   };
 
   const setAllianceCenterProgress = (progress: number) => {
@@ -1568,13 +1663,36 @@ const getVideoRatioKind = (image: string) => (image.endsWith('/servicios.mp4') ?
 
   const onAllianceWheel = (event: WheelEvent) => {
     if (event.deltaY === 0) return;
+    const startsNewWheelGesture = !wheelGestureActive;
+    wheelGestureActive = true;
     rememberUserScrollIntent(event.deltaY > 0 ? 1 : -1);
     window.clearTimeout(allianceWheelEndTimer);
     allianceWheelEndTimer = window.setTimeout(() => {
+      wheelGestureActive = false;
       allianceWheelConsumed = false;
+      requestAtomicAboutStopSync();
     }, 180);
     if (zoomHandoffState !== 'idle') return;
     if (section.dataset.aboutState !== 'active') return;
+
+    if (atomicAboutTarget !== null) {
+      event.preventDefault();
+      // Solo una rueda nueva, después de que terminó el momentum anterior,
+      // puede encadenar Clientes → Servicio 5. Los ticks restantes del gesto
+      // que salió de Alianzas se consumen sin atravesar otra lámina.
+      if (
+        startsNewWheelGesture
+        && atomicAboutTarget === CLIENTS_SLIDE
+        && current === CLIENTS_SLIDE
+        && pendingSlideTarget < 0
+        && event.deltaY < 0
+      ) {
+        clientsToLastServiceRequested = true;
+      }
+      requestAtomicAboutStopSync();
+      return;
+    }
+
     if (isAllianceExitPlaying) {
       event.preventDefault();
       return;
@@ -1582,10 +1700,27 @@ const getVideoRatioKind = (image: string) => (image.endsWith('/servicios.mp4') ?
 
     const rect = section.getBoundingClientRect();
     const progress = getLogicalAboutProgress(rect);
+    const isAllianceVisualOwner = current === ALLIANCE_SLIDE
+      && pendingSlideTarget < 0
+      && !isAnimating;
     const isAtDockedAlliance = allianceAnchor === 'dock'
-      || (!isAllianceAtCenter && Math.abs(progress - ALLIANCE_SLIDE) < 0.12);
+      || (
+        isAllianceVisualOwner
+        && !isAllianceAtCenter
+        && Math.abs(progress - ALLIANCE_SLIDE) < 0.12
+      );
     const isAtCenteredAlliance = allianceAnchor === 'center'
-      || (isAllianceAtCenter && Math.abs(progress - CENTERED_ALLIANCE_STEP) < 0.12);
+      || (
+        isAllianceVisualOwner
+        && isAllianceAtCenter
+        && Math.abs(progress - CENTERED_ALLIANCE_STEP) < 0.12
+      );
+
+    const isAtClients = allianceAnchor === 'none'
+      && current === CLIENTS_SLIDE
+      && pendingSlideTarget < 0
+      && !isAnimating
+      && Math.abs(progress - CLIENTS_SLIDE) < 0.18;
 
     if (allianceWheelConsumed && (isAllianceTravelPlaying || isAtDockedAlliance || isAtCenteredAlliance)) {
       event.preventDefault();
@@ -1595,6 +1730,13 @@ const getVideoRatioKind = (image: string) => (image.endsWith('/servicios.mp4') ?
     if (isAllianceTravelPlaying) {
       // Lockout: la animación en curso es dueña del gesto.
       event.preventDefault();
+      return;
+    }
+
+    if (event.deltaY > 0 && isAtClients) {
+      event.preventDefault();
+      allianceWheelConsumed = true;
+      enterAllianceAtDock();
       return;
     }
 
@@ -1727,8 +1869,8 @@ const getVideoRatioKind = (image: string) => (image.endsWith('/servicios.mp4') ?
     const isWithinSection = rect.top <= trackOffset + getActivationLead() && rect.bottom > trackOffset;
 
     if (!isWithinSection) {
-      if (atomicReverseTarget !== null) {
-        cancelAtomicReverseStop();
+      if (atomicAboutTarget !== null) {
+        cancelAtomicAboutStop();
         clientsToLastServiceRequested = false;
         isAllianceExitPlaying = false;
       }
@@ -1810,11 +1952,11 @@ const getVideoRatioKind = (image: string) => (image.endsWith('/servicios.mp4') ?
       return;
     }
 
-    if (atomicReverseTarget !== null) {
+    if (atomicAboutTarget !== null) {
       // La lámina y la posición física se confirman como una sola operación.
       // El scroll nativo no puede reinterpretar un punto intermedio como
       // Alianzas mientras iOS termina el gesto o resuelve su ancla anterior.
-      requestAtomicReverseStopSync();
+      requestAtomicAboutStopSync();
       return;
     }
 
@@ -1835,6 +1977,20 @@ const getVideoRatioKind = (image: string) => (image.endsWith('/servicios.mp4') ?
     }
 
     if (allianceAnchor === 'dock' && isAllianceScrubbing) {
+      return;
+    }
+
+    // Clientes → Alianzas también tiene una parada atómica. Al cruzar el mismo
+    // umbral que antes iniciaba la transición normal, termina exactamente en
+    // el logo anclado a la barra. El momentum de trackpad/swipe no puede usar
+    // ese mismo gesto para avanzar además hasta el logo centrado.
+    if (
+      progress >= CLIENTS_SLIDE + 0.5
+      && !isAllianceScrubbing
+      && allianceAnchor === 'none'
+      && (current === CLIENTS_SLIDE || pendingSlideTarget === ALLIANCE_SLIDE)
+    ) {
+      enterAllianceAtDock();
       return;
     }
 

@@ -1,4 +1,5 @@
 import gsap from 'gsap';
+import { ALLIANCE_LOGO_OVERSAMPLE } from '../../animations/allianceLogoZoom';
 import { ensureVideoAutoplay } from '../../scripts/videoAutoplay';
 import { getAllianceVideoHandoff } from './allianceVideoHandoff';
 
@@ -324,15 +325,22 @@ export function initAllianceVideoExperience(): (() => void) | undefined {
     ) * 1.18;
   };
 
-  const setLogoGeometry = (geometry: LogoGeometry, scale = 1) => {
+  const getLogoLayerScale = (visualScale: number) => visualScale / ALLIANCE_LOGO_OVERSAMPLE;
+
+  const setLogoGeometry = (geometry: LogoGeometry, visualScale = 1) => {
+    const oversampledWidth = geometry.width * ALLIANCE_LOGO_OVERSAMPLE;
+    const oversampledHeight = geometry.height * ALLIANCE_LOGO_OVERSAMPLE;
     gsap.set(logoLayer, {
       left: 0,
       top: 0,
-      width: geometry.width,
-      height: geometry.height,
-      x: geometry.x,
-      y: geometry.y,
-      scale,
+      width: oversampledWidth,
+      height: oversampledHeight,
+      // El centro visual permanece idéntico al logo de Alianzas, pero la capa
+      // interna conserva doce veces más superficie. Así el navegador parte de
+      // la resolución completa del PNG embebido y no de una textura de 82 px.
+      x: geometry.x - (oversampledWidth - geometry.width) / 2,
+      y: geometry.y - (oversampledHeight - geometry.height) / 2,
+      scale: getLogoLayerScale(visualScale),
       autoAlpha: 1,
       transformOrigin: '50% 50%',
     });
@@ -642,7 +650,7 @@ export function initAllianceVideoExperience(): (() => void) | undefined {
       ease: 'power2.inOut',
     }, 0);
     activeTimeline.to(logoLayer, {
-      scale: 1,
+      scale: getLogoLayerScale(1),
       duration: animationDuration(LOGO_ZOOM_DURATION),
       ease: 'power2.inOut',
     }, 0);
@@ -727,7 +735,7 @@ export function initAllianceVideoExperience(): (() => void) | undefined {
         ease: 'power2.inOut',
       }, 0);
       activeTimeline.to(logoLayer, {
-        scale: fillScale,
+        scale: getLogoLayerScale(fillScale),
         duration: animationDuration(LOGO_ZOOM_DURATION),
         ease: 'power2.inOut',
       }, 0);
@@ -920,7 +928,10 @@ export function initAllianceVideoExperience(): (() => void) | undefined {
   gsap.set(scene, { autoAlpha: 0 });
   gsap.set(cover, { autoAlpha: 0 });
   gsap.set(shell, { transformOrigin: '0 0', force3D: true });
-  gsap.set(logoLayer, { transformOrigin: '50% 50%', force3D: true, autoAlpha: 0 });
+  // El logo contiene un PNG: forzar una capa 3D cuando todavía mide lo mismo
+  // que el logo de reposo hace que WebKit/Chromium rastericen esa miniatura y
+  // luego la amplíen. La geometría sobredimensionada mantiene la nitidez.
+  gsap.set(logoLayer, { transformOrigin: '50% 50%', force3D: false, autoAlpha: 0 });
   gsap.set(copy, { xPercent: -50, autoAlpha: 0 });
   setLines(undefined);
 
