@@ -1456,18 +1456,33 @@ button.crm-replacement-logo:focus-visible {
   }
 }
 
-/* Larger service artwork on tablet and desktop; kept isolated for easy rollback. */
+/* Stack service artwork above copy on portrait tablets. */
 @media (min-width: 680px) and (max-width: 960px) and (orientation: portrait) {
   .crm-pillar-card,
   .crm-pillar-step-even .crm-pillar-card {
-    grid-template-columns: minmax(280px, 1.15fr) minmax(250px, 0.85fr);
-    gap: clamp(18px, 2.5vw, 26px);
+    grid-template-columns: minmax(0, 1fr);
+    gap: clamp(20px, 2.4dvh, 28px);
+    align-content: center;
   }
 
   .crm-pillar-media,
+  .crm-pillar-step-even .crm-pillar-media {
+    order: 1;
+    width: min(100%, 560px);
+    max-height: min(42dvh, 430px);
+    justify-self: center;
+  }
+
   .crm-pillar-media img {
-    width: min(100%, 520px);
-    max-height: min(54dvh, 500px);
+    width: 100%;
+    max-height: min(42dvh, 430px);
+  }
+
+  .crm-pillar-card-copy,
+  .crm-pillar-step-even .crm-pillar-card-copy {
+    order: 2;
+    width: min(100%, 560px);
+    justify-self: center;
   }
 }
 
@@ -1546,8 +1561,8 @@ button.crm-replacement-logo:focus-visible {
 
   .crm-pillar-media,
   .crm-pillar-media img {
-    width: min(100%, 280px);
-    max-height: min(38vh, 140px);
+    width: min(100%, 350px);
+    max-height: min(58dvh, 220px);
   }
 }
 
