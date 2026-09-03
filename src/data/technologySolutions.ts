@@ -134,11 +134,11 @@ export const technologySolutionsByLang: Record<SupportedLang, TechnologySolution
         {
           code: 'BIZ',
           label: 'Business Platforms',
-          title: 'Plataformas Empresariales Inteligentes',
+          title: 'Plataforma Empresarial Inteligente',
           copy:
             'Implementamos plataformas empresariales que centralizan la información, optimizan procesos y fortalecen la colaboración entre áreas.',
           cta: 'Ver servicios',
-          href: '/administracion-crm/',
+          href: '/soluciones-tecnologicas/plataforma-empresarial-inteligente/',
         },
         {
           code: 'SW',
@@ -285,11 +285,11 @@ export const technologySolutionsByLang: Record<SupportedLang, TechnologySolution
         {
           code: 'BIZ',
           label: 'Business Platforms',
-          title: 'Intelligent Business Platforms',
+          title: 'Intelligent Enterprise Platform',
           copy:
             'We implement business platforms that centralize information, optimize processes and strengthen collaboration across teams.',
           cta: 'View services',
-          href: '/en/crm-administration/',
+          href: '/en/technology-solutions/intelligent-enterprise-platform/',
         },
         {
           code: 'SW',

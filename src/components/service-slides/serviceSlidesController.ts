@@ -63,6 +63,105 @@ const getPanelHeight = () => {
   return Math.max(1, window.innerHeight);
 };
 
+const setupCrmIntroBridgeProgress = (root: HTMLElement) => {
+  if (!root.matches('.crm-platform-page')) return;
+
+  const intro = root.querySelector<HTMLElement>('.crm-pillars-intro');
+  const firstStep = root.querySelector<HTMLElement>('.crm-pillar-step-1');
+  const straightProgress = intro?.querySelector<HTMLElement>('[data-crm-intro-bridge-progress]');
+  const curveProgress = intro?.querySelector<SVGRectElement>('[data-crm-intro-curve-progress]');
+  if (!intro || !firstStep || !straightProgress || !curveProgress) return;
+
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  gsap.set(straightProgress, { scaleY: reduceMotion ? 1 : 0, transformOrigin: '50% 0' });
+  gsap.set(curveProgress, { attr: { height: reduceMotion ? 100 : 0 } });
+  if (reduceMotion) return;
+
+  const timeline = gsap.timeline({
+    scrollTrigger: {
+      id: 'crm-intro-bridge-progress',
+      trigger: intro,
+      endTrigger: firstStep,
+      start: () => `top top+=${getNavOffset()}`,
+      end: () => `top top+=${getNavOffset()}`,
+      scrub: true,
+      invalidateOnRefresh: true,
+    },
+  });
+
+  timeline
+    .to(straightProgress, { scaleY: 1, ease: 'none' }, 0)
+    .to(curveProgress, { attr: { height: 100 }, ease: 'none' }, 0);
+};
+
+const setupCrmPillarPathProgress = (root: HTMLElement) => {
+  if (!root.matches('.crm-platform-page')) return;
+
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const entries = Array.from(root.querySelectorAll<HTMLElement>('.crm-pillar-step')).flatMap((step) => {
+    const fill = step.querySelector<SVGRectElement>('.crm-pillar-path-fill');
+    if (!fill) return [];
+
+    const parsedFillStop = Number.parseFloat(fill.dataset.pillarFillStop ?? '50');
+    const fillStop = Number.isFinite(parsedFillStop) ? parsedFillStop : 50;
+    const marker = step.querySelector<HTMLElement>('.crm-pillar-path-marker');
+
+    gsap.set(fill, { attr: { height: 0 } });
+
+    const setFill = (height: number, immediate = false) => {
+      if (reduceMotion || immediate) {
+        gsap.set(fill, { attr: { height } });
+        return;
+      }
+
+      const timeline = gsap.timeline({ defaults: { overwrite: 'auto' } });
+      timeline.to(fill, { attr: { height }, duration: 0.46, ease: 'power2.out' });
+      if (marker) {
+        timeline.fromTo(
+          marker,
+          { scale: 0.82 },
+          { scale: 1, duration: 0.34, ease: 'back.out(2)' },
+          0.18,
+        );
+      }
+    };
+
+    return [{ step, fillStop, setFill }];
+  });
+
+  if (!entries.length) return;
+
+  let activeIndex = -1;
+  const sync = (immediate = false) => {
+    const threshold = window.scrollY + getNavOffset() + 2;
+    const firstTop = entries[0].step.getBoundingClientRect().top + window.scrollY;
+
+    if (threshold < firstTop) {
+      if (activeIndex !== -1) {
+        entries.forEach(({ setFill }) => setFill(0, immediate));
+        activeIndex = -1;
+      }
+      return;
+    }
+
+    const nextIndex = entries.reduce((currentIndex, { step }, index) => {
+      const stepTop = step.getBoundingClientRect().top + window.scrollY;
+      return threshold >= stepTop ? index : currentIndex;
+    }, 0);
+
+    if (nextIndex === activeIndex) return;
+
+    entries.forEach(({ fillStop, setFill }, index) => {
+      setFill(index < nextIndex ? 100 : index === nextIndex ? fillStop : 0, immediate);
+    });
+    activeIndex = nextIndex;
+  };
+
+  sync(true);
+  window.addEventListener('scroll', () => sync(), { passive: true });
+  window.addEventListener('agsit:viewport-change', () => sync(true), { passive: true });
+};
+
 const clearLegacyReveal = (section: HTMLElement, items: HTMLElement[]) => {
   [section, ...items].forEach((element) => {
     element.removeAttribute('data-service-reveal');
@@ -240,7 +339,6 @@ const setupTrack = (
 const setupPageSnapState = (root: HTMLElement) => {
   const html = document.documentElement;
   const activeTracks = new Set<Element>();
-  let contactHandoffFrame = 0;
   const getStart = () => `top top+=${getNavOffset()}`;
   const syncTrackState = () => {
     html.classList.toggle('service-track-active', activeTracks.size > 0);
@@ -275,7 +373,7 @@ const setupPageSnapState = (root: HTMLElement) => {
   const contact = root.querySelector<HTMLElement>('.final-contact-section');
   if (!contact) return;
 
-  const getPreviousTrackEnd = () => {
+  const getPreviousTrackPosition = () => {
     let previousSibling = contact.previousElementSibling;
 
     while (previousSibling) {
@@ -288,6 +386,11 @@ const setupPageSnapState = (root: HTMLElement) => {
         if (track) return Math.round(track.end);
       }
 
+      if (previousSibling instanceof HTMLElement && previousSibling.matches('section.service-slide-panel')) {
+        const rootTop = root.getBoundingClientRect().top + window.scrollY;
+        return Math.max(0, Math.round(rootTop + previousSibling.offsetTop - getNavOffset()));
+      }
+
       previousSibling = previousSibling.previousElementSibling;
     }
 
@@ -295,18 +398,14 @@ const setupPageSnapState = (root: HTMLElement) => {
   };
 
   const resumePreviousTrack = () => {
-    window.cancelAnimationFrame(contactHandoffFrame);
-    contactHandoffFrame = window.requestAnimationFrame(() => {
-      contactHandoffFrame = 0;
-      const trackEnd = getPreviousTrackEnd();
+    const previousTrackPosition = getPreviousTrackPosition();
 
-      // La zona libre del formulario termina después del spacer del pin. Al
-      // volver, aterrizamos en el último estado del track anterior en vez de
-      // recorrer ese spacer con Contacto aún visible bajo el menú fijo.
-      if (trackEnd !== null && window.scrollY > trackEnd + 2) {
-        window.scrollTo(0, trackEnd);
-      }
-    });
+    // El traspaso debe resolverse dentro del mismo evento de ScrollTrigger.
+    // Esperar un frame permite que el navegador pinte Contacto junto con una
+    // franja de la lámina anterior antes de restaurar el track.
+    if (previousTrackPosition !== null && Math.abs(window.scrollY - previousTrackPosition) > 2) {
+      window.scrollTo(0, previousTrackPosition);
+    }
   };
 
   ScrollTrigger.create({
@@ -327,6 +426,7 @@ const setupPageSnapState = (root: HTMLElement) => {
 const setupLandingTrackNavigation = (root: HTMLElement) => {
   const html = document.documentElement;
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const contact = root.querySelector<HTMLElement>('.final-contact-section');
   let navigationLocked = false;
   let navigationAnimating = false;
   let unlockTimer = 0;
@@ -335,8 +435,8 @@ const setupLandingTrackNavigation = (root: HTMLElement) => {
   let touchStartY: number | null = null;
   const navigationEase = gsap.parseEase('power2.inOut');
   const touchThreshold = Number.parseFloat(root.dataset.serviceTouchThreshold ?? '') || 34;
-  const isNavigationSuspended = () =>
-    html.classList.contains('service-slides-footer-free') || html.classList.contains('mobile-menu-open');
+  const isContactFree = () => html.classList.contains('service-slides-footer-free');
+  const isMenuOpen = () => html.classList.contains('mobile-menu-open');
 
   const getPinnedStopCount = (section: HTMLElement) => {
     const explicitStops = Number.parseInt(section.dataset.serviceTrackStops ?? '', 10);
@@ -467,6 +567,28 @@ const setupLandingTrackNavigation = (root: HTMLElement) => {
     activeScrollFrame = window.requestAnimationFrame(updateScroll);
   };
 
+  const getContactStart = () => {
+    if (!contact) return null;
+    const rootTop = root.getBoundingClientRect().top + window.scrollY;
+    return Math.max(0, Math.round(rootTop + contact.offsetTop - getNavOffset()));
+  };
+
+  const resumeContactToPreviousPanel = () => {
+    if (!contact || !isContactFree()) return false;
+
+    const contactStart = getContactStart();
+    if (contactStart === null || window.scrollY > contactStart + 3) return false;
+
+    const previousDestination = getDestinations()
+      .filter(({ position }) => position < contactStart - 2)
+      .at(-1);
+    if (!previousDestination) return false;
+
+    html.classList.remove('service-slides-footer-free');
+    navigateTo(previousDestination.position, true);
+    return true;
+  };
+
   const navigateByDirection = (direction: 1 | -1) => {
     const destinations = getDestinations();
     if (destinations.length < 2) return false;
@@ -477,17 +599,24 @@ const setupLandingTrackNavigation = (root: HTMLElement) => {
 
     const currentDestination = destinations[currentIndex];
     const nextDestination = destinations[nextIndex];
-    const currentSection = currentDestination.owner.querySelector<HTMLElement>(':scope > section');
-    const nextSection = nextDestination.owner.querySelector<HTMLElement>(':scope > section');
+    const getDestinationSection = (owner: Element) =>
+      owner.matches('section') ? owner : owner.querySelector<HTMLElement>(':scope > section');
+    const currentSection = getDestinationSection(currentDestination.owner);
+    const nextSection = getDestinationSection(nextDestination.owner);
     const isTechnologyMethodCatalogHandoff =
       (currentSection?.matches('.technology-method') && nextSection?.matches('.technology-capabilities')) ||
       (currentSection?.matches('.technology-capabilities') && nextSection?.matches('.technology-method'));
+    const isCrmIntroHandoff =
+      (currentSection?.matches('.crm-pillars-intro') && nextSection?.matches('.crm-pillar-step-1')) ||
+      (currentSection?.matches('.crm-pillar-step-1') && nextSection?.matches('.crm-pillars-intro'));
 
     // La metodología y el catálogo forman una secuencia visual continua. Al
     // cruzar entre ambos preservamos el desplazamiento interpolado para que la
     // última lámina de uno y la introducción del otro no se perciban como un salto.
     const shouldJumpAcrossTracks =
-      currentDestination.owner !== nextDestination.owner && !isTechnologyMethodCatalogHandoff;
+      currentDestination.owner !== nextDestination.owner &&
+      !isTechnologyMethodCatalogHandoff &&
+      !isCrmIntroHandoff;
 
     navigateTo(nextDestination.position, shouldJumpAcrossTracks);
     return true;
@@ -511,15 +640,19 @@ const setupLandingTrackNavigation = (root: HTMLElement) => {
         return;
       }
 
-      if (Math.abs(event.deltaY) < 8 || isNavigationSuspended()) {
-        return;
-      }
+      if (Math.abs(event.deltaY) < 8 || isMenuOpen()) return;
 
       const target = event.target;
       if (isScrollControlTarget(target)) return;
 
       lastWheelEventAt = Date.now();
       const direction = event.deltaY > 0 ? 1 : -1;
+
+      if (isContactFree()) {
+        if (direction < 0 && resumeContactToPreviousPanel()) event.preventDefault();
+        return;
+      }
+
       const navigated = navigateByDirection(direction);
       if (!navigated && direction > 0) {
         html.classList.add('service-slides-footer-free');
@@ -534,7 +667,7 @@ const setupLandingTrackNavigation = (root: HTMLElement) => {
   window.addEventListener(
     'touchstart',
     (event) => {
-      if (isNavigationSuspended() || isInteractiveTarget(event.target)) return;
+      if (isMenuOpen() || isInteractiveTarget(event.target)) return;
       touchStartY = event.touches[0]?.clientY ?? null;
     },
     { passive: true },
@@ -543,7 +676,18 @@ const setupLandingTrackNavigation = (root: HTMLElement) => {
   window.addEventListener(
     'touchmove',
     (event) => {
-      if (touchStartY === null || isNavigationSuspended()) return;
+      if (touchStartY === null || isMenuOpen()) return;
+
+      if (isContactFree()) {
+        const currentY = event.touches[0]?.clientY ?? touchStartY;
+        const contactStart = getContactStart();
+        const isMovingBack = touchStartY - currentY < 0;
+        if (isMovingBack && contactStart !== null && window.scrollY <= contactStart + 3) {
+          event.preventDefault();
+        }
+        return;
+      }
+
       event.preventDefault();
     },
     { passive: false },
@@ -552,7 +696,7 @@ const setupLandingTrackNavigation = (root: HTMLElement) => {
   window.addEventListener(
     'touchend',
     (event) => {
-      if (touchStartY === null || navigationLocked || isNavigationSuspended()) {
+      if (touchStartY === null || navigationLocked || isMenuOpen()) {
         touchStartY = null;
         return;
       }
@@ -561,6 +705,11 @@ const setupLandingTrackNavigation = (root: HTMLElement) => {
       const delta = touchStartY - touchEndY;
       touchStartY = null;
       if (Math.abs(delta) < touchThreshold) return;
+
+      if (isContactFree()) {
+        if (delta < 0) resumeContactToPreviousPanel();
+        return;
+      }
 
       const direction = delta > 0 ? 1 : -1;
       const navigated = navigateByDirection(direction);
@@ -572,17 +721,16 @@ const setupLandingTrackNavigation = (root: HTMLElement) => {
   );
 
   window.addEventListener('keydown', (event) => {
-    if (
-      navigationLocked ||
-      isNavigationSuspended() ||
-      isInteractiveTarget(event.target)
-    ) {
-      return;
-    }
-
     const forward = ['ArrowDown', 'PageDown', ' '].includes(event.key);
     const backward = ['ArrowUp', 'PageUp'].includes(event.key);
     if (!forward && !backward) return;
+
+    if (navigationLocked || isMenuOpen() || isInteractiveTarget(event.target)) return;
+
+    if (isContactFree()) {
+      if (backward && resumeContactToPreviousPanel()) event.preventDefault();
+      return;
+    }
 
     event.preventDefault();
     const direction = forward ? 1 : -1;
@@ -591,68 +739,6 @@ const setupLandingTrackNavigation = (root: HTMLElement) => {
       html.classList.add('service-slides-footer-free');
     }
   });
-};
-
-const setupCrmPillarPathProgress = (root: HTMLElement) => {
-  if (!root.matches('.crm-platform-page')) return;
-
-  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const entries = Array.from(root.querySelectorAll<HTMLElement>('.crm-pillar-step')).flatMap((step) => {
-    const progressFill = step.querySelector<SVGRectElement>('.crm-pillar-path-fill');
-    if (!progressFill) return [];
-
-    const fillStop = Number.parseFloat(progressFill.dataset.pillarFillStop ?? '') || 0;
-    const marker = step.querySelector<HTMLElement>('.crm-pillar-path-marker');
-    gsap.set(progressFill, { attr: { height: 0 } });
-
-    const setFill = (height: number, immediate = false) => {
-      if (reduceMotion) {
-        gsap.set(progressFill, { attr: { height } });
-        return;
-      }
-
-      const timeline = gsap.timeline({ defaults: { overwrite: 'auto' } });
-      timeline.to(progressFill, { attr: { height }, duration: immediate ? 0 : 0.46, ease: 'power2.out' });
-      if (marker) {
-        timeline.fromTo(marker, { scale: 0.82 }, { scale: 1, duration: 0.34, ease: 'back.out(2)' }, 0.18);
-      }
-    };
-
-    return [{ step, fillStop, setFill }];
-  });
-
-  let activeIndex = -1;
-  const syncPathProgress = (immediate = false) => {
-    const firstEntry = entries[0];
-    if (!firstEntry) return;
-
-    const threshold = window.scrollY + getNavOffset() + 2;
-    const firstTop = firstEntry.step.getBoundingClientRect().top + window.scrollY;
-
-    if (threshold < firstTop) {
-      if (activeIndex !== -1) {
-        entries.forEach(({ setFill }) => setFill(0, immediate));
-        activeIndex = -1;
-      }
-      return;
-    }
-
-    const nextIndex = entries.reduce((currentIndex, { step }, index) => {
-      const top = step.getBoundingClientRect().top + window.scrollY;
-      return threshold >= top ? index : currentIndex;
-    }, 0);
-
-    if (nextIndex === activeIndex) return;
-
-    entries.forEach(({ fillStop, setFill }, index) => {
-      const target = index < nextIndex ? 100 : index === nextIndex ? fillStop : 0;
-      setFill(target, immediate);
-    });
-    activeIndex = nextIndex;
-  };
-
-  syncPathProgress(true);
-  window.addEventListener('scroll', () => syncPathProgress(), { passive: true });
 };
 
 export const setupServiceSlides = () => {
@@ -680,6 +766,7 @@ export const setupServiceSlides = () => {
     setupTrack(section, items, index, variant);
   });
 
+  setupCrmIntroBridgeProgress(root);
   setupCrmPillarPathProgress(root);
   setupPageSnapState(root);
   setupLandingTrackNavigation(root);

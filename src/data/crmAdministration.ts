@@ -1,16 +1,23 @@
 import type { SupportedLang } from '../i18n/ui';
 
 export type PlatformCard = {
+  anchor?: string;
   eyebrow: string;
   title: string;
   copy: string;
   detail: string;
+  image: string;
 };
 
-export type PlatformStep = {
+export type PlatformPathway = {
   label: string;
-  title: string;
-  copy: string;
+  href: string;
+};
+
+export type PlatformReplacement = {
+  name: string;
+  logo: string;
+  tooltip: string;
 };
 
 export type CrmAdministrationContent = {
@@ -27,17 +34,16 @@ export type CrmAdministrationContent = {
     titleAccent: string;
     copy: string;
     primaryCta: string;
-    secondaryCta: string;
+    pathwaysLabel: string;
+    pathways: PlatformPathway[];
     visualAlt: string;
   };
   convergence: {
     eyebrow: string;
     title: string;
     copy: string;
-    states: PlatformStep[];
-    resultLabel: string;
-    resultTitle: string;
-    resultCopy: string;
+    replacementLabel: string;
+    replacements: PlatformReplacement[];
   };
   pillars: {
     eyebrow: string;
@@ -45,228 +51,384 @@ export type CrmAdministrationContent = {
     copy: string;
     items: PlatformCard[];
   };
-  journey: {
-    eyebrow: string;
-    title: string;
-    copy: string;
-    steps: PlatformStep[];
-  };
-  collaboration: {
-    eyebrow: string;
-    title: string;
-    copy: string;
-    visualAlt: string;
-    outcomes: string[];
-  };
-  integrations: {
-    eyebrow: string;
-    title: string;
-    copy: string;
-    items: string[];
-  };
-  implementation: {
-    eyebrow: string;
-    title: string;
-    copy: string;
-    steps: PlatformStep[];
-  };
 };
 
 export const crmAdministrationByLang: Record<SupportedLang, CrmAdministrationContent> = {
   es: {
     metadata: {
-      title: 'Plataforma integral para tu empresa | AGSIT',
+      title: 'Plataforma Empresarial Inteligente | AGSIT',
       description:
-        'Centraliza ventas, proyectos, comunicación, automatización y control operativo en una sola plataforma implementada por AGSIT.',
-      canonicalUrl: 'https://agsit.com.mx/administracion-crm/',
+        'Integra clientes, ventas, proyectos, procesos, documentos, automatización y colaboración en una plataforma empresarial implementada por AGSIT.',
+      canonicalUrl: 'https://agsit.com.mx/soluciones-tecnologicas/plataforma-empresarial-inteligente/',
       htmlLang: 'es-MX',
       locale: 'es_MX',
     },
     hero: {
-      eyebrow: 'Plataforma integral para tu empresa',
-      title: 'Toda tu operación.',
-      titleAccent: 'Un solo lugar.',
+      eyebrow: 'Plataforma Empresarial Inteligente',
+      title: 'Toda tu empresa en',
+      titleAccent: 'una sola plataforma.',
       copy:
-        'Conecta clientes, equipos, proyectos y procesos para que cada área avance con la misma información y sin cambiar de herramienta.',
+        'Gestiona clientes, proyectos, tareas, procesos, documentos y recursos humanos. Automatiza actividades, crea sitios web y tiendas en línea, y centraliza la comunicación, los calendarios compartidos, el control de tiempo, el análisis de información y la colaboración en un solo lugar.',
       primaryCta: 'Hablar con un especialista',
-      secondaryCta: 'Descubrir la plataforma',
-      visualAlt: 'Laptop y teléfonos con una interfaz genérica de operación empresarial integrada.',
+      pathwaysLabel: 'Explorar la plataforma por área',
+      pathways: [
+        { label: 'Soluciones para la gestión comercial', href: '#gestion-comercial' },
+        { label: 'Soluciones para la gestión operativa', href: '#gestion-operativa' },
+      ],
+      visualAlt: 'Tablero de operación empresarial con indicadores comerciales, analítica y seguimiento.',
     },
     convergence: {
-      eyebrow: 'Cuando todo vive separado',
-      title: 'El trabajo se fragmenta antes de que tu equipo pueda avanzar.',
+      eyebrow: 'Una empresa, demasiadas aplicaciones',
+      title: 'Cuando la información se dispersa, también se frenan las decisiones.',
       copy:
-        'Las conversaciones, los clientes, los archivos y las tareas pierden contexto cuando cada uno vive en una aplicación diferente.',
-      states: [
-        { label: '01', title: 'Clientes', copy: 'Seguimientos repartidos entre hojas, correos y notas.' },
-        { label: '02', title: 'Equipos', copy: 'Mensajes que no llegan a convertirse en trabajo claro.' },
-        { label: '03', title: 'Proyectos', copy: 'Responsables, fechas y archivos en lugares distintos.' },
+        'Haz que toda tu empresa trabaje como un solo equipo con nuestra plataforma empresarial inteligente.',
+      replacementLabel: 'Reemplaza a:',
+      replacements: [
+        {
+          name: 'Slack',
+          logo: '/assets/platform-replacements/slack.jpg',
+          tooltip: 'La plataforma reúne chat, canales, videollamadas y tareas en un solo contexto.',
+        },
+        {
+          name: 'Asana',
+          logo: '/assets/platform-replacements/asana.jpg',
+          tooltip: 'La plataforma planifica tareas, responsables, fechas y proyectos conectados con la operación.',
+        },
+        {
+          name: 'Microsoft Teams',
+          logo: '/assets/platform-replacements/teams.jpg',
+          tooltip: 'La plataforma integra mensajería, reuniones, videollamadas y archivos de cada equipo.',
+        },
+        {
+          name: 'Google Drive',
+          logo: '/assets/platform-replacements/google-drive.jpg',
+          tooltip: 'La plataforma centraliza archivos y documentos con permisos, versiones y colaboración en línea.',
+        },
+        {
+          name: 'Salesforce',
+          logo: '/assets/platform-replacements/salesforce.jpg',
+          tooltip: 'La plataforma gestiona prospectos, clientes, oportunidades, embudos y seguimiento comercial.',
+        },
+        {
+          name: 'HubSpot',
+          logo: '/assets/platform-replacements/hubspot.jpg',
+          tooltip: 'La plataforma conecta gestión comercial, campañas, automatizaciones y atención al cliente.',
+        },
+        {
+          name: 'ChatGPT',
+          logo: '/assets/platform-replacements/chat-gpt.jpg',
+          tooltip: 'La plataforma incorpora asistencia de IA para redactar, resumir y acelerar tareas dentro del trabajo.',
+        },
+        {
+          name: 'Jira',
+          logo: '/assets/platform-replacements/jira.jpg',
+          tooltip: 'La plataforma coordina proyectos, incidencias, prioridades y responsables desde una vista compartida.',
+        },
+        {
+          name: 'Clockify',
+          logo: '/assets/platform-replacements/clockify.jpg',
+          tooltip: 'La plataforma registra horas, controla tiempos por tarea y analiza la carga de trabajo.',
+        },
+        {
+          name: 'Pipedrive',
+          logo: '/assets/platform-replacements/pipedrive.jpg',
+          tooltip: 'La plataforma administra oportunidades, etapas, actividades y pronósticos comerciales.',
+        },
+        {
+          name: 'monday.com',
+          logo: '/assets/platform-replacements/monday.jpg',
+          tooltip: 'La plataforma orquesta proyectos, procesos, responsables y automatizaciones entre áreas.',
+        },
+        {
+          name: 'Trello',
+          logo: '/assets/platform-replacements/trello.jpg',
+          tooltip: 'La plataforma ofrece tableros Kanban conectados con tareas, proyectos y responsables.',
+        },
+        {
+          name: 'ClickUp',
+          logo: '/assets/platform-replacements/clickup.jpg',
+          tooltip: 'La plataforma reúne tareas, proyectos, documentos, objetivos y colaboración.',
+        },
+        {
+          name: 'Zoho',
+          logo: '/assets/platform-replacements/zoho.jpg',
+          tooltip: 'La plataforma unifica ventas, clientes, automatización y procesos empresariales.',
+        },
+        {
+          name: 'Wrike',
+          logo: '/assets/platform-replacements/wrike.jpg',
+          tooltip: 'La plataforma planifica proyectos, cargas de trabajo, plazos y aprobaciones.',
+        },
+        {
+          name: 'Wix',
+          logo: '/assets/platform-replacements/wix.jpg',
+          tooltip: 'La plataforma crea sitios, páginas de destino y formularios conectados con la gestión comercial.',
+        },
+        {
+          name: 'Miro',
+          logo: '/assets/platform-replacements/miro.jpg',
+          tooltip: 'La plataforma incorpora pizarras colaborativas para planear, idear y trabajar en equipo.',
+        },
+        {
+          name: 'Calendly',
+          logo: '/assets/platform-replacements/calendly.jpg',
+          tooltip: 'La plataforma coordina citas y calendarios compartidos con el contexto de cada cliente.',
+        },
       ],
-      resultLabel: 'Una operación conectada',
-      resultTitle: 'Cada conversación se convierte en una acción con contexto.',
-      resultCopy: 'La información fluye desde el primer contacto hasta la entrega y el análisis.',
     },
     pillars: {
-      eyebrow: 'Todo lo esencial, conectado',
-      title: 'Una plataforma que acompaña a cada área.',
-      copy: 'No son módulos aislados: cada capacidad comparte información con la siguiente para sostener toda la operación.',
+      eyebrow: 'Una solución que se adapta a tu empresa',
+      title: 'Tu forma de trabajar marca el punto de partida.',
+      copy:
+        'Comienza con las funciones que necesitas y amplía su alcance a medida que crece tu empresa.',
       items: [
         {
-          eyebrow: '01 · CRM y ventas',
-          title: 'Convierte cada oportunidad en un seguimiento claro.',
-          copy: 'Gestiona prospectos, contactos, negociaciones, cotizaciones y canales de atención desde una vista compartida.',
-          detail: 'CRM · embudos · atención omnicanal · reportes',
+          anchor: 'gestion-comercial',
+          eyebrow: '01 · CRM',
+          title: 'Convierte cada contacto en una oportunidad bien atendida.',
+          copy:
+            'Organiza prospectos, clientes, ventas y seguimientos en un solo lugar para que tu equipo sepa qué hacer y cuándo hacerlo.',
+          detail: 'Prospectos · clientes · ventas · seguimiento',
+          image: '/assets/plataforma-empresarial/crm.png',
         },
         {
-          eyebrow: '02 · Proyectos y tareas',
-          title: 'Del acuerdo al trabajo ejecutado, sin perder el hilo.',
-          copy: 'Organiza responsables, fechas, prioridades y carga de trabajo con vistas que se adaptan a cada equipo.',
-          detail: 'Kanban · Gantt · calendario · seguimiento',
+          anchor: 'gestion-operativa',
+          eyebrow: '02 · Gestión de proyectos',
+          title: 'Lleva cada proyecto del plan al resultado.',
+          copy:
+            'Coordina tareas, responsables, fechas y avances para que todos sepan qué sigue y trabajen con mayor orden.',
+          detail: 'Tareas · responsables · fechas · avances',
+          image: '/assets/plataforma-empresarial/gestion-proyectos.png',
         },
         {
-          eyebrow: '03 · Colaboración',
-          title: 'Hablen, reúnanse y documenten dentro del mismo flujo.',
-          copy: 'Centraliza chats, videollamadas, archivos, documentos y calendarios para que las decisiones no se queden dispersas.',
-          detail: 'chat · videollamadas · documentos · drive',
+          eyebrow: '03 · Gestión documental',
+          title: 'Encuentra y comparte cada documento con facilidad.',
+          copy:
+            'Guarda archivos en un solo lugar, controla quién puede verlos y mantén siempre disponible la versión correcta.',
+          detail: 'Archivos · permisos · versiones · colaboración',
+          image: '/assets/plataforma-empresarial/gestion-documental.png',
         },
         {
-          eyebrow: '04 · Automatización y control',
-          title: 'Haz que los procesos avancen incluso cuando nadie persigue pendientes.',
-          copy: 'Crea reglas, aprobaciones, recordatorios y tableros que dan visibilidad a la operación en tiempo real.',
-          detail: 'flujos · aprobaciones · permisos · analítica',
+          eyebrow: '04 · Automatizaciones',
+          title: 'Haz que las tareas repetitivas avancen solas.',
+          copy:
+            'Automatiza recordatorios, asignaciones y acciones para reducir el trabajo manual y mantener cada proceso en movimiento.',
+          detail: 'Recordatorios · asignaciones · alertas · acciones automáticas',
+          image: '/assets/plataforma-empresarial/automatizaciones.png',
         },
         {
-          eyebrow: '05 · Comunicación y reuniones',
-          title: 'Mantén las conversaciones y reuniones dentro del trabajo.',
-          copy: 'Convierte mensajes, llamadas y reuniones en acuerdos que permanecen junto a los clientes, tareas y proyectos correctos.',
-          detail: 'chat · videollamadas · calendario · notificaciones',
+          eyebrow: '05 · Flujos de trabajo',
+          title: 'Convierte cada proceso en una ruta clara.',
+          copy:
+            'Define pasos, responsables y aprobaciones para que las solicitudes avancen sin perderse entre mensajes o pendientes.',
+          detail: 'Pasos · responsables · aprobaciones · seguimiento',
+          image: '/assets/plataforma-empresarial/flujos-trabajo.png',
         },
         {
-          eyebrow: '06 · Documentos y conocimiento',
-          title: 'Da a cada archivo un contexto y un lugar seguro.',
-          copy: 'Comparte documentos, controla accesos y conserva la información disponible para que el equipo encuentre lo que necesita.',
-          detail: 'drive · permisos · archivos compartidos · búsqueda',
+          eyebrow: '06 · Colaboración empresarial',
+          title: 'Mantén a todo tu equipo conectado y coordinado.',
+          copy:
+            'Reúne conversaciones, reuniones, calendarios y archivos para que cada decisión permanezca junto al trabajo que le da contexto.',
+          detail: 'Chat · reuniones · calendarios · archivos',
+          image: '/assets/plataforma-empresarial/colaboracion-empresarial.png',
         },
-      ],
-    },
-    journey: {
-      eyebrow: 'Un flujo, de punta a punta',
-      title: 'Del primer contacto al resultado medible.',
-      copy: 'Una misma operación conecta comercial, ejecución y dirección sin duplicar información.',
-      steps: [
-        { label: '01', title: 'Captura', copy: 'Un nuevo contacto entra desde el canal que elija tu cliente.' },
-        { label: '02', title: 'Seguimiento', copy: 'El equipo comercial sabe qué hacer, cuándo y con quién.' },
-        { label: '03', title: 'Ejecución', copy: 'La venta se convierte en tareas, proyecto y colaboración.' },
-        { label: '04', title: 'Control', copy: 'Dirección consulta avances, cuellos de botella y resultados.' },
-      ],
-    },
-    collaboration: {
-      eyebrow: 'Trabajo que mantiene el contexto',
-      title: 'Tu equipo no necesita otra aplicación para avanzar.',
-      copy:
-        'Una conversación puede abrir una tarea, una reunión puede quedar ligada a un cliente y un documento puede vivir dentro del proyecto correcto.',
-      visualAlt: 'Equipo colaborando frente a una interfaz genérica de trabajo, videollamada y calendario.',
-      outcomes: ['Menos cambios de aplicación', 'Decisiones con contexto', 'Información disponible desde cualquier lugar'],
-    },
-    integrations: {
-      eyebrow: 'Conecta lo que ya usas',
-      title: 'Una plataforma abierta a tu operación.',
-      copy: 'Integramos los canales y herramientas que tu empresa ya necesita para seguir trabajando sin fricción.',
-      items: ['WhatsApp', 'Telefonía', 'Correo electrónico', 'Microsoft 365', 'Google Workspace', 'API e integraciones a medida'],
-    },
-    implementation: {
-      eyebrow: 'Implementación AGSIT',
-      title: 'La plataforma es solo el inicio. La adopción es el resultado.',
-      copy: 'Traducimos la forma en que trabaja tu empresa a una operación clara, medible y lista para crecer.',
-      steps: [
-        { label: '01', title: 'Diagnóstico', copy: 'Entendemos los procesos, equipos y puntos de fricción actuales.' },
-        { label: '02', title: 'Diseño y configuración', copy: 'Definimos flujos, permisos, tableros e integraciones a tu medida.' },
-        { label: '03', title: 'Migración y puesta en marcha', copy: 'Preparamos la información y activamos la operación con orden.' },
-        { label: '04', title: 'Adopción', copy: 'Capacitamos a tu equipo para que el sistema se vuelva parte del trabajo diario.' },
-        { label: '05', title: 'Mejora continua', copy: 'Acompañamos la evolución de la plataforma conforme crece tu empresa.' },
+        {
+          eyebrow: '07 · Integración con aplicaciones empresariales',
+          title: 'Conecta la plataforma con las herramientas que ya utilizas.',
+          copy:
+            'Integra correo, telefonía y aplicaciones empresariales para compartir información y evitar capturas repetidas.',
+          detail: 'Correo · telefonía · aplicaciones · información compartida',
+          image: '/assets/plataforma-empresarial/integraciones-empresariales.png',
+        },
       ],
     },
   },
   en: {
     metadata: {
-      title: 'Integrated business platform | AGSIT',
+      title: 'Intelligent Enterprise Platform | AGSIT',
       description:
-        'Centralize sales, projects, communication, automation and operating control in one platform implemented by AGSIT.',
-      canonicalUrl: 'https://agsit.com.mx/en/crm-administration/',
+        'Integrate customers, sales, projects, processes, documents, automation and collaboration in one business platform implemented by AGSIT.',
+      canonicalUrl: 'https://agsit.com.mx/en/technology-solutions/intelligent-enterprise-platform/',
       htmlLang: 'en',
       locale: 'en_US',
     },
     hero: {
-      eyebrow: 'An integrated platform for your business',
-      title: 'Your entire operation.',
-      titleAccent: 'One place.',
+      eyebrow: 'Intelligent Enterprise Platform',
+      title: 'Your entire company on',
+      titleAccent: 'one platform.',
       copy:
-        'Connect customers, teams, projects and processes so every area moves forward with the same information, without switching tools.',
+        'Manage customers, projects, tasks, processes, documents and human resources. Automate activities, build websites and online stores, and centralize communication, shared calendars, time tracking, data analysis and collaboration in one place.',
       primaryCta: 'Talk to a specialist',
-      secondaryCta: 'Discover the platform',
-      visualAlt: 'Laptop and phones showing a generic integrated business operations interface.',
+      pathwaysLabel: 'Explore the platform by area',
+      pathways: [
+        { label: 'Solutions for commercial management', href: '#commercial-management' },
+        { label: 'Solutions for operations management', href: '#operations-management' },
+      ],
+      visualAlt: 'Business operations dashboard with commercial indicators, analytics and tracking.',
     },
     convergence: {
-      eyebrow: 'When everything lives apart',
-      title: 'Work gets fragmented before your team can move forward.',
+      eyebrow: 'One company, too many applications',
+      title: 'When information is scattered, decisions slow down too.',
       copy:
-        'Conversations, customers, files and tasks lose context when each one lives in a different application.',
-      states: [
-        { label: '01', title: 'Customers', copy: 'Follow-ups scattered across spreadsheets, emails and notes.' },
-        { label: '02', title: 'Teams', copy: 'Messages that never become clear, accountable work.' },
-        { label: '03', title: 'Projects', copy: 'Owners, dates and files kept in separate places.' },
+        'Bring your entire company together as one team with our intelligent enterprise platform.',
+      replacementLabel: 'Replaces:',
+      replacements: [
+        {
+          name: 'Slack',
+          logo: '/assets/platform-replacements/slack.jpg',
+          tooltip: 'The platform brings chat, channels, video calls and tasks into one context.',
+        },
+        {
+          name: 'Asana',
+          logo: '/assets/platform-replacements/asana.jpg',
+          tooltip: 'The platform plans tasks, owners, dates and projects connected to the operation.',
+        },
+        {
+          name: 'Microsoft Teams',
+          logo: '/assets/platform-replacements/teams.jpg',
+          tooltip: 'The platform integrates messaging, meetings, video calls and team files.',
+        },
+        {
+          name: 'Google Drive',
+          logo: '/assets/platform-replacements/google-drive.jpg',
+          tooltip: 'The platform centralizes files and documents with permissions, versions and online collaboration.',
+        },
+        {
+          name: 'Salesforce',
+          logo: '/assets/platform-replacements/salesforce.jpg',
+          tooltip: 'The platform manages leads, customers, opportunities, pipelines and sales follow-up.',
+        },
+        {
+          name: 'HubSpot',
+          logo: '/assets/platform-replacements/hubspot.jpg',
+          tooltip: 'The platform connects sales management, campaigns, automation and customer service.',
+        },
+        {
+          name: 'ChatGPT',
+          logo: '/assets/platform-replacements/chat-gpt.jpg',
+          tooltip: 'The platform adds AI assistance to write, summarize and accelerate work tasks.',
+        },
+        {
+          name: 'Jira',
+          logo: '/assets/platform-replacements/jira.jpg',
+          tooltip: 'The platform coordinates projects, issues, priorities and owners in a shared view.',
+        },
+        {
+          name: 'Clockify',
+          logo: '/assets/platform-replacements/clockify.jpg',
+          tooltip: 'The platform records hours, tracks task time and analyzes workload.',
+        },
+        {
+          name: 'Pipedrive',
+          logo: '/assets/platform-replacements/pipedrive.jpg',
+          tooltip: 'The platform manages opportunities, stages, activities and sales forecasts.',
+        },
+        {
+          name: 'monday.com',
+          logo: '/assets/platform-replacements/monday.jpg',
+          tooltip: 'The platform orchestrates projects, processes, owners and cross-team automation.',
+        },
+        {
+          name: 'Trello',
+          logo: '/assets/platform-replacements/trello.jpg',
+          tooltip: 'The platform provides Kanban boards connected to tasks, projects and owners.',
+        },
+        {
+          name: 'ClickUp',
+          logo: '/assets/platform-replacements/clickup.jpg',
+          tooltip: 'The platform brings tasks, projects, documents, goals and collaboration together.',
+        },
+        {
+          name: 'Zoho',
+          logo: '/assets/platform-replacements/zoho.jpg',
+          tooltip: 'The platform unifies sales, customers, automation and business processes.',
+        },
+        {
+          name: 'Wrike',
+          logo: '/assets/platform-replacements/wrike.jpg',
+          tooltip: 'The platform plans projects, workloads, deadlines and approvals.',
+        },
+        {
+          name: 'Wix',
+          logo: '/assets/platform-replacements/wix.jpg',
+          tooltip: 'The platform creates websites, landing pages and forms connected to sales management.',
+        },
+        {
+          name: 'Miro',
+          logo: '/assets/platform-replacements/miro.jpg',
+          tooltip: 'The platform includes collaborative whiteboards for planning, ideation and teamwork.',
+        },
+        {
+          name: 'Calendly',
+          logo: '/assets/platform-replacements/calendly.jpg',
+          tooltip: 'The platform coordinates appointments and shared calendars with full customer context.',
+        },
       ],
-      resultLabel: 'One connected operation',
-      resultTitle: 'Every conversation becomes an action with context.',
-      resultCopy: 'Information flows from the first contact through delivery and analysis.',
     },
     pillars: {
-      eyebrow: 'Everything essential, connected',
-      title: 'One platform that supports every area.',
-      copy: 'These are not isolated modules: every capability shares information with the next one to support the whole operation.',
+      eyebrow: 'A solution that adapts to your business',
+      title: 'The way you work sets the starting point.',
+      copy:
+        'Start with the capabilities you need and expand its reach as your business grows.',
       items: [
-        { eyebrow: '01 · CRM and sales', title: 'Turn every opportunity into clear follow-up.', copy: 'Manage leads, contacts, deals, quotes and service channels from a shared view.', detail: 'CRM · pipelines · omnichannel service · reports' },
-        { eyebrow: '02 · Projects and tasks', title: 'From agreement to execution, without losing the thread.', copy: 'Organize owners, dates, priorities and workload in views that fit every team.', detail: 'Kanban · Gantt · calendar · tracking' },
-        { eyebrow: '03 · Collaboration', title: 'Talk, meet and document inside the same flow.', copy: 'Centralize chats, video calls, files, documents and calendars so decisions never stay scattered.', detail: 'chat · video calls · documents · drive' },
-        { eyebrow: '04 · Automation and control', title: 'Let processes move even when nobody is chasing tasks.', copy: 'Create rules, approvals, reminders and dashboards that make operations visible in real time.', detail: 'workflows · approvals · permissions · analytics' },
-        { eyebrow: '05 · Communication and meetings', title: 'Keep conversations and meetings inside the work.', copy: 'Turn messages, calls and meetings into agreements that stay connected to the right customers, tasks and projects.', detail: 'chat · video calls · calendar · notifications' },
-        { eyebrow: '06 · Documents and knowledge', title: 'Give every file context and a secure place.', copy: 'Share documents, control access and keep information available so every team member can find what they need.', detail: 'drive · permissions · shared files · search' },
-      ],
-    },
-    journey: {
-      eyebrow: 'One end-to-end flow',
-      title: 'From first contact to measurable results.',
-      copy: 'The same operation connects commercial work, execution and leadership without duplicating information.',
-      steps: [
-        { label: '01', title: 'Capture', copy: 'A new contact enters through the channel your customer chooses.' },
-        { label: '02', title: 'Follow-up', copy: 'Your sales team knows what to do, when and with whom.' },
-        { label: '03', title: 'Execution', copy: 'The sale becomes tasks, projects and collaboration.' },
-        { label: '04', title: 'Control', copy: 'Leadership sees progress, bottlenecks and results.' },
-      ],
-    },
-    collaboration: {
-      eyebrow: 'Work that keeps its context',
-      title: 'Your team does not need another app to move forward.',
-      copy: 'A conversation can open a task, a meeting can remain connected to a customer and a document can live in the right project.',
-      visualAlt: 'Team collaborating in front of a generic work interface with video call and calendar.',
-      outcomes: ['Fewer app switches', 'Decisions with context', 'Information available from anywhere'],
-    },
-    integrations: {
-      eyebrow: 'Connect what you already use',
-      title: 'A platform open to your operation.',
-      copy: 'We integrate the channels and tools your company already needs to keep work moving without friction.',
-      items: ['WhatsApp', 'Telephony', 'Email', 'Microsoft 365', 'Google Workspace', 'Custom API and integrations'],
-    },
-    implementation: {
-      eyebrow: 'AGSIT implementation',
-      title: 'The platform is only the start. Adoption is the outcome.',
-      copy: 'We translate the way your company works into an operation that is clear, measurable and ready to grow.',
-      steps: [
-        { label: '01', title: 'Assessment', copy: 'We understand current processes, teams and friction points.' },
-        { label: '02', title: 'Design and configuration', copy: 'We define tailored flows, permissions, dashboards and integrations.' },
-        { label: '03', title: 'Migration and launch', copy: 'We prepare the information and activate the operation in order.' },
-        { label: '04', title: 'Adoption', copy: 'We train your team so the system becomes part of daily work.' },
-        { label: '05', title: 'Continuous improvement', copy: 'We support the platform as your company evolves.' },
+        {
+          anchor: 'commercial-management',
+          eyebrow: '01 · CRM',
+          title: 'Turn every contact into a well-managed opportunity.',
+          copy:
+            'Organize prospects, customers, sales and follow-ups in one place so your team knows what to do and when to do it.',
+          detail: 'Prospects · customers · sales · follow-up',
+          image: '/assets/plataforma-empresarial/crm.png',
+        },
+        {
+          anchor: 'operations-management',
+          eyebrow: '02 · Project management',
+          title: 'Take every project from plan to result.',
+          copy:
+            'Coordinate tasks, owners, dates and progress so everyone knows what comes next and works with greater clarity.',
+          detail: 'Tasks · owners · dates · progress',
+          image: '/assets/plataforma-empresarial/gestion-proyectos.png',
+        },
+        {
+          eyebrow: '03 · Document management',
+          title: 'Find and share every document with ease.',
+          copy:
+            'Store files in one place, control who can view them and keep the correct version available at all times.',
+          detail: 'Files · permissions · versions · collaboration',
+          image: '/assets/plataforma-empresarial/gestion-documental.png',
+        },
+        {
+          eyebrow: '04 · Automation',
+          title: 'Keep repetitive tasks moving on their own.',
+          copy:
+            'Automate reminders, assignments and actions to reduce manual work and keep every process moving.',
+          detail: 'Reminders · assignments · alerts · automated actions',
+          image: '/assets/plataforma-empresarial/automatizaciones.png',
+        },
+        {
+          eyebrow: '05 · Workflows',
+          title: 'Turn every process into a clear path.',
+          copy:
+            'Define steps, owners and approvals so requests move forward without getting lost in messages or pending tasks.',
+          detail: 'Steps · owners · approvals · tracking',
+          image: '/assets/plataforma-empresarial/flujos-trabajo.png',
+        },
+        {
+          eyebrow: '06 · Business collaboration',
+          title: 'Keep your entire team connected and coordinated.',
+          copy:
+            'Bring conversations, meetings, calendars and files together so every decision stays with the work that gives it context.',
+          detail: 'Chat · meetings · calendars · files',
+          image: '/assets/plataforma-empresarial/colaboracion-empresarial.png',
+        },
+        {
+          eyebrow: '07 · Business application integration',
+          title: 'Connect the platform with the tools you already use.',
+          copy:
+            'Integrate email, telephony and business applications to share information and avoid duplicate data entry.',
+          detail: 'Email · telephony · applications · shared information',
+          image: '/assets/plataforma-empresarial/integraciones-empresariales.png',
+        },
       ],
     },
   },
