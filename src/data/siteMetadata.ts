@@ -5,6 +5,7 @@ export type SiteMetadata = {
   description: string;
   canonicalUrl: string;
   image: string;
+  imageAlt: string;
   locale: string;
   htmlLang: string;
   siteName: string;
@@ -16,7 +17,8 @@ export const siteMetadataByLang: Record<SupportedLang, SiteMetadata> = {
     description:
       'Consultoría empresarial especializada en estrategia, proyectos, tecnología, procesos, calidad y mercadotecnia digital para organizaciones que buscan resultados medibles.',
     canonicalUrl: 'https://agsit.com.mx/',
-    image: '/assets/logo-asit.webp',
+    image: '/assets/social/inicio-es.jpg',
+    imageAlt: 'AGSIT: decisiones que definen el futuro de tu empresa.',
     locale: 'es_MX',
     htmlLang: 'es-MX',
     siteName: 'AGSIT',
@@ -26,7 +28,8 @@ export const siteMetadataByLang: Record<SupportedLang, SiteMetadata> = {
     description:
       'Business consulting specialized in strategy, project management, technology, processes, quality and digital marketing for organizations seeking measurable results.',
     canonicalUrl: 'https://agsit.com.mx/en/',
-    image: '/assets/logo-asit.webp',
+    image: '/assets/social/inicio-en.jpg',
+    imageAlt: 'AGSIT: decisions that define the future of your company.',
     locale: 'en_US',
     htmlLang: 'en',
     siteName: 'AGSIT',

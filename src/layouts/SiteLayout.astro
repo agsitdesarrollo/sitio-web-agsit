@@ -6,12 +6,14 @@ type Props = {
   title?: string;
   description?: string;
   canonicalUrl?: string;
+  image?: string;
+  imageAlt?: string;
   htmlLang?: string;
   locale?: string;
   alternates?: Array<{ lang: string; href: string }>;
 };
 
-const { title, description, canonicalUrl, htmlLang = 'es-MX', locale, alternates = [] } = Astro.props;
+const { title, description, canonicalUrl, image, imageAlt, htmlLang = 'es-MX', locale, alternates = [] } = Astro.props;
 ---
 
 <!doctype html>
@@ -29,7 +31,15 @@ const { title, description, canonicalUrl, htmlLang = 'es-MX', locale, alternates
     <!-- <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="icon" href="/favicon.ico" /> -->
     <link rel="icon" href="/AGSIT-Logo-512x512-2-150x150.png" />
-    <SeoHead title={title} description={description} canonicalUrl={canonicalUrl} locale={locale} alternates={alternates} />
+    <SeoHead
+      title={title}
+      description={description}
+      canonicalUrl={canonicalUrl}
+      image={image}
+      imageAlt={imageAlt}
+      locale={locale}
+      alternates={alternates}
+    />
   </head>
   <body>
     <script is:inline>

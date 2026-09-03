@@ -6,6 +6,7 @@ type Props = {
   description?: string;
   canonicalUrl?: string;
   image?: string;
+  imageAlt?: string;
   locale?: string;
   alternates?: Array<{ lang: string; href: string }>;
 };
@@ -15,6 +16,7 @@ const {
   description = siteMetadata.description,
   canonicalUrl = siteMetadata.canonicalUrl,
   image = siteMetadata.image,
+  imageAlt = siteMetadata.imageAlt,
   locale = siteMetadata.locale,
   alternates = [],
 } = Astro.props;
@@ -33,7 +35,12 @@ const absoluteImage = image.startsWith('http') ? image : new URL(image, canonica
 <meta property="og:description" content={description} />
 <meta property="og:url" content={canonicalUrl} />
 <meta property="og:image" content={absoluteImage} />
+<meta property="og:image:type" content="image/jpeg" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta property="og:image:alt" content={imageAlt} />
 <meta name="twitter:card" content="summary_large_image" />
 <meta name="twitter:title" content={title} />
 <meta name="twitter:description" content={description} />
 <meta name="twitter:image" content={absoluteImage} />
+<meta name="twitter:image:alt" content={imageAlt} />

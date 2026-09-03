@@ -25,6 +25,8 @@ export type CrmAdministrationContent = {
     title: string;
     description: string;
     canonicalUrl: string;
+    image: string;
+    imageAlt: string;
     htmlLang: string;
     locale: string;
   };
@@ -60,6 +62,8 @@ export const crmAdministrationByLang: Record<SupportedLang, CrmAdministrationCon
       description:
         'Integra clientes, ventas, proyectos, procesos, documentos, automatización y colaboración en una plataforma empresarial implementada por AGSIT.',
       canonicalUrl: 'https://agsit.com.mx/soluciones-tecnologicas/plataforma-empresarial-inteligente/',
+      image: '/assets/social/plataforma-empresarial-inteligente-es.jpg',
+      imageAlt: 'Plataforma Empresarial Inteligente para gestionar toda la empresa en un solo lugar.',
       htmlLang: 'es-MX',
       locale: 'es_MX',
     },
@@ -249,6 +253,8 @@ export const crmAdministrationByLang: Record<SupportedLang, CrmAdministrationCon
       description:
         'Integrate customers, sales, projects, processes, documents, automation and collaboration in one business platform implemented by AGSIT.',
       canonicalUrl: 'https://agsit.com.mx/en/technology-solutions/intelligent-enterprise-platform/',
+      image: '/assets/social/intelligent-enterprise-platform-en.jpg',
+      imageAlt: 'Intelligent Enterprise Platform for managing the entire company in one place.',
       htmlLang: 'en',
       locale: 'en_US',
     },

@@ -8,6 +8,8 @@ export const strategicPlanningTemplateByLang: Record<SupportedLang, TechnologySo
       description:
         'Planeación estratégica empresarial con diagnóstico ADN, misión, visión, valores, análisis interno y externo, gobierno corporativo, tableros ejecutivos y modelos de crecimiento.',
       canonicalUrl: 'https://agsit.com.mx/planeacion-estrategica/',
+      image: '/assets/social/planeacion-estrategica-es.jpg',
+      imageAlt: 'Planeación estratégica AGSIT para crecer con dirección y control.',
       htmlLang: 'es-MX',
       locale: 'es_MX',
     },
@@ -142,6 +144,8 @@ export const strategicPlanningTemplateByLang: Record<SupportedLang, TechnologySo
       description:
         'Business strategic planning with company DNA diagnosis, mission, vision, values, internal and external analysis, corporate governance, executive dashboards and growth models.',
       canonicalUrl: 'https://agsit.com.mx/en/strategic-planning/',
+      image: '/assets/social/strategic-planning-en.jpg',
+      imageAlt: 'AGSIT strategic planning for clear direction and controlled growth.',
       htmlLang: 'en',
       locale: 'en_US',
     },
@@ -279,6 +283,8 @@ export const projectManagementTemplateByLang: Record<SupportedLang, TechnologySo
       description:
         'Dirección de proyectos con diagnóstico, auditoría, PMO, metodologías ágiles o predictivas, gobierno, capacitación y control de alcance, tiempo y costo.',
       canonicalUrl: 'https://agsit.com.mx/direccion-de-proyectos/',
+      image: '/assets/social/direccion-proyectos-es.jpg',
+      imageAlt: 'Dirección de proyectos AGSIT con control, ritmo y evidencia.',
       htmlLang: 'es-MX',
       locale: 'es_MX',
     },
@@ -414,6 +420,8 @@ export const projectManagementTemplateByLang: Record<SupportedLang, TechnologySo
       description:
         'Project management with diagnosis, auditing, PMO, agile or predictive methodologies, governance, training and scope, time and cost control.',
       canonicalUrl: 'https://agsit.com.mx/en/project-management/',
+      image: '/assets/social/project-management-en.jpg',
+      imageAlt: 'AGSIT project management with control, rhythm and evidence.',
       htmlLang: 'en',
       locale: 'en_US',
     },
@@ -552,6 +560,8 @@ export const processManagementTemplateByLang: Record<SupportedLang, TechnologySo
       description:
         'Administración de procesos de negocio con diagnóstico AS-IS, modelado BPMN, análisis, diseño, automatización, KPIs, auditoría y mejora continua.',
       canonicalUrl: 'https://agsit.com.mx/administracion-de-procesos/',
+      image: '/assets/social/administracion-procesos-es.jpg',
+      imageAlt: 'Administración de procesos AGSIT para operar mejor.',
       htmlLang: 'es-MX',
       locale: 'es_MX',
     },
@@ -687,6 +697,8 @@ export const processManagementTemplateByLang: Record<SupportedLang, TechnologySo
       description:
         'Business process management with AS-IS diagnosis, BPMN modeling, analysis, design, automation, KPIs, auditing and continuous improvement.',
       canonicalUrl: 'https://agsit.com.mx/en/process-management/',
+      image: '/assets/social/process-management-en.jpg',
+      imageAlt: 'AGSIT business process management for better operations.',
       htmlLang: 'en',
       locale: 'en_US',
     },

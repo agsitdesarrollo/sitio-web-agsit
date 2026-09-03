@@ -49,6 +49,8 @@ export type DigitalMarketingV2Content = {
     title: string;
     description: string;
     canonicalUrl: string;
+    image: string;
+    imageAlt: string;
     htmlLang: string;
     locale: string;
   };
@@ -103,6 +105,8 @@ export const digitalMarketingV2ByLang: Record<SupportedLang, DigitalMarketingV2C
       description:
         'Marketing digital AGSIT: estrategia, SEO, SEM, analítica, social media y e-commerce trabajando como un solo sistema para atraer, convertir y medir resultados.',
       canonicalUrl: 'https://agsit.com.mx/marketing-digital/',
+      image: '/assets/social/marketing-digital-es.jpg',
+      imageAlt: 'Marketing Digital AGSIT: crecimiento diseñado con datos.',
       htmlLang: 'es-MX',
       locale: 'es_MX',
     },
@@ -286,6 +290,8 @@ export const digitalMarketingV2ByLang: Record<SupportedLang, DigitalMarketingV2C
       description:
         'AGSIT digital marketing: strategy, SEO, SEM, analytics, social media and e-commerce working as one system to attract, convert and measure results.',
       canonicalUrl: 'https://agsit.com.mx/en/digital-marketing/',
+      image: '/assets/social/digital-marketing-en.jpg',
+      imageAlt: 'AGSIT Digital Marketing: growth designed with data.',
       htmlLang: 'en',
       locale: 'en_US',
     },

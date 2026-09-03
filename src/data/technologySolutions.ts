@@ -32,6 +32,8 @@ export type TechnologySolutionsContent = {
     title: string;
     description: string;
     canonicalUrl: string;
+    image: string;
+    imageAlt: string;
     htmlLang: string;
     locale: string;
   };
@@ -74,6 +76,8 @@ export const technologySolutionsByLang: Record<SupportedLang, TechnologySolution
       description:
         'Soluciones tecnológicas para empresas: auditoría de software, requerimientos, desarrollo, testing, soporte, bases de datos, servidores, ERP, nube y metodologías de desarrollo.',
       canonicalUrl: 'https://agsit.com.mx/soluciones-tecnologicas/',
+      image: '/assets/social/soluciones-tecnologicas-es.jpg',
+      imageAlt: 'Soluciones Tecnológicas AGSIT para impulsar el crecimiento empresarial.',
       htmlLang: 'es-MX',
       locale: 'es_MX',
     },
@@ -225,6 +229,8 @@ export const technologySolutionsByLang: Record<SupportedLang, TechnologySolution
       description:
         'Technology solutions for companies: software audits, requirements, development, testing, support, databases, servers, ERP, cloud and development methodologies.',
       canonicalUrl: 'https://agsit.com.mx/en/technology-solutions/',
+      image: '/assets/social/technology-solutions-en.jpg',
+      imageAlt: 'AGSIT technology solutions that power business growth.',
       htmlLang: 'en',
       locale: 'en_US',
     },
