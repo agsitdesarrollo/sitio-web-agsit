@@ -41,8 +41,8 @@ const t = useTranslations(lang);
       contactHref="#contacto"
       alternateHref="/soluciones-tecnologicas/"
     />
-    <!-- Only business platforms directs to CRM from the catalogue. -->
-    <TechnologySolutionsPage content={content} contactCopy={contactCopy} capabilityLinkCodes={['BIZ']} />
+    <!-- Published pages are enabled from the catalogue by code. -->
+    <TechnologySolutionsPage content={content} contactCopy={contactCopy} capabilityLinkCodes={['BIZ', 'SW']} />
     <Footer
       copy={footerCopy}
       services={servicesContent.services}

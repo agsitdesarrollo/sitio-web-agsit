@@ -10,7 +10,6 @@
     .data-page,
     .ops-page,
     .itg-page,
-    .dev-page,
     .inn-page,
     .crm-page,
     .quality-page,
@@ -26,7 +25,6 @@
     .data-page,
     .ops-page,
     .itg-page,
-    .dev-page,
     .inn-page,
     .crm-page,
     .quality-page
@@ -40,7 +38,6 @@
     .data-page,
     .ops-page,
     .itg-page,
-    .dev-page,
     .inn-page,
     .crm-page,
     .quality-page,
@@ -56,7 +53,6 @@
     .data-page,
     .ops-page,
     .itg-page,
-    .dev-page,
     .inn-page,
     .crm-page,
     .quality-page,
@@ -72,7 +68,6 @@
     .data-page,
     .ops-page,
     .itg-page,
-    .dev-page,
     .inn-page,
     .crm-page,
     .quality-page,
@@ -88,7 +83,6 @@
     .data-page,
     .ops-page,
     .itg-page,
-    .dev-page,
     .inn-page,
     .crm-page,
     .quality-page,
@@ -124,7 +118,6 @@
     .data-hero,
     .ops-hero,
     .itg-hero,
-    .dev-hero,
     .inn-hero,
     .crm-hero,
     .quality-hero,
@@ -141,7 +134,6 @@
     .data-hero-content,
     .ops-hero-content,
     .itg-hero-content,
-    .dev-hero-content,
     .inn-hero-content
   ) {
     width: min(760px, 100%);
@@ -175,7 +167,6 @@
     .data-hero-content,
     .ops-hero-content,
     .itg-hero-content,
-    .dev-hero-content,
     .inn-hero-content,
     .crm-hero-copy,
     .quality-hero-copy
@@ -306,7 +297,6 @@
     .data-method-map,
     .ops-method-map,
     .itg-method-map,
-    .dev-method-map,
     .inn-method-map
   ) {
     margin-top: 18px;
@@ -320,13 +310,11 @@
     .data-method-path,
     .ops-method-path,
     .itg-method-path,
-    .dev-method-path,
     .inn-method-path,
     .auto-approach-path,
     .data-approach-path,
     .ops-approach-path,
     .itg-approach-path,
-    .dev-approach-path,
     .inn-approach-path
   ) {
     display: none;
@@ -338,7 +326,6 @@
     .data-method-step,
     .ops-method-step,
     .itg-method-step,
-    .dev-method-step,
     .inn-method-step
   ) {
     min-height: auto;
@@ -392,7 +379,6 @@
     .data-method-step,
     .ops-method-step,
     .itg-method-step,
-    .dev-method-step,
     .inn-method-step
   ) p:not([class$='step-label']) {
     margin-top: 7px;
@@ -536,7 +522,6 @@
     .data-approach-map,
     .ops-approach-map,
     .itg-approach-map,
-    .dev-approach-map,
     .inn-approach-map
   ) {
     margin-top: 18px;
@@ -549,7 +534,6 @@
     .data-approach-step,
     .ops-approach-step,
     .itg-approach-step,
-    .dev-approach-step,
     .inn-approach-step
   ) {
     min-height: auto;

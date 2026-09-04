@@ -1,0 +1,292 @@
+.technology-solution-benefits {
+  min-height: var(--app-panel-h, 100svh);
+  box-sizing: border-box;
+  padding: calc(var(--nav-h) + clamp(20px, 3.5vh, 40px)) var(--crm-gutter) clamp(20px, 3.5vh, 40px);
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  color: var(--crm-navy);
+  background:
+    radial-gradient(circle at 18% 54%, rgba(139, 226, 255, 0.22), transparent 34%),
+    linear-gradient(135deg, #fbfdff 0%, #eef7fc 55%, #ffffff 100%);
+}
+
+.technology-solution-benefits-layout {
+  width: min(100%, var(--crm-wide-shell));
+  display: grid;
+  grid-template-columns: minmax(390px, 0.98fr) minmax(430px, 1.02fr);
+  gap: clamp(48px, 6vw, 96px);
+  align-items: center;
+}
+
+.technology-solution-benefits-media {
+  width: 100%;
+  aspect-ratio: 3 / 2;
+  position: relative;
+  overflow: hidden;
+  border: 1px solid rgba(65, 200, 246, 0.26);
+  border-radius: clamp(22px, 2.2vw, 34px);
+  background: linear-gradient(145deg, #071934, #020712);
+  box-shadow: 0 28px 70px rgba(8, 21, 43, 0.2);
+}
+
+.technology-solution-benefits-media::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+  pointer-events: none;
+}
+
+.technology-solution-benefits-media img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: contain;
+}
+
+.technology-solution-benefits-content {
+  display: grid;
+  gap: clamp(24px, 3.4vh, 38px);
+}
+
+.technology-solution-benefits-heading {
+  display: grid;
+  gap: clamp(10px, 1.5vh, 16px);
+}
+
+.technology-solution-benefits-heading .crm-kicker {
+  color: var(--crm-teal);
+}
+
+.technology-solution-benefits-heading h2 {
+  max-width: 15ch;
+  color: var(--crm-blue);
+  font-size: var(--crm-title-lg);
+  line-height: 1;
+}
+
+.technology-solution-benefits-heading > p:last-child {
+  max-width: 650px;
+  color: #52637a;
+  font-size: var(--crm-body);
+  font-weight: 500;
+  line-height: 1.55;
+}
+
+.technology-solution-benefits-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: clamp(18px, 2.3vw, 30px) clamp(22px, 3vw, 40px);
+}
+
+.technology-solution-benefit {
+  min-width: 0;
+  display: grid;
+  grid-template-columns: 42px minmax(0, 1fr);
+  gap: 13px;
+  align-items: start;
+}
+
+.technology-solution-benefit-icon {
+  width: 42px;
+  aspect-ratio: 1;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(40, 124, 161, 0.2);
+  border-radius: 14px;
+  color: var(--crm-teal);
+  background: rgba(139, 226, 255, 0.22);
+}
+
+.technology-solution-benefit-icon svg {
+  width: 23px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.technology-solution-benefit h3 {
+  color: var(--crm-blue);
+  font-family: 'Inter', 'Segoe UI', Tahoma, sans-serif;
+  font-size: clamp(0.96rem, 1vw, 1.08rem);
+  font-weight: 800;
+  line-height: 1.25;
+}
+
+.technology-solution-benefit p {
+  margin-top: 6px;
+  color: var(--crm-muted-light);
+  font-size: clamp(0.82rem, 0.86vw, 0.94rem);
+  font-weight: 500;
+  line-height: 1.48;
+}
+
+@media (max-width: 960px) and (orientation: portrait) {
+  .technology-solution-benefits-layout {
+    width: min(100%, 720px);
+    grid-template-columns: 1fr;
+    gap: clamp(22px, 3vh, 34px);
+  }
+
+  .technology-solution-benefits-media {
+    width: min(100%, 600px);
+    max-height: 31vh;
+    justify-self: center;
+  }
+
+  .technology-solution-benefits-content {
+    gap: clamp(20px, 2.5vh, 28px);
+  }
+
+  .technology-solution-benefits-heading {
+    justify-items: center;
+    text-align: center;
+  }
+
+  .technology-solution-benefits-heading h2 {
+    max-width: 18ch;
+  }
+
+  .technology-solution-benefits-heading > p:last-child {
+    max-width: 620px;
+  }
+}
+
+@media (max-width: 679px) {
+  .technology-solution-benefits {
+    padding-top: calc(var(--nav-h) + clamp(10px, 1.6vh, 16px));
+    padding-bottom: clamp(12px, 2vh, 20px);
+  }
+
+  .technology-solution-benefits-layout {
+    gap: clamp(12px, 1.8vh, 18px);
+  }
+
+  .technology-solution-benefits-media {
+    max-height: min(23vh, 190px);
+    border-radius: 18px;
+  }
+
+  .technology-solution-benefits-content {
+    gap: clamp(13px, 1.8vh, 18px);
+  }
+
+  .technology-solution-benefits-heading {
+    gap: clamp(7px, 1vh, 10px);
+  }
+
+  .technology-solution-benefits-heading h2 {
+    font-size: clamp(1.85rem, min(8.7vw, 4.8vh), 2.55rem);
+  }
+
+  .technology-solution-benefits-heading > p:last-child {
+    font-size: clamp(0.82rem, min(3.6vw, 1.9vh), 0.96rem);
+    line-height: 1.4;
+  }
+
+  .technology-solution-benefits-grid {
+    gap: clamp(10px, 1.4vh, 14px) 13px;
+  }
+
+  .technology-solution-benefit {
+    grid-template-columns: 32px minmax(0, 1fr);
+    gap: 9px;
+  }
+
+  .technology-solution-benefit-icon {
+    width: 32px;
+    border-radius: 10px;
+  }
+
+  .technology-solution-benefit-icon svg {
+    width: 18px;
+  }
+
+  .technology-solution-benefit h3 {
+    font-size: clamp(0.74rem, min(3.25vw, 1.65vh), 0.88rem);
+  }
+
+  .technology-solution-benefit p {
+    margin-top: 3px;
+    font-size: clamp(0.66rem, min(2.85vw, 1.45vh), 0.78rem);
+    line-height: 1.35;
+  }
+}
+
+@media (pointer: coarse) and (orientation: landscape) and (max-width: 932px) and (max-height: 520px) {
+  .technology-solution-benefits {
+    padding-top: calc(var(--nav-h) + 4px);
+    padding-bottom: 4px;
+  }
+
+  .technology-solution-benefits-layout {
+    grid-template-columns: minmax(250px, 0.92fr) minmax(0, 1.08fr);
+    gap: clamp(22px, 4vw, 38px);
+  }
+
+  .technology-solution-benefits-media {
+    max-height: min(58vh, 250px);
+    border-radius: 18px;
+  }
+
+  .technology-solution-benefits-content {
+    gap: 12px;
+  }
+
+  .technology-solution-benefits-heading {
+    gap: 4px;
+  }
+
+  .technology-solution-benefits-heading h2 {
+    max-width: 18ch;
+    font-size: clamp(1.45rem, 3vw, 1.8rem);
+  }
+
+  .technology-solution-benefits-heading > p:last-child {
+    font-size: clamp(0.6rem, 1.2vw, 0.7rem);
+    line-height: 1.3;
+  }
+
+  .technology-solution-benefits-grid {
+    gap: 9px 14px;
+  }
+
+  .technology-solution-benefit {
+    grid-template-columns: 28px minmax(0, 1fr);
+    gap: 7px;
+  }
+
+  .technology-solution-benefit-icon {
+    width: 28px;
+    border-radius: 9px;
+  }
+
+  .technology-solution-benefit-icon svg {
+    width: 16px;
+  }
+
+  .technology-solution-benefit h3 {
+    font-size: 0.66rem;
+  }
+
+  .technology-solution-benefit p {
+    margin-top: 2px;
+    font-size: 0.54rem;
+    line-height: 1.28;
+  }
+}
+
+html.mobile-menu-open .crm-platform-page > .technology-solution-benefits {
+  min-height: calc(var(--app-panel-h, 100svh) + var(--mobile-menu-open-h, 0px));
+  padding-top: calc(var(--nav-h) + var(--mobile-menu-open-h, 0px) + clamp(12px, 2vh, 24px));
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .technology-solution-benefits * {
+    transition-duration: 0ms !important;
+  }
+}

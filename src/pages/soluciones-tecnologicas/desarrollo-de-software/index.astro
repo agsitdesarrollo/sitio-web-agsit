@@ -35,12 +35,18 @@ const t = useTranslations(lang);
     <Header
       lang={lang}
       homeHref="/#inicio"
-      servicesHref="/#servicios"
+      servicesHref="/soluciones-tecnologicas/"
       contactHref="#contacto"
       alternateHref="/en/technology-solutions/software-development/"
     />
     <SoftwareDevelopmentPage content={content} contactCopy={contactCopy} />
-    <Footer copy={footerCopy} services={servicesContent.services} homeHref="/#inicio" servicesHref="/#servicios" contactHref="#contacto" />
+    <Footer
+      copy={footerCopy}
+      services={servicesContent.services}
+      homeHref="/#inicio"
+      servicesHref="/soluciones-tecnologicas/"
+      contactHref="#contacto"
+    />
     <ContactDrawer copy={contactCopy} />
     <PageShellScripts openMenuLabel={t('nav.openMenu')} closeMenuLabel={t('nav.closeMenu')} />
   </div>

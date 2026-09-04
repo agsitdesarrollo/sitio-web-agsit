@@ -150,6 +150,8 @@ export const technologySolutionsByLang: Record<SupportedLang, TechnologySolution
           title: 'Fábrica de Software / Desarrollo de Software a la Medida',
           copy:
             'Diseñamos y desarrollamos soluciones de software a la medida que responden a las necesidades operativas de tu empresa, desde aplicaciones especializadas hasta sistemas empresariales.',
+          cta: 'Ver servicios',
+          href: '/soluciones-tecnologicas/desarrollo-de-software/',
         },
         {
           code: 'AUTO',
@@ -303,6 +305,8 @@ export const technologySolutionsByLang: Record<SupportedLang, TechnologySolution
           title: 'Software Factory / Custom Software Development',
           copy:
             'We design and develop custom software solutions that address your company’s operational needs, from specialized applications to enterprise systems.',
+          cta: 'View services',
+          href: '/en/technology-solutions/software-development/',
         },
         {
           code: 'AUTO',

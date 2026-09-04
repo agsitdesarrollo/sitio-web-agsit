@@ -1,0 +1,72 @@
+---
+import type {
+  TechnologySolutionBenefitIcon,
+  TechnologySolutionBenefitsContent,
+} from './types';
+
+type Props = {
+  content: TechnologySolutionBenefitsContent;
+};
+
+const { content } = Astro.props;
+
+const iconPaths: Record<TechnologySolutionBenefitIcon, string[]> = {
+  fit: [
+    'M9 4h6v4h5v6h-5v6H9v-6H4V8h5V4Z',
+    'M9 8h6M9 14h6M12 8v6',
+  ],
+  quality: [
+    'M12 3 20 6v5c0 5-3.3 8.4-8 10-4.7-1.6-8-5-8-10V6l8-3Z',
+    'm8.5 12 2.2 2.2 4.8-5',
+  ],
+  growth: [
+    'M5 19V9m7 10V5m7 14v-8',
+    'm4 8 5-4 4 3 7-5',
+  ],
+  integration: [
+    'M9.5 14.5 7 17a3.5 3.5 0 1 1-5-5l3-3a3.5 3.5 0 0 1 5 0',
+    'm14.5 9.5 2.5-2.5a3.5 3.5 0 1 1 5 5l-3 3a3.5 3.5 0 0 1-5 0',
+    'm8 16 8-8',
+  ],
+};
+---
+
+<section
+  class="technology-solution-benefits"
+  aria-labelledby="technology-solution-benefits-title"
+>
+  <div class="crm-shell technology-solution-benefits-layout">
+    <figure class="technology-solution-benefits-media">
+      <img
+        src={content.image}
+        alt={content.imageAlt}
+        loading="eager"
+        decoding="async"
+      />
+    </figure>
+
+    <div class="technology-solution-benefits-content">
+      <header class="technology-solution-benefits-heading">
+        <p class="crm-kicker">{content.eyebrow}</p>
+        <h2 id="technology-solution-benefits-title">{content.title}</h2>
+        <p>{content.copy}</p>
+      </header>
+
+      <div class="technology-solution-benefits-grid">
+        {content.items.map((benefit) => (
+          <article class="technology-solution-benefit">
+            <span class="technology-solution-benefit-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" focusable="false">
+                {iconPaths[benefit.icon].map((path) => <path d={path} />)}
+              </svg>
+            </span>
+            <div>
+              <h3>{benefit.title}</h3>
+              <p>{benefit.copy}</p>
+            </div>
+          </article>
+        ))}
+      </div>
+    </div>
+  </div>
+</section>

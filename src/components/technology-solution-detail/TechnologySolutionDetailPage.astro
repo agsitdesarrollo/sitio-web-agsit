@@ -16,6 +16,7 @@ type Props = {
   journey: TechnologySolutionJourneyContent;
   contactCopy: ContactCopy;
   touchThreshold?: number;
+  pageClass?: string;
 };
 
 const {
@@ -24,11 +25,12 @@ const {
   journey,
   contactCopy,
   touchThreshold = 22,
+  pageClass,
 } = Astro.props;
 ---
 
 <main
-  class="technology-solution-detail-page crm-platform-page"
+  class:list={['technology-solution-detail-page', 'crm-platform-page', pageClass]}
   data-technology-solution-detail
   data-service-touch-threshold={touchThreshold}
 >

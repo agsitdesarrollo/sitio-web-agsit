@@ -28,7 +28,7 @@ const PAGE_DEFINITIONS: PageDefinition[] = [
     root: '[data-technology-solution-detail]',
     tracks: [],
   },
-  ...['itg', 'auto', 'dev', 'ops', 'data', 'inn'].map((prefix) => ({
+  ...['itg', 'auto', 'ops', 'data', 'inn'].map((prefix) => ({
     root: `.${prefix}-page`,
     tracks: [
       { section: `.${prefix}-services`, items: `.${prefix}-service-card` },

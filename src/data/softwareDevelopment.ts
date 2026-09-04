@@ -1,30 +1,5 @@
 import type { SupportedLang } from '../i18n/ui';
 
-export type DevChallengeItem = {
-  label: string;
-  title: string;
-  copy: string;
-};
-
-export type DevServiceItem = {
-  code: string;
-  title: string;
-  copy: string;
-  activities: string[];
-};
-
-export type DevBenefitItem = {
-  value: string;
-  title: string;
-  copy: string;
-};
-
-export type DevApproachStep = {
-  label: string;
-  title: string;
-  copy: string;
-};
-
 export type SoftwareDevelopmentContent = {
   metadata: {
     title: string;
@@ -36,402 +11,268 @@ export type SoftwareDevelopmentContent = {
   hero: {
     eyebrow: string;
     title: string;
+    titleAccent: string;
     copy: string;
     primaryCta: string;
-  };
-  challenges: {
-    eyebrow: string;
-    title: string;
-    copy: string;
-    items: DevChallengeItem[];
-  };
-  services: {
-    eyebrow: string;
-    title: string;
-    copy: string;
-    activitiesLabel: string;
-    items: DevServiceItem[];
+    pathwaysLabel: string;
+    pathways: Array<{
+      label: string;
+      href: string;
+    }>;
+    visualAlt: string;
   };
   benefits: {
     eyebrow: string;
     title: string;
     copy: string;
-    items: DevBenefitItem[];
+    image: string;
+    imageAlt: string;
+    items: Array<{
+      icon: 'fit' | 'quality' | 'growth' | 'integration';
+      title: string;
+      copy: string;
+    }>;
   };
-  approach: {
+  journey: {
     eyebrow: string;
     title: string;
     copy: string;
-    steps: DevApproachStep[];
-  };
-  cta: {
-    eyebrow: string;
-    title: string;
-    copy: string;
+    items: Array<{
+      anchor: string;
+      eyebrow: string;
+      title: string;
+      copy: string;
+      detail: string;
+      image: string;
+    }>;
   };
 };
 
 export const softwareDevelopmentByLang: Record<SupportedLang, SoftwareDevelopmentContent> = {
   es: {
     metadata: {
-      title: 'Desarrollo de Software | AGSIT — Aplicaciones alineadas a tu operación',
+      title: 'Desarrollo de Software a la Medida | AGSIT',
       description:
-        'Desarrollo de aplicaciones de escritorio, web y móvil, testing, metodologías de desarrollo e implementación para empresas.',
+        'Desarrollamos software a la medida, aplicaciones web, apps móviles y sistemas de escritorio con pruebas de calidad para empresas.',
       canonicalUrl: 'https://agsit.com.mx/soluciones-tecnologicas/desarrollo-de-software/',
       htmlLang: 'es-MX',
       locale: 'es_MX',
     },
     hero: {
-      eyebrow: 'Desarrollo de Software',
-      title: 'Desarrollamos software que impulsa resultados reales',
+      eyebrow: 'Desarrollo de software a la medida',
+      title: 'Creamos el software',
+      titleAccent: 'que tu empresa necesita.',
       copy:
-        'Construimos aplicaciones de escritorio, web y móvil alineadas a la operación real de tu negocio, con validación funcional antes de escalar y adopción asegurada del equipo.',
-      primaryCta: 'Solicitar diagnóstico',
-    },
-    challenges: {
-      eyebrow: 'Retos que resolvemos',
-      title: 'Cuando el software estándar no es suficiente',
-      copy:
-        'Los sistemas genéricos rara vez encajan con los procesos únicos de tu empresa. Identificamos qué frena tu operación antes de escribir una sola línea de código.',
-      items: [
+        'Desarrollamos soluciones web, móviles y de escritorio pensadas para resolver necesidades reales de tu operación.',
+      primaryCta: 'Hablar con un especialista',
+      pathwaysLabel: 'Explorar soluciones de desarrollo',
+      pathways: [
         {
-          label: 'Sistemas obsoletos',
-          title: 'Tecnología que limita la operación',
-          copy: 'Aplicaciones antiguas, sin soporte o difíciles de integrar obligan a procesos manuales y generan dependencias técnicas que frenan el crecimiento.',
+          label: 'Soluciones de desarrollo',
+          href: '#desarrollo-software-a-la-medida',
         },
         {
-          label: 'Procesos sin sistema',
-          title: 'Flujos gestionados en hojas de cálculo',
-          copy: 'Cuando operaciones críticas dependen de archivos de Excel o correos, la trazabilidad, el control y la escalabilidad se vuelven imposibles de mantener.',
-        },
-        {
-          label: 'Falta de integración',
-          title: 'Aplicaciones que no se conectan',
-          copy: 'Sistemas desconectados obligan a captura doble, generan inconsistencias entre áreas y crean puntos ciegos que afectan la toma de decisiones.',
-        },
-        {
-          label: 'Calidad inestable',
-          title: 'Entregas con errores que afectan al usuario',
-          copy: 'Sin procesos de prueba estructurados, los errores llegan a producción y generan costos de corrección, pérdida de confianza y fricción operativa.',
+          label: 'Calidad de software',
+          href: '#testing',
         },
       ],
-    },
-    services: {
-      eyebrow: 'Servicios incluidos',
-      title: 'Servicios de desarrollo y calidad de software',
-      copy:
-        'Cubrimos desde el análisis hasta la liberación: escritorio, web, móvil, testing y metodologías que aseguran calidad desde el inicio.',
-      activitiesLabel: 'Actividades clave',
-      items: [
-        {
-          code: 'DEV-01',
-          title: 'Desarrollo de Aplicaciones de Escritorio',
-          copy: 'Construimos aplicaciones de escritorio robustas y eficientes, alineadas a los procesos internos y entornos tecnológicos de tu empresa.',
-          activities: [
-            'Análisis de procesos internos y entorno tecnológico',
-            'Diseño de interfaz y flujos de trabajo',
-            'Desarrollo e integración con sistemas existentes',
-            'Pruebas funcionales y liberación controlada',
-          ],
-        },
-        {
-          code: 'DEV-02',
-          title: 'Desarrollo Web',
-          copy: 'Desarrollamos plataformas y sistemas web funcionales, escalables y seguros, con enfoque en la experiencia de usuario y el rendimiento.',
-          activities: [
-            'Definición de arquitectura y tecnología web',
-            'Diseño UX y estructura funcional',
-            'Desarrollo frontend y backend escalable',
-            'Pruebas de rendimiento y despliegue',
-          ],
-        },
-        {
-          code: 'DEV-03',
-          title: 'Desarrollo de Apps Móviles',
-          copy: 'Creamos aplicaciones móviles que extienden las capacidades operativas de tu empresa, con experiencias intuitivas y sincronización en tiempo real.',
-          activities: [
-            'Diseño de experiencia de usuario móvil',
-            'Desarrollo nativo o multiplataforma',
-            'Integración con APIs y sistemas corporativos',
-            'Pruebas en dispositivos reales y publicación',
-          ],
-        },
-        {
-          code: 'DEV-04',
-          title: 'Gestión de Pruebas (Testing)',
-          copy: 'Diseñamos y ejecutamos estrategias de pruebas funcionales, de integración y de regresión para asegurar calidad antes de cada liberación.',
-          activities: [
-            'Diseño de estrategia y plan de pruebas',
-            'Pruebas funcionales y de integración',
-            'Pruebas de regresión y validación de calidad',
-            'Reporte y seguimiento de defectos detectados',
-          ],
-        },
-        {
-          code: 'DEV-05',
-          title: 'Metodologías de Desarrollo',
-          copy: 'Implementamos y capacitamos a tu equipo en metodologías estructuradas que mejoran la planificación, el control y la entrega de software.',
-          activities: [
-            'Evaluación del proceso de desarrollo actual',
-            'Diseño e implementación de flujos de trabajo',
-            'Capacitación del equipo en la metodología',
-            'Seguimiento con indicadores de mejora continua',
-          ],
-        },
-      ],
+      visualAlt: 'Animación digital que representa la creación de software para empresas.',
     },
     benefits: {
-      eyebrow: 'Beneficios para tu organización',
-      title: 'Tecnología alineada a tus objetivos de negocio',
+      eyebrow: 'Beneficios del desarrollo a la medida',
+      title: 'Software que trabaja a favor de tu empresa.',
       copy:
-        'Cada solución que construimos está orientada a resolver un problema real de operación, no a cumplir una lista de funcionalidades técnicas.',
+        'Obtén una solución que responde a tus procesos, se integra con tus herramientas y puede crecer con tu operación.',
+      image: '/assets/desarrollo-software/beneficios.png',
+      imageAlt: 'Solución de software adaptable, segura e integrada para una empresa.',
       items: [
         {
-          value: '01',
-          title: 'Software a tu medida',
-          copy: 'Aplicaciones diseñadas para tus procesos reales, no adaptadas con parches a software genérico que no encaja con tu operación.',
+          icon: 'fit',
+          title: 'Hecho para tu empresa',
+          copy: 'Se adapta a tu forma de trabajar y a las necesidades reales de tu equipo.',
         },
         {
-          value: '02',
+          icon: 'quality',
           title: 'Calidad desde el inicio',
-          copy: 'Testing integrado en cada etapa del desarrollo para reducir errores en producción y asegurar entregas confiables.',
+          copy: 'Validamos cada avance para reducir errores y entregar una solución confiable.',
         },
         {
-          value: '03',
-          title: 'Escalabilidad',
-          copy: 'Arquitecturas que crecen con tu negocio sin requerir reescrituras costosas cuando cambian los volúmenes o las necesidades.',
+          icon: 'growth',
+          title: 'Preparado para crecer',
+          copy: 'Amplía funciones y capacidades a medida que cambian tus objetivos.',
         },
         {
-          value: '04',
-          title: 'Integración con tus sistemas',
-          copy: 'Conexión fluida con las plataformas que ya usas para eliminar silos de información y centralizar la operación.',
-        },
-        {
-          value: '05',
-          title: 'Adopción real del equipo',
-          copy: 'Capacitación y acompañamiento post-entrega para que tu equipo use la herramienta con confianza desde el primer día.',
+          icon: 'integration',
+          title: 'Integración sin fricción',
+          copy: 'Conecta el nuevo software con las herramientas que tu empresa ya utiliza.',
         },
       ],
     },
-    approach: {
-      eyebrow: 'Nuestro enfoque',
-      title: 'Desarrollo estructurado y orientado a calidad',
+    journey: {
+      eyebrow: 'Desarrollo para cada necesidad',
+      title: 'De una idea a una solución lista para trabajar.',
       copy:
-        'Seguimos un ciclo que garantiza que cada entrega cumpla los requerimientos, sea probada antes de llegar a producción y sea adoptada por el equipo.',
-      steps: [
+        'Construimos la solución adecuada para cada operación, desde sistemas a la medida hasta aplicaciones web, móviles y de escritorio.',
+      items: [
         {
-          label: '01',
-          title: 'Requerimientos',
-          copy: 'Levantamos y documentamos qué necesita tu operación: funcionalidades, integraciones, flujos y criterios de aceptación.',
+          anchor: 'desarrollo-software-a-la-medida',
+          eyebrow: '01 · Desarrollo de software a la medida',
+          title: 'Convierte tu forma de trabajar en una solución propia.',
+          copy:
+            'Diseñamos software alrededor de tus procesos, necesidades y objetivos para que tu equipo trabaje con mayor claridad y control.',
+          detail: 'Análisis · diseño · desarrollo · integración',
+          image: '/assets/desarrollo-software/software-a-la-medida.png',
         },
         {
-          label: '02',
-          title: 'Diseño',
-          copy: 'Definimos la arquitectura, interfaz y tecnología adecuadas con criterios de escalabilidad, seguridad y experiencia de usuario.',
+          anchor: 'desarrollo-web',
+          eyebrow: '02 · Desarrollo web',
+          title: 'Lleva tus procesos a una experiencia web clara y accesible.',
+          copy:
+            'Creamos plataformas y sistemas web fáciles de usar, preparados para acompañar la operación diaria de tu empresa.',
+          detail: 'Plataformas web · portales · sistemas · integraciones',
+          image: '/assets/desarrollo-software/desarrollo-web.png',
         },
         {
-          label: '03',
-          title: 'Construcción',
-          copy: 'Desarrollamos por iteraciones entregando valor incremental, con revisiones frecuentes y control de cambios estructurado.',
+          anchor: 'apps-moviles',
+          eyebrow: '03 · Apps móviles',
+          title: 'Pon las funciones clave de tu empresa al alcance de tu equipo.',
+          copy:
+            'Desarrollamos aplicaciones móviles intuitivas para consultar información, atender tareas y mantener la operación en movimiento.',
+          detail: 'iOS · Android · experiencia móvil · información actualizada',
+          image: '/assets/desarrollo-software/apps-moviles.png',
         },
         {
-          label: '04',
-          title: 'Pruebas',
-          copy: 'Ejecutamos pruebas funcionales, de integración y de regresión para asegurar que el software funciona correctamente en todos los escenarios.',
+          anchor: 'aplicaciones-escritorio',
+          eyebrow: '04 · Aplicaciones de escritorio',
+          title: 'Fortalece tu operación con aplicaciones robustas.',
+          copy:
+            'Construimos herramientas de escritorio eficientes para organizar procesos internos y trabajar con seguridad desde cada equipo.',
+          detail: 'Procesos internos · rendimiento · seguridad · integración',
+          image: '/assets/desarrollo-software/aplicaciones-escritorio.png',
         },
         {
-          label: '05',
-          title: 'Liberación',
-          copy: 'Desplegamos en producción con plan de rollout, documentación técnica y capacitación al equipo para asegurar adopción desde el inicio.',
+          anchor: 'testing',
+          eyebrow: '05 · Testing',
+          title: 'Entrega software confiable desde el primer lanzamiento.',
+          copy:
+            'Probamos funciones, conexiones y recorridos antes de cada entrega para detectar errores y proteger la experiencia de tus usuarios.',
+          detail: 'Pruebas funcionales · integración · regresión · calidad',
+          image: '/assets/desarrollo-software/testing.png',
         },
       ],
-    },
-    cta: {
-      eyebrow: 'Diagnóstico inicial',
-      title: 'Construyamos tu próxima solución tecnológica',
-      copy:
-        'Cuéntanos qué proceso o necesidad quieres resolver con software. Revisaremos tu caso y propondremos el enfoque correcto.',
     },
   },
   en: {
     metadata: {
-      title: 'Software Development | AGSIT — Applications aligned to your operation',
+      title: 'Custom Software Development | AGSIT',
       description:
-        'Desktop, web and mobile application development, testing, development methodologies and implementation for businesses.',
+        'We develop custom software, web applications, mobile apps and desktop systems with quality testing for businesses.',
       canonicalUrl: 'https://agsit.com.mx/en/technology-solutions/software-development/',
       htmlLang: 'en',
       locale: 'en_US',
     },
     hero: {
-      eyebrow: 'Software Development',
-      title: 'We develop software that drives real results',
+      eyebrow: 'Custom software development',
+      title: 'We create the software',
+      titleAccent: 'your business needs.',
       copy:
-        'We build desktop, web and mobile applications aligned to your actual business operations, with functional validation before scaling and assured team adoption.',
-      primaryCta: 'Request a diagnosis',
-    },
-    challenges: {
-      eyebrow: 'Challenges we solve',
-      title: 'When off-the-shelf software isn\'t enough',
-      copy:
-        'Generic systems rarely fit your company\'s unique processes. We identify what holds back your operation before writing a single line of code.',
-      items: [
+        'We develop web, mobile and desktop solutions built to solve real needs across your operation.',
+      primaryCta: 'Talk to a specialist',
+      pathwaysLabel: 'Explore development solutions',
+      pathways: [
         {
-          label: 'Outdated systems',
-          title: 'Technology that limits the operation',
-          copy: 'Legacy applications, unsupported or hard to integrate, force manual processes and create technical dependencies that slow growth.',
+          label: 'Development solutions',
+          href: '#custom-software-development',
         },
         {
-          label: 'Unsupported processes',
-          title: 'Flows managed in spreadsheets',
-          copy: 'When critical operations depend on Excel files or email, traceability, control and scalability become impossible to sustain.',
-        },
-        {
-          label: 'Lack of integration',
-          title: 'Applications that don\'t connect',
-          copy: 'Disconnected systems force double entry, create inconsistencies between departments and blind spots that affect decision-making.',
-        },
-        {
-          label: 'Unstable quality',
-          title: 'Releases with errors that affect users',
-          copy: 'Without structured testing processes, errors reach production generating correction costs, loss of trust and operational friction.',
+          label: 'Software quality',
+          href: '#testing',
         },
       ],
-    },
-    services: {
-      eyebrow: 'Included services',
-      title: 'Software development and quality services',
-      copy:
-        'We cover from analysis to release: desktop, web, mobile, testing and methodologies that ensure quality from the start.',
-      activitiesLabel: 'Key activities',
-      items: [
-        {
-          code: 'DEV-01',
-          title: 'Desktop Application Development',
-          copy: 'We build robust, efficient desktop applications aligned to your company\'s internal processes and technology environments.',
-          activities: [
-            'Analysis of internal processes and technology environment',
-            'Interface and workflow design',
-            'Development and integration with existing systems',
-            'Functional testing and controlled release',
-          ],
-        },
-        {
-          code: 'DEV-02',
-          title: 'Web Development',
-          copy: 'We develop functional, scalable and secure web platforms and systems focused on user experience and performance.',
-          activities: [
-            'Web architecture and technology definition',
-            'UX design and functional structure',
-            'Scalable frontend and backend development',
-            'Performance testing and deployment',
-          ],
-        },
-        {
-          code: 'DEV-03',
-          title: 'Mobile App Development',
-          copy: 'We create mobile applications that extend your company\'s operational capabilities with intuitive experiences and real-time synchronization.',
-          activities: [
-            'Mobile user experience design',
-            'Native or cross-platform development',
-            'Integration with APIs and corporate systems',
-            'Testing on real devices and publication',
-          ],
-        },
-        {
-          code: 'DEV-04',
-          title: 'Testing Management',
-          copy: 'We design and execute functional, integration and regression testing strategies to ensure quality before every release.',
-          activities: [
-            'Testing strategy and plan design',
-            'Functional and integration testing',
-            'Regression testing and quality validation',
-            'Defect reporting and tracking',
-          ],
-        },
-        {
-          code: 'DEV-05',
-          title: 'Development Methodologies',
-          copy: 'We implement and train your team in structured methodologies that improve planning, control and software delivery.',
-          activities: [
-            'Assessment of current development process',
-            'Workflow design and implementation',
-            'Team training in the methodology',
-            'Continuous improvement tracking with indicators',
-          ],
-        },
-      ],
+      visualAlt: 'Digital animation representing software creation for businesses.',
     },
     benefits: {
-      eyebrow: 'Benefits for your organization',
-      title: 'Technology aligned to your business objectives',
+      eyebrow: 'Benefits of custom development',
+      title: 'Software that works for your business.',
       copy:
-        'Every solution we build is designed to solve a real operational problem, not to fulfill a list of technical features.',
+        'Get a solution that fits your processes, connects with your tools and grows with your operation.',
+      image: '/assets/desarrollo-software/beneficios.png',
+      imageAlt: 'Adaptable, secure and integrated software solution for a business.',
       items: [
         {
-          value: '01',
-          title: 'Custom-built software',
-          copy: 'Applications designed for your real processes, not patched generic software that doesn\'t fit your operation.',
+          icon: 'fit',
+          title: 'Built for your business',
+          copy: 'It fits the way your team works and the real needs of your operation.',
         },
         {
-          value: '02',
+          icon: 'quality',
           title: 'Quality from the start',
-          copy: 'Testing integrated at every development stage to reduce production errors and ensure reliable deliveries.',
+          copy: 'We validate every step to reduce errors and deliver a reliable solution.',
         },
         {
-          value: '03',
-          title: 'Scalability',
-          copy: 'Architectures that grow with your business without costly rewrites when volumes or needs change.',
+          icon: 'growth',
+          title: 'Ready to grow',
+          copy: 'Add functions and capabilities as your goals and operation change.',
         },
         {
-          value: '04',
-          title: 'Integration with your systems',
-          copy: 'Seamless connection with the platforms you already use to eliminate information silos and centralize operations.',
-        },
-        {
-          value: '05',
-          title: 'Real team adoption',
-          copy: 'Training and post-delivery support so your team uses the tool confidently from day one.',
+          icon: 'integration',
+          title: 'Seamless integration',
+          copy: 'Connect new software with the tools your business already uses.',
         },
       ],
     },
-    approach: {
-      eyebrow: 'Our approach',
-      title: 'Structured, quality-oriented development',
+    journey: {
+      eyebrow: 'Development for every need',
+      title: 'From an idea to a solution ready to work.',
       copy:
-        'We follow a cycle that ensures every delivery meets requirements, is tested before reaching production and is adopted by the team.',
-      steps: [
+        'We build the right solution for each operation, from custom systems to web, mobile and desktop applications.',
+      items: [
         {
-          label: '01',
-          title: 'Requirements',
-          copy: 'We gather and document what your operation needs: features, integrations, flows and acceptance criteria.',
+          anchor: 'custom-software-development',
+          eyebrow: '01 · Custom software development',
+          title: 'Turn the way you work into a solution of your own.',
+          copy:
+            'We design software around your processes, needs and goals so your team can work with greater clarity and control.',
+          detail: 'Analysis · design · development · integration',
+          image: '/assets/desarrollo-software/software-a-la-medida.png',
         },
         {
-          label: '02',
-          title: 'Design',
-          copy: 'We define the appropriate architecture, interface and technology with scalability, security and user experience criteria.',
+          anchor: 'web-development',
+          eyebrow: '02 · Web development',
+          title: 'Bring your processes into a clear, accessible web experience.',
+          copy:
+            'We create easy-to-use web platforms and systems built to support your company’s daily operation.',
+          detail: 'Web platforms · portals · systems · integrations',
+          image: '/assets/desarrollo-software/desarrollo-web.png',
         },
         {
-          label: '03',
-          title: 'Build',
-          copy: 'We develop in iterations delivering incremental value, with frequent reviews and structured change control.',
+          anchor: 'mobile-apps',
+          eyebrow: '03 · Mobile apps',
+          title: 'Put key business functions within your team’s reach.',
+          copy:
+            'We develop intuitive mobile apps to check information, handle tasks and keep the operation moving.',
+          detail: 'iOS · Android · mobile experience · updated information',
+          image: '/assets/desarrollo-software/apps-moviles.png',
         },
         {
-          label: '04',
-          title: 'Testing',
-          copy: 'We run functional, integration and regression tests to ensure the software works correctly in all scenarios.',
+          anchor: 'desktop-applications',
+          eyebrow: '04 · Desktop applications',
+          title: 'Strengthen your operation with robust applications.',
+          copy:
+            'We build efficient desktop tools to organize internal processes and work securely from every computer.',
+          detail: 'Internal processes · performance · security · integration',
+          image: '/assets/desarrollo-software/aplicaciones-escritorio.png',
         },
         {
-          label: '05',
-          title: 'Release',
-          copy: 'We deploy to production with a rollout plan, technical documentation and team training to ensure adoption from day one.',
+          anchor: 'testing',
+          eyebrow: '05 · Testing',
+          title: 'Release reliable software from day one.',
+          copy:
+            'We test functions, connections and user journeys before every release to detect errors and protect the user experience.',
+          detail: 'Functional tests · integration · regression · quality',
+          image: '/assets/desarrollo-software/testing.png',
         },
       ],
-    },
-    cta: {
-      eyebrow: 'Initial diagnosis',
-      title: 'Let\'s build your next technology solution',
-      copy:
-        'Tell us what process or need you want to solve with software. We\'ll review your case and propose the right approach.',
     },
   },
 };

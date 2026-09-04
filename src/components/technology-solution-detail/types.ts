@@ -37,3 +37,20 @@ export type TechnologySolutionJourneyContent = {
   copy: string;
   items: TechnologySolutionJourneyItem[];
 };
+
+export type TechnologySolutionBenefitIcon = 'fit' | 'quality' | 'growth' | 'integration';
+
+export type TechnologySolutionBenefitItem = {
+  icon: TechnologySolutionBenefitIcon;
+  title: string;
+  copy: string;
+};
+
+export type TechnologySolutionBenefitsContent = {
+  eyebrow: string;
+  title: string;
+  copy: string;
+  image: string;
+  imageAlt: string;
+  items: TechnologySolutionBenefitItem[];
+};
