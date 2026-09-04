@@ -1,0 +1,122 @@
+---
+import type { TechnologySolutionJourneyContent } from './types';
+
+type Props = {
+  content: TechnologySolutionJourneyContent;
+};
+
+const { content } = Astro.props;
+---
+
+<section
+  class="crm-pillars-intro"
+  aria-labelledby="technology-solution-journey-title"
+  data-technology-solution-journey-intro
+>
+  <div class="crm-shell crm-pillars-intro-content">
+    <p class="crm-kicker">{content.eyebrow}</p>
+    <h2 id="technology-solution-journey-title">{content.title}</h2>
+    <p>{content.copy}</p>
+  </div>
+
+  <div class="crm-pillars-scroll-bridge" aria-hidden="true">
+    <span class="crm-pillars-scroll-cue">
+      <svg viewBox="0 0 32 32" focusable="false">
+        <path d="m9 5 7 7 7-7" />
+        <path d="m9 12 7 7 7-7" />
+        <path d="m9 19 7 7 7-7" />
+      </svg>
+    </span>
+    <span class="crm-pillars-scroll-line">
+      <span class="crm-pillars-scroll-line-progress" data-technology-solution-intro-line-progress></span>
+    </span>
+    <svg
+      class="crm-pillars-scroll-curve"
+      viewBox="0 0 100 100"
+      preserveAspectRatio="none"
+      focusable="false"
+    >
+      <defs>
+        <clipPath id="technology-solution-scroll-curve-clip">
+          <rect
+            data-technology-solution-intro-curve-progress
+            x="0"
+            y="0"
+            width="100"
+            height="0"
+          />
+        </clipPath>
+      </defs>
+      <path class="crm-pillars-scroll-curve-base" d="M100 0V18C100 58 0 62 0 100" />
+      <path
+        class="crm-pillars-scroll-curve-progress"
+        d="M100 0V18C100 58 0 62 0 100"
+        clip-path="url(#technology-solution-scroll-curve-clip)"
+      />
+    </svg>
+  </div>
+</section>
+
+{content.items.map((item, index) => {
+  const itemNumber = index + 1;
+  const startX = itemNumber === 1 ? 50 : itemNumber % 2 === 0 ? 47 : 52;
+  const endX = itemNumber % 2 === 0 ? 52 : 47;
+  const pathData = `M${startX} 0V50C${startX} 68 ${endX} 78 ${endX} 100`;
+  const maskId = `technology-solution-journey-mask-${itemNumber}`;
+  const itemId = `technology-solution-journey-item-${itemNumber}`;
+
+  return (
+    <section
+      id={item.anchor}
+      class:list={[
+        'crm-pillar-step',
+        `crm-pillar-step-${itemNumber}`,
+        {
+          'crm-pillar-step-odd': itemNumber % 2 === 1,
+          'crm-pillar-step-even': itemNumber % 2 === 0,
+        },
+      ]}
+      aria-labelledby={itemId}
+      data-technology-solution-journey-step={itemNumber}
+    >
+      <div class="crm-pillar-path-lane" aria-hidden="true">
+        <svg class="crm-pillar-path" viewBox="0 0 100 100" preserveAspectRatio="none">
+          <defs>
+            <clipPath id={maskId}>
+              <rect
+                class="crm-pillar-path-fill"
+                data-technology-solution-path-fill
+                data-pillar-fill-stop="50"
+                x="0"
+                y="0"
+                width="100"
+                height="0"
+              />
+            </clipPath>
+          </defs>
+          <path class="crm-pillar-path-base" d={pathData} />
+          <path class="crm-pillar-path-progress" d={pathData} clip-path={`url(#${maskId})`} />
+        </svg>
+        <span
+          class="crm-pillar-path-marker"
+          data-technology-solution-path-marker
+          style={`--crm-marker-x: ${startX}%`}
+        ></span>
+      </div>
+
+      <div class="crm-shell crm-pillar-step-shell">
+        <article class="crm-pillar-card">
+          <figure class="crm-pillar-media" aria-hidden="true">
+            <img src={item.image} alt="" loading="lazy" decoding="async" />
+          </figure>
+          <div class="crm-pillar-card-copy">
+            <span class="crm-pillar-index">{item.eyebrow}</span>
+            <h3 id={itemId}>{item.title}</h3>
+            <p>{item.copy}</p>
+            <small>{item.detail}</small>
+          </div>
+        </article>
+      </div>
+    </section>
+  );
+})}

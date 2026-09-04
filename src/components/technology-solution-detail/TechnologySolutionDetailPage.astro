@@ -1,0 +1,40 @@
+---
+import type { ContactCopy } from '../../data/contact';
+import FinalContactSection from '../final-contact/FinalContactSection.astro';
+import ServiceSlidesController from '../service-slides/ServiceSlidesController.astro';
+import TechnologySolutionHero from './TechnologySolutionHero.astro';
+import TechnologySolutionJourney from './TechnologySolutionJourney.astro';
+import type {
+  TechnologySolutionHeroContent,
+  TechnologySolutionHeroMedia,
+  TechnologySolutionJourneyContent,
+} from './types';
+
+type Props = {
+  hero: TechnologySolutionHeroContent;
+  heroMedia: TechnologySolutionHeroMedia;
+  journey: TechnologySolutionJourneyContent;
+  contactCopy: ContactCopy;
+  touchThreshold?: number;
+};
+
+const {
+  hero,
+  heroMedia,
+  journey,
+  contactCopy,
+  touchThreshold = 22,
+} = Astro.props;
+---
+
+<main
+  class="technology-solution-detail-page crm-platform-page"
+  data-technology-solution-detail
+  data-service-touch-threshold={touchThreshold}
+>
+  <TechnologySolutionHero content={hero} media={heroMedia} />
+  <slot name="secondary-section" />
+  <TechnologySolutionJourney content={journey} />
+  <FinalContactSection copy={contactCopy} />
+  <ServiceSlidesController />
+</main>

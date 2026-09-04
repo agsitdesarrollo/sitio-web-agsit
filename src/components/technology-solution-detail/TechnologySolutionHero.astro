@@ -1,0 +1,77 @@
+---
+import type {
+  TechnologySolutionHeroContent,
+  TechnologySolutionHeroMedia,
+} from './types';
+
+type Props = {
+  content: TechnologySolutionHeroContent;
+  media: TechnologySolutionHeroMedia;
+};
+
+const { content, media } = Astro.props;
+---
+
+<section class="crm-platform-hero" aria-labelledby="technology-solution-detail-title">
+  <div class="crm-shell crm-platform-hero-layout">
+    <div class="crm-platform-hero-copy">
+      <p class="crm-kicker">{content.eyebrow}</p>
+      <h1 id="technology-solution-detail-title">
+        {content.title}
+        <em>{content.titleAccent}</em>
+      </h1>
+      <p class="crm-platform-lead">{content.copy}</p>
+      <div class="crm-platform-actions">
+        <button type="button" data-contact-trigger>{content.primaryCta}</button>
+      </div>
+    </div>
+
+    <div class="crm-hero-visual-column">
+      <figure class="crm-hero-visual" role="img" aria-label={content.visualAlt}>
+        <video
+          class="crm-hero-video"
+          data-technology-solution-hero-video
+          autoplay
+          muted
+          loop
+          playsinline
+          preload="metadata"
+          poster={media.poster}
+          aria-hidden="true"
+          tabindex="-1"
+        >
+          {media.sources.map((source) => <source src={source.src} type={source.type} />)}
+        </video>
+      </figure>
+      <nav class="crm-hero-pathways" aria-label={content.pathwaysLabel}>
+        {content.pathways.map((pathway) => (
+          <a href={pathway.href}>
+            <span>{pathway.label}</span>
+            <span class="crm-hero-pathway-arrow" aria-hidden="true">↘</span>
+          </a>
+        ))}
+      </nav>
+    </div>
+  </div>
+</section>
+
+<script>
+  const initializeTechnologySolutionHeroVideos = () => {
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    document.querySelectorAll<HTMLVideoElement>('[data-technology-solution-hero-video]').forEach((video) => {
+      if (reduceMotion) {
+        video.pause();
+        video.currentTime = 0;
+        return;
+      }
+
+      void video.play().catch(() => {
+        // The poster remains visible when the browser blocks autoplay.
+      });
+    });
+  };
+
+  initializeTechnologySolutionHeroVideos();
+  document.addEventListener('astro:page-load', initializeTechnologySolutionHeroVideos);
+</script>

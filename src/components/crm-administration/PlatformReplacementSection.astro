@@ -1,0 +1,162 @@
+---
+import type { CrmAdministrationContent } from '../../data/crmAdministration';
+
+type Props = {
+  content: CrmAdministrationContent['convergence'];
+};
+
+const { content } = Astro.props;
+---
+
+<section id="plataforma" class="crm-connection-story" aria-labelledby="crm-connection-title">
+  <div class="crm-shell crm-connection-layout">
+    <div class="crm-section-intro crm-connection-copy">
+      <p class="crm-kicker">{content.eyebrow}</p>
+      <h2 id="crm-connection-title">{content.title}</h2>
+      <p>{content.copy}</p>
+    </div>
+    <div class="crm-connection-visual crm-replacement-carousel" data-replacement-carousel>
+      <p class="crm-replacement-label">{content.replacementLabel}</p>
+      <div class="crm-replacement-viewport">
+        <div class="crm-replacement-track">
+          <ul class="crm-replacement-list">
+            {content.replacements.map((replacement) => (
+              <li>
+                <button
+                  type="button"
+                  class="crm-replacement-logo"
+                  data-replacement-trigger
+                  data-replacement-name={replacement.name}
+                  data-replacement-copy={replacement.tooltip}
+                  aria-label={`${replacement.name}. ${replacement.tooltip}`}
+                  aria-describedby="crm-replacement-tooltip"
+                >
+                  <img
+                    src={replacement.logo}
+                    alt=""
+                    width="144"
+                    height="144"
+                    loading="lazy"
+                    decoding="async"
+                  />
+                </button>
+              </li>
+            ))}
+          </ul>
+
+          <ul class="crm-replacement-list" aria-hidden="true">
+            {content.replacements.map((replacement) => (
+              <li>
+                <span class="crm-replacement-logo crm-replacement-logo-clone">
+                  <img
+                    src={replacement.logo}
+                    alt=""
+                    width="144"
+                    height="144"
+                    loading="lazy"
+                    decoding="async"
+                  />
+                </span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+
+      <div
+        id="crm-replacement-tooltip"
+        class="crm-replacement-tooltip"
+        data-replacement-tooltip
+        role="tooltip"
+        aria-live="polite"
+        aria-atomic="true"
+        aria-hidden="true"
+      >
+        <strong data-replacement-tooltip-name></strong>
+        <span data-replacement-tooltip-copy></span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  const initializeReplacementCarousels = () => {
+    document.querySelectorAll<HTMLElement>('[data-replacement-carousel]').forEach((carousel) => {
+      if (carousel.dataset.replacementReady === 'true') return;
+      carousel.dataset.replacementReady = 'true';
+
+      const tooltip = carousel.querySelector<HTMLElement>('[data-replacement-tooltip]');
+      const tooltipName = carousel.querySelector<HTMLElement>('[data-replacement-tooltip-name]');
+      const tooltipCopy = carousel.querySelector<HTMLElement>('[data-replacement-tooltip-copy]');
+      const triggers = carousel.querySelectorAll<HTMLButtonElement>('[data-replacement-trigger]');
+
+      if (!tooltip || !tooltipName || !tooltipCopy) return;
+
+      const hideTooltip = () => {
+        carousel.classList.remove('is-tooltip-visible');
+        tooltip.setAttribute('aria-hidden', 'true');
+        tooltipName.textContent = '';
+        tooltipCopy.textContent = '';
+      };
+
+      const resetInteraction = () => {
+        hideTooltip();
+        carousel.classList.remove('is-keyboard-active', 'is-touch-active');
+      };
+
+      const showTooltip = (trigger: HTMLButtonElement) => {
+        tooltipName.textContent = trigger.dataset.replacementName ?? '';
+        tooltipCopy.textContent = trigger.dataset.replacementCopy ?? '';
+        tooltip.setAttribute('aria-hidden', 'false');
+        carousel.classList.add('is-tooltip-visible');
+      };
+
+      triggers.forEach((trigger) => {
+        let pointerType = '';
+
+        trigger.addEventListener('pointerdown', (event) => {
+          pointerType = event.pointerType;
+          if (event.pointerType !== 'touch' && event.pointerType !== 'pen') return;
+          carousel.classList.add('is-touch-active');
+          showTooltip(trigger);
+        });
+        trigger.addEventListener('pointerenter', (event) => {
+          if (event.pointerType === 'mouse') showTooltip(trigger);
+        });
+        trigger.addEventListener('pointerleave', (event) => {
+          if (event.pointerType !== 'mouse') return;
+          const hasKeyboardFocus =
+            carousel.classList.contains('is-keyboard-active') && document.activeElement === trigger;
+          if (!hasKeyboardFocus) hideTooltip();
+        });
+        trigger.addEventListener('focus', () => {
+          if (pointerType === 'mouse' || pointerType === 'touch' || pointerType === 'pen') return;
+          carousel.classList.add('is-keyboard-active');
+          showTooltip(trigger);
+        });
+        trigger.addEventListener('blur', () => {
+          pointerType = '';
+          carousel.classList.remove('is-keyboard-active');
+          if (!carousel.classList.contains('is-touch-active')) hideTooltip();
+        });
+        trigger.addEventListener('click', () => {
+          if (pointerType !== 'touch' && pointerType !== 'pen') return;
+          carousel.classList.add('is-touch-active');
+          showTooltip(trigger);
+        });
+        trigger.addEventListener('keydown', (event) => {
+          if (event.key !== 'Escape') return;
+          resetInteraction();
+          trigger.blur();
+        });
+      });
+
+      document.addEventListener('pointerdown', (event) => {
+        if (event.target instanceof Node && !carousel.contains(event.target)) resetInteraction();
+      });
+    });
+  };
+
+  initializeReplacementCarousels();
+  document.addEventListener('astro:page-load', initializeReplacementCarousels);
+</script>

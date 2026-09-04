@@ -25,7 +25,7 @@ const PAGE_DEFINITIONS: PageDefinition[] = [
     tracks: [{ section: '.technology-benefits', items: '.technology-benefit-card' }],
   },
   {
-    root: '.crm-platform-page',
+    root: '[data-technology-solution-detail]',
     tracks: [],
   },
   ...['itg', 'auto', 'dev', 'ops', 'data', 'inn'].map((prefix) => ({
@@ -63,13 +63,13 @@ const getPanelHeight = () => {
   return Math.max(1, window.innerHeight);
 };
 
-const setupCrmIntroBridgeProgress = (root: HTMLElement) => {
-  if (!root.matches('.crm-platform-page')) return;
+const setupTechnologySolutionIntroBridgeProgress = (root: HTMLElement) => {
+  if (!root.matches('[data-technology-solution-detail]')) return;
 
-  const intro = root.querySelector<HTMLElement>('.crm-pillars-intro');
-  const firstStep = root.querySelector<HTMLElement>('.crm-pillar-step-1');
-  const straightProgress = intro?.querySelector<HTMLElement>('[data-crm-intro-bridge-progress]');
-  const curveProgress = intro?.querySelector<SVGRectElement>('[data-crm-intro-curve-progress]');
+  const intro = root.querySelector<HTMLElement>('[data-technology-solution-journey-intro]');
+  const firstStep = root.querySelector<HTMLElement>('[data-technology-solution-journey-step="1"]');
+  const straightProgress = intro?.querySelector<HTMLElement>('[data-technology-solution-intro-line-progress]');
+  const curveProgress = intro?.querySelector<SVGRectElement>('[data-technology-solution-intro-curve-progress]');
   if (!intro || !firstStep || !straightProgress || !curveProgress) return;
 
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -79,7 +79,7 @@ const setupCrmIntroBridgeProgress = (root: HTMLElement) => {
 
   const timeline = gsap.timeline({
     scrollTrigger: {
-      id: 'crm-intro-bridge-progress',
+      id: 'technology-solution-intro-bridge-progress',
       trigger: intro,
       endTrigger: firstStep,
       start: () => `top top+=${getNavOffset()}`,
@@ -94,17 +94,17 @@ const setupCrmIntroBridgeProgress = (root: HTMLElement) => {
     .to(curveProgress, { attr: { height: 100 }, ease: 'none' }, 0);
 };
 
-const setupCrmPillarPathProgress = (root: HTMLElement) => {
-  if (!root.matches('.crm-platform-page')) return;
+const setupTechnologySolutionJourneyPathProgress = (root: HTMLElement) => {
+  if (!root.matches('[data-technology-solution-detail]')) return;
 
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const entries = Array.from(root.querySelectorAll<HTMLElement>('.crm-pillar-step')).flatMap((step) => {
-    const fill = step.querySelector<SVGRectElement>('.crm-pillar-path-fill');
+  const entries = Array.from(root.querySelectorAll<HTMLElement>('[data-technology-solution-journey-step]')).flatMap((step) => {
+    const fill = step.querySelector<SVGRectElement>('[data-technology-solution-path-fill]');
     if (!fill) return [];
 
     const parsedFillStop = Number.parseFloat(fill.dataset.pillarFillStop ?? '50');
     const fillStop = Number.isFinite(parsedFillStop) ? parsedFillStop : 50;
-    const marker = step.querySelector<HTMLElement>('.crm-pillar-path-marker');
+    const marker = step.querySelector<HTMLElement>('[data-technology-solution-path-marker]');
 
     gsap.set(fill, { attr: { height: 0 } });
 
@@ -606,9 +606,11 @@ const setupLandingTrackNavigation = (root: HTMLElement) => {
     const isTechnologyMethodCatalogHandoff =
       (currentSection?.matches('.technology-method') && nextSection?.matches('.technology-capabilities')) ||
       (currentSection?.matches('.technology-capabilities') && nextSection?.matches('.technology-method'));
-    const isCrmIntroHandoff =
-      (currentSection?.matches('.crm-pillars-intro') && nextSection?.matches('.crm-pillar-step-1')) ||
-      (currentSection?.matches('.crm-pillar-step-1') && nextSection?.matches('.crm-pillars-intro'));
+    const isTechnologySolutionIntroHandoff =
+      (currentSection?.matches('[data-technology-solution-journey-intro]') &&
+        nextSection?.matches('[data-technology-solution-journey-step="1"]')) ||
+      (currentSection?.matches('[data-technology-solution-journey-step="1"]') &&
+        nextSection?.matches('[data-technology-solution-journey-intro]'));
 
     // La metodología y el catálogo forman una secuencia visual continua. Al
     // cruzar entre ambos preservamos el desplazamiento interpolado para que la
@@ -616,7 +618,7 @@ const setupLandingTrackNavigation = (root: HTMLElement) => {
     const shouldJumpAcrossTracks =
       currentDestination.owner !== nextDestination.owner &&
       !isTechnologyMethodCatalogHandoff &&
-      !isCrmIntroHandoff;
+      !isTechnologySolutionIntroHandoff;
 
     navigateTo(nextDestination.position, shouldJumpAcrossTracks);
     return true;
@@ -766,8 +768,8 @@ export const setupServiceSlides = () => {
     setupTrack(section, items, index, variant);
   });
 
-  setupCrmIntroBridgeProgress(root);
-  setupCrmPillarPathProgress(root);
+  setupTechnologySolutionIntroBridgeProgress(root);
+  setupTechnologySolutionJourneyPathProgress(root);
   setupPageSnapState(root);
   setupLandingTrackNavigation(root);
 
