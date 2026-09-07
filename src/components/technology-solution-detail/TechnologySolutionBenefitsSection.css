@@ -24,19 +24,7 @@
   aspect-ratio: 3 / 2;
   position: relative;
   overflow: hidden;
-  border: 1px solid rgba(65, 200, 246, 0.26);
   border-radius: clamp(22px, 2.2vw, 34px);
-  background: linear-gradient(145deg, #071934, #020712);
-  box-shadow: 0 28px 70px rgba(8, 21, 43, 0.2);
-}
-
-.technology-solution-benefits-media::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08);
-  pointer-events: none;
 }
 
 .technology-solution-benefits-media img {
@@ -123,6 +111,12 @@
   font-size: clamp(0.82rem, 0.86vw, 0.94rem);
   font-weight: 500;
   line-height: 1.48;
+}
+
+@media (min-width: 1080px) {
+  .technology-solution-benefits-heading h2 {
+    max-width: 20ch;
+  }
 }
 
 @media (max-width: 960px) and (orientation: portrait) {
@@ -224,8 +218,8 @@
   }
 
   .technology-solution-benefits-layout {
-    grid-template-columns: minmax(250px, 0.92fr) minmax(0, 1.08fr);
-    gap: clamp(22px, 4vw, 38px);
+    grid-template-columns: minmax(220px, 0.86fr) minmax(0, 1.14fr);
+    gap: clamp(18px, 3vw, 28px);
   }
 
   .technology-solution-benefits-media {
@@ -234,16 +228,25 @@
   }
 
   .technology-solution-benefits-content {
-    gap: 12px;
+    gap: 8px;
   }
 
   .technology-solution-benefits-heading {
-    gap: 4px;
+    gap: 3px;
+  }
+
+  .technology-solution-benefits-heading .crm-kicker {
+    font-size: 0.5rem;
+    letter-spacing: 0.12em;
+    white-space: nowrap;
   }
 
   .technology-solution-benefits-heading h2 {
-    max-width: 18ch;
-    font-size: clamp(1.45rem, 3vw, 1.8rem);
+    max-width: none;
+    font-size: clamp(1.08rem, 2.9vw, 1.58rem);
+    font-weight: 400;
+    line-height: 0.98;
+    white-space: nowrap;
   }
 
   .technology-solution-benefits-heading > p:last-child {
@@ -252,7 +255,7 @@
   }
 
   .technology-solution-benefits-grid {
-    gap: 9px 14px;
+    gap: 6px 12px;
   }
 
   .technology-solution-benefit {

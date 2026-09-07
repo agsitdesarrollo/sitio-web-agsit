@@ -1,10 +1,26 @@
+.software-development-detail .crm-hero-image {
+  -webkit-mask-image: radial-gradient(
+    ellipse 88% 84% at 50% 46%,
+    #000 0%,
+    #000 56%,
+    rgba(0, 0, 0, 0.94) 68%,
+    transparent 100%
+  );
+  mask-image: radial-gradient(
+    ellipse 88% 84% at 50% 46%,
+    #000 0%,
+    #000 56%,
+    rgba(0, 0, 0, 0.94) 68%,
+    transparent 100%
+  );
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+}
+
 .software-development-detail .crm-pillar-media {
   aspect-ratio: 3 / 2;
   overflow: hidden;
-  border: 1px solid rgba(65, 200, 246, 0.2);
   border-radius: clamp(20px, 2vw, 30px);
-  background: linear-gradient(145deg, #071934, #020712);
-  box-shadow: 0 24px 60px rgba(8, 21, 43, 0.16);
 }
 
 .software-development-detail .crm-pillar-media img {

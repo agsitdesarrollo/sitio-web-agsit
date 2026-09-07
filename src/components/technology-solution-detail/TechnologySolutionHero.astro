@@ -28,29 +28,43 @@ const { content, media } = Astro.props;
 
     <div class="crm-hero-visual-column">
       <figure class="crm-hero-visual" role="img" aria-label={content.visualAlt}>
-        <video
-          class="crm-hero-video"
-          data-technology-solution-hero-video
-          autoplay
-          muted
-          loop
-          playsinline
-          preload="metadata"
-          poster={media.poster}
-          aria-hidden="true"
-          tabindex="-1"
-        >
-          {media.sources.map((source) => <source src={source.src} type={source.type} />)}
-        </video>
+        {media.kind === 'image' ? (
+          <img
+            class="crm-hero-image"
+            src={media.src}
+            alt=""
+            aria-hidden="true"
+            loading="eager"
+            decoding="async"
+            fetchpriority="high"
+          />
+        ) : (
+          <video
+            class="crm-hero-video"
+            data-technology-solution-hero-video
+            autoplay
+            muted
+            loop
+            playsinline
+            preload="metadata"
+            poster={media.poster}
+            aria-hidden="true"
+            tabindex="-1"
+          >
+            {media.sources.map((source) => <source src={source.src} type={source.type} />)}
+          </video>
+        )}
       </figure>
-      <nav class="crm-hero-pathways" aria-label={content.pathwaysLabel}>
-        {content.pathways.map((pathway) => (
-          <a href={pathway.href}>
-            <span>{pathway.label}</span>
-            <span class="crm-hero-pathway-arrow" aria-hidden="true">↘</span>
-          </a>
-        ))}
-      </nav>
+      {content.pathways.length > 0 && (
+        <nav class="crm-hero-pathways" aria-label={content.pathwaysLabel}>
+          {content.pathways.map((pathway) => (
+            <a href={pathway.href}>
+              <span>{pathway.label}</span>
+              <span class="crm-hero-pathway-arrow" aria-hidden="true">↘</span>
+            </a>
+          ))}
+        </nav>
+      )}
     </div>
   </div>
 </section>

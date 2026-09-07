@@ -14,13 +14,19 @@ export type TechnologySolutionHeroContent = {
   visualAlt: string;
 };
 
-export type TechnologySolutionHeroMedia = {
-  poster?: string;
-  sources: Array<{
-    src: string;
-    type: string;
-  }>;
-};
+export type TechnologySolutionHeroMedia =
+  | {
+      kind?: 'video';
+      poster?: string;
+      sources: Array<{
+        src: string;
+        type: string;
+      }>;
+    }
+  | {
+      kind: 'image';
+      src: string;
+    };
 
 export type TechnologySolutionJourneyItem = {
   anchor?: string;

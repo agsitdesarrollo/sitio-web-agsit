@@ -66,17 +66,9 @@ export const softwareDevelopmentByLang: Record<SupportedLang, SoftwareDevelopmen
         'Desarrollamos soluciones web, móviles y de escritorio pensadas para resolver necesidades reales de tu operación.',
       primaryCta: 'Hablar con un especialista',
       pathwaysLabel: 'Explorar soluciones de desarrollo',
-      pathways: [
-        {
-          label: 'Soluciones de desarrollo',
-          href: '#desarrollo-software-a-la-medida',
-        },
-        {
-          label: 'Calidad de software',
-          href: '#testing',
-        },
-      ],
-      visualAlt: 'Animación digital que representa la creación de software para empresas.',
+      pathways: [],
+      visualAlt:
+        'Ilustración de una solución de software a la medida conectada entre computadora, móvil y nube.',
     },
     benefits: {
       eyebrow: 'Beneficios del desarrollo a la medida',
@@ -179,17 +171,9 @@ export const softwareDevelopmentByLang: Record<SupportedLang, SoftwareDevelopmen
         'We develop web, mobile and desktop solutions built to solve real needs across your operation.',
       primaryCta: 'Talk to a specialist',
       pathwaysLabel: 'Explore development solutions',
-      pathways: [
-        {
-          label: 'Development solutions',
-          href: '#custom-software-development',
-        },
-        {
-          label: 'Software quality',
-          href: '#testing',
-        },
-      ],
-      visualAlt: 'Digital animation representing software creation for businesses.',
+      pathways: [],
+      visualAlt:
+        'Illustration of a custom software solution connected across desktop, mobile and cloud systems.',
     },
     benefits: {
       eyebrow: 'Benefits of custom development',

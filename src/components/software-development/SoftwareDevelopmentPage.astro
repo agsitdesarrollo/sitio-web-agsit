@@ -15,10 +15,8 @@ const { content, contactCopy } = Astro.props;
 <TechnologySolutionDetailPage
   hero={content.hero}
   heroMedia={{
-    sources: [
-      { src: '/assets/binary-wave-bg.webm', type: 'video/webm' },
-      { src: '/assets/binary-wave-bg.mp4', type: 'video/mp4' },
-    ],
+    kind: 'image',
+    src: '/assets/desarrollo-software/hero-desarrollo-software.webp',
   }}
   journey={content.journey}
   contactCopy={contactCopy}
