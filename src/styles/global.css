@@ -12,12 +12,11 @@
 @import "./service-landscape.css";
 @import "../components/crm-administration/CrmAdministration.css";
 @import "../components/technology-solution-detail/TechnologySolutionBenefitsSection.css";
-@import "../components/software-development/SoftwareDevelopment.css";
+@import "../components/technology-solution-detail/IllustratedTechnologySolution.css";
 @import "../components/digital-marketing-v2/DigitalMarketingStoryV2.css";
 /* Marketing Digital V2 uses its own hybrid track controller. */
 @import "../components/digital-marketing-strategy/DigitalStrategyPage.css";
 @import "../components/digital-marketing/DigitalMarketing.css";
-@import "../components/automation-optimization/AutomationOptimization.css";
 @import "../components/infrastructure-cloud/InfrastructureCloud.css";
 @import "../components/data-business-intelligence/DataBusinessIntelligence.css";
 @import "../components/technological-innovation/TechnologicalInnovation.css";

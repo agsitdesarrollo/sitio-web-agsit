@@ -159,6 +159,8 @@ export const technologySolutionsByLang: Record<SupportedLang, TechnologySolution
           title: 'Automatización Inteligente de Procesos',
           copy:
             'Automatizamos procesos e integramos sistemas para reducir tareas manuales, acelerar la operación y mejorar la eficiencia del negocio.',
+          cta: 'Ver servicios',
+          href: '/soluciones-tecnologicas/automatizacion-inteligente-de-procesos/',
         },
         {
           code: 'DATA',
@@ -314,6 +316,8 @@ export const technologySolutionsByLang: Record<SupportedLang, TechnologySolution
           title: 'Intelligent Process Automation',
           copy:
             'We automate processes and integrate systems to reduce manual tasks, accelerate operations and improve business efficiency.',
+          cta: 'View services',
+          href: '/en/technology-solutions/intelligent-process-automation/',
         },
         {
           code: 'DATA',
