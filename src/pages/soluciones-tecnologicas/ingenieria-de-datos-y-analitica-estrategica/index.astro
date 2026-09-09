@@ -1,18 +1,18 @@
 ---
 import ContactDrawer from '../../../components/contact/ContactDrawer.astro';
+import DataEngineeringStrategicAnalyticsPage from '../../../components/data-engineering-strategic-analytics/DataEngineeringStrategicAnalyticsPage.astro';
 import Footer from '../../../components/footer/Footer.astro';
-import DataBusinessIntelligencePage from '../../../components/data-business-intelligence/DataBusinessIntelligencePage.astro';
 import Header from '../../../components/navigation/Header.astro';
 import PageShellScripts from '../../../components/navigation/PageShellScripts.astro';
 import { getContactCopy } from '../../../data/contact';
+import { getDataEngineeringStrategicAnalyticsContent } from '../../../data/dataEngineeringStrategicAnalytics';
 import { getFooterCopy } from '../../../data/footer';
-import { getDataBusinessIntelligenceContent } from '../../../data/dataBusinessIntelligence';
 import { getServicesContent } from '../../../data/services';
 import SiteLayout from '../../../layouts/SiteLayout.astro';
 import { useTranslations } from '../../../i18n/utils';
 
 const lang = 'es';
-const content = getDataBusinessIntelligenceContent(lang);
+const content = getDataEngineeringStrategicAnalyticsContent(lang);
 const contactCopy = getContactCopy(lang);
 const footerCopy = getFooterCopy(lang);
 const servicesContent = getServicesContent(lang);
@@ -27,7 +27,10 @@ const t = useTranslations(lang);
   locale={content.metadata.locale}
   alternates={[
     { lang: 'es-MX', href: content.metadata.canonicalUrl },
-    { lang: 'en', href: 'https://agsit.com.mx/en/technology-solutions/data-and-business-intelligence/' },
+    {
+      lang: 'en',
+      href: 'https://agsit.com.mx/en/technology-solutions/data-engineering-and-strategic-analytics/',
+    },
     { lang: 'x-default', href: content.metadata.canonicalUrl },
   ]}
 >
@@ -35,12 +38,18 @@ const t = useTranslations(lang);
     <Header
       lang={lang}
       homeHref="/#inicio"
-      servicesHref="/#servicios"
+      servicesHref="/soluciones-tecnologicas/"
       contactHref="#contacto"
-      alternateHref="/en/technology-solutions/data-and-business-intelligence/"
+      alternateHref="/en/technology-solutions/data-engineering-and-strategic-analytics/"
     />
-    <DataBusinessIntelligencePage content={content} contactCopy={contactCopy} />
-    <Footer copy={footerCopy} services={servicesContent.services} homeHref="/#inicio" servicesHref="/#servicios" contactHref="#contacto" />
+    <DataEngineeringStrategicAnalyticsPage content={content} contactCopy={contactCopy} />
+    <Footer
+      copy={footerCopy}
+      services={servicesContent.services}
+      homeHref="/#inicio"
+      servicesHref="/soluciones-tecnologicas/"
+      contactHref="#contacto"
+    />
     <ContactDrawer copy={contactCopy} />
     <PageShellScripts openMenuLabel={t('nav.openMenu')} closeMenuLabel={t('nav.closeMenu')} />
   </div>

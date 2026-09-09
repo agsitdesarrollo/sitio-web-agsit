@@ -426,17 +426,38 @@ const setupPageSnapState = (root: HTMLElement) => {
 const setupLandingTrackNavigation = (root: HTMLElement) => {
   const html = document.documentElement;
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const buffersRapidGestures = root.matches('[data-technology-solution-detail]');
   const contact = root.querySelector<HTMLElement>('.final-contact-section');
   let navigationLocked = false;
   let navigationAnimating = false;
   let unlockTimer = 0;
   let lastWheelEventAt = 0;
+  let wheelGestureTimer = 0;
+  let wheelGestureDirection: 1 | -1 | null = null;
   let activeScrollFrame = 0;
   let touchStartY: number | null = null;
+  const queuedDirections: Array<1 | -1> = [];
+  let processNavigationDirection: (direction: 1 | -1) => boolean = () => false;
   const navigationEase = gsap.parseEase('power2.inOut');
   const touchThreshold = Number.parseFloat(root.dataset.serviceTouchThreshold ?? '') || 34;
+  const wheelGestureIdle = 140;
+  const maxQueuedDirections = Math.max(4, root.querySelectorAll(':scope > section').length);
   const isContactFree = () => html.classList.contains('service-slides-footer-free');
   const isMenuOpen = () => html.classList.contains('mobile-menu-open');
+
+  const queueNavigationDirection = (direction: 1 | -1) => {
+    if (!buffersRapidGestures) return;
+
+    const lastQueuedDirection = queuedDirections.at(-1);
+    if (lastQueuedDirection && lastQueuedDirection !== direction) {
+      queuedDirections.pop();
+      return;
+    }
+
+    if (queuedDirections.length < maxQueuedDirections) {
+      queuedDirections.push(direction);
+    }
+  };
 
   const getPinnedStopCount = (section: HTMLElement) => {
     const explicitStops = Number.parseInt(section.dataset.serviceTrackStops ?? '', 10);
@@ -529,6 +550,18 @@ const setupLandingTrackNavigation = (root: HTMLElement) => {
 
     unlockTimer = window.setTimeout(() => {
       navigationLocked = false;
+
+      if (!buffersRapidGestures || !queuedDirections.length || isMenuOpen()) {
+        if (isMenuOpen()) queuedDirections.length = 0;
+        return;
+      }
+
+      const queuedDirection = queuedDirections.shift();
+      if (!queuedDirection || processNavigationDirection(queuedDirection)) return;
+
+      // Si ya alcanzamos un extremo, los gestos pendientes no deben provocar
+      // saltos cuando el usuario cambie de sentido más adelante.
+      queuedDirections.length = 0;
     }, delay);
   };
 
@@ -624,6 +657,19 @@ const setupLandingTrackNavigation = (root: HTMLElement) => {
     return true;
   };
 
+  processNavigationDirection = (direction) => {
+    if (isContactFree()) {
+      return direction < 0 ? resumeContactToPreviousPanel() : false;
+    }
+
+    const navigated = navigateByDirection(direction);
+    if (!navigated && direction > 0) {
+      html.classList.add('service-slides-footer-free');
+    }
+
+    return navigated;
+  };
+
   const isScrollControlTarget = (target: EventTarget | null) =>
     target instanceof Element &&
     Boolean(target.closest('input, textarea, select, [data-contact-drawer], [data-mobile-menu]'));
@@ -635,31 +681,38 @@ const setupLandingTrackNavigation = (root: HTMLElement) => {
   window.addEventListener(
     'wheel',
     (event) => {
-      if (navigationLocked) {
-        event.preventDefault();
-        lastWheelEventAt = Date.now();
-        scheduleNavigationUnlock();
-        return;
-      }
-
       if (Math.abs(event.deltaY) < 8 || isMenuOpen()) return;
 
       const target = event.target;
       if (isScrollControlTarget(target)) return;
 
-      lastWheelEventAt = Date.now();
+      const eventAt = Date.now();
       const direction = event.deltaY > 0 ? 1 : -1;
+      const startsNewGesture =
+        wheelGestureDirection === null ||
+        wheelGestureDirection !== direction ||
+        eventAt - lastWheelEventAt > wheelGestureIdle;
+
+      wheelGestureDirection = direction;
+      lastWheelEventAt = eventAt;
+      window.clearTimeout(wheelGestureTimer);
+      wheelGestureTimer = window.setTimeout(() => {
+        wheelGestureDirection = null;
+      }, wheelGestureIdle);
+
+      if (navigationLocked) {
+        event.preventDefault();
+        if (startsNewGesture) queueNavigationDirection(direction);
+        scheduleNavigationUnlock();
+        return;
+      }
 
       if (isContactFree()) {
         if (direction < 0 && resumeContactToPreviousPanel()) event.preventDefault();
         return;
       }
 
-      const navigated = navigateByDirection(direction);
-      if (!navigated && direction > 0) {
-        html.classList.add('service-slides-footer-free');
-        return;
-      }
+      const navigated = processNavigationDirection(direction);
 
       if (navigated) event.preventDefault();
     },
@@ -698,7 +751,7 @@ const setupLandingTrackNavigation = (root: HTMLElement) => {
   window.addEventListener(
     'touchend',
     (event) => {
-      if (touchStartY === null || navigationLocked || isMenuOpen()) {
+      if (touchStartY === null || isMenuOpen()) {
         touchStartY = null;
         return;
       }
@@ -708,16 +761,18 @@ const setupLandingTrackNavigation = (root: HTMLElement) => {
       touchStartY = null;
       if (Math.abs(delta) < touchThreshold) return;
 
+      const direction = delta > 0 ? 1 : -1;
+      if (navigationLocked) {
+        queueNavigationDirection(direction);
+        return;
+      }
+
       if (isContactFree()) {
         if (delta < 0) resumeContactToPreviousPanel();
         return;
       }
 
-      const direction = delta > 0 ? 1 : -1;
-      const navigated = navigateByDirection(direction);
-      if (!navigated && direction > 0) {
-        html.classList.add('service-slides-footer-free');
-      }
+      processNavigationDirection(direction);
     },
     { passive: true },
   );
@@ -727,7 +782,14 @@ const setupLandingTrackNavigation = (root: HTMLElement) => {
     const backward = ['ArrowUp', 'PageUp'].includes(event.key);
     if (!forward && !backward) return;
 
-    if (navigationLocked || isMenuOpen() || isInteractiveTarget(event.target)) return;
+    if (isMenuOpen() || isInteractiveTarget(event.target)) return;
+
+    const direction = forward ? 1 : -1;
+    if (navigationLocked) {
+      event.preventDefault();
+      if (!event.repeat) queueNavigationDirection(direction);
+      return;
+    }
 
     if (isContactFree()) {
       if (backward && resumeContactToPreviousPanel()) event.preventDefault();
@@ -735,11 +797,7 @@ const setupLandingTrackNavigation = (root: HTMLElement) => {
     }
 
     event.preventDefault();
-    const direction = forward ? 1 : -1;
-    const navigated = navigateByDirection(direction);
-    if (!navigated && direction > 0) {
-      html.classList.add('service-slides-footer-free');
-    }
+    processNavigationDirection(direction);
   });
 };
 

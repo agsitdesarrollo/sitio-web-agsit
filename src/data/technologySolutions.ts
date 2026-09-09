@@ -168,6 +168,8 @@ export const technologySolutionsByLang: Record<SupportedLang, TechnologySolution
           title: 'Ingeniería de Datos y Analítica Estratégica',
           copy:
             'Convertimos los datos en información estratégica mediante soluciones de analítica, inteligencia de negocio y visualización ejecutiva.',
+          cta: 'Ver servicios',
+          href: '/soluciones-tecnologicas/ingenieria-de-datos-y-analitica-estrategica/',
         },
         {
           code: 'AI',
@@ -325,6 +327,8 @@ export const technologySolutionsByLang: Record<SupportedLang, TechnologySolution
           title: 'Data Engineering and Strategic Analytics',
           copy:
             'We turn data into strategic information through analytics, business intelligence and executive visualization solutions.',
+          cta: 'View services',
+          href: '/en/technology-solutions/data-engineering-and-strategic-analytics/',
         },
         {
           code: 'AI',
