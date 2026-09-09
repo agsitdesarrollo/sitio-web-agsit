@@ -1,18 +1,18 @@
 ---
+import ArtificialIntelligenceSolutionsPage from '../../../../components/artificial-intelligence-solutions/ArtificialIntelligenceSolutionsPage.astro';
 import ContactDrawer from '../../../../components/contact/ContactDrawer.astro';
 import Footer from '../../../../components/footer/Footer.astro';
-import TechnologicalInnovationPage from '../../../../components/technological-innovation/TechnologicalInnovationPage.astro';
 import Header from '../../../../components/navigation/Header.astro';
 import PageShellScripts from '../../../../components/navigation/PageShellScripts.astro';
+import { getArtificialIntelligenceSolutionsContent } from '../../../../data/artificialIntelligenceSolutions';
 import { getContactCopy } from '../../../../data/contact';
 import { getFooterCopy } from '../../../../data/footer';
-import { getTechnologicalInnovationContent } from '../../../../data/technologicalInnovation';
 import { getServicesContent } from '../../../../data/services';
 import SiteLayout from '../../../../layouts/SiteLayout.astro';
 import { useTranslations } from '../../../../i18n/utils';
 
 const lang = 'en';
-const content = getTechnologicalInnovationContent(lang);
+const content = getArtificialIntelligenceSolutionsContent(lang);
 const contactCopy = getContactCopy(lang);
 const footerCopy = getFooterCopy(lang);
 const servicesContent = getServicesContent(lang);
@@ -26,25 +26,31 @@ const t = useTranslations(lang);
   htmlLang={content.metadata.htmlLang}
   locale={content.metadata.locale}
   alternates={[
-    { lang: 'es-MX', href: 'https://agsit.com.mx/soluciones-tecnologicas/innovacion-tecnologica/' },
+    {
+      lang: 'es-MX',
+      href: 'https://agsit.com.mx/soluciones-tecnologicas/inteligencia-artificial/',
+    },
     { lang: 'en', href: content.metadata.canonicalUrl },
-    { lang: 'x-default', href: 'https://agsit.com.mx/soluciones-tecnologicas/innovacion-tecnologica/' },
+    {
+      lang: 'x-default',
+      href: 'https://agsit.com.mx/soluciones-tecnologicas/inteligencia-artificial/',
+    },
   ]}
 >
   <div class="app-shell">
     <Header
       lang={lang}
       homeHref="/en/#inicio"
-      servicesHref="/en/#servicios"
+      servicesHref="/en/technology-solutions/"
       contactHref="#contacto"
-      alternateHref="/soluciones-tecnologicas/innovacion-tecnologica/"
+      alternateHref="/soluciones-tecnologicas/inteligencia-artificial/"
     />
-    <TechnologicalInnovationPage content={content} contactCopy={contactCopy} />
+    <ArtificialIntelligenceSolutionsPage content={content} contactCopy={contactCopy} />
     <Footer
       copy={footerCopy}
       services={servicesContent.services}
       homeHref="/en/#inicio"
-      servicesHref="/en/#servicios"
+      servicesHref="/en/technology-solutions/"
       contactHref="#contacto"
     />
     <ContactDrawer copy={contactCopy} />

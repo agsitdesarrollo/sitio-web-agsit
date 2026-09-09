@@ -1,0 +1,26 @@
+---
+import type { ArtificialIntelligenceSolutionsContent } from '../../data/artificialIntelligenceSolutions';
+import type { ContactCopy } from '../../data/contact';
+import TechnologySolutionBenefitsSection from '../technology-solution-detail/TechnologySolutionBenefitsSection.astro';
+import TechnologySolutionDetailPage from '../technology-solution-detail/TechnologySolutionDetailPage.astro';
+
+type Props = {
+  content: ArtificialIntelligenceSolutionsContent;
+  contactCopy: ContactCopy;
+};
+
+const { content, contactCopy } = Astro.props;
+---
+
+<TechnologySolutionDetailPage
+  hero={content.hero}
+  heroMedia={{
+    kind: 'image',
+    src: '/assets/ingenieria-datos-analitica/hero-datos-analitica.webp',
+  }}
+  journey={content.journey}
+  contactCopy={contactCopy}
+  pageClass="artificial-intelligence-solutions-detail illustrated-technology-solution-detail"
+>
+  <TechnologySolutionBenefitsSection slot="secondary-section" content={content.benefits} />
+</TechnologySolutionDetailPage>

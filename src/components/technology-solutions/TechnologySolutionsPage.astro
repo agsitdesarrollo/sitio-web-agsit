@@ -3,6 +3,7 @@ import FinalContactSection from '../final-contact/FinalContactSection.astro';
 import ServiceSlidesController from '../service-slides/ServiceSlidesController.astro';
 import type { ContactCopy } from '../../data/contact';
 import type { TechnologySolutionsContent } from '../../data/technologySolutions';
+import { getTechnologySolutionLink } from '../../data/technologySolutionLinks';
 
 type Props = {
   content: TechnologySolutionsContent;
@@ -10,8 +11,7 @@ type Props = {
   capabilityLinkCodes?: string[];
 };
 
-const { content, contactCopy, capabilityLinkCodes } = Astro.props;
-const shouldShowCapabilityLink = (code: string) => capabilityLinkCodes?.includes(code) ?? false;
+const { content, contactCopy } = Astro.props;
 const isEnglishPage = Astro.url.pathname.startsWith('/en/');
 const mobileCapabilityOverrides: Record<string, { title: string; copy: string }> = isEnglishPage
   ? {}
@@ -103,7 +103,10 @@ const capabilityPages = Array.from(
               {
                 items.map((item) => {
                   const mobileOverride = mobileCapabilityOverrides[item.code];
-                  const hasCapabilityLink = shouldShowCapabilityLink(item.code) && Boolean(item.href);
+                  const publishedLink = getTechnologySolutionLink(item.code, isEnglishPage ? 'en' : 'es');
+                  const capabilityHref = item.href ?? publishedLink?.href;
+                  const capabilityCta = item.cta ?? publishedLink?.cta;
+                  const hasCapabilityLink = Boolean(capabilityHref && capabilityCta);
 
                   return (
                     <article class="technology-capability">
@@ -120,8 +123,8 @@ const capabilityPages = Array.from(
                       </div>
                       <div class="technology-capability-action" aria-hidden={hasCapabilityLink ? undefined : 'true'}>
                         {hasCapabilityLink && (
-                          <a class="technology-capability-link" href={item.href}>
-                            <span class="technology-capability-link-text technology-capability-desktop-cta">{item.cta}</span>
+                          <a class="technology-capability-link" href={capabilityHref}>
+                            <span class="technology-capability-link-text technology-capability-desktop-cta">{capabilityCta}</span>
                             <span class="technology-capability-link-text technology-capability-mobile-cta">{mobileCapabilityCta}</span>
                             <span class="technology-capability-arrow" aria-hidden="true"></span>
                           </a>
