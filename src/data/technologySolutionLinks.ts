@@ -29,6 +29,16 @@ const technologySolutionLinks: Record<string, TechnologySolutionLinkByLanguage> 
       cta: 'View services',
     },
   },
+  CLOUD: {
+    es: {
+      href: '/soluciones-tecnologicas/infraestructura-cloud-y-servicios-ti/',
+      cta: 'Ver servicios',
+    },
+    en: {
+      href: '/en/technology-solutions/cloud-infrastructure-and-it-services/',
+      cta: 'View services',
+    },
+  },
 };
 
 export function getTechnologySolutionLink(code: string, language: 'es' | 'en') {
