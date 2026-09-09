@@ -19,6 +19,16 @@ const technologySolutionLinks: Record<string, TechnologySolutionLinkByLanguage> 
       cta: 'View services',
     },
   },
+  CONS: {
+    es: {
+      href: '/soluciones-tecnologicas/consultoria-y-transformacion-tecnologica/',
+      cta: 'Ver servicios',
+    },
+    en: {
+      href: '/en/technology-solutions/technology-consulting-and-transformation/',
+      cta: 'View services',
+    },
+  },
 };
 
 export function getTechnologySolutionLink(code: string, language: 'es' | 'en') {

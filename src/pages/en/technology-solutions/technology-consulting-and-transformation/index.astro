@@ -1,18 +1,18 @@
 ---
 import ContactDrawer from '../../../../components/contact/ContactDrawer.astro';
 import Footer from '../../../../components/footer/Footer.astro';
-import ITManagementGovernancePage from '../../../../components/it-management-governance/ITManagementGovernancePage.astro';
 import Header from '../../../../components/navigation/Header.astro';
 import PageShellScripts from '../../../../components/navigation/PageShellScripts.astro';
+import TechnologyConsultingTransformationPage from '../../../../components/technology-consulting-transformation/TechnologyConsultingTransformationPage.astro';
 import { getContactCopy } from '../../../../data/contact';
 import { getFooterCopy } from '../../../../data/footer';
-import { getITManagementGovernanceContent } from '../../../../data/itManagementGovernance';
 import { getServicesContent } from '../../../../data/services';
+import { getTechnologyConsultingTransformationContent } from '../../../../data/technologyConsultingTransformation';
 import SiteLayout from '../../../../layouts/SiteLayout.astro';
 import { useTranslations } from '../../../../i18n/utils';
 
 const lang = 'en';
-const content = getITManagementGovernanceContent(lang);
+const content = getTechnologyConsultingTransformationContent(lang);
 const contactCopy = getContactCopy(lang);
 const footerCopy = getFooterCopy(lang);
 const servicesContent = getServicesContent(lang);
@@ -26,25 +26,31 @@ const t = useTranslations(lang);
   htmlLang={content.metadata.htmlLang}
   locale={content.metadata.locale}
   alternates={[
-    { lang: 'es-MX', href: 'https://agsit.com.mx/soluciones-tecnologicas/gestion-gobierno-ti/' },
+    {
+      lang: 'es-MX',
+      href: 'https://agsit.com.mx/soluciones-tecnologicas/consultoria-y-transformacion-tecnologica/',
+    },
     { lang: 'en', href: content.metadata.canonicalUrl },
-    { lang: 'x-default', href: 'https://agsit.com.mx/soluciones-tecnologicas/gestion-gobierno-ti/' },
+    {
+      lang: 'x-default',
+      href: 'https://agsit.com.mx/soluciones-tecnologicas/consultoria-y-transformacion-tecnologica/',
+    },
   ]}
 >
   <div class="app-shell">
     <Header
       lang={lang}
       homeHref="/en/#inicio"
-      servicesHref="/en/#servicios"
+      servicesHref="/en/technology-solutions/"
       contactHref="#contacto"
-      alternateHref="/soluciones-tecnologicas/gestion-gobierno-ti/"
+      alternateHref="/soluciones-tecnologicas/consultoria-y-transformacion-tecnologica/"
     />
-    <ITManagementGovernancePage content={content} contactCopy={contactCopy} />
+    <TechnologyConsultingTransformationPage content={content} contactCopy={contactCopy} />
     <Footer
       copy={footerCopy}
       services={servicesContent.services}
       homeHref="/en/#inicio"
-      servicesHref="/en/#servicios"
+      servicesHref="/en/technology-solutions/"
       contactHref="#contacto"
     />
     <ContactDrawer copy={contactCopy} />

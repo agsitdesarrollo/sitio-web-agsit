@@ -1,18 +1,18 @@
 ---
 import ContactDrawer from '../../../components/contact/ContactDrawer.astro';
 import Footer from '../../../components/footer/Footer.astro';
-import ITManagementGovernancePage from '../../../components/it-management-governance/ITManagementGovernancePage.astro';
 import Header from '../../../components/navigation/Header.astro';
 import PageShellScripts from '../../../components/navigation/PageShellScripts.astro';
+import TechnologyConsultingTransformationPage from '../../../components/technology-consulting-transformation/TechnologyConsultingTransformationPage.astro';
 import { getContactCopy } from '../../../data/contact';
 import { getFooterCopy } from '../../../data/footer';
-import { getITManagementGovernanceContent } from '../../../data/itManagementGovernance';
 import { getServicesContent } from '../../../data/services';
+import { getTechnologyConsultingTransformationContent } from '../../../data/technologyConsultingTransformation';
 import SiteLayout from '../../../layouts/SiteLayout.astro';
 import { useTranslations } from '../../../i18n/utils';
 
 const lang = 'es';
-const content = getITManagementGovernanceContent(lang);
+const content = getTechnologyConsultingTransformationContent(lang);
 const contactCopy = getContactCopy(lang);
 const footerCopy = getFooterCopy(lang);
 const servicesContent = getServicesContent(lang);
@@ -27,7 +27,10 @@ const t = useTranslations(lang);
   locale={content.metadata.locale}
   alternates={[
     { lang: 'es-MX', href: content.metadata.canonicalUrl },
-    { lang: 'en', href: 'https://agsit.com.mx/en/technology-solutions/it-management-governance/' },
+    {
+      lang: 'en',
+      href: 'https://agsit.com.mx/en/technology-solutions/technology-consulting-and-transformation/',
+    },
     { lang: 'x-default', href: content.metadata.canonicalUrl },
   ]}
 >
@@ -35,12 +38,18 @@ const t = useTranslations(lang);
     <Header
       lang={lang}
       homeHref="/#inicio"
-      servicesHref="/#servicios"
+      servicesHref="/soluciones-tecnologicas/"
       contactHref="#contacto"
-      alternateHref="/en/technology-solutions/it-management-governance/"
+      alternateHref="/en/technology-solutions/technology-consulting-and-transformation/"
     />
-    <ITManagementGovernancePage content={content} contactCopy={contactCopy} />
-    <Footer copy={footerCopy} services={servicesContent.services} homeHref="/#inicio" servicesHref="/#servicios" contactHref="#contacto" />
+    <TechnologyConsultingTransformationPage content={content} contactCopy={contactCopy} />
+    <Footer
+      copy={footerCopy}
+      services={servicesContent.services}
+      homeHref="/#inicio"
+      servicesHref="/soluciones-tecnologicas/"
+      contactHref="#contacto"
+    />
     <ContactDrawer copy={contactCopy} />
     <PageShellScripts openMenuLabel={t('nav.openMenu')} closeMenuLabel={t('nav.closeMenu')} />
   </div>
