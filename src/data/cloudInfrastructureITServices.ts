@@ -34,8 +34,8 @@ export const cloudInfrastructureITServicesByLang: Record<
     },
     hero: {
       eyebrow: 'Infraestructura cloud y servicios TI',
-      title: 'Construye una infraestructura',
-      titleAccent: 'estable, segura y preparada para crecer.',
+      title: 'Infraestructura lista',
+      titleAccent: 'para crecer.',
       copy:
         'Diseñamos, implementamos y administramos la base tecnológica que mantiene disponibles tus sistemas y acompaña el crecimiento de tu operación.',
       primaryCta: 'Hablar con un especialista',
@@ -46,7 +46,7 @@ export const cloudInfrastructureITServicesByLang: Record<
     },
     benefits: {
       eyebrow: 'Beneficios de una infraestructura bien gestionada',
-      title: 'Continuidad, control y capacidad bajo demanda.',
+      title: 'Continuidad y control para crecer.',
       copy:
         'Mantén disponibles tus servicios, protege la información y ajusta los recursos tecnológicos conforme cambian las necesidades del negocio.',
       image: '/assets/ingenieria-datos-analitica/beneficios-datos.webp',
@@ -159,8 +159,8 @@ export const cloudInfrastructureITServicesByLang: Record<
     },
     hero: {
       eyebrow: 'Cloud infrastructure and IT services',
-      title: 'Build an infrastructure',
-      titleAccent: 'that is stable, secure and ready to grow.',
+      title: 'Infrastructure ready',
+      titleAccent: 'to grow.',
       copy:
         'We design, implement and manage the technology foundation that keeps your systems available and supports operational growth.',
       primaryCta: 'Talk to a specialist',
@@ -171,7 +171,7 @@ export const cloudInfrastructureITServicesByLang: Record<
     },
     benefits: {
       eyebrow: 'Benefits of well-managed infrastructure',
-      title: 'Continuity, control and capacity on demand.',
+      title: 'Continuity and control for growth.',
       copy:
         'Keep services available, protect information and adjust technology resources as business needs change.',
       image: '/assets/ingenieria-datos-analitica/beneficios-datos.webp',

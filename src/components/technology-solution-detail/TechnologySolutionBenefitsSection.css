@@ -211,6 +211,68 @@
   }
 }
 
+/* Móvil portrait: mantiene el contenido dentro del viewport visual cuando las
+   barras del navegador permanecen visibles. El panel conserva la altura estable
+   del track; solo su composición interna sigue --app-vh. */
+@media (max-width: 679px) and (orientation: portrait) {
+  .technology-solution-benefits {
+    --technology-benefits-top-gap: clamp(8px, 1.4dvh, 14px);
+    --technology-benefits-bottom-gap: max(
+      clamp(14px, 2dvh, 20px),
+      env(safe-area-inset-bottom, 0px)
+    );
+
+    padding-top: calc(var(--nav-h) + var(--technology-benefits-top-gap));
+    padding-bottom: var(--technology-benefits-bottom-gap);
+    place-items: start center;
+  }
+
+  .technology-solution-benefits-layout {
+    height: max(
+      0px,
+      calc(
+        var(--app-vh, 100dvh) - var(--nav-h) - var(--technology-benefits-top-gap) -
+          var(--technology-benefits-bottom-gap)
+      )
+    );
+    min-height: 0;
+    gap: clamp(10px, 1.6dvh, 16px);
+    align-content: center;
+  }
+
+  .technology-solution-benefits-media {
+    max-height: min(21dvh, 172px);
+  }
+
+  .technology-solution-benefits-content {
+    gap: clamp(11px, 1.6dvh, 16px);
+  }
+
+  .technology-solution-benefits-heading {
+    gap: clamp(6px, 0.9dvh, 9px);
+  }
+
+  .technology-solution-benefits-heading h2 {
+    font-size: clamp(1.85rem, min(8.7vw, 4.8dvh), 2.55rem);
+  }
+
+  .technology-solution-benefits-heading > p:last-child {
+    font-size: clamp(0.82rem, min(3.6vw, 1.9dvh), 0.96rem);
+  }
+
+  .technology-solution-benefits-grid {
+    gap: clamp(9px, 1.3dvh, 13px) 13px;
+  }
+
+  .technology-solution-benefit h3 {
+    font-size: clamp(0.74rem, min(3.25vw, 1.65dvh), 0.88rem);
+  }
+
+  .technology-solution-benefit p {
+    font-size: clamp(0.66rem, min(2.85vw, 1.45dvh), 0.78rem);
+  }
+}
+
 @media (pointer: coarse) and (orientation: landscape) and (max-width: 932px) and (max-height: 520px) {
   .technology-solution-benefits {
     padding-top: calc(var(--nav-h) + 4px);

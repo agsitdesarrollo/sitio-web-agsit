@@ -33,8 +33,8 @@ export const artificialIntelligenceSolutionsByLang: Record<
     },
     hero: {
       eyebrow: 'Soluciones de inteligencia artificial',
-      title: 'Integra inteligencia artificial',
-      titleAccent: 'en decisiones y procesos reales.',
+      title: 'IA que impulsa',
+      titleAccent: 'tu operación.',
       copy:
         'Diseñamos soluciones de IA que aprovechan la información de tu empresa para analizar, responder y automatizar con un propósito claro.',
       primaryCta: 'Hablar con un especialista',
@@ -45,7 +45,7 @@ export const artificialIntelligenceSolutionsByLang: Record<
     },
     benefits: {
       eyebrow: 'Beneficios de la inteligencia artificial',
-      title: 'Más capacidad para analizar, responder y crecer.',
+      title: 'Analiza mejor y responde más rápido.',
       copy:
         'Convierte datos y conocimiento operativo en herramientas que apoyan a tu equipo, reducen tiempos y mejoran la experiencia de tus clientes.',
       image: '/assets/ingenieria-datos-analitica/beneficios-datos.webp',
@@ -130,8 +130,8 @@ export const artificialIntelligenceSolutionsByLang: Record<
     },
     hero: {
       eyebrow: 'Artificial intelligence solutions',
-      title: 'Bring artificial intelligence',
-      titleAccent: 'into real decisions and processes.',
+      title: 'AI that drives',
+      titleAccent: 'your business forward.',
       copy:
         'We design AI solutions that use your business information to analyze, respond and automate with a clear purpose.',
       primaryCta: 'Talk to a specialist',
@@ -142,7 +142,7 @@ export const artificialIntelligenceSolutionsByLang: Record<
     },
     benefits: {
       eyebrow: 'Benefits of artificial intelligence',
-      title: 'More capacity to analyze, respond and grow.',
+      title: 'Analyze better and respond faster.',
       copy:
         'Turn data and operational knowledge into tools that support your team, reduce response times and improve customer experiences.',
       image: '/assets/ingenieria-datos-analitica/beneficios-datos.webp',

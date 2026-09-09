@@ -34,8 +34,8 @@ export const technologyConsultingTransformationByLang: Record<
     },
     hero: {
       eyebrow: 'Consultoría y transformación tecnológica',
-      title: 'Convierte tus retos tecnológicos',
-      titleAccent: 'en una ruta clara de transformación.',
+      title: 'Define el rumbo',
+      titleAccent: 'de tu transformación.',
       copy:
         'Analizamos tu operación, definimos prioridades y diseñamos soluciones alineadas con los objetivos reales de tu empresa.',
       primaryCta: 'Hablar con un especialista',
@@ -141,8 +141,8 @@ export const technologyConsultingTransformationByLang: Record<
     },
     hero: {
       eyebrow: 'Technology consulting and transformation',
-      title: 'Turn technology challenges',
-      titleAccent: 'into a clear transformation roadmap.',
+      title: 'Define the path',
+      titleAccent: 'for your transformation.',
       copy:
         'We analyze your operation, define priorities and design solutions aligned with your company’s real objectives.',
       primaryCta: 'Talk to a specialist',
