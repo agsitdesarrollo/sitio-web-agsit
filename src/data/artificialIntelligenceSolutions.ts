@@ -10,6 +10,8 @@ export type ArtificialIntelligenceSolutionsContent = {
     title: string;
     description: string;
     canonicalUrl: string;
+    image: string;
+    imageAlt: string;
     htmlLang: string;
     locale: string;
   };
@@ -28,6 +30,8 @@ export const artificialIntelligenceSolutionsByLang: Record<
       description:
         'Soluciones de inteligencia artificial, IA generativa, machine learning y agentes virtuales aplicadas a las necesidades de tu empresa.',
       canonicalUrl: 'https://agsit.com.mx/soluciones-tecnologicas/inteligencia-artificial/',
+      image: '/assets/social/inteligencia-artificial-es.jpg',
+      imageAlt: 'Soluciones de inteligencia artificial aplicadas a procesos y decisiones empresariales.',
       htmlLang: 'es-MX',
       locale: 'es_MX',
     },
@@ -125,6 +129,8 @@ export const artificialIntelligenceSolutionsByLang: Record<
       description:
         'Artificial intelligence, generative AI, machine learning and virtual agent solutions designed around your company’s needs.',
       canonicalUrl: 'https://agsit.com.mx/en/technology-solutions/artificial-intelligence/',
+      image: '/assets/social/artificial-intelligence-en.jpg',
+      imageAlt: 'Artificial intelligence solutions applied to business processes and decisions.',
       htmlLang: 'en',
       locale: 'en_US',
     },

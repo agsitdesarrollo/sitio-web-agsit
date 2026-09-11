@@ -10,6 +10,7 @@ type Props = {
 };
 
 const { content, media } = Astro.props;
+const isImage = media.kind === 'image';
 ---
 
 <section class="crm-platform-hero" aria-labelledby="technology-solution-detail-title">
@@ -27,13 +28,16 @@ const { content, media } = Astro.props;
     </div>
 
     <div class="crm-hero-visual-column">
-      <figure class="crm-hero-visual" role="img" aria-label={content.visualAlt}>
-        {media.kind === 'image' ? (
+      <figure
+        class="crm-hero-visual"
+        role={isImage ? undefined : 'img'}
+        aria-label={isImage ? undefined : content.visualAlt}
+      >
+        {isImage ? (
           <img
             class="crm-hero-image"
             src={media.src}
-            alt=""
-            aria-hidden="true"
+            alt={content.visualAlt}
             loading="eager"
             decoding="async"
             fetchpriority="high"

@@ -10,6 +10,8 @@ export type DataEngineeringStrategicAnalyticsContent = {
     title: string;
     description: string;
     canonicalUrl: string;
+    image: string;
+    imageAlt: string;
     htmlLang: string;
     locale: string;
   };
@@ -29,6 +31,8 @@ export const dataEngineeringStrategicAnalyticsByLang: Record<
         'Soluciones de Big Data, Business Intelligence, analítica, gobernanza, dashboards ejecutivos y arquitectura de datos para empresas.',
       canonicalUrl:
         'https://agsit.com.mx/soluciones-tecnologicas/ingenieria-de-datos-y-analitica-estrategica/',
+      image: '/assets/social/ingenieria-datos-analitica-es.jpg',
+      imageAlt: 'Ingeniería de datos y analítica estratégica para convertir información en decisiones.',
       htmlLang: 'es-MX',
       locale: 'es_MX',
     },
@@ -145,6 +149,8 @@ export const dataEngineeringStrategicAnalyticsByLang: Record<
         'Big Data, Business Intelligence, analytics, data governance, executive dashboards and data architecture solutions for businesses.',
       canonicalUrl:
         'https://agsit.com.mx/en/technology-solutions/data-engineering-and-strategic-analytics/',
+      image: '/assets/social/data-engineering-strategic-analytics-en.jpg',
+      imageAlt: 'Data engineering and strategic analytics turning information into decisions.',
       htmlLang: 'en',
       locale: 'en_US',
     },

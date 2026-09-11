@@ -10,6 +10,8 @@ export type CloudInfrastructureITServicesContent = {
     title: string;
     description: string;
     canonicalUrl: string;
+    image: string;
+    imageAlt: string;
     htmlLang: string;
     locale: string;
   };
@@ -29,6 +31,8 @@ export const cloudInfrastructureITServicesByLang: Record<
         'Servicios de cloud computing, servidores, bases de datos, DevOps, ITIL, soporte e infraestructura TI para empresas.',
       canonicalUrl:
         'https://agsit.com.mx/soluciones-tecnologicas/infraestructura-cloud-y-servicios-ti/',
+      image: '/assets/social/infraestructura-cloud-servicios-ti-es.jpg',
+      imageAlt: 'Infraestructura cloud y servicios TI para una operación disponible, segura y escalable.',
       htmlLang: 'es-MX',
       locale: 'es_MX',
     },
@@ -154,6 +158,8 @@ export const cloudInfrastructureITServicesByLang: Record<
         'Cloud computing, servers, databases, DevOps, ITIL, support and IT infrastructure services for businesses.',
       canonicalUrl:
         'https://agsit.com.mx/en/technology-solutions/cloud-infrastructure-and-it-services/',
+      image: '/assets/social/cloud-infrastructure-it-services-en.jpg',
+      imageAlt: 'Cloud infrastructure and IT services for available, secure and scalable operations.',
       htmlLang: 'en',
       locale: 'en_US',
     },

@@ -10,6 +10,8 @@ export type IntelligentProcessAutomationContent = {
     title: string;
     description: string;
     canonicalUrl: string;
+    image: string;
+    imageAlt: string;
     htmlLang: string;
     locale: string;
   };
@@ -29,6 +31,8 @@ export const intelligentProcessAutomationByLang: Record<
         'Automatizamos procesos, integramos sistemas y desarrollamos APIs, webhooks, RPA, IoT y workflows para agilizar la operación de tu empresa.',
       canonicalUrl:
         'https://agsit.com.mx/soluciones-tecnologicas/automatizacion-inteligente-de-procesos/',
+      image: '/assets/social/automatizacion-inteligente-procesos-es.jpg',
+      imageAlt: 'Automatización inteligente para conectar procesos, sistemas y tareas empresariales.',
       htmlLang: 'es-MX',
       locale: 'es_MX',
     },
@@ -154,6 +158,8 @@ export const intelligentProcessAutomationByLang: Record<
         'We automate processes, integrate systems and build APIs, webhooks, RPA, IoT and workflows to streamline your business operations.',
       canonicalUrl:
         'https://agsit.com.mx/en/technology-solutions/intelligent-process-automation/',
+      image: '/assets/social/intelligent-process-automation-en.jpg',
+      imageAlt: 'Intelligent automation connecting business processes, systems and tasks.',
       htmlLang: 'en',
       locale: 'en_US',
     },

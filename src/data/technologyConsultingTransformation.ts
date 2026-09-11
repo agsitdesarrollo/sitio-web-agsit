@@ -10,6 +10,8 @@ export type TechnologyConsultingTransformationContent = {
     title: string;
     description: string;
     canonicalUrl: string;
+    image: string;
+    imageAlt: string;
     htmlLang: string;
     locale: string;
   };
@@ -29,6 +31,8 @@ export const technologyConsultingTransformationByLang: Record<
         'Servicios de auditoría TI, levantamiento de requerimientos, diseño de soluciones, arquitectura tecnológica y transformación digital.',
       canonicalUrl:
         'https://agsit.com.mx/soluciones-tecnologicas/consultoria-y-transformacion-tecnologica/',
+      image: '/assets/social/consultoria-transformacion-tecnologica-es.jpg',
+      imageAlt: 'Consultoría y transformación tecnológica para orientar la evolución de la empresa.',
       htmlLang: 'es-MX',
       locale: 'es_MX',
     },
@@ -136,6 +140,8 @@ export const technologyConsultingTransformationByLang: Record<
         'IT audit, requirements gathering, solution design, technology architecture and digital transformation services.',
       canonicalUrl:
         'https://agsit.com.mx/en/technology-solutions/technology-consulting-and-transformation/',
+      image: '/assets/social/technology-consulting-transformation-en.jpg',
+      imageAlt: 'Technology consulting and transformation guiding business evolution.',
       htmlLang: 'en',
       locale: 'en_US',
     },

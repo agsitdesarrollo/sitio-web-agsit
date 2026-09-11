@@ -5,6 +5,8 @@ export type SoftwareDevelopmentContent = {
     title: string;
     description: string;
     canonicalUrl: string;
+    image: string;
+    imageAlt: string;
     htmlLang: string;
     locale: string;
   };
@@ -55,6 +57,8 @@ export const softwareDevelopmentByLang: Record<SupportedLang, SoftwareDevelopmen
       description:
         'Desarrollamos software a la medida, aplicaciones web, apps móviles y sistemas de escritorio con pruebas de calidad para empresas.',
       canonicalUrl: 'https://agsit.com.mx/soluciones-tecnologicas/desarrollo-de-software/',
+      image: '/assets/social/desarrollo-software-es.jpg',
+      imageAlt: 'Desarrollo de software a la medida para las necesidades de cada empresa.',
       htmlLang: 'es-MX',
       locale: 'es_MX',
     },
@@ -160,6 +164,8 @@ export const softwareDevelopmentByLang: Record<SupportedLang, SoftwareDevelopmen
       description:
         'We develop custom software, web applications, mobile apps and desktop systems with quality testing for businesses.',
       canonicalUrl: 'https://agsit.com.mx/en/technology-solutions/software-development/',
+      image: '/assets/social/software-development-en.jpg',
+      imageAlt: 'Custom software development tailored to each company’s needs.',
       htmlLang: 'en',
       locale: 'en_US',
     },
