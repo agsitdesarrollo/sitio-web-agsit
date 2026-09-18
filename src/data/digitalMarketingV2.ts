@@ -233,8 +233,8 @@ export const digitalMarketingV2ByLang: Record<SupportedLang, DigitalMarketingV2C
           theme: 'sage',
           visual: 'flower',
           srcvideo: '/assets/videos-marketing/1.-%20Omnicanalidad.mp4',
-          // cta: 'Conoce la estrategia',
-          // href: '/marketing-digital/estrategia-digital/',
+          cta: 'Conoce la estrategia',
+          href: '/marketing-digital/growth-marketing-y-estrategia-digital/',
         },
         {
           title: 'Posicionamiento Orgánico (SEO)',
@@ -418,8 +418,8 @@ export const digitalMarketingV2ByLang: Record<SupportedLang, DigitalMarketingV2C
           theme: 'sage',
           visual: 'flower',
           srcvideo: '/assets/videos-marketing/1.-%20Omnicanalidad.mp4',
-          // cta: 'Explore the strategy',
-          // href: '/en/digital-marketing/digital-strategy/',
+          cta: 'Explore the strategy',
+          href: '/en/digital-marketing/growth-marketing-and-digital-strategy/',
         },
         {
           title: 'Organic Search Positioning (SEO)',

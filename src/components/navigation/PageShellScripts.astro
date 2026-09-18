@@ -31,6 +31,7 @@ const { openMenuLabel, closeMenuLabel } = Astro.props;
     if (!isOpen || !nav || !mobileMenuQuery.matches) {
       root.classList.remove('mobile-menu-open');
       root.style.removeProperty('--mobile-menu-open-h');
+      window.dispatchEvent(new CustomEvent('agsit:mobile-menu-change', { detail: { isOpen: false } }));
       return;
     }
 
@@ -39,6 +40,7 @@ const { openMenuLabel, closeMenuLabel } = Astro.props;
 
       root.style.setProperty('--mobile-menu-open-h', `${Math.ceil(nav.getBoundingClientRect().height)}px`);
       root.classList.add('mobile-menu-open');
+      window.dispatchEvent(new CustomEvent('agsit:mobile-menu-change', { detail: { isOpen: true } }));
     });
   };
 
