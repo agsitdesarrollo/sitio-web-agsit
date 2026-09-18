@@ -590,41 +590,11 @@
   }
 
   /* Digital strategy */
-  .strategy-hero {
-    padding: 22px 30px;
-  }
-
-  .strategy-hero-content {
-    width: min(760px, 100%);
-  }
-
-  .strategy-back-link {
-    margin-bottom: 12px;
-  }
-
-  .strategy-hero-copy {
-    max-width: 650px;
-    margin-top: 10px;
-  }
-
-  .strategy-primary-cta {
-    margin-top: 14px;
-  }
-
-  .strategy-scroll-hint {
-    display: none;
-  }
-
-  .strategy-narrative {
-    min-height: auto;
-    padding: 30px;
-  }
-
-  .strategy-large-copy {
-    width: min(780px, 100%);
-    font-size: clamp(1.75rem, 7vh, 2.45rem);
-    line-height: 1.1;
-  }
+  /* The hero and the pinned narrative moved into DigitalMarketingServiceHero
+     and DigitalStrategyPage's own landscape rules; .strategy-hero and its
+     siblings below no longer exist in the current markup, and
+     .strategy-narrative/.strategy-large-copy still do, which let this stale,
+     equal-specificity rule fight the current one and shrink the copy. */
 
   :is(.strategy-lifecycle, .strategy-method, .strategy-layers, .strategy-benefits, .strategy-bridge) {
     padding: 30px clamp(20px, 4vw, 34px);

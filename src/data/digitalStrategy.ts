@@ -33,6 +33,8 @@ export type DigitalStrategyContent = {
     title: string;
     description: string;
     canonicalUrl: string;
+    image: string;
+    imageAlt: string;
     htmlLang: string;
     locale: string;
   };
@@ -44,6 +46,7 @@ export type DigitalStrategyContent = {
     copy: string;
     cta: string;
     scrollHint: string;
+    scrollLabel: string;
   };
   narrative: {
     ariaLabel: string;
@@ -90,352 +93,358 @@ export type DigitalStrategyContent = {
 export const digitalStrategyByLang: Record<SupportedLang, DigitalStrategyContent> = {
   es: {
     metadata: {
-      title: 'Estrategia de Mercadotecnia Digital AGSIT | El plan antes de invertir',
+      title: 'Growth Marketing y Estrategia Digital | AGSIT',
       description:
-        'Deja de invertir en publicidad sin rumbo. Diseñamos el plan estratégico que acompaña a tu cliente en cada etapa, del descubrimiento a la lealtad, con métricas para cuidar tu retorno.',
-      canonicalUrl: 'https://agsit.com.mx/marketing-digital/estrategia-digital/',
+        'Consigue más clientes con un plan claro. En AGSIT definimos a quién llegar, qué decirle y cómo convertir su interés en ventas para tu negocio.',
+      canonicalUrl: 'https://agsit.com.mx/marketing-digital/growth-marketing-y-estrategia-digital/',
+      image: '/assets/social/growth-marketing-y-estrategia-digital.jpg',
+      imageAlt: 'Rutas luminosas que simbolizan crecimiento con dirección.',
       htmlLang: 'es-MX',
       locale: 'es_MX',
     },
     backLink: 'Volver a Marketing Digital',
     hero: {
-      eyebrow: 'Mercadotecnia Digital · Estrategia',
-      primary: 'Primero la estrategia,',
-      secondary: 'después la inversión.',
+      eyebrow: 'Growth Marketing + Estrategia Digital',
+      primary: 'Crecimiento',
+      secondary: 'con dirección',
       copy:
-        '¿Has invertido en publicidad esperando más clientes y las ventas no llegan? No te falta presupuesto: te falta un plan. Diseñamos la ruta que conecta tus objetivos con las personas correctas, en los canales correctos.',
-      cta: 'Diseñemos tu estrategia',
-      scrollHint: 'Desliza para ver el recorrido',
+        'Te ayudamos a conseguir más clientes con un plan claro: a quién buscar, qué decirle y por dónde llegar a él.',
+      cta: 'Hablemos de tu negocio',
+      scrollHint: 'Desliza para continuar',
+      scrollLabel: 'DESLIZA · EXPLORA · DESLIZA · EXPLORA · ',
     },
     narrative: {
       ariaLabel:
-        'La publicidad amplifica lo que ya existe: sin dirección, amplifica el gasto. Una estrategia hecha por expertos define a quién atraer, qué decirle y cómo convertir su atención en ventas.',
+        'Anunciarte sin un plan es gastar más para vender lo mismo. Con Growth Marketing sabes a quién buscar, qué decirle y cómo convertir su interés en ventas.',
       segments: [
-        { text: 'La publicidad amplifica lo que ya existe: sin ' },
-        { accent: 'dirección' },
-        { text: ', amplifica el gasto. Una estrategia hecha por expertos define a quién ' },
-        { accent: 'atraer' },
-        { text: ', qué decirle y cómo convertir su atención en ' },
+        { text: 'Anunciarte sin un ' },
+        { accent: 'plan' },
+        { text: ' es gastar más para vender lo mismo. Con Growth Marketing sabes a quién ' },
+        { accent: 'buscar' },
+        { text: ', qué decirle y cómo convertir su interés en ' },
         { accent: 'ventas' },
         { text: '.' },
       ],
     },
     lifecycle: {
-      eyebrow: 'El ciclo de vida de tu cliente',
-      title: 'Una estrategia para cada etapa del recorrido.',
+      eyebrow: 'Lo que incluye Growth Marketing',
+      title: 'Cinco formas de hacer crecer tu negocio.',
       copy:
-        'Nadie se convierte en cliente de un solo clic. Por eso diseñamos acciones específicas para cada momento: desde el primer encuentro con tu marca hasta la recompra y la recomendación.',
+        'Nadie compra en el primer clic. Por eso trabajamos cada momento: desde que alguien te conoce hasta que te compra, vuelve y te recomienda.',
       stages: [
         {
-          label: 'Descubrimiento',
-          sublabel: 'Visitantes calificados',
-          copy: 'Las personas con mayor probabilidad de comprarte te encuentran donde ya están buscando: buscadores, redes sociales y contenido que les resulta útil.',
+          label: 'Estrategia digital',
+          sublabel: 'Un plan claro para crecer',
+          copy: 'Definimos contigo a quién quieres llegar, qué decirle y en qué canales invertir. Así cada peso que pones en marketing tiene un propósito y un resultado que puedes ver.',
           image: '/assets/estrategia-digital/etapa-descubrimiento.webp',
           imageAlt: 'Persona descubriendo contenido en su teléfono',
         },
         {
-          label: 'Consideración',
-          sublabel: 'Prospectos',
-          copy: 'Convertimos visitas en conversaciones: contenido y ofertas que responden lo que tu prospecto necesita resolver antes de decidir.',
+          label: 'Recorrido del cliente',
+          sublabel: 'Acompañamos cada paso',
+          copy: 'Desde que alguien te descubre hasta que te compra y vuelve, cuidamos cada punto de contacto para que ningún interesado se pierda en el camino.',
           image: '/assets/estrategia-digital/etapa-consideracion.webp',
           imageAlt: 'Persona evaluando opciones frente a su laptop',
         },
         {
-          label: 'Selección',
-          sublabel: 'Interesados',
-          copy: 'Cuando tu cliente compara opciones, tu propuesta destaca: mensajes que muestran con claridad por qué elegirte a ti.',
+          label: 'Inteligencia artificial',
+          sublabel: 'Tecnología que trabaja para ti',
+          copy: 'Usamos herramientas inteligentes para conocer mejor a tus clientes, personalizar lo que les dices y detectar oportunidades antes que tu competencia.',
           image: '/assets/estrategia-digital/etapa-seleccion.webp',
           imageAlt: 'Equipo tomando una decisión frente a una pantalla',
         },
         {
-          label: 'Ascensión',
-          sublabel: 'Compradores',
-          copy: 'La primera compra abre la relación: venta cruzada y ofertas de mayor valor que aumentan lo que cada cliente aporta a tu negocio.',
+          label: 'Automatización',
+          sublabel: 'Seguimiento puntual, sin esfuerzo extra',
+          copy: 'Los mensajes, recordatorios y seguimientos se envían solos y a tiempo. Tu equipo se concentra en cerrar ventas, no en tareas repetitivas.',
           image: '/assets/estrategia-digital/etapa-ascension.webp',
           imageAlt: 'Persona completando una compra en línea',
         },
         {
-          label: 'Lealtad',
-          sublabel: 'Clientes',
-          copy: 'Un cliente satisfecho vuelve y te recomienda: comunicación y beneficios que convierten compradores en embajadores de tu marca.',
+          label: 'Canales conectados',
+          sublabel: 'Una sola conversación con tu cliente',
+          copy: 'Redes sociales, correo, sitio web y WhatsApp trabajando juntos. Tu cliente recibe la misma atención sin importar por dónde te contacte.',
           image: '/assets/estrategia-digital/etapa-lealtad.webp',
           imageAlt: 'Cliente satisfecho usando su teléfono',
         },
       ],
     },
     method: {
-      eyebrow: 'Cómo lo construimos',
-      title: 'Del diagnóstico a un roadmap que tu equipo puede ejecutar.',
+      eyebrow: 'Cómo trabajamos contigo',
+      title: 'Un plan hecho para tu negocio.',
       copy:
-        'Un plan estratégico serio no empieza en el anuncio: empieza en tu negocio. Esto es lo que hacemos antes de invertir un solo peso en medios.',
+        'Antes de invertir en anuncios, entendemos tu negocio. Estos son los pasos que seguimos contigo.',
       steps: [
         {
           title: 'Diagnóstico',
-          copy: 'Analizamos las necesidades de tu negocio, el entorno del mercado, tus productos y servicios, y a tus clientes objetivo.',
+          copy: 'Conocemos tu negocio, tu mercado, lo que vendes y a quién quieres venderle.',
         },
         {
           title: 'Enfoque',
-          copy: 'Elegimos los medios digitales y los segmentos donde tu inversión rinde más, según valor, viabilidad y urgencia.',
+          copy: 'Elegimos dónde conviene invertir primero: los canales y los clientes con más potencial.',
         },
         {
-          title: 'Roadmap',
-          copy: 'Trazamos las estrategias y actividades a seguir, con las métricas e indicadores que validarán la efectividad de cada campaña.',
+          title: 'Plan de acción',
+          copy: 'Definimos qué haremos, cuándo y cómo sabremos si está funcionando.',
         },
         {
-          title: 'Optimización',
-          copy: 'Medimos los resultados y hacemos los ajustes que el mercado va dictando, para sostener el retorno de tu inversión.',
+          title: 'Mejora continua',
+          copy: 'Revisamos los resultados y ajustamos lo que haga falta para que tu inversión rinda más.',
         },
       ],
       image: '/assets/estrategia-digital/metodo-diagnostico.webp',
-      imageAlt: 'Sesión de planeación estratégica con notas sobre la mesa',
+      imageAlt: 'Sesión de planeación con notas sobre la mesa',
     },
     layers: {
-      eyebrow: 'Las capas de tu estrategia',
-      title: 'Más que canales: psicología, datos y creatividad.',
-      copy: 'Cada plan integra disciplinas que trabajan juntas para que tu marca conecte con personas reales y venda.',
+      eyebrow: 'Lo que hay detrás de tu plan',
+      title: 'Más que anuncios: personas, datos y creatividad.',
+      copy: 'Cada plan combina varias disciplinas para que tu marca conecte con personas reales y venda.',
       items: [
         {
-          title: 'Marketing emocional',
-          copy: 'Mensajes que conectan con lo que tu cliente siente, no solo con lo que necesita.',
+          title: 'Mensajes que conectan',
+          copy: 'Hablamos de lo que tu cliente siente y necesita, no solo de lo que vendes.',
         },
         {
-          title: 'Mercadotecnia psicológica',
-          copy: 'Principios de decisión y persuasión aplicados a cada punto de contacto.',
+          title: 'Decisiones con datos',
+          copy: 'Cada ajuste se basa en lo que tus clientes hacen, no en suposiciones.',
         },
         {
-          title: 'Estrategia omnicanal',
-          copy: 'Una sola conversación con tu cliente, sin importar el canal donde te encuentre.',
+          title: 'Todos tus canales juntos',
+          copy: 'Una sola conversación con tu cliente, sin importar dónde te encuentre.',
         },
         {
-          title: 'Personalización y segmentación',
-          copy: 'Mensajes a la medida de cada audiencia, en lugar de un anuncio genérico para todos.',
+          title: 'Mensajes a la medida',
+          copy: 'Cada tipo de cliente recibe lo que le interesa, en lugar de un anuncio genérico.',
         },
         {
-          title: 'Contenido generativo con IA',
-          copy: 'Producción asistida por inteligencia artificial, curada por estrategas humanos.',
+          title: 'Contenido con apoyo de inteligencia artificial',
+          copy: 'Producimos más rápido, con revisión de personas que conocen tu negocio.',
         },
         {
-          title: 'Marketing de influencia',
-          copy: 'Voces con credibilidad en tu sector que amplifican tu mensaje.',
+          title: 'Voces que te recomiendan',
+          copy: 'Personas con credibilidad en tu sector que hablan de tu marca.',
         },
       ],
     },
     benefits: {
       eyebrow: 'Lo que obtienes',
-      title: 'Resultados que se notan en el negocio, no solo en el reporte.',
-      copy: 'Sin promesas infladas: esto es lo que una estrategia bien ejecutada cambia en tu operación.',
+      title: 'Resultados que se notan en tu negocio.',
+      copy: 'Sin promesas infladas: esto es lo que cambia cuando el plan está bien hecho.',
       items: [
         {
-          title: 'Más clientes potenciales',
-          copy: 'Atracción y nutrición constante de prospectos calificados para tu equipo comercial.',
+          title: 'Más personas interesadas',
+          copy: 'Un flujo constante de posibles clientes listos para hablar con tu equipo de ventas.',
         },
         {
-          title: 'Marca más fuerte',
-          copy: 'Reconocimiento y reputación que trabajan por ti en cada búsqueda y cada red.',
+          title: 'Una marca que se reconoce',
+          copy: 'Que te encuentren y te recuerden cuando buscan lo que ofreces.',
         },
         {
           title: 'Clientes que regresan',
-          copy: 'Fidelización y retención que convierten ventas sueltas en relaciones duraderas.',
+          copy: 'Ventas sueltas que se convierten en relaciones de largo plazo.',
         },
         {
           title: 'Nuevos mercados',
-          copy: 'Expansión de tu territorio de ventas sin abrir una sola sucursal.',
+          copy: 'Vende en más lugares sin abrir una sola sucursal.',
         },
         {
           title: 'Ventas de mayor valor',
-          copy: 'Venta cruzada y ofertas superiores sobre la cartera de clientes que ya tienes.',
+          copy: 'Ofrece más a los clientes que ya confían en ti.',
         },
         {
           title: 'Inversión bajo control',
-          copy: 'Monitoreo en tiempo real de cada campaña y ajustes que cuidan tu retorno.',
+          copy: 'Sabes en qué se gasta cada peso y qué te está dando.',
         },
       ],
     },
     bridge: {
-      title: 'La estrategia es el mapa. Estos son los caminos.',
-      copy: 'SEO, SEM, analítica web, redes sociales y e-commerce: cada servicio de AGSIT ejecuta una parte del plan.',
+      title: 'El plan es el mapa. Estos son los caminos.',
+      copy: 'Posicionamiento en buscadores, anuncios, contenido, redes sociales y tienda en línea: cada servicio de AGSIT ejecuta una parte del plan.',
       cta: 'Explora todos los servicios',
     },
     contact: {
       eyebrow: 'Hablemos',
       title: 'Tu próximo cliente ya te está buscando.',
       copy:
-        'Cuéntanos tu meta y un especialista de AGSIT analizará tus necesidades para proponerte el punto de partida. Sin compromiso, con dirección.',
+        'Cuéntanos qué quieres lograr y un especialista de AGSIT te propondrá por dónde empezar. Sin compromiso.',
     },
   },
   en: {
     metadata: {
-      title: 'AGSIT Digital Marketing Strategy | The plan before the spend',
+      title: 'Growth Marketing and Digital Strategy | AGSIT',
       description:
-        'Stop pouring money into aimless advertising. We design the strategic plan that guides your customer through every stage, from discovery to loyalty, with metrics that protect your return.',
-      canonicalUrl: 'https://agsit.com.mx/en/digital-marketing/digital-strategy/',
+        'Win more customers with a clear plan. At AGSIT we define who to reach, what to say and how to turn their interest into sales for your business.',
+      canonicalUrl: 'https://agsit.com.mx/en/digital-marketing/growth-marketing-and-digital-strategy/',
+      image: '/assets/social/growth-marketing-y-estrategia-digital.jpg',
+      imageAlt: 'Luminous paths that represent growth with direction.',
       htmlLang: 'en',
       locale: 'en_US',
     },
     backLink: 'Back to Digital Marketing',
     hero: {
-      eyebrow: 'Digital Marketing · Strategy',
-      primary: 'Strategy first,',
-      secondary: 'spending second.',
+      eyebrow: 'Growth Marketing + Digital Strategy',
+      primary: 'Growth',
+      secondary: 'with direction',
       copy:
-        'Have you invested in advertising expecting more customers, and sales never came? You are not short on budget — you are short on a plan. We design the route that connects your goals with the right people, on the right channels.',
-      cta: 'Design your strategy',
-      scrollHint: 'Scroll to see the journey',
+        'We help you win more customers with a clear plan: who to look for, what to say and how to reach them.',
+      cta: 'Let’s talk about your business',
+      scrollHint: 'Scroll to continue',
+      scrollLabel: 'SCROLL · EXPLORE · SCROLL · EXPLORE · ',
     },
     narrative: {
       ariaLabel:
-        'Advertising amplifies what already exists: without direction, it amplifies spending. A strategy built by experts defines who to attract, what to say and how to turn attention into sales.',
+        'Advertising without a plan means spending more to sell the same. With Growth Marketing you know who to look for, what to say and how to turn their interest into sales.',
       segments: [
-        { text: 'Advertising amplifies what already exists: without ' },
-        { accent: 'direction' },
-        { text: ', it amplifies spending. A strategy built by experts defines who to ' },
-        { accent: 'attract' },
-        { text: ', what to say and how to turn attention into ' },
+        { text: 'Advertising without a ' },
+        { accent: 'plan' },
+        { text: ' means spending more to sell the same. With Growth Marketing you know who to ' },
+        { accent: 'look for' },
+        { text: ', what to say and how to turn their interest into ' },
         { accent: 'sales' },
         { text: '.' },
       ],
     },
     lifecycle: {
-      eyebrow: 'Your customer’s life cycle',
-      title: 'A strategy for every stage of the journey.',
+      eyebrow: 'What Growth Marketing includes',
+      title: 'Five ways to grow your business.',
       copy:
-        'Nobody becomes a customer in a single click. That is why we design specific actions for each moment: from the first encounter with your brand to repeat purchases and referrals.',
+        'Nobody buys on the first click. That is why we work on every moment: from the day someone discovers you until they buy, come back and recommend you.',
       stages: [
         {
-          label: 'Discovery',
-          sublabel: 'Qualified visitors',
-          copy: 'The people most likely to buy from you find you where they are already looking: search engines, social media and content they find useful.',
+          label: 'Digital strategy',
+          sublabel: 'A clear plan to grow',
+          copy: 'Together we define who you want to reach, what to tell them and where to invest. Every dollar you put into marketing has a purpose and a result you can see.',
           image: '/assets/estrategia-digital/etapa-descubrimiento.webp',
           imageAlt: 'Person discovering content on their phone',
         },
         {
-          label: 'Consideration',
-          sublabel: 'Prospects',
-          copy: 'We turn visits into conversations: content and offers that answer what your prospect needs to solve before deciding.',
+          label: 'Customer journey',
+          sublabel: 'We guide every step',
+          copy: 'From the moment someone discovers you until they buy and return, we take care of every touchpoint so no interested person gets lost along the way.',
           image: '/assets/estrategia-digital/etapa-consideracion.webp',
           imageAlt: 'Person weighing options at their laptop',
         },
         {
-          label: 'Selection',
-          sublabel: 'Interested buyers',
-          copy: 'When your customer compares options, your offer stands out: messages that make it clear why they should choose you.',
+          label: 'Artificial intelligence',
+          sublabel: 'Technology that works for you',
+          copy: 'We use smart tools to understand your customers better, personalize what you tell them and spot opportunities before your competitors do.',
           image: '/assets/estrategia-digital/etapa-seleccion.webp',
           imageAlt: 'Team making a decision in front of a screen',
         },
         {
-          label: 'Ascension',
-          sublabel: 'Buyers',
-          copy: 'The first purchase opens the relationship: cross-selling and higher-value offers that grow what each customer brings to your business.',
+          label: 'Automation',
+          sublabel: 'Timely follow-up, no extra effort',
+          copy: 'Messages, reminders and follow-ups go out on their own and on time. Your team focuses on closing sales, not on repetitive tasks.',
           image: '/assets/estrategia-digital/etapa-ascension.webp',
           imageAlt: 'Person completing an online purchase',
         },
         {
-          label: 'Loyalty',
-          sublabel: 'Customers',
-          copy: 'A satisfied customer comes back and recommends you: communication and benefits that turn buyers into ambassadors for your brand.',
+          label: 'Connected channels',
+          sublabel: 'One conversation with your customer',
+          copy: 'Social media, email, website and WhatsApp working together. Your customer gets the same attention no matter where they reach you.',
           image: '/assets/estrategia-digital/etapa-lealtad.webp',
           imageAlt: 'Happy customer using their phone',
         },
       ],
     },
     method: {
-      eyebrow: 'How we build it',
-      title: 'From diagnosis to a roadmap your team can execute.',
+      eyebrow: 'How we work with you',
+      title: 'A plan built for your business.',
       copy:
-        'A serious strategic plan does not start with the ad — it starts with your business. This is what we do before investing a single peso in media.',
+        'Before spending on ads, we get to know your business. These are the steps we take with you.',
       steps: [
         {
           title: 'Diagnosis',
-          copy: 'We analyze your business needs, the market environment, your products and services, and your target customers.',
+          copy: 'We get to know your business, your market, what you sell and who you want to sell to.',
         },
         {
           title: 'Focus',
-          copy: 'We choose the digital channels and segments where your investment performs best, based on value, feasibility and urgency.',
+          copy: 'We choose where to invest first: the channels and customers with the most potential.',
         },
         {
-          title: 'Roadmap',
-          copy: 'We lay out the strategies and activities to follow, with the metrics and indicators that will validate each campaign.',
+          title: 'Action plan',
+          copy: 'We define what we will do, when, and how we will know it is working.',
         },
         {
-          title: 'Optimization',
-          copy: 'We measure results and make the adjustments the market dictates, to sustain your return on investment.',
+          title: 'Continuous improvement',
+          copy: 'We review the results and adjust whatever is needed so your investment pays off more.',
         },
       ],
       image: '/assets/estrategia-digital/metodo-diagnostico.webp',
-      imageAlt: 'Strategic planning session with notes on the table',
+      imageAlt: 'Planning session with notes on the table',
     },
     layers: {
-      eyebrow: 'The layers of your strategy',
-      title: 'More than channels: psychology, data and creativity.',
-      copy: 'Every plan integrates disciplines that work together so your brand connects with real people — and sells.',
+      eyebrow: 'What is behind your plan',
+      title: 'More than ads: people, data and creativity.',
+      copy: 'Every plan combines several disciplines so your brand connects with real people and sells.',
       items: [
         {
-          title: 'Emotional marketing',
-          copy: 'Messages that connect with what your customer feels, not just what they need.',
+          title: 'Messages that connect',
+          copy: 'We speak to what your customer feels and needs, not only to what you sell.',
         },
         {
-          title: 'Psychological marketing',
-          copy: 'Decision and persuasion principles applied to every touchpoint.',
+          title: 'Decisions based on data',
+          copy: 'Every adjustment comes from what your customers actually do, not from guesses.',
         },
         {
-          title: 'Omnichannel strategy',
-          copy: 'One single conversation with your customer, whichever channel they find you on.',
+          title: 'All your channels together',
+          copy: 'One single conversation with your customer, wherever they find you.',
         },
         {
-          title: 'Personalization & segmentation',
-          copy: 'Messages tailored to each audience, instead of one generic ad for everyone.',
+          title: 'Tailored messages',
+          copy: 'Each type of customer gets what interests them, instead of one generic ad.',
         },
         {
-          title: 'AI-assisted content',
-          copy: 'Production assisted by artificial intelligence, curated by human strategists.',
+          title: 'Content with help from artificial intelligence',
+          copy: 'We produce faster, with review by people who know your business.',
         },
         {
-          title: 'Influencer marketing',
-          copy: 'Credible voices in your industry that amplify your message.',
+          title: 'Voices that recommend you',
+          copy: 'Credible people in your industry talking about your brand.',
         },
       ],
     },
     benefits: {
       eyebrow: 'What you get',
-      title: 'Results you notice in the business, not just in the report.',
-      copy: 'No inflated promises: this is what a well-executed strategy changes in your operation.',
+      title: 'Results you notice in your business.',
+      copy: 'No inflated promises: this is what changes when the plan is done right.',
       items: [
         {
-          title: 'More potential customers',
-          copy: 'Constant attraction and nurturing of qualified prospects for your sales team.',
+          title: 'More interested people',
+          copy: 'A steady flow of potential customers ready to talk to your sales team.',
         },
         {
-          title: 'A stronger brand',
-          copy: 'Recognition and reputation working for you on every search and every network.',
+          title: 'A brand people recognize',
+          copy: 'Be found and remembered when people look for what you offer.',
         },
         {
-          title: 'Customers who return',
-          copy: 'Loyalty and retention that turn one-off sales into lasting relationships.',
+          title: 'Customers who come back',
+          copy: 'One-off sales that turn into long-term relationships.',
         },
         {
           title: 'New markets',
-          copy: 'Expand your sales territory without opening a single branch.',
+          copy: 'Sell in more places without opening a single branch.',
         },
         {
           title: 'Higher-value sales',
-          copy: 'Cross-selling and premium offers on the customer base you already have.',
+          copy: 'Offer more to the customers who already trust you.',
         },
         {
-          title: 'Investment under control',
-          copy: 'Real-time monitoring of every campaign, with adjustments that protect your return.',
+          title: 'Spending under control',
+          copy: 'You know where every dollar goes and what it brings back.',
         },
       ],
     },
     bridge: {
-      title: 'Strategy is the map. These are the roads.',
-      copy: 'SEO, SEM, web analytics, social media and e-commerce: each AGSIT service executes one part of the plan.',
+      title: 'The plan is the map. These are the roads.',
+      copy: 'Search rankings, ads, content, social media and online store: each AGSIT service carries out one part of the plan.',
       cta: 'Explore all services',
     },
     contact: {
       eyebrow: 'Let’s talk',
       title: 'Your next customer is already looking for you.',
       copy:
-        'Tell us your goal and an AGSIT specialist will analyze your needs and propose a starting point. No strings attached — just direction.',
+        'Tell us what you want to achieve and an AGSIT specialist will suggest where to start. No strings attached.',
     },
   },
 };

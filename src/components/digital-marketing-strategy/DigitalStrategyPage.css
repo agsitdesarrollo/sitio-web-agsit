@@ -9,7 +9,31 @@
   --strategy-line-light: rgba(37, 63, 108, 0.16);
   background: var(--strategy-ink);
   color: #f2f8ff;
+  overflow: visible;
+  /* The fixed header overlays the page; it must not add a second top offset. */
+  padding-top: 0;
+}
+
+/* Lenis drives every scroll on this page (see DigitalStrategyPage.astro).
+   These are the base rules its runtime expects on the document. */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+
+html.lenis.lenis-stopped {
   overflow: clip;
+}
+
+html.lenis.lenis-smooth iframe {
+  pointer-events: none;
+}
+
+/* Keep the hero as a complete viewport panel, matching the technology
+   solutions track. The header's height is reserved inside the panel only. */
+.strategy-page > .dm-service-hero {
+  min-height: var(--app-panel-h, 100svh);
+  box-sizing: border-box;
 }
 
 .strategy-page h1,
@@ -192,9 +216,22 @@
 
 /* ─── PINNED NARRATIVE ─── */
 
+.strategy-narrative-track {
+  position: relative;
+  background: #020712;
+}
+
+.strategy-page.is-enhanced .strategy-narrative-track {
+  /* Visible panel + its 1.3-panel word-reveal range. */
+  height: var(--strategy-narrative-track-h, 230svh);
+}
+
 .strategy-narrative {
   position: relative;
-  min-height: var(--app-stable-vh, 100svh);
+  z-index: 3;
+  isolation: isolate;
+  min-height: var(--strategy-panel-h, var(--app-panel-h, 100svh));
+  box-sizing: border-box;
   padding: clamp(46px, 6vw, 84px) clamp(18px, 5vw, 72px);
   display: grid;
   align-items: center;
@@ -225,10 +262,43 @@
 
 /* ─── LIFECYCLE JOURNEY ─── */
 
+.strategy-lifecycle-track {
+  position: relative;
+  z-index: 2;
+  background: linear-gradient(180deg, #020712, #071426);
+}
+
+.strategy-page.is-enhanced .strategy-lifecycle-track {
+  /* Visible card panel + one panel between consecutive cards. The last
+     card ends exactly where the pin ends, so Method is one panel away. */
+  height: var(--strategy-lifecycle-track-h, 500svh);
+}
+
+.strategy-lifecycle-intro {
+  min-height: var(--app-panel-h, 100svh);
+  box-sizing: border-box;
+  display: grid;
+  place-items: center;
+  padding: clamp(48px, 8vw, 110px) clamp(18px, 6vw, 92px);
+  background: linear-gradient(180deg, #020712, #071426);
+}
+
 .strategy-lifecycle {
   position: relative;
-  padding: clamp(76px, 10vw, 150px) clamp(18px, 6vw, 92px);
+  z-index: 3;
+  isolation: isolate;
+  min-height: var(--strategy-panel-h, var(--app-panel-h, 100svh));
+  box-sizing: border-box;
+  padding: 0 clamp(18px, 6vw, 92px);
+  display: grid;
+  align-items: center;
+  justify-items: center;
   background: linear-gradient(180deg, #020712, #071426);
+}
+
+.strategy-lifecycle-cards .strategy-journey {
+  align-self: center;
+  margin-block: 0;
 }
 
 .strategy-heading {
@@ -275,12 +345,14 @@
 }
 
 .strategy-journey {
-  width: min(1180px, 100%);
+  width: min(1240px, 100%);
   margin: clamp(48px, 7vw, 96px) auto 0;
   display: grid;
-  grid-template-columns: minmax(150px, 220px) minmax(0, 1fr);
-  gap: clamp(32px, 5vw, 80px);
+  grid-template-columns: minmax(150px, 190px) minmax(0, 940px);
+  gap: clamp(36px, 5vw, 64px);
   align-items: center;
+  justify-content: center;
+  place-content: center;
 }
 
 .strategy-journey-rail {
@@ -288,6 +360,7 @@
   justify-items: start;
   align-content: center;
   gap: 22px;
+  justify-self: end;
 }
 
 .strategy-journey-counter {
@@ -331,6 +404,7 @@
 .strategy-journey-labels {
   display: grid;
   gap: 12px;
+  text-align: left;
 }
 
 .strategy-journey-labels li {
@@ -348,15 +422,64 @@
 }
 
 .strategy-journey-stages {
+  width: 100%;
+  justify-self: center;
   display: grid;
+  place-items: center;
+  align-self: center;
   gap: clamp(56px, 9vw, 110px);
 }
 
 .strategy-stage {
+  width: 100%;
+  margin-inline: auto;
   display: grid;
   grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
   gap: clamp(28px, 4vw, 64px);
   align-items: center;
+  justify-items: center;
+  text-align: left;
+}
+
+.strategy-stage-body {
+  width: min(100%, 520px);
+  align-self: center;
+}
+
+/* Desktop composition: give the lifecycle track more visual presence while
+   keeping the complete group centered in the panel. The 1.2x scale-up is
+   decorative and needs real spare width to not overflow its own box —
+   at 901px (a tablet landscape width, e.g. iPad's 1024) the enlarged rail
+   and card body no longer fit and clip against the right edge, so this
+   waits for a genuinely wide desktop viewport before enlarging anything. */
+@media (min-width: 1280px) {
+  .strategy-journey {
+    width: min(1480px, calc(100% - 72px));
+    grid-template-columns: minmax(180px, 220px) minmax(0, 1120px);
+    gap: clamp(48px, 5vw, 88px);
+  }
+
+  .strategy-journey-rail {
+    transform: scale(1.2);
+    transform-origin: center right;
+  }
+
+  .strategy-stage-media {
+    /* Leave a real breathing gap after the enlarged image. A 1.2 scale was
+       consuming the entire grid gap and visually pushing the copy into it. */
+    transform: scale(1.08);
+    transform-origin: center center;
+  }
+
+  .strategy-stage-body {
+    width: min(100%, 624px);
+    transform: scale(1.08);
+    transform-origin: center left;
+  }
+
+  .strategy-stage {
+    gap: clamp(76px, 5vw, 96px);
+  }
 }
 
 .strategy-stage-media {
@@ -413,8 +536,8 @@
 
 /* Desktop + JS: stages overlap for the pinned crossfade */
 @media (min-width: 901px) {
-  .strategy-page.is-enhanced .strategy-journey {
-    min-height: calc(var(--app-stable-vh, 100svh) - var(--nav-h) - 48px);
+.strategy-page.is-enhanced .strategy-journey {
+    min-height: calc(var(--strategy-panel-h, var(--app-stable-vh, 100svh)) - var(--nav-h) - 48px);
   }
 
   .strategy-page.is-enhanced .strategy-journey-stages {
@@ -429,15 +552,215 @@
   .strategy-page.is-enhanced .strategy-stage-count {
     display: none;
   }
+
+  /* Keep the same deliberate rhythm between the eyebrow, heading and body
+     copy without allowing the display title to paint over the method image. */
+  .strategy-stage h3 {
+    margin-top: clamp(18px, 1.5vw, 26px);
+  }
+
+  .strategy-stage-copy {
+    margin-top: clamp(22px, 1.7vw, 30px);
+  }
+
+  .strategy-method .strategy-heading h2 {
+    max-width: 14ch;
+    white-space: normal;
+    text-wrap: balance;
+  }
+}
+
+/* The lifecycle is a one-card track on touch screens too. Keeping the
+   stages in the same grid cell prevents the following card from peeking into
+   the active viewport while the user swipes. */
+@media (max-width: 900px) {
+.strategy-page.is-enhanced .strategy-journey {
+    min-height: calc(var(--strategy-panel-h, var(--app-panel-h, 100svh)) - 24px);
+    align-items: center;
+  }
+
+  .strategy-page.is-enhanced .strategy-journey-stages {
+    display: grid;
+    align-content: center;
+    min-height: 0;
+  }
+
+  .strategy-page.is-enhanced .strategy-stage {
+    grid-area: 1 / 1;
+    width: 100%;
+  }
+
+  .strategy-page.is-enhanced .strategy-stage-media {
+    max-height: min(48vh, 360px);
+  }
+}
+
+/* In a short touch landscape viewport, image and copy sit side by side so a
+   complete stage remains visible without reducing the text to unreadable
+   sizes. */
+@media (pointer: coarse) and (orientation: landscape) and (max-width: 1024px) and (max-height: 520px) {
+.strategy-page.is-enhanced .strategy-journey {
+    min-height: calc(var(--strategy-panel-h, var(--app-panel-h, 100svh)) - 16px);
+  }
+
+  .strategy-page.is-enhanced .strategy-stage {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: clamp(14px, 3vw, 28px);
+  }
+
+  .strategy-page.is-enhanced .strategy-stage-media {
+    max-height: none;
+    aspect-ratio: 4 / 3;
+  }
+
+  .strategy-page.is-enhanced .strategy-stage-body {
+    align-self: center;
+  }
+
+  .strategy-page.is-enhanced .strategy-stage h3 {
+    font-size: clamp(1.7rem, 5.4vw, 2.8rem);
+  }
+
+  .strategy-page.is-enhanced .strategy-stage-copy {
+    font-size: clamp(0.78rem, 1.8vw, 0.95rem);
+    line-height: 1.4;
+  }
+
+  /* The narrative panel's desktop padding and height-driven size were tuned
+     for a tall viewport; on a short landscape phone they left the copy sized
+     off the wrong dimension. Width is the abundant axis here, so it drives
+     the clamp instead. */
+  .strategy-page.is-enhanced .strategy-narrative {
+    padding: clamp(16px, 4vh, 28px) clamp(20px, 5vw, 46px);
+  }
+
+  .strategy-page.is-enhanced .strategy-large-copy {
+    width: min(900px, 100%);
+    font-size: clamp(1.6rem, 4.6vw, 2.5rem);
+    line-height: 1.16;
+  }
+}
+
+/* A landscape viewport can be short on tablets too. The desktop enlargement is
+   intentionally disabled here: it is decorative on tall screens but can make
+   an image or its copy exceed the available panel in landscape. */
+@media (orientation: landscape) and (max-height: 620px) {
+  .strategy-page.is-enhanced .strategy-journey {
+    width: min(1180px, calc(100% - 32px));
+    /* The fixed header occupies part of a short landscape panel. Size the
+       journey from the remaining visible area so it cannot be centred into
+       the menu above or pushed beyond the bottom edge. */
+    min-height: calc(var(--strategy-panel-h, var(--app-panel-h, 100svh)) - var(--nav-h) - 28px);
+    grid-template-columns: minmax(116px, 156px) minmax(0, 1fr);
+    gap: clamp(16px, 3vw, 36px);
+    margin-block: 0;
+  }
+
+  .strategy-page.is-enhanced .strategy-journey-rail,
+  .strategy-page.is-enhanced .strategy-stage-media,
+  .strategy-page.is-enhanced .strategy-stage-body {
+    transform: none;
+  }
+
+  .strategy-page.is-enhanced .strategy-stage {
+    grid-template-columns: minmax(0, 0.96fr) minmax(0, 1fr);
+    gap: clamp(16px, 3vw, 36px);
+  }
+
+  .strategy-page.is-enhanced .strategy-stage-media {
+    max-height: calc(var(--strategy-panel-h, var(--app-panel-h, 100svh)) - var(--nav-h) - 48px);
+    aspect-ratio: 16 / 10;
+  }
+
+  .strategy-page.is-enhanced .strategy-stage-count {
+    margin: 0;
+    font-size: 0.64rem;
+  }
+
+  .strategy-page.is-enhanced .strategy-stage-sublabel {
+    margin-top: 6px;
+    font-size: clamp(0.58rem, 1.35vw, 0.72rem);
+    line-height: 1.2;
+  }
+
+  .strategy-page.is-enhanced .strategy-stage h3 {
+    margin-top: 12px;
+    font-size: clamp(1.7rem, 4.6vh, 2.75rem);
+    line-height: 0.96;
+  }
+
+  .strategy-page.is-enhanced .strategy-stage-copy {
+    margin-top: 14px;
+    font-size: clamp(0.74rem, 1.65vw, 0.96rem);
+    line-height: 1.36;
+  }
+
+  /* The header is fixed, so short landscape panels reserve a real safe band
+     for it. This shifts content down without changing panel height or track
+     geometry, and prevents the first image/text line from sitting underneath
+     the navigation. */
+  .strategy-page.is-enhanced .strategy-narrative {
+    padding-top: calc(var(--nav-h) + 12px);
+    padding-bottom: 18px;
+  }
+
+  .strategy-page.is-enhanced .strategy-lifecycle-intro {
+    padding-top: calc(var(--nav-h) + 12px);
+    padding-bottom: 18px;
+  }
+
+  .strategy-page.is-enhanced .strategy-lifecycle {
+    align-items: start;
+    padding-top: calc(var(--nav-h) + 12px);
+    padding-bottom: 14px;
+  }
+}
+
+/* The rail-plus-stage two-column grid above assumes the rail is visible,
+   which is true on tablets. Below 900px the rail is hidden (see the mobile
+   rule near the top of this file), so .strategy-journey-stages — now the
+   only grid item — auto-places into that grid's narrow first track instead
+   of using the full width, squeezing the image and copy into a sliver. This
+   comes after the rule above so it wins the equal-specificity tie on phones. */
+@media (orientation: landscape) and (max-height: 620px) and (max-width: 900px) {
+  .strategy-page.is-enhanced .strategy-journey {
+    grid-template-columns: 1fr;
+  }
 }
 
 /* ─── METHOD ─── */
 
 .strategy-method {
   position: relative;
-  padding: clamp(76px, 10vw, 150px) clamp(18px, 6vw, 92px);
+  z-index: 4;
+  min-height: var(--app-panel-h, 100svh);
+  box-sizing: border-box;
+  display: grid;
+  align-items: center;
+  padding: max(96px, calc(var(--nav-h, 92px) + 18px)) clamp(18px, 6vw, 92px) 28px;
   background: linear-gradient(180deg, #ffffff, #eef6fb);
   color: #0d1522;
+}
+
+/* Método es una parada obligatoria entre la quinta tarjeta y Contacto. */
+.strategy-page.is-enhanced .strategy-method {
+  min-height: var(--strategy-panel-h, var(--app-panel-h, 100svh));
+}
+
+.strategy-method .strategy-heading h2 {
+  font-size: clamp(1.85rem, 3vw, 3.65rem);
+  line-height: 0.98;
+  /* The heading shares a two-column grid with the image. It must wrap within
+     its own column; forcing a single line lets it paint over the media. */
+  max-width: min(100%, 14ch);
+  white-space: normal;
+  text-wrap: balance;
+}
+
+@media (max-width: 900px) {
+  .strategy-method .strategy-heading h2 {
+    white-space: normal;
+  }
 }
 
 .strategy-method-grid {
@@ -450,7 +773,7 @@
 }
 
 .strategy-method-list {
-  margin-top: clamp(34px, 4vw, 54px);
+  margin-top: clamp(18px, 2.5vw, 34px);
   display: grid;
 }
 
@@ -458,7 +781,7 @@
   display: grid;
   grid-template-columns: 64px minmax(0, 1fr);
   gap: 18px;
-  padding: clamp(20px, 2.4vw, 30px) 0;
+  padding: clamp(12px, 1.5vw, 20px) 0;
   border-top: 1px solid var(--strategy-line-light);
 }
 
@@ -501,6 +824,84 @@
   object-fit: cover;
   display: block;
   will-change: transform;
+}
+
+@media (min-width: 901px) and (max-height: 850px) {
+  .strategy-method {
+    padding-block: 24px;
+  }
+
+  .strategy-method-step p {
+    margin-top: 6px;
+    line-height: 1.4;
+  }
+
+  .strategy-method-media {
+    aspect-ratio: 5 / 4;
+  }
+}
+
+/* Method has no landscape treatment below 900px at all: it falls through to
+   the portrait-mobile rule right above (image full width, order:-1 above the
+   text) with no height cap, and a 4:3 image at full viewport width is taller
+   than the entire short landscape viewport by itself — landing here shows
+   only a photo, with the heading and every step below the fold. Side by
+   side, like the lifecycle cards already do in this same viewport, keeps a
+   step readable next to a properly capped image instead. */
+@media (pointer: coarse) and (orientation: landscape) and (max-width: 1024px) and (max-height: 520px) {
+  .strategy-page.is-enhanced .strategy-method {
+    align-items: start;
+    padding: calc(var(--nav-h) + 12px) clamp(20px, 5vw, 46px) clamp(16px, 4vh, 28px);
+  }
+
+  .strategy-page.is-enhanced .strategy-method-grid {
+    grid-template-columns: minmax(0, 0.85fr) minmax(0, 1fr);
+    align-items: center;
+    gap: clamp(16px, 3vw, 32px);
+  }
+
+  .strategy-page.is-enhanced .strategy-method-media {
+    order: 0;
+    max-height: calc(var(--strategy-panel-h, var(--app-panel-h, 100svh)) - 64px);
+    aspect-ratio: 4 / 3;
+  }
+
+  .strategy-page.is-enhanced .strategy-method .strategy-heading h2 {
+    font-size: clamp(1.5rem, 4.2vw, 2.1rem);
+    white-space: normal;
+  }
+
+  .strategy-page.is-enhanced .strategy-method .strategy-heading > p:not(.strategy-eyebrow) {
+    margin-top: 6px;
+    font-size: clamp(0.72rem, 1.6vw, 0.86rem);
+    line-height: 1.36;
+  }
+
+  .strategy-page.is-enhanced .strategy-method-list {
+    margin-top: 8px;
+  }
+
+  .strategy-page.is-enhanced .strategy-method-step {
+    padding-block: 6px;
+    grid-template-columns: 30px minmax(0, 1fr);
+    gap: 10px;
+  }
+
+  .strategy-page.is-enhanced .strategy-method-step h3 {
+    font-size: clamp(1.05rem, 2.5vw, 1.4rem);
+  }
+
+  .strategy-page.is-enhanced .strategy-method-step p {
+    margin-top: 3px;
+    font-size: clamp(0.68rem, 1.45vw, 0.8rem);
+    line-height: 1.3;
+  }
+}
+
+@media (orientation: landscape) and (max-height: 620px) {
+  .strategy-page.is-enhanced .strategy-method {
+    padding-top: calc(var(--nav-h) + 12px);
+  }
 }
 
 /* ─── LAYERS ─── */
@@ -722,6 +1123,13 @@
   .strategy-stage {
     grid-template-columns: 1fr;
     gap: 20px;
+    justify-items: center;
+    text-align: center;
+  }
+
+  .strategy-stage-media,
+  .strategy-stage-body {
+    width: min(100%, 620px);
   }
 
   .strategy-stage-copy {
@@ -774,6 +1182,10 @@
     padding: clamp(72px, 16vw, 112px) 18px;
   }
 
+  .strategy-page.is-enhanced .strategy-narrative {
+    min-height: var(--strategy-panel-h, var(--app-panel-h, 100svh));
+  }
+
   .strategy-large-copy {
     width: min(720px, 100%);
     font-size: clamp(1.9rem, 8.6vw, 3.4rem);
@@ -783,6 +1195,52 @@
 
   .strategy-method-step {
     grid-template-columns: 44px minmax(0, 1fr);
+  }
+
+  /* Method uses native reading scroll when its complete content is taller than
+     the viewport. Compact spacing keeps the useful copy dense without hiding
+     any of the process steps. */
+  .strategy-method {
+    align-items: start;
+    padding: calc(var(--nav-h, 72px) + 24px) 24px 44px;
+  }
+
+  .strategy-method-grid {
+    gap: 20px;
+  }
+
+  .strategy-method-media {
+    max-height: 250px;
+    border-radius: 18px;
+  }
+
+  .strategy-method .strategy-heading h2 {
+    font-size: clamp(2rem, 9vw, 2.7rem);
+  }
+
+  .strategy-method .strategy-heading > p:not(.strategy-eyebrow) {
+    margin-top: 12px;
+    font-size: 0.96rem;
+    line-height: 1.5;
+  }
+
+  .strategy-method-list {
+    margin-top: 16px;
+  }
+
+  .strategy-method-step {
+    gap: 12px;
+    padding: 11px 0;
+  }
+
+  .strategy-method-step h3 {
+    font-size: 1.7rem;
+  }
+
+  .strategy-method-step p {
+    margin-top: 6px;
+    font-size: 0.92rem;
+    line-height: 1.46;
   }
 
   .strategy-layer {
@@ -818,4 +1276,49 @@
 
 .strategy-page.is-reduced-motion .strategy-narrative {
   min-height: auto;
+}
+
+/* The mobile navigation is an overlay. When expanded, every slide reserves
+   its measured height before its own content so no title or pinned stage can
+   sit beneath the menu. The controller refreshes its stops on this state
+   change, keeping the next gesture aligned with the visible slide. */
+@media (max-width: 749px),
+  (pointer: coarse) and (orientation: landscape) and (max-width: 932px) and (max-height: 520px) {
+  html.mobile-menu-open .strategy-page > :is(
+    .dm-service-hero,
+    .strategy-narrative-track,
+    .strategy-lifecycle-intro,
+    .strategy-lifecycle-track,
+    .strategy-method
+  ) {
+    min-height: calc(var(--app-panel-h, 100svh) + var(--mobile-menu-open-h, 0px));
+  }
+
+  html.mobile-menu-open .strategy-page > .dm-service-hero {
+    padding-top: calc(clamp(26px, 5dvh, 44px) + var(--mobile-menu-open-h, 0px));
+  }
+
+  html.mobile-menu-open .strategy-page .strategy-narrative,
+  html.mobile-menu-open .strategy-page > .strategy-lifecycle-intro,
+  html.mobile-menu-open .strategy-page .strategy-lifecycle {
+    padding-top: calc(clamp(46px, 6vw, 84px) + var(--mobile-menu-open-h, 0px));
+  }
+
+  html.mobile-menu-open .strategy-page > .strategy-method {
+    padding-top: calc(max(96px, var(--nav-h, 92px) + 18px) + var(--mobile-menu-open-h, 0px));
+  }
+}
+
+@media (pointer: coarse) and (orientation: landscape) and (max-width: 932px) and (max-height: 520px) {
+  html.mobile-menu-open .strategy-page > .dm-service-hero {
+    padding-top: calc(10px + var(--mobile-menu-open-h, 0px));
+  }
+
+  html.mobile-menu-open .strategy-page :is(.strategy-narrative, .strategy-lifecycle-intro, .strategy-lifecycle) {
+    padding-top: calc(18px + var(--mobile-menu-open-h, 0px));
+  }
+
+  html.mobile-menu-open .strategy-page > .strategy-method {
+    padding-top: calc(18px + var(--mobile-menu-open-h, 0px));
+  }
 }

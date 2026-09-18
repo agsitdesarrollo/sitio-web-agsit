@@ -20,7 +20,7 @@ const routes = [
   '/administracion-de-procesos/',
   '/gestion-de-calidad/',
   '/marketing-digital/',
-  '/marketing-digital/estrategia-digital/',
+  '/marketing-digital/growth-marketing-y-estrategia-digital/',
   '/en/technology-solutions/',
   '/en/technology-solutions/intelligent-enterprise-platform/',
   '/en/technology-solutions/artificial-intelligence/',
@@ -34,7 +34,7 @@ const routes = [
   '/en/process-management/',
   '/en/quality-management/',
   '/en/digital-marketing/',
-  '/en/digital-marketing/digital-strategy/',
+  '/en/digital-marketing/growth-marketing-and-digital-strategy/',
 ];
 
 export const GET: APIRoute = () => {

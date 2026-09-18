@@ -1,0 +1,117 @@
+---
+import type { DigitalMarketingServiceHeroCopy } from '../../types/digitalMarketingService.types';
+import './DigitalMarketingServiceHero.css';
+
+type Props = {
+  content: DigitalMarketingServiceHeroCopy;
+  titleId?: string;
+};
+
+const { content, titleId = 'digital-marketing-service-title' } = Astro.props;
+const orbitId = `${titleId}-scroll-orbit`;
+---
+
+<section class="dm-service-hero js-dm-service-hero" aria-labelledby={titleId} data-marketing-track>
+  <div class="dm-service-hero__content">
+    <p class="dm-service-hero__eyebrow js-dm-service-hero-eyebrow">{content.eyebrow}</p>
+    <h1 id={titleId} class="dm-service-hero__title">
+      <span class="dm-service-hero__title-accent js-dm-service-hero-line">{content.primary}</span>
+      <span class="dm-service-hero__title-base js-dm-service-hero-line">{content.secondary}</span>
+    </h1>
+    <p class="dm-service-hero__copy js-dm-service-hero-copy">{content.copy}</p>
+  </div>
+
+  <button
+    class="dm-service-hero__scroll js-dm-service-hero-scroll"
+    type="button"
+    aria-label={content.scrollHint}
+  >
+    <svg viewBox="0 0 100 100" aria-hidden="true">
+      <defs>
+        <path id={orbitId} d="M 50,50 m -36,0 a 36,36 0 1,1 72,0 a 36,36 0 1,1 -72,0"></path>
+      </defs>
+      <text>
+        <textPath href={`#${orbitId}`} startOffset="0%" textLength="226" lengthAdjust="spacing">{content.scrollLabel}</textPath>
+      </text>
+    </svg>
+    <span aria-hidden="true">↓</span>
+  </button>
+</section>
+
+<script>
+  import gsap from 'gsap';
+
+  const initDigitalMarketingServiceHeroes = () => {
+    document.querySelectorAll<HTMLElement>('.js-dm-service-hero').forEach((root) => {
+      if (root.dataset.heroReady === 'true') return;
+
+      root.dataset.heroReady = 'true';
+
+      const eyebrow = root.querySelector<HTMLElement>('.js-dm-service-hero-eyebrow');
+      const lines = Array.from(root.querySelectorAll<HTMLElement>('.js-dm-service-hero-line'));
+      const copy = root.querySelector<HTMLElement>('.js-dm-service-hero-copy');
+      const scrollControl = root.querySelector<HTMLButtonElement>('.js-dm-service-hero-scroll');
+      const animatedItems = [eyebrow, ...lines, copy, scrollControl].filter(
+        (item): item is HTMLElement => item instanceof HTMLElement,
+      );
+      const media = gsap.matchMedia();
+
+      media.add(
+        {
+          reduceMotion: '(prefers-reduced-motion: reduce)',
+        },
+        (context) => {
+          if (context.conditions?.reduceMotion) {
+            gsap.set(animatedItems, { clearProps: 'all' });
+            return;
+          }
+
+          gsap.set([eyebrow, copy, scrollControl], { autoAlpha: 0, y: 18 });
+          gsap.set(lines, { autoAlpha: 0, yPercent: 38 });
+
+          const entrance = gsap.timeline({ defaults: { ease: 'power3.out' } });
+          entrance
+            .to(eyebrow, { autoAlpha: 1, y: 0, duration: 0.55 }, 0.12)
+            .to(lines, { autoAlpha: 1, yPercent: 0, duration: 0.9, stagger: 0.12 }, 0.24)
+            .to(copy, { autoAlpha: 1, y: 0, duration: 0.62 }, 0.62)
+            .to(scrollControl, { autoAlpha: 1, y: 0, duration: 0.52 }, 0.84);
+
+          return () => {
+            entrance.kill();
+          };
+        },
+        root,
+      );
+
+      const navigateNext = () => {
+        const trackController = root.closest<HTMLElement>('[data-track-controller]');
+        if (trackController) {
+          trackController.dispatchEvent(new CustomEvent('agsit:track-next', { bubbles: true }));
+          return;
+        }
+
+        root.nextElementSibling?.scrollIntoView({
+          behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth',
+          block: 'start',
+        });
+      };
+
+      scrollControl?.addEventListener('click', navigateNext);
+
+      window.addEventListener(
+        'pagehide',
+        () => {
+          media.revert();
+          scrollControl?.removeEventListener('click', navigateNext);
+        },
+        { once: true },
+      );
+    });
+  };
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initDigitalMarketingServiceHeroes, { once: true });
+  } else {
+    initDigitalMarketingServiceHeroes();
+  }
+</script>

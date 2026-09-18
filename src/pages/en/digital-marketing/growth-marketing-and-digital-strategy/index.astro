@@ -17,18 +17,21 @@ const contactCopy = getContactCopy(lang);
 const footerCopy = getFooterCopy(lang);
 const servicesContent = getServicesContent(lang);
 const t = useTranslations(lang);
+const spanishHref = '/marketing-digital/growth-marketing-y-estrategia-digital/';
 ---
 
 <SiteLayout
   title={content.metadata.title}
   description={content.metadata.description}
   canonicalUrl={content.metadata.canonicalUrl}
+  image={content.metadata.image}
+  imageAlt={content.metadata.imageAlt}
   htmlLang={content.metadata.htmlLang}
   locale={content.metadata.locale}
   alternates={[
-    { lang: 'es-MX', href: 'https://agsit.com.mx/marketing-digital/estrategia-digital/' },
+    { lang: 'es-MX', href: `https://agsit.com.mx${spanishHref}` },
     { lang: 'en', href: content.metadata.canonicalUrl },
-    { lang: 'x-default', href: 'https://agsit.com.mx/marketing-digital/estrategia-digital/' },
+    { lang: 'x-default', href: `https://agsit.com.mx${spanishHref}` },
   ]}
 >
   <div class="app-shell">
@@ -37,10 +40,16 @@ const t = useTranslations(lang);
       homeHref="/en/#inicio"
       servicesHref="/en/#servicios"
       contactHref="#contacto"
-      alternateHref="/marketing-digital/estrategia-digital/"
+      alternateHref={spanishHref}
     />
-    <DigitalStrategyPage content={content} contactCopy={contactCopy} marketingHref="/en/digital-marketing/" />
-    <Footer copy={footerCopy} services={servicesContent.services} homeHref="/en/#inicio" servicesHref="/en/#servicios" contactHref="#contacto" />
+    <DigitalStrategyPage content={content} contactCopy={contactCopy} />
+    <Footer
+      copy={footerCopy}
+      services={servicesContent.services}
+      homeHref="/en/#inicio"
+      servicesHref="/en/#servicios"
+      contactHref="#contacto"
+    />
     <ContactDrawer copy={contactCopy} />
     <PageShellScripts openMenuLabel={t('nav.openMenu')} closeMenuLabel={t('nav.closeMenu')} />
   </div>

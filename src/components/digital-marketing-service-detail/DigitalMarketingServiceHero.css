@@ -1,0 +1,390 @@
+.dm-service-hero {
+  --dm-hero-ink: #020712;
+  --dm-hero-navy: #071a33;
+  --dm-hero-blue: #253f6c;
+  --dm-hero-cyan: #41c8f6;
+  --dm-hero-cyan-soft: #8be2ff;
+  --dm-hero-white: #f2f8ff;
+  position: relative;
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  min-height: var(--app-content-h, calc(100svh - var(--nav-h)));
+  padding: clamp(34px, 5vw, 76px) clamp(22px, 5.8vw, 108px) clamp(104px, 13vh, 142px);
+  display: grid;
+  align-items: center;
+  overflow: hidden;
+  isolation: isolate;
+  background:
+    radial-gradient(ellipse at 52% 44%, rgba(37, 63, 108, 0.42) 0%, rgba(7, 26, 51, 0.15) 42%, transparent 68%),
+    linear-gradient(142deg, var(--dm-hero-ink) 0%, var(--dm-hero-navy) 54%, #020914 100%);
+  color: var(--dm-hero-white);
+  scroll-snap-align: start;
+}
+
+.dm-service-hero::before,
+.dm-service-hero::after {
+  position: absolute;
+  z-index: -1;
+  content: '';
+  pointer-events: none;
+}
+
+.dm-service-hero::before {
+  inset: 0;
+  background: linear-gradient(90deg, transparent 0%, rgba(139, 226, 255, 0.035) 50%, transparent 100%);
+  mask-image: linear-gradient(transparent, #000 18%, #000 82%, transparent);
+}
+
+.dm-service-hero::after {
+  top: 50%;
+  left: 0;
+  width: 100%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(139, 226, 255, 0.12) 24%, rgba(139, 226, 255, 0.12) 76%, transparent);
+}
+
+.dm-service-hero__content {
+  width: min(100%, 1660px);
+  min-width: 0;
+  max-width: 100%;
+  margin-inline: auto;
+  display: grid;
+}
+
+.dm-service-hero__eyebrow,
+.dm-service-hero__copy,
+.dm-service-hero__title {
+  margin: 0;
+}
+
+/* DigitalStrategyPage.css resets margin on every h1/h2/h3/p inside
+   .strategy-page at (0,1,1) specificity, which outranks a bare
+   .dm-service-hero__title/__copy rule and silently cancels their margin-top
+   at every breakpoint below. Reading the gap from a custom property (set per
+   breakpoint below) and applying it through this doubled selector keeps this
+   component's own spacing in charge of itself regardless of what the page
+   around it resets. */
+.dm-service-hero .dm-service-hero__title {
+  margin-top: var(--dm-hero-title-mt, 0px);
+}
+
+.dm-service-hero .dm-service-hero__copy {
+  margin-top: var(--dm-hero-copy-mt, 0px);
+}
+
+.dm-service-hero__eyebrow {
+  padding-left: clamp(4px, 3.8vw, 64px);
+  color: var(--dm-hero-cyan);
+  font-family: 'Inter', 'Segoe UI', Tahoma, sans-serif;
+  font-size: clamp(0.67rem, 0.82vw, 0.82rem);
+  font-weight: 900;
+  letter-spacing: 0.2em;
+  line-height: 1.4;
+  text-transform: uppercase;
+}
+
+.dm-service-hero__title {
+  --dm-hero-title-mt: clamp(24px, 3.2vh, 38px);
+  display: grid;
+  min-width: 0;
+  max-width: 100%;
+  color: var(--dm-hero-white);
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: clamp(4.8rem, 10.5vw, 12.6rem);
+  font-weight: 300;
+  letter-spacing: -0.058em;
+  line-height: 0.72;
+  text-transform: uppercase;
+}
+
+.dm-service-hero__title span {
+  display: block;
+  white-space: nowrap;
+}
+
+.dm-service-hero__title-accent {
+  justify-self: start;
+  padding-left: clamp(0px, 3vw, 52px);
+  color: var(--dm-hero-cyan-soft);
+}
+
+.dm-service-hero__title-base {
+  justify-self: end;
+  margin-top: 0.14em;
+  padding-right: clamp(0px, 2.2vw, 38px);
+  font-size: 0.78em;
+  letter-spacing: -0.045em;
+}
+
+.dm-service-hero__copy {
+  width: min(520px, 38vw);
+  --dm-hero-copy-mt: clamp(48px, 6.8vh, 78px);
+  margin-right: clamp(0px, 4vw, 68px);
+  justify-self: end;
+  color: rgba(180, 197, 219, 0.9);
+  font-family: 'Inter', 'Segoe UI', Tahoma, sans-serif;
+  font-size: clamp(0.92rem, 1.08vw, 1.08rem);
+  font-weight: 500;
+  line-height: 1.58;
+  text-align: right;
+}
+
+.dm-service-hero__scroll {
+  position: absolute;
+  left: 50%;
+  bottom: max(clamp(14px, 2.2vh, 28px), env(safe-area-inset-bottom));
+  width: clamp(76px, 6.2vw, 96px);
+  aspect-ratio: 1;
+  padding: 0;
+  display: grid;
+  place-items: center;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--dm-hero-cyan-soft);
+  cursor: pointer;
+  transform: translateX(-50%);
+}
+
+.dm-service-hero__scroll::before {
+  position: absolute;
+  inset: 28%;
+  border: 1px solid rgba(139, 226, 255, 0.48);
+  border-radius: inherit;
+  content: '';
+  transition: background-color 180ms ease, border-color 180ms ease, transform 180ms ease;
+}
+
+.dm-service-hero__scroll svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  animation: dm-service-hero-orbit 18s linear infinite;
+}
+
+.dm-service-hero__scroll text {
+  fill: rgba(139, 226, 255, 0.78);
+  font-family: 'Inter', 'Segoe UI', Tahoma, sans-serif;
+  font-size: 7.1px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.dm-service-hero__scroll > span {
+  position: relative;
+  z-index: 1;
+  font-family: 'Inter', 'Segoe UI', Tahoma, sans-serif;
+  font-size: clamp(1rem, 1.25vw, 1.22rem);
+  line-height: 1;
+}
+
+.dm-service-hero__scroll:hover::before,
+.dm-service-hero__scroll:focus-visible::before {
+  border-color: var(--dm-hero-cyan-soft);
+  background: rgba(65, 200, 246, 0.12);
+  transform: scale(1.12);
+}
+
+.dm-service-hero__scroll:focus-visible {
+  outline: 2px solid var(--dm-hero-cyan);
+  outline-offset: 4px;
+}
+
+@media (min-width: 680px) and (max-width: 900px) and (orientation: portrait) {
+  .dm-service-hero {
+    padding-inline: clamp(32px, 6vw, 58px);
+  }
+
+  .dm-service-hero__eyebrow {
+    padding-left: 0;
+  }
+
+  .dm-service-hero__title {
+    --dm-hero-title-mt: clamp(18px, 2.6vh, 26px);
+    font-size: clamp(5.8rem, 13vw, 8rem);
+    line-height: 0.78;
+  }
+
+  .dm-service-hero__title-accent,
+  .dm-service-hero__title-base {
+    padding-inline: 0;
+  }
+
+  .dm-service-hero__copy {
+    width: min(540px, 78vw);
+    --dm-hero-copy-mt: clamp(24px, 3.4vh, 34px);
+    margin-right: 0;
+  }
+}
+
+@media (max-width: 679px) and (orientation: portrait) {
+  .dm-service-hero {
+    min-height: var(--app-content-h, calc(100dvh - var(--nav-h)));
+    padding: clamp(26px, 5dvh, 44px) 18px calc(94px + env(safe-area-inset-bottom));
+  }
+
+  .dm-service-hero__content {
+    justify-items: center;
+    text-align: center;
+    transform: translateY(-1.2dvh);
+  }
+
+  .dm-service-hero__eyebrow {
+    max-width: 34ch;
+    padding-left: 0;
+    font-size: clamp(0.58rem, 2.8vw, 0.69rem);
+    letter-spacing: 0.16em;
+  }
+
+  .dm-service-hero__title {
+    width: 100%;
+    --dm-hero-title-mt: clamp(14px, 2vh, 20px);
+    font-size: clamp(2.55rem, 13vw, 4rem);
+    letter-spacing: -0.07em;
+    line-height: 0.78;
+  }
+
+  .dm-service-hero__title-accent,
+  .dm-service-hero__title-base {
+    justify-self: center;
+    padding-inline: 0;
+  }
+
+  .dm-service-hero__title-base {
+    margin-top: 0.18em;
+    font-size: 0.76em;
+  }
+
+  .dm-service-hero__copy {
+    width: min(33ch, 100%);
+    --dm-hero-copy-mt: clamp(16px, 2.2vh, 22px);
+    margin-right: 0;
+    justify-self: center;
+    font-size: clamp(0.86rem, 3.8vw, 1rem);
+    line-height: 1.5;
+    text-align: center;
+  }
+
+  .dm-service-hero__scroll {
+    width: 74px;
+    bottom: max(10px, env(safe-area-inset-bottom));
+  }
+}
+
+@media (max-width: 679px) and (orientation: portrait) and (max-height: 690px) {
+  .dm-service-hero {
+    padding-top: 18px;
+    padding-bottom: calc(78px + env(safe-area-inset-bottom));
+  }
+
+  .dm-service-hero__content {
+    transform: translateY(-0.5dvh);
+  }
+
+  .dm-service-hero__title {
+    --dm-hero-title-mt: 14px;
+    font-size: clamp(3rem, 15.6vw, 4.1rem);
+  }
+
+  .dm-service-hero__copy {
+    --dm-hero-copy-mt: 16px;
+    font-size: 0.82rem;
+    line-height: 1.42;
+  }
+
+  .dm-service-hero__scroll {
+    width: 62px;
+    bottom: max(7px, env(safe-area-inset-bottom));
+  }
+}
+
+@media (pointer: coarse) and (orientation: landscape) and (max-width: 932px) and (max-height: 520px) {
+  .dm-service-hero {
+    min-height: var(--app-content-h, calc(100dvh - var(--nav-h)));
+    padding: 10px clamp(24px, 5vw, 46px) 54px;
+  }
+
+  .dm-service-hero__content {
+    align-self: center;
+    justify-items: center;
+    text-align: center;
+    /* The site header remains fixed in short landscape viewports. Shift the
+       full hero group into the available space below it instead of allowing
+       the eyebrow to sit behind the navigation. */
+    transform: translateY(clamp(20px, 6vh, 32px));
+  }
+
+  .dm-service-hero__eyebrow {
+    padding-left: 0;
+    font-size: 0.55rem;
+    letter-spacing: 0.16em;
+  }
+
+  /* The desktop title deliberately splits each line to opposite edges, but on
+     a narrow-height landscape phone there is no room for that offset to read
+     as intentional — it just looks spread apart. Centering both lines and
+     sizing from width (the abundant dimension here) instead of height keeps
+     it legible, matching the mobile portrait treatment above. */
+  .dm-service-hero__title {
+    width: min(100%, 620px);
+    --dm-hero-title-mt: 10px;
+    font-size: clamp(2.6rem, 9.5vw, 3.8rem);
+    line-height: 0.86;
+  }
+
+  .dm-service-hero__title-accent,
+  .dm-service-hero__title-base {
+    justify-self: center;
+    padding-inline: 0;
+  }
+
+  .dm-service-hero__title-base {
+    margin-top: 0.12em;
+  }
+
+  .dm-service-hero__copy {
+    width: min(480px, 78vw);
+    --dm-hero-copy-mt: 14px;
+    margin-right: 0;
+    justify-self: center;
+    font-size: clamp(0.72rem, 2.1vw, 0.84rem);
+    line-height: 1.38;
+    text-align: center;
+  }
+
+  .dm-service-hero__scroll {
+    width: 48px;
+    bottom: 3px;
+  }
+
+  .dm-service-hero__scroll text {
+    font-size: 6.5px;
+  }
+}
+
+@media (max-width: 749px),
+  (pointer: coarse) and (orientation: landscape) and (max-width: 932px) and (max-height: 520px) {
+  html.mobile-menu-open .dm-service-hero__content {
+    transform: translateY(calc(var(--mobile-menu-open-h, 0px) * 0.28));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dm-service-hero__scroll::before {
+    transition: none;
+  }
+
+  .dm-service-hero__scroll svg {
+    animation: none;
+  }
+}
+
+@keyframes dm-service-hero-orbit {
+  to {
+    transform: rotate(360deg);
+  }
+}
