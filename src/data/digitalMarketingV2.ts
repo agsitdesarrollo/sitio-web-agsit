@@ -273,6 +273,8 @@ export const digitalMarketingV2ByLang: Record<SupportedLang, DigitalMarketingV2C
           theme: 'paper',
           visual: 'heart',
           srcvideo: '/assets/videos-marketing/5.-%20Posicinamiento%20en%20Marketplaces.mp4',
+          cta: 'Conoce cómo vender más',
+          href: '/marketing-digital/estrategia-ecommerce/',
         },
         {
           title: 'Analytics y CRO',
@@ -464,6 +466,8 @@ export const digitalMarketingV2ByLang: Record<SupportedLang, DigitalMarketingV2C
           theme: 'paper',
           visual: 'heart',
           srcvideo: '/assets/videos-marketing/5.-%20Posicinamiento%20en%20Marketplaces.mp4',
+          cta: 'See how to sell more',
+          href: '/en/digital-marketing/ecommerce-strategy/',
         },
         {
           title: 'Analytics and CRO',
