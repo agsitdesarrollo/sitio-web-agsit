@@ -263,6 +263,8 @@ export const digitalMarketingV2ByLang: Record<SupportedLang, DigitalMarketingV2C
           theme: 'sage',
           visual: 'flower',
           srcvideo: '/assets/videos-marketing/4.-%20Content%20Marketing.mp4',
+          cta: 'Conoce cómo conectar',
+          href: '/marketing-digital/content-marketing-social-media/',
         },
         {
           title: 'Diseño y Estrategia de E-commerce',
@@ -452,6 +454,8 @@ export const digitalMarketingV2ByLang: Record<SupportedLang, DigitalMarketingV2C
           theme: 'sage',
           visual: 'flower',
           srcvideo: '/assets/videos-marketing/4.-%20Content%20Marketing.mp4',
+          cta: 'See how to connect',
+          href: '/en/digital-marketing/content-marketing-social-media/',
         },
         {
           title: 'E-commerce Design and Strategy',

@@ -23,6 +23,7 @@ const routes = [
   '/marketing-digital/growth-marketing-y-estrategia-digital/',
   '/marketing-digital/posicionamiento-organico-seo/',
   '/marketing-digital/publicidad-digital/',
+  '/marketing-digital/content-marketing-social-media/',
   '/en/technology-solutions/',
   '/en/technology-solutions/intelligent-enterprise-platform/',
   '/en/technology-solutions/artificial-intelligence/',
@@ -39,6 +40,7 @@ const routes = [
   '/en/digital-marketing/growth-marketing-and-digital-strategy/',
   '/en/digital-marketing/organic-search-positioning-seo/',
   '/en/digital-marketing/digital-advertising/',
+  '/en/digital-marketing/content-marketing-social-media/',
 ];
 
 export const GET: APIRoute = () => {
