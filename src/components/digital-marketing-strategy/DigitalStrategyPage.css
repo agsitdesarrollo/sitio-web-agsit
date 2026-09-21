@@ -563,11 +563,6 @@ html.lenis.lenis-smooth iframe {
     margin-top: clamp(22px, 1.7vw, 30px);
   }
 
-  .strategy-method .strategy-heading h2 {
-    max-width: 14ch;
-    white-space: normal;
-    text-wrap: balance;
-  }
 }
 
 /* The lifecycle is a one-card track on touch screens too. Keeping the
@@ -750,9 +745,11 @@ html.lenis.lenis-smooth iframe {
 .strategy-method .strategy-heading h2 {
   font-size: clamp(1.85rem, 3vw, 3.65rem);
   line-height: 0.98;
-  /* The heading shares a two-column grid with the image. It must wrap within
-     its own column; forcing a single line lets it paint over the media. */
-  max-width: min(100%, 14ch);
+  /* The heading must use the same column width as its eyebrow. Restricting it
+     to a character count wasted available space and turned otherwise balanced
+     titles into three lines. The grid column remains its hard boundary, so it
+     cannot paint over the image. */
+  max-width: min(100%, 31.5rem);
   white-space: normal;
   text-wrap: balance;
 }

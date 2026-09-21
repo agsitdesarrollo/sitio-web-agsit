@@ -243,6 +243,8 @@ export const digitalMarketingV2ByLang: Record<SupportedLang, DigitalMarketingV2C
           theme: 'paper',
           visual: 'eye',
           srcvideo: '/assets/videos-marketing/2.-%20SEO%20T%C3%A9cnico.mp4',
+          cta: 'Conoce cómo te encuentran',
+          href: '/marketing-digital/posicionamiento-organico-seo/',
         },
         {
           title: 'Publicidad Digital (Google Ads & Social Ads)',
@@ -428,6 +430,8 @@ export const digitalMarketingV2ByLang: Record<SupportedLang, DigitalMarketingV2C
           theme: 'paper',
           visual: 'eye',
           srcvideo: '/assets/videos-marketing/2.-%20SEO%20T%C3%A9cnico.mp4',
+          cta: 'See how people find you',
+          href: '/en/digital-marketing/organic-search-positioning-seo/',
         },
         {
           title: 'Digital Advertising (Google Ads & Social Ads)',
