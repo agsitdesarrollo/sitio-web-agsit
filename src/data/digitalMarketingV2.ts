@@ -253,6 +253,8 @@ export const digitalMarketingV2ByLang: Record<SupportedLang, DigitalMarketingV2C
           theme: 'warm',
           visual: 'heart',
           srcvideo: '/assets/videos-marketing/3.-%20Google%20Ads.mp4',
+          cta: 'Conoce cómo atraer clientes',
+          href: '/marketing-digital/publicidad-digital/',
         },
         {
           title: 'Content Marketing y Social Media',
@@ -440,6 +442,8 @@ export const digitalMarketingV2ByLang: Record<SupportedLang, DigitalMarketingV2C
           theme: 'warm',
           visual: 'heart',
           srcvideo: '/assets/videos-marketing/3.-%20Google%20Ads.mp4',
+          cta: 'See how to attract customers',
+          href: '/en/digital-marketing/digital-advertising/',
         },
         {
           title: 'Content Marketing and Social Media',
