@@ -1,0 +1,264 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-09-24T09:08:55Z",
+  "title": "Design System: AGSIT service pages",
+  "extensions": {
+    "colorMeta": {
+      "cyan": {
+        "role": "primary",
+        "displayName": "Signal Cyan",
+        "canonical": "oklch(78.0% 0.130 225)",
+        "tonalRamp": [
+          "#000e14",
+          "#002a38",
+          "#00495f",
+          "#006c89",
+          "#0090b6",
+          "#24b5e2",
+          "#72d8ff",
+          "#d9f4ff"
+        ]
+      },
+      "cyan-soft": {
+        "role": "primary",
+        "displayName": "Pale Signal Cyan",
+        "canonical": "oklch(86.8% 0.093 221)",
+        "tonalRamp": [
+          "#000e14",
+          "#002a36",
+          "#004a5c",
+          "#006c86",
+          "#348faa",
+          "#5bb2ce",
+          "#80d7f4",
+          "#d7f4ff"
+        ]
+      },
+      "teal-on-paper": {
+        "role": "secondary",
+        "displayName": "Paper Teal",
+        "canonical": "oklch(51.1% 0.092 232)",
+        "tonalRamp": [
+          "#000d16",
+          "#00293b",
+          "#004864",
+          "#176a8c",
+          "#418cb0",
+          "#65afd5",
+          "#89d4fb",
+          "#dcf3ff"
+        ]
+      },
+      "ink": {
+        "role": "neutral",
+        "displayName": "Deep Control-Room Ink",
+        "canonical": "oklch(12.8% 0.029 256)",
+        "tonalRamp": [
+          "#040b17",
+          "#1c2633",
+          "#384351",
+          "#576272",
+          "#778394",
+          "#9aa6b7",
+          "#bdcadc",
+          "#e4f0ff"
+        ]
+      },
+      "navy": {
+        "role": "neutral",
+        "displayName": "Night Navy",
+        "canonical": "oklch(19.8% 0.048 260)",
+        "tonalRamp": [
+          "#020a1f",
+          "#17253c",
+          "#33425c",
+          "#51627d",
+          "#7283a0",
+          "#94a6c4",
+          "#b7cae9",
+          "#e5efff"
+        ]
+      },
+      "paper": {
+        "role": "neutral",
+        "displayName": "Cool Paper",
+        "canonical": "oklch(98.3% 0.007 248)",
+        "tonalRamp": [
+          "#090b0e",
+          "#222528",
+          "#3f4245",
+          "#5e6265",
+          "#7f8386",
+          "#a2a5a9",
+          "#c6cacd",
+          "#ebeff3"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Display",
+        "purpose": "The page promise, two lines on the hero."
+      },
+      "headline": {
+        "displayName": "Headline",
+        "purpose": "Sentence-length panel titles."
+      },
+      "title": {
+        "displayName": "Title",
+        "purpose": "Method steps, before/after results, sibling service names."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Reading text, capped at 60ch."
+      },
+      "label": {
+        "displayName": "Label",
+        "purpose": "Small uppercase tags and the primary button."
+      }
+    },
+    "shadows": [
+      {
+        "name": "media-frame",
+        "value": "0 24px 48px rgba(0, 0, 0, 0.34)",
+        "purpose": "Soft drop under an image frame on ink."
+      }
+    ],
+    "motion": [
+      {
+        "name": "ease-out-expo",
+        "value": "cubic-bezier(0.16, 1, 0.3, 1)",
+        "purpose": "Entrances, route drawing and hover nudges."
+      },
+      {
+        "name": "node-arrive",
+        "value": "cubic-bezier(0.34, 1.56, 0.64, 1)",
+        "purpose": "Hero route nodes arriving with a small overshoot."
+      },
+      {
+        "name": "station-travel",
+        "value": "0.55s to 1.35s, cubic in-out",
+        "purpose": "One gesture moves one station; duration grows with distance."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "phone-landscape",
+        "value": "(pointer: coarse) and (orientation: landscape) and (max-width: 932px) and (max-height: 520px)"
+      },
+      {
+        "name": "portrait-single-column",
+        "value": "(orientation: portrait) and (max-width: 1023px)"
+      },
+      {
+        "name": "desktop",
+        "value": "1080px"
+      },
+      {
+        "name": "route-labels",
+        "value": "1200px"
+      },
+      {
+        "name": "short-screen",
+        "value": "max-height 620px landscape / 640px portrait / 340px ultra-short"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "The single call to action: opens the contact drawer.",
+      "html": "<button class=\"ds-btn-primary\" type=\"button\">Hablar con un especialista</button>",
+      "css": ".ds-btn-primary{min-height:48px;border:1px solid rgba(65,200,246,.74);border-radius:999px;padding:0 22px;display:inline-flex;align-items:center;justify-content:center;background:#41c8f6;color:#08152b;font:900 .78rem 'Inter','Segoe UI',Tahoma,sans-serif;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;transition:background-color 180ms ease,border-color 180ms ease,transform 180ms ease}.ds-btn-primary:hover{border-color:#fff;background:#fff;transform:translateY(-2px)}.ds-btn-primary:focus-visible{outline:3px solid #8be2ff;outline-offset:3px}"
+    },
+    {
+      "name": "Technical-name Chip",
+      "kind": "chip",
+      "refersTo": "chip-term",
+      "description": "Names the service in the words people search for, under a plain-language title.",
+      "html": "<p class=\"ds-chip\"><span class=\"ds-chip-node\"></span>BPMN</p>",
+      "css": ".ds-chip{width:fit-content;margin:0;display:inline-flex;align-items:center;gap:10px;border:1px solid rgba(65,200,246,.42);border-radius:999px;padding:6px 14px 6px 10px;color:#8be2ff;font:800 .78rem 'Inter','Segoe UI',Tahoma,sans-serif;letter-spacing:.08em;text-transform:uppercase}.ds-chip-node{width:10px;height:10px;border-radius:50%;background:#41c8f6}"
+    },
+    {
+      "name": "Media Frame",
+      "kind": "card",
+      "refersTo": "media-frame",
+      "description": "Reserved 4:3 space for a service image; shows the technical name in italic serif until the image exists.",
+      "html": "<figure class=\"ds-frame\"><span class=\"ds-frame-term\">AS-IS</span></figure>",
+      "css": ".ds-frame{position:relative;width:100%;max-width:360px;aspect-ratio:4/3;margin:0;overflow:hidden;border:1px solid rgba(139,226,255,.18);border-radius:14px;background:linear-gradient(145deg,#0d2445 0%,#08152b 58%,#061020 100%);box-shadow:0 24px 48px rgba(0,0,0,.34)}.ds-frame-term{position:absolute;inset:0;display:grid;place-items:center;color:rgba(139,226,255,.24);font:italic 300 3rem/1 'Cormorant Garamond',Georgia,serif}"
+    },
+    {
+      "name": "Route Bar",
+      "kind": "nav",
+      "refersTo": "route-bar",
+      "description": "Signature: fixed dock that shows the current station of the page. Done nodes filled, current ringed, upcoming hollow.",
+      "html": "<nav class=\"ds-route\"><ol><li class=\"ds-done\"><i></i><span>Inicio</span></li><li class=\"ds-done\"><i></i><span>Hoy</span></li><li class=\"ds-active\"><i></i><span>Método</span></li><li><i></i><span>BPMN</span></li><li><i></i><span>AS-IS</span></li></ol></nav>",
+      "css": ".ds-route{padding:10px 24px;background:rgba(2,7,18,.95);border-top:1px solid rgba(139,226,255,.14);color:rgba(180,197,219,.88);font:600 .76rem 'Inter','Segoe UI',Tahoma,sans-serif}.ds-route ol{position:relative;display:grid;grid-template-columns:repeat(5,1fr);margin:0;padding:0;list-style:none}.ds-route ol:before{content:'';position:absolute;top:5px;left:10%;right:10%;height:2px;background:linear-gradient(90deg,#41c8f6 50%,rgba(139,226,255,.22) 50%)}.ds-route li{position:relative;display:grid;justify-items:center;gap:8px}.ds-route i{width:12px;height:12px;box-sizing:border-box;border:2px solid rgba(139,226,255,.55);border-radius:50%;background:#020712}.ds-done i{border-color:#41c8f6;background:#41c8f6}.ds-active i{border-color:#fff;background:#41c8f6;outline:2px solid rgba(65,200,246,.55);outline-offset:3px;transform:scale(1.15)}.ds-active{color:#fff}"
+    },
+    {
+      "name": "Hero Route",
+      "kind": "custom",
+      "refersTo": "route-bar",
+      "description": "Signature: the page's services as a vertical route with a thin-ring start and a heavy-ring end.",
+      "html": "<ol class=\"ds-hr\"><li class=\"ds-hr-start\"><i></i><em>Cada quien lo hace a su manera</em></li><li><i class=\"ds-dot\"></i><div><b>BPMN</b><span>El mapa de tus procesos</span></div></li><li><i class=\"ds-dot\"></i><div><b>AS-IS</b><span>Cómo trabajas hoy</span></div></li><li class=\"ds-hr-end\"><i></i><em>Un proceso claro para todos</em></li></ol>",
+      "css": ".ds-hr{margin:0;padding:24px;list-style:none;background:#020712;color:#fff;font-family:'Inter','Segoe UI',Tahoma,sans-serif}.ds-hr li{position:relative;display:grid;grid-template-columns:14px 1fr;column-gap:18px;padding-bottom:14px}.ds-hr li:not(:last-child):before{content:'';position:absolute;left:6px;top:18px;bottom:-2px;width:2px;background:rgba(139,226,255,.28)}.ds-hr i{width:14px;height:14px;box-sizing:border-box;margin-top:3px;border:2px solid #41c8f6;border-radius:50%;background:#020712}.ds-hr .ds-dot{background:#41c8f6}.ds-hr-start i{border-width:1.5px}.ds-hr-end i{border-width:4px}.ds-hr b{display:block;font-weight:800}.ds-hr span{color:rgba(180,197,219,.88);font-size:.86rem}.ds-hr em{color:#8be2ff;font:italic 400 1.2rem/1.2 'Cormorant Garamond',Georgia,serif}"
+    },
+    {
+      "name": "Link Row",
+      "kind": "custom",
+      "refersTo": "button-primary",
+      "description": "Sibling-service link: serif name, plain line, cyan arrow that nudges on hover.",
+      "html": "<a class=\"ds-row\" href=\"#\"><span class=\"ds-row-name\">Excelencia Operativa</span><span class=\"ds-row-copy\">Reducimos esperas, desperdicios y trabajo repetido.</span><svg viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"M4 12h15M13 6l6 6-6 6\"/></svg></a>",
+      "css": ".ds-row{display:grid;grid-template-columns:1fr 22px;column-gap:20px;align-items:center;padding:16px 0;border-top:1px solid rgba(242,248,255,.16);background:#08152b;color:#fff;text-decoration:none}.ds-row-name{font:300 1.7rem/1.1 'Cormorant Garamond',Georgia,serif;transition:color 180ms ease}.ds-row-copy{grid-column:1;color:rgba(180,197,219,.88);font:500 .9rem/1.35 'Inter','Segoe UI',Tahoma,sans-serif}.ds-row svg{grid-column:2;grid-row:1/span 2;width:22px;height:22px;fill:none;stroke:#41c8f6;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;transition:transform 220ms cubic-bezier(.16,1,.3,1)}.ds-row:hover .ds-row-name{color:#41c8f6}.ds-row:hover svg{transform:translateX(5px)}.ds-row:focus-visible{outline:3px solid #8be2ff;outline-offset:3px}"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Process Route",
+    "overview": "A service page is read the way a process is read: as stations on one continuous line. Each screen is a station, and the line is always in view. The mood is calm and exact, with the serif display voice of an editorial page over the deep ink of a control room. Nothing decorates; every mark either says where you are or what you can do next.\n\nThe system is dark by default because these pages are read in focused sessions on screens of every size, and it opens to a pale paper ground only for the passages about the reader's own situation and outcome. Cyan is the single signal color. Depth comes from tonal layers, hairlines and one soft shadow, never from texture.\n\nConfirmed visual rejections: no background grids or vertical-line patterns, no hand-drawn strokes, no grids of identical cards.",
+    "keyCharacteristics": [
+      "One route per page: thin-ring start, dot stations, heavy-ring end, joined by a 2px line.",
+      "Ink and navy grounds with paper interludes; cyan is used for position and action only.",
+      "Serif display for sentences, sans body for reading; titles are full sentences.",
+      "Every panel is exactly one screen high; copy is written to fit before type is shrunk.",
+      "Motion follows the route: lines draw, nodes arrive, panels enter in their own way."
+    ],
+    "rules": [
+      {
+        "name": "The Signal Rule",
+        "body": "Cyan appears only where it marks position or invites action. If it is decoration, remove it.",
+        "section": "colors"
+      },
+      {
+        "name": "The Paper Rule",
+        "body": "Paper panels speak about the reader (their situation, their result); services and method stay on ink. Accent on paper is always Paper Teal.",
+        "section": "colors"
+      },
+      {
+        "name": "The Sentence Rule",
+        "body": "Titles are complete sentences a non-specialist can read aloud; technical names live in chips and labels.",
+        "section": "typography"
+      },
+      {
+        "name": "The Flat Panel Rule",
+        "body": "Panels have no cards, borders or shadows around their content. Structure comes from spacing and hairlines.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "**Do** keep every panel one screen high and write copy to fit before shrinking type below its floor.",
+      "**Do** use Paper Teal (#1f6f92) for accents on paper; cyan on paper fails contrast.",
+      "**Do** give a service without an image a typographic frame, never a stock picture or a gradient stand-in.",
+      "**Do** keep body copy at 60ch or less and explain every technical term in plain words on first use.",
+      "**Do** keep the route bar on a dark plate on any ground so the current station is always legible."
+    ],
+    "donts": [
+      "**Don't** use background grids, repeating vertical lines or any texture pattern.",
+      "**Don't** use hand-drawn strokes or scribbles; diagrams are straight lines and circles.",
+      "**Don't** lay services or steps out as grids of identical cards.",
+      "**Don't** add testimonials, FAQ blocks, prices or numbers the business cannot substantiate.",
+      "**Don't** hide navigation or content behind animation: the page must read fully with motion reduced."
+    ]
+  }
+}

@@ -1,0 +1,66 @@
+---
+import ContactDrawer from '../../../../components/contact/ContactDrawer.astro';
+import Footer from '../../../../components/footer/Footer.astro';
+import Header from '../../../../components/navigation/Header.astro';
+import PageShellScripts from '../../../../components/navigation/PageShellScripts.astro';
+import ProcessDetailPage from '../../../../components/process-detail/ProcessDetailPage.astro';
+import { getContactCopy } from '../../../../data/contact';
+import { getFooterCopy } from '../../../../data/footer';
+import {
+  getProcessDetailAlternatePath,
+  getProcessDetailMetadata,
+  getProcessDetailPages,
+  type ProcessDetailPageContent,
+} from '../../../../data/processDetail';
+import { getServicesContent } from '../../../../data/services';
+import { useTranslations } from '../../../../i18n/utils';
+import SiteLayout from '../../../../layouts/SiteLayout.astro';
+
+export function getStaticPaths() {
+  return getProcessDetailPages('en').map((page) => ({ params: { slug: page.slug }, props: { page } }));
+}
+
+const lang = 'en';
+const { page } = Astro.props as { page: ProcessDetailPageContent };
+const metadata = getProcessDetailMetadata(lang, page);
+const spanishHref = getProcessDetailAlternatePath(lang, page.slug);
+const contactCopy = getContactCopy(lang);
+const footerCopy = getFooterCopy(lang);
+const servicesContent = getServicesContent(lang);
+const t = useTranslations(lang);
+---
+
+<SiteLayout
+  title={metadata.title}
+  description={metadata.description}
+  canonicalUrl={metadata.canonicalUrl}
+  image={metadata.image}
+  imageAlt={metadata.imageAlt}
+  htmlLang={metadata.htmlLang}
+  locale={metadata.locale}
+  alternates={[
+    { lang: 'es-MX', href: `https://agsit.com.mx${spanishHref}` },
+    { lang: 'en', href: metadata.canonicalUrl },
+    { lang: 'x-default', href: `https://agsit.com.mx${spanishHref}` },
+  ]}
+>
+  <div class="app-shell">
+    <Header
+      lang={lang}
+      homeHref="/en/#inicio"
+      servicesHref="/en/#servicios"
+      contactHref="#contacto"
+      alternateHref={spanishHref}
+    />
+    <ProcessDetailPage lang={lang} page={page} contactCopy={contactCopy} />
+    <Footer
+      copy={footerCopy}
+      services={servicesContent.services}
+      homeHref="/en/#inicio"
+      servicesHref="/en/#servicios"
+      contactHref="#contacto"
+    />
+    <ContactDrawer copy={contactCopy} />
+    <PageShellScripts openMenuLabel={t('nav.openMenu')} closeMenuLabel={t('nav.closeMenu')} />
+  </div>
+</SiteLayout>

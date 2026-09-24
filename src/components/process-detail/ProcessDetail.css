@@ -1,0 +1,1217 @@
+/*
+ * Process detail pages (Administración de Procesos, 5 services × es/en).
+ * Direction: "La ruta del proceso". One route ties Start, Today, Method, every
+ * service and Result together; the bottom route bar always says where you are.
+ * The site's palette and type are inherited (ink/cyan/paper, Cormorant
+ * Garamond + Inter). No background grids, no hand-drawn strokes, no card grids.
+ */
+
+.pd-page {
+  --pd-ink: #020712;
+  --pd-navy: #08152b;
+  --pd-cyan: #41c8f6;
+  --pd-cyan-soft: #8be2ff;
+  --pd-teal: #1f6f92; /* accent on paper: 5.3:1 */
+  --pd-paper: #f6fafe;
+  --pd-muted-dark: rgba(180, 197, 219, 0.88);
+  --pd-muted-light: rgba(8, 21, 43, 0.74);
+  --pd-line-dark: rgba(242, 248, 255, 0.16);
+  --pd-line-light: rgba(37, 63, 108, 0.2);
+
+  --pd-gutter: clamp(20px, 5vw, 72px);
+  --pd-shell: 1240px;
+  --pd-pad-y: clamp(12px, 2.6svh, 36px);
+  --pd-gap: clamp(10px, 2svh, 24px);
+  --pd-route-h: calc(60px + env(safe-area-inset-bottom, 0px));
+  --pd-panel-h: var(--app-panel-h, 100svh);
+  --pd-content-h: calc(var(--pd-panel-h) - var(--nav-h) - var(--pd-route-h) - var(--pd-pad-y) * 2);
+
+  /* Same scale as the technology pages, capped by the screen height so every
+     panel fits in one screen. */
+  --pd-h1: min(clamp(1.9rem, 9.6vw, 3.25rem), 6.6svh);
+  --pd-h2: min(clamp(1.5rem, 6.4vw, 2.3rem), 5.4svh);
+  --pd-lead: clamp(0.92rem, min(3.8vw, 2.4svh), 1.08rem);
+  --pd-small: clamp(0.68rem, 2.8vw, 0.78rem);
+
+  position: relative;
+  padding-top: 0;
+  background: var(--pd-ink);
+  color: #ffffff;
+  overflow: clip;
+}
+
+.pd-page :is(h1, h2, h3, p, ul, ol, figure) {
+  margin: 0;
+}
+
+.pd-page :is(ul, ol) {
+  padding: 0;
+  list-style: none;
+}
+
+.pd-page :where(p, li, a, button, span, strong, em) {
+  font-family: 'Inter', 'Segoe UI', Tahoma, sans-serif;
+}
+
+.pd-page :is(h1, h2, h3) {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-weight: 300;
+  letter-spacing: 0;
+  text-wrap: balance;
+}
+
+.pd-page ::selection {
+  background: var(--pd-cyan);
+  color: var(--pd-ink);
+}
+
+.pd-page :is(a, button):focus-visible {
+  outline: 3px solid var(--pd-cyan-soft);
+  outline-offset: 3px;
+  border-radius: 6px;
+}
+
+.pd-paper :is(a, button):focus-visible {
+  outline-color: var(--pd-teal);
+}
+
+/* ── Panels ────────────────────────────────────────────────────────────── */
+
+.pd-panel {
+  position: relative;
+  min-height: var(--pd-panel-h);
+  box-sizing: border-box;
+  padding: calc(var(--nav-h) + var(--pd-pad-y)) var(--pd-gutter) calc(var(--pd-route-h) + var(--pd-pad-y));
+  display: grid;
+  align-items: center;
+  overflow: hidden;
+  scroll-margin-top: 0;
+}
+
+.pd-inner {
+  width: min(100%, var(--pd-shell));
+  margin-inline: auto;
+}
+
+.pd-paper {
+  background: var(--pd-paper);
+  color: var(--pd-navy);
+}
+
+.pd-method,
+.pd-more {
+  background: var(--pd-navy);
+}
+
+.pd-lead {
+  max-width: 60ch;
+  color: var(--pd-muted-dark);
+  font-size: var(--pd-lead);
+  font-weight: 500;
+  line-height: 1.55;
+}
+
+.pd-page h2 {
+  font-size: var(--pd-h2);
+  line-height: 1.04;
+}
+
+/* ── Nodes: the shared vocabulary of the route ─────────────────────────── */
+
+.pd-node {
+  width: 14px;
+  height: 14px;
+  box-sizing: border-box;
+  flex: none;
+  border: 2px solid var(--pd-cyan);
+  border-radius: 50%;
+  background: var(--pd-ink);
+}
+
+.pd-node--dot {
+  background: var(--pd-cyan);
+}
+
+.pd-node--start {
+  border-width: 1.5px;
+}
+
+.pd-node--end {
+  border-width: 4px;
+}
+
+.pd-paper .pd-node {
+  border-color: var(--pd-teal);
+  background: var(--pd-paper);
+}
+
+/* ── Hero ──────────────────────────────────────────────────────────────── */
+
+.pd-hero {
+  padding-bottom: calc(var(--pd-pad-y) + env(safe-area-inset-bottom, 0px));
+  background:
+    radial-gradient(circle at 80% 30%, rgba(65, 200, 246, 0.16), transparent 42%),
+    linear-gradient(135deg, #020712 0%, #061228 52%, #020712 100%);
+}
+
+.pd-hero-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.04fr) minmax(0, 0.96fr);
+  gap: clamp(28px, 5vw, 84px);
+  align-items: center;
+}
+
+.pd-hero-copy {
+  max-width: 720px;
+  display: grid;
+  gap: var(--pd-gap);
+  justify-items: start;
+}
+
+.pd-back {
+  min-height: 32px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--pd-cyan-soft);
+  font-size: clamp(0.8rem, min(3.4vw, 2.2svh), 0.94rem);
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  transition: color 180ms ease;
+}
+
+.pd-back svg {
+  width: 14px;
+  height: 14px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  transition: transform 220ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.pd-back:hover {
+  color: #ffffff;
+}
+
+.pd-back:hover svg {
+  transform: translateX(-3px);
+}
+
+.pd-hero h1 {
+  font-size: var(--pd-h1);
+  line-height: 0.98;
+}
+
+.pd-hero h1 span {
+  display: block;
+  font: inherit;
+}
+
+.pd-actions button {
+  min-height: 48px;
+  border: 1px solid rgba(65, 200, 246, 0.74);
+  border-radius: 999px;
+  padding: 0 22px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--pd-cyan);
+  color: var(--pd-navy);
+  font-size: var(--pd-small);
+  font-weight: 900;
+  letter-spacing: 0.1em;
+  text-align: center;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition:
+    background-color 180ms ease,
+    border-color 180ms ease,
+    transform 180ms ease;
+}
+
+.pd-actions button:hover {
+  border-color: #ffffff;
+  background: #ffffff;
+  transform: translateY(-2px);
+}
+
+/* The hero's own route: the services of this page as a vertical line. */
+.pd-hero-route {
+  justify-self: end;
+  width: min(100%, 470px);
+  --pd-hr-gap: clamp(8px, 1.9svh, 22px);
+}
+
+.pd-hr-item {
+  position: relative;
+  display: grid;
+  grid-template-columns: 14px minmax(0, 1fr);
+  column-gap: 18px;
+  align-items: start;
+  padding-bottom: var(--pd-hr-gap);
+}
+
+.pd-hr-item:last-child {
+  padding-bottom: 0;
+}
+
+.pd-hr-item::before {
+  content: '';
+  position: absolute;
+  left: 6px;
+  top: 18px;
+  bottom: -2px;
+  width: 2px;
+  background: rgba(139, 226, 255, 0.28);
+}
+
+.pd-hr-item:last-child::before {
+  display: none;
+}
+
+.pd-hr-item > .pd-node {
+  margin-top: 3px;
+}
+
+.pd-hr-item a {
+  display: grid;
+  gap: 2px;
+  transition: transform 220ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.pd-hr-item a:hover {
+  transform: translateX(4px);
+}
+
+.pd-hr-term {
+  color: #ffffff;
+  font-size: clamp(0.92rem, min(3.6vw, 2.5svh), 1.12rem);
+  font-weight: 800;
+  line-height: 1.25;
+  transition: color 180ms ease;
+}
+
+.pd-hr-item a:hover .pd-hr-term {
+  color: var(--pd-cyan);
+}
+
+.pd-hr-blurb {
+  color: var(--pd-muted-dark);
+  font-size: clamp(0.78rem, min(3.2vw, 2.1svh), 0.92rem);
+  font-weight: 500;
+  line-height: 1.35;
+}
+
+.pd-hr-state {
+  color: var(--pd-cyan-soft);
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: clamp(1.1rem, min(4.6vw, 3.1svh), 1.45rem);
+  font-style: italic;
+  font-weight: 400;
+  line-height: 1.2;
+}
+
+/* ── Today (paper) ─────────────────────────────────────────────────────── */
+
+.pd-today-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
+  gap: clamp(28px, 6vw, 96px);
+  align-items: center;
+}
+
+.pd-paper h2 {
+  color: var(--pd-navy);
+}
+
+.pd-signs li {
+  display: grid;
+  grid-template-columns: 14px minmax(0, 1fr);
+  column-gap: 18px;
+  align-items: start;
+  padding: clamp(10px, 2.4svh, 24px) 0;
+  border-top: 1px solid var(--pd-line-light);
+  color: var(--pd-navy);
+  font-size: clamp(0.98rem, min(4vw, 2.7svh), 1.3rem);
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+.pd-signs li:last-child {
+  border-bottom: 1px solid var(--pd-line-light);
+}
+
+.pd-signs .pd-node {
+  margin-top: 0.34em;
+}
+
+/* ── Method ────────────────────────────────────────────────────────────── */
+
+.pd-method-layout {
+  display: grid;
+  gap: clamp(20px, 6svh, 64px);
+}
+
+.pd-method h2 {
+  max-width: 20ch;
+}
+
+.pd-steps {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: clamp(20px, 4vw, 64px);
+}
+
+.pd-steps::before {
+  content: '';
+  position: absolute;
+  top: 6px;
+  left: 7px;
+  right: 0;
+  height: 2px;
+  background: rgba(139, 226, 255, 0.28);
+}
+
+.pd-step {
+  position: relative;
+  display: grid;
+  gap: 8px;
+  padding-top: clamp(24px, 4svh, 40px);
+}
+
+.pd-step > .pd-node {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.pd-step h3 {
+  color: #ffffff;
+  font-size: clamp(1.35rem, min(5vw, 3.6svh), 1.9rem);
+  font-weight: 400;
+  line-height: 1.1;
+}
+
+.pd-step p {
+  max-width: 34ch;
+  color: var(--pd-muted-dark);
+  font-size: var(--pd-lead);
+  font-weight: 500;
+  line-height: 1.5;
+}
+
+/* ── Service panels ────────────────────────────────────────────────────── */
+
+.pd-service-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 0.92fr);
+  gap: clamp(28px, 6vw, 96px);
+  align-items: center;
+}
+
+.pd-service--flip .pd-service-layout {
+  grid-template-columns: minmax(0, 0.92fr) minmax(0, 1fr);
+}
+
+.pd-service--flip .pd-media {
+  order: -1;
+}
+
+.pd-service-copy {
+  display: grid;
+  gap: var(--pd-gap);
+  justify-items: start;
+}
+
+.pd-service-copy h2 {
+  max-width: 17ch;
+}
+
+.pd-term {
+  width: fit-content;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  border: 1px solid rgba(65, 200, 246, 0.42);
+  border-radius: 999px;
+  padding: 6px 14px 6px 10px;
+  color: var(--pd-cyan-soft);
+  font-size: var(--pd-small);
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.pd-term .pd-node {
+  width: 10px;
+  height: 10px;
+  border-width: 0;
+}
+
+.pd-receive {
+  width: 100%;
+  max-width: 60ch;
+  display: grid;
+  gap: 4px;
+  border-top: 1px solid var(--pd-line-dark);
+  padding-top: clamp(8px, 1.8svh, 16px);
+  color: #ffffff;
+  font-size: var(--pd-lead);
+  font-weight: 500;
+  line-height: 1.45;
+}
+
+.pd-receive strong {
+  color: var(--pd-cyan-soft);
+  font-size: var(--pd-small);
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.pd-media {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  max-height: var(--pd-content-h);
+  overflow: hidden;
+  border: 1px solid rgba(139, 226, 255, 0.18);
+  border-radius: 14px;
+  background: linear-gradient(145deg, #0d2445 0%, #08152b 58%, #061020 100%);
+  box-shadow: 0 24px 48px rgba(0, 0, 0, 0.34);
+}
+
+.pd-media img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+}
+
+/* Until the real image arrives, the frame carries the technical name. */
+.pd-media-term {
+  position: absolute;
+  inset: 0;
+  padding: 8%;
+  display: grid;
+  place-items: center;
+  color: rgba(139, 226, 255, 0.24);
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: clamp(2rem, min(8vw, 9svh), 4.6rem);
+  font-style: italic;
+  font-weight: 300;
+  line-height: 1;
+  text-align: center;
+}
+
+/* ── Change (paper) ────────────────────────────────────────────────────── */
+
+.pd-change-layout {
+  display: grid;
+  gap: clamp(14px, 4.6svh, 48px);
+}
+
+.pd-compare-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 28px minmax(0, 1.15fr);
+  column-gap: clamp(14px, 3vw, 40px);
+  align-items: center;
+  padding: clamp(10px, 2.4svh, 24px) 0;
+  border-top: 1px solid var(--pd-line-light);
+}
+
+.pd-compare-row:last-child {
+  border-bottom: 1px solid var(--pd-line-light);
+}
+
+.pd-compare-row p {
+  display: grid;
+  gap: 4px;
+}
+
+.pd-compare-row strong {
+  font-size: var(--pd-small);
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.pd-before strong {
+  color: var(--pd-muted-light);
+}
+
+.pd-after strong {
+  color: var(--pd-teal);
+}
+
+.pd-before span {
+  color: var(--pd-muted-light);
+  font-size: clamp(0.94rem, min(3.8vw, 2.5svh), 1.14rem);
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+.pd-after span {
+  color: var(--pd-navy);
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: clamp(1.25rem, min(5.2vw, 3.7svh), 1.95rem);
+  font-weight: 400;
+  line-height: 1.1;
+}
+
+.pd-compare-arrow {
+  width: 26px;
+  height: 26px;
+  fill: none;
+  stroke: var(--pd-teal);
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* ── More services ─────────────────────────────────────────────────────── */
+
+.pd-more-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+  gap: clamp(28px, 6vw, 96px);
+  align-items: center;
+}
+
+.pd-more-heading {
+  display: grid;
+  gap: clamp(14px, 3svh, 28px);
+  justify-items: start;
+}
+
+.pd-parent {
+  min-height: 32px;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--pd-cyan-soft);
+  font-size: clamp(0.8rem, min(3.4vw, 2.2svh), 0.94rem);
+  font-weight: 700;
+  line-height: 1.3;
+  transition: color 180ms ease;
+}
+
+.pd-parent svg,
+.pd-link-arrow {
+  width: 22px;
+  height: 22px;
+  flex: none;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  transition: transform 220ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.pd-parent:hover {
+  color: #ffffff;
+}
+
+.pd-parent:hover svg {
+  transform: translateX(4px);
+}
+
+.pd-links li a {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 22px;
+  column-gap: 20px;
+  align-items: center;
+  padding: clamp(9px, 2.2svh, 22px) 0;
+  border-top: 1px solid var(--pd-line-dark);
+  color: #ffffff;
+}
+
+.pd-links li:last-child a {
+  border-bottom: 1px solid var(--pd-line-dark);
+}
+
+.pd-link-name {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: clamp(1.3rem, min(5.4vw, 3.7svh), 2.1rem);
+  font-weight: 300;
+  line-height: 1.1;
+  transition: color 180ms ease;
+}
+
+.pd-link-name em {
+  color: var(--pd-cyan-soft);
+  font-family: 'Inter', 'Segoe UI', Tahoma, sans-serif;
+  font-size: var(--pd-small);
+  font-style: normal;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.pd-cross .pd-link-name {
+  font-size: clamp(1.1rem, min(4.4vw, 3svh), 1.6rem);
+}
+
+.pd-link-copy {
+  grid-column: 1;
+  color: var(--pd-muted-dark);
+  font-size: clamp(0.8rem, min(3.3vw, 2.2svh), 0.94rem);
+  font-weight: 500;
+  line-height: 1.35;
+}
+
+.pd-link-arrow {
+  grid-column: 2;
+  grid-row: 1 / span 2;
+  color: var(--pd-cyan);
+}
+
+.pd-links li a:hover .pd-link-name {
+  color: var(--pd-cyan);
+}
+
+.pd-links li a:hover .pd-link-arrow {
+  transform: translateX(5px);
+}
+
+/* ── Route bar ─────────────────────────────────────────────────────────── */
+
+.pd-route {
+  position: fixed;
+  right: 0;
+  bottom: max(0px, calc(var(--app-vh, 100dvh) - var(--app-stable-vh, 100svh)));
+  left: 0;
+  z-index: 90;
+  height: var(--pd-route-h);
+  box-sizing: border-box;
+  padding: 10px max(var(--pd-gutter), env(safe-area-inset-right)) env(safe-area-inset-bottom, 0px)
+    max(var(--pd-gutter), env(safe-area-inset-left));
+  border-top: 1px solid rgba(139, 226, 255, 0.14);
+  background: rgba(2, 7, 18, 0.95);
+  color: var(--pd-muted-dark);
+  visibility: hidden;
+  opacity: 0;
+  transform: translateY(100%);
+  transition:
+    transform 560ms cubic-bezier(0.16, 1, 0.3, 1),
+    opacity 320ms ease,
+    visibility 0s linear 560ms;
+}
+
+.pd-route.is-visible {
+  visibility: visible;
+  opacity: 1;
+  transform: none;
+  transition-delay: 0s;
+}
+
+.pd-route-now {
+  display: none;
+}
+
+.pd-route-body {
+  position: relative;
+}
+
+.pd-route-list {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(var(--pd-stations), minmax(0, 1fr));
+}
+
+.pd-route-track {
+  position: absolute;
+  top: 5px;
+  left: calc(50% / var(--pd-stations));
+  right: calc(50% / var(--pd-stations));
+  height: 2px;
+  background: rgba(139, 226, 255, 0.22);
+}
+
+.pd-route-fill {
+  display: block;
+  height: 100%;
+  background: var(--pd-cyan);
+  transform: scaleX(var(--pd-progress, 0));
+  transform-origin: left center;
+  transition: transform 700ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.pd-route-item a {
+  min-height: 34px;
+  display: grid;
+  justify-items: center;
+  align-content: start;
+  gap: 8px;
+  color: inherit;
+  font-size: 0.76rem;
+  font-weight: 600;
+  line-height: 1.2;
+  text-align: center;
+}
+
+.pd-route-node {
+  width: 12px;
+  height: 12px;
+  box-sizing: border-box;
+  border: 2px solid rgba(139, 226, 255, 0.55);
+  border-radius: 50%;
+  background: var(--pd-ink);
+  transition:
+    background-color 300ms ease,
+    border-color 300ms ease,
+    transform 420ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.pd-route-label {
+  display: none;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.pd-route-item.is-done .pd-route-node {
+  border-color: var(--pd-cyan);
+  background: var(--pd-cyan);
+}
+
+.pd-route-item.is-active .pd-route-node {
+  border-color: #ffffff;
+  background: var(--pd-cyan);
+  outline: 2px solid rgba(65, 200, 246, 0.55);
+  outline-offset: 3px;
+  transform: scale(1.15);
+}
+
+.pd-route-item.is-active a {
+  color: #ffffff;
+}
+
+.pd-route-item a:hover {
+  color: #ffffff;
+}
+
+/* ── Entrance choreography (only when the controller is running) ───────── */
+
+.pd-page.is-enhanced .pd-panel [data-pd-reveal] {
+  opacity: 0;
+  transform: var(--pd-from, translate3d(0, 18px, 0));
+  transition:
+    opacity 260ms ease,
+    transform 260ms ease;
+}
+
+.pd-page.is-enhanced .pd-panel.is-current [data-pd-reveal] {
+  opacity: 1;
+  transform: none;
+  transition:
+    opacity 720ms cubic-bezier(0.16, 1, 0.3, 1) calc(var(--pd-i, 0) * 80ms + 120ms),
+    transform 820ms cubic-bezier(0.16, 1, 0.3, 1) calc(var(--pd-i, 0) * 80ms + 120ms);
+}
+
+/* Each kind of panel enters in its own way; the route is the authored moment. */
+.pd-today {
+  --pd-from: translate3d(28px, 0, 0);
+}
+
+.pd-method [data-pd-reveal] {
+  --pd-from: translate3d(0, 0, 0);
+}
+
+.pd-service .pd-media {
+  --pd-from: scale(0.965);
+}
+
+.pd-change {
+  --pd-from: translate3d(-24px, 0, 0);
+}
+
+/* Hero: the services line draws itself node by node. */
+.pd-page.is-enhanced .pd-hero .pd-hr-item::before {
+  transform: scaleY(0);
+  transform-origin: top center;
+  transition: transform 260ms ease;
+}
+
+.pd-page.is-enhanced .pd-hero .pd-hr-item > .pd-node {
+  transform: scale(0.3);
+  transition: transform 220ms ease;
+}
+
+.pd-page.is-enhanced .pd-hero.is-current .pd-hr-item::before {
+  transform: scaleY(1);
+  transition: transform 420ms cubic-bezier(0.16, 1, 0.3, 1) calc(var(--pd-k, 0) * 150ms + 560ms);
+}
+
+.pd-page.is-enhanced .pd-hero.is-current .pd-hr-item > .pd-node {
+  transform: none;
+  transition: transform 480ms cubic-bezier(0.34, 1.56, 0.64, 1) calc(var(--pd-k, 0) * 150ms + 480ms);
+}
+
+/* Method: the line runs through the three steps. */
+.pd-page.is-enhanced .pd-method .pd-steps::before {
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform 260ms ease;
+}
+
+.pd-page.is-enhanced .pd-method.is-current .pd-steps::before {
+  transform: scaleX(1);
+  transition: transform 1150ms cubic-bezier(0.16, 1, 0.3, 1) 260ms;
+}
+
+/* ── Desktop ───────────────────────────────────────────────────────────── */
+
+@media (min-width: 1080px) {
+  .pd-page {
+    --pd-h1: min(clamp(3.35rem, 4.4vw, 5rem), 7.8svh);
+    --pd-h2: min(clamp(2.4rem, 3.5vw, 3.8rem), 6.8svh);
+    --pd-lead: clamp(1rem, min(1.2vw, 2.7svh), 1.2rem);
+    --pd-small: clamp(0.72rem, 0.8vw, 0.86rem);
+  }
+}
+
+@media (min-width: 1080px) and (min-height: 700px) {
+  .pd-today h2,
+  .pd-change h2 {
+    font-size: calc(var(--pd-h2) * 1.22);
+  }
+
+  .pd-signs li {
+    font-size: clamp(1.1rem, min(1.55vw, 3svh), 1.5rem);
+  }
+}
+
+@media (min-width: 1200px) {
+  .pd-route-label {
+    display: block;
+  }
+
+  .pd-route-item.is-active .pd-route-label {
+    color: var(--pd-cyan-soft);
+  }
+}
+
+/* ── Compact route (no room for every label): show the current one ─────── */
+
+@media (max-width: 1199px) {
+  .pd-page {
+    --pd-route-h: calc(64px + env(safe-area-inset-bottom, 0px));
+  }
+
+  .pd-route {
+    display: grid;
+    grid-template-rows: auto auto;
+    align-content: start;
+    row-gap: 9px;
+  }
+
+  .pd-route-now {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+    color: #ffffff;
+    font-size: 0.74rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    line-height: 1.2;
+  }
+
+  .pd-route-now [data-pd-route-label] {
+    color: var(--pd-cyan-soft);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+
+  .pd-route-now [data-pd-route-count] {
+    color: var(--pd-muted-dark);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .pd-route-item a {
+    min-height: 26px;
+  }
+
+  .pd-route-track {
+    top: 5px;
+  }
+}
+
+/* ── Portrait: phones and tablets, one column ──────────────────────────── */
+
+@media (orientation: portrait) and (max-width: 1023px) {
+  .pd-page {
+    --pd-h1: min(clamp(1.9rem, 9.4vw, 4.2rem), 6.2svh);
+    --pd-h2: min(clamp(1.55rem, 6.6vw, 3rem), 4.6svh);
+    --pd-lead: clamp(0.92rem, min(3.8vw, 2.3svh), 1.18rem);
+    --pd-gutter: clamp(20px, 6vw, 56px);
+  }
+
+  .pd-hero-layout,
+  .pd-today-layout,
+  .pd-service-layout,
+  .pd-service--flip .pd-service-layout,
+  .pd-more-layout {
+    grid-template-columns: minmax(0, 1fr);
+    gap: clamp(14px, 3svh, 36px);
+    align-items: start;
+  }
+
+  .pd-hero-route {
+    justify-self: start;
+    width: 100%;
+    max-width: 520px;
+  }
+
+  .pd-service-layout {
+    height: var(--pd-content-h);
+    grid-template-rows: auto minmax(0, 1fr);
+  }
+
+  .pd-service-copy h2,
+  .pd-method h2 {
+    max-width: none;
+  }
+
+  .pd-service--flip .pd-media {
+    order: 0;
+  }
+
+  .pd-media {
+    height: 100%;
+    max-height: none;
+    aspect-ratio: auto;
+    min-height: 0;
+  }
+
+  .pd-steps {
+    grid-template-columns: minmax(0, 1fr);
+    gap: clamp(14px, 3svh, 28px);
+  }
+
+  .pd-steps::before {
+    top: 7px;
+    bottom: 12px;
+    left: 6px;
+    right: auto;
+    width: 2px;
+    height: auto;
+  }
+
+  .pd-page.is-enhanced .pd-method .pd-steps::before {
+    transform: scaleY(0);
+    transform-origin: top center;
+  }
+
+  .pd-page.is-enhanced .pd-method.is-current .pd-steps::before {
+    transform: scaleY(1);
+  }
+
+  .pd-step {
+    padding: 0 0 0 clamp(30px, 8vw, 44px);
+  }
+
+  .pd-step > .pd-node {
+    top: 3px;
+  }
+
+  .pd-compare-row {
+    grid-template-columns: minmax(0, 1fr);
+    row-gap: 6px;
+  }
+
+  .pd-compare-arrow {
+    display: none;
+  }
+}
+
+/* ── Short portrait phones: keep the essentials of each panel ───────────── */
+
+@media (orientation: portrait) and (max-width: 1023px) and (max-height: 720px) {
+  .pd-hr-blurb,
+  .pd-link-copy {
+    display: none;
+  }
+}
+
+@media (orientation: portrait) and (max-width: 1023px) and (max-height: 760px) {
+  .pd-compare-row {
+    position: relative;
+  }
+
+  .pd-compare-row strong {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+  }
+}
+
+@media (orientation: portrait) and (max-width: 1023px) {
+  .pd-links li a {
+    padding-block: clamp(7px, 1.6svh, 16px);
+  }
+}
+
+@media (orientation: portrait) and (max-width: 1023px) and (max-height: 640px) {
+  .pd-page {
+    --pd-pad-y: 10px;
+    --pd-gap: 8px;
+    --pd-h2: min(clamp(1.4rem, 6.2vw, 3rem), 4.4svh);
+    --pd-lead: clamp(0.86rem, min(3.7vw, 2.2svh), 1.18rem);
+  }
+
+  .pd-back {
+    min-height: 26px;
+  }
+
+  .pd-hr-item {
+    padding-bottom: 6px;
+  }
+
+  .pd-signs li,
+  .pd-compare-row,
+  .pd-links li a {
+    padding-block: 6px;
+  }
+
+  .pd-actions button {
+    min-height: 44px;
+  }
+}
+
+/* ── Short landscape screens (phones, small laptop windows) ────────────── */
+
+@media (orientation: landscape) and (max-height: 620px) {
+  .pd-page {
+    --pd-pad-y: clamp(8px, 2.4svh, 16px);
+    --pd-gap: clamp(6px, 1.6svh, 12px);
+    --pd-h1: min(clamp(1.7rem, 4.4vw, 3rem), 9svh);
+    --pd-h2: min(clamp(1.35rem, 3.2vw, 2.3rem), 8svh);
+    --pd-lead: clamp(0.8rem, min(1.7vw, 3.8svh), 0.98rem);
+    --pd-small: clamp(0.62rem, 1.4svh + 0.2vw, 0.74rem);
+  }
+
+  .pd-hero-layout,
+  .pd-today-layout,
+  .pd-service-layout,
+  .pd-more-layout {
+    gap: clamp(20px, 4vw, 48px);
+  }
+
+  .pd-signs li,
+  .pd-compare-row,
+  .pd-links li a {
+    padding-block: clamp(4px, 1.3svh, 10px);
+  }
+
+  .pd-change-layout {
+    gap: clamp(8px, 2.4svh, 18px);
+  }
+
+  .pd-hr-item {
+    padding-bottom: clamp(4px, 1.4svh, 10px);
+  }
+
+  .pd-hr-blurb,
+  .pd-link-copy {
+    display: none;
+  }
+
+  .pd-step {
+    padding-top: clamp(20px, 5svh, 28px);
+  }
+}
+
+/* ── Phones held sideways ──────────────────────────────────────────────── */
+
+@media (pointer: coarse) and (orientation: landscape) and (max-width: 932px) and (max-height: 520px) {
+  .pd-page {
+    --pd-route-h: calc(36px + env(safe-area-inset-bottom, 0px));
+    --pd-gutter: max(20px, env(safe-area-inset-left));
+  }
+
+  .pd-route {
+    padding-top: 7px;
+    grid-template-columns: minmax(64px, 20%) minmax(0, 1fr);
+    grid-template-rows: auto;
+    column-gap: 14px;
+    align-items: start;
+  }
+
+  .pd-route-now {
+    display: block;
+    padding-top: 2px;
+  }
+
+  .pd-route-now [data-pd-route-count] {
+    display: none;
+  }
+
+  .pd-route-item a {
+    min-height: 22px;
+  }
+}
+
+@media (orientation: landscape) and (max-height: 340px) {
+  .pd-term {
+    display: none;
+  }
+
+  .pd-compare-row {
+    position: relative;
+  }
+
+  .pd-compare-row strong {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+  }
+
+  .pd-page {
+    --pd-h2: min(clamp(1.25rem, 3vw, 2.3rem), 7.4svh);
+    --pd-lead: 0.78rem;
+    --pd-gap: 4px;
+    --pd-pad-y: 6px;
+  }
+
+  .pd-link-name,
+  .pd-cross .pd-link-name {
+    font-size: 1.05rem;
+  }
+}
+
+/* ── Mobile menu open: every panel reserves the menu's measured height ─── */
+
+@media (max-width: 749px),
+  (pointer: coarse) and (orientation: landscape) and (max-width: 932px) and (max-height: 520px) {
+  html.mobile-menu-open .pd-panel {
+    min-height: calc(var(--pd-panel-h) + var(--mobile-menu-open-h, 0px));
+    padding-top: calc(var(--nav-h) + var(--pd-pad-y) + var(--mobile-menu-open-h, 0px));
+  }
+}
+
+/* ── Reduced motion: nothing hidden, nothing moving ────────────────────── */
+
+@media (prefers-reduced-motion: reduce) {
+  .pd-route,
+  .pd-route-fill,
+  .pd-route-node,
+  .pd-back svg,
+  .pd-hr-item a,
+  .pd-links li a,
+  .pd-actions button {
+    transition-duration: 0ms;
+  }
+}

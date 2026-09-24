@@ -625,6 +625,8 @@ export const processManagementTemplateByLang: Record<SupportedLang, TechnologySo
           title: 'Modelado y Optimización de Procesos',
           copy:
             'Diseñamos procesos más claros y eficientes para fortalecer la operación y facilitar el crecimiento de tu empresa.',
+          href: '/administracion-de-procesos/modelado-y-optimizacion-de-procesos/',
+          cta: 'Ver servicios',
         },
         {
           code: 'AUTO',
@@ -632,6 +634,8 @@ export const processManagementTemplateByLang: Record<SupportedLang, TechnologySo
           title: 'Automatización Inteligente de Procesos',
           copy:
             'Automatizamos y conectamos procesos para agilizar la operación y aprovechar mejor el tiempo de tus equipos.',
+          href: '/administracion-de-procesos/automatizacion-inteligente-de-procesos/',
+          cta: 'Ver servicios',
         },
         {
           code: 'INTEL',
@@ -639,6 +643,8 @@ export const processManagementTemplateByLang: Record<SupportedLang, TechnologySo
           title: 'Inteligencia y Gobierno de Procesos',
           copy:
             'Convertimos la información de tus procesos en visibilidad y control para tomar decisiones con mayor claridad.',
+          href: '/administracion-de-procesos/inteligencia-y-gobierno-de-procesos/',
+          cta: 'Ver servicios',
         },
         {
           code: 'OPS',
@@ -646,6 +652,8 @@ export const processManagementTemplateByLang: Record<SupportedLang, TechnologySo
           title: 'Excelencia Operativa',
           copy:
             'Fortalecemos tu operación para aprovechar mejor los recursos, elevar la productividad y sostener mejores resultados.',
+          href: '/administracion-de-procesos/excelencia-operativa/',
+          cta: 'Ver servicios',
         },
         {
           code: 'ASSESS',
@@ -653,6 +661,8 @@ export const processManagementTemplateByLang: Record<SupportedLang, TechnologySo
           title: 'Diagnóstico y Auditoría de Procesos',
           copy:
             'Evaluamos tus procesos para descubrir oportunidades y definir acciones que impulsen la mejora de tu operación.',
+          href: '/administracion-de-procesos/diagnostico-y-auditoria-de-procesos/',
+          cta: 'Ver servicios',
         },
       ],
     },
@@ -762,6 +772,8 @@ export const processManagementTemplateByLang: Record<SupportedLang, TechnologySo
           title: 'Process Modeling and Optimization',
           copy:
             'We design clearer, more efficient processes to strengthen operations and facilitate your company’s growth.',
+          href: '/en/process-management/process-modeling-and-optimization/',
+          cta: 'View services',
         },
         {
           code: 'AUTO',
@@ -769,6 +781,8 @@ export const processManagementTemplateByLang: Record<SupportedLang, TechnologySo
           title: 'Intelligent Process Automation',
           copy:
             'We automate and connect processes to streamline operations and make better use of your teams’ time.',
+          href: '/en/process-management/intelligent-process-automation/',
+          cta: 'View services',
         },
         {
           code: 'INTEL',
@@ -776,6 +790,8 @@ export const processManagementTemplateByLang: Record<SupportedLang, TechnologySo
           title: 'Process Intelligence & Governance',
           copy:
             'We turn your process information into visibility and control for clearer decision-making.',
+          href: '/en/process-management/process-intelligence-and-governance/',
+          cta: 'View services',
         },
         {
           code: 'OPS',
@@ -783,6 +799,8 @@ export const processManagementTemplateByLang: Record<SupportedLang, TechnologySo
           title: 'Operational Excellence',
           copy:
             'We strengthen your operations to make better use of resources, improve productivity and sustain stronger results.',
+          href: '/en/process-management/operational-excellence/',
+          cta: 'View services',
         },
         {
           code: 'ASSESS',
@@ -790,6 +808,8 @@ export const processManagementTemplateByLang: Record<SupportedLang, TechnologySo
           title: 'Process Diagnosis & Audit',
           copy:
             'We assess your processes to uncover opportunities and define actions that drive operational improvement.',
+          href: '/en/process-management/process-diagnosis-and-audit/',
+          cta: 'View services',
         },
       ],
     },
