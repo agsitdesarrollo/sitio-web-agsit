@@ -148,3 +148,7 @@ Necesitas un proyecto de Google Cloud con facturaciÃ³n activa. Cloud Run requi
 Antes de cambiar DNS, prueba el formulario en la URL de Hosting, revisa las respuestas 200/4xx/5xx de `/api/contact`, canonical, hreflang, `robots.txt` y `sitemap.xml`. El único recurso que aún dependía de WordPress (`AGSIT BPM 360.mp4`) ya apunta a `public/assets/videos-servicios/BPM.mp4`; los logos de clientes también son locales.
 
 La redirección conocida `/es -> /` ya está configurada como 301. Las demás redirecciones WordPress deben agregarse a `firebase.json` cuando se disponga del inventario de URLs histórico: no se deben inventar equivalencias porque puede afectar SEO. Mantén el WordPress anterior disponible hasta validar dominio, assets, SEO y formulario en producción; para revertir, restaura únicamente los registros web de `@` y `www` en el proveedor DNS.
+
+## Nota de alcance
+
+Administración de Procesos contempla cinco páginas terciarias en español e inglés: Modelado y Optimización de Procesos, Automatización Inteligente de Procesos, Inteligencia y Gobierno de Procesos, Excelencia Operativa, y Diagnóstico y Auditoría de Procesos.
