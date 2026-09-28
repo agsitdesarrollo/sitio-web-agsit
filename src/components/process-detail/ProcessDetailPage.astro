@@ -1,0 +1,257 @@
+---
+import type { ContactCopy } from '../../data/contact';
+import {
+  getProcessDetailFamilyPath,
+  getProcessDetailPages,
+  getProcessDetailPath,
+  getProcessDetailUi,
+  type ProcessDetailPageContent,
+} from '../../data/processDetail';
+import type { SupportedLang } from '../../i18n/ui';
+import FinalContactSection from '../final-contact/FinalContactSection.astro';
+import './ProcessDetail.css';
+
+type Props = {
+  lang: SupportedLang;
+  page: ProcessDetailPageContent;
+  contactCopy: ContactCopy;
+};
+
+const { lang, page, contactCopy } = Astro.props;
+const ui = getProcessDetailUi(lang);
+const parentHref = getProcessDetailFamilyPath(lang);
+const siblings = getProcessDetailPages(lang).filter((item) => item.slug !== page.slug);
+
+// La ruta tiene una estación por panel, en el mismo orden en que se recorren.
+const stations = [
+  { id: 'pd-start', label: ui.stations.start },
+  { id: 'pd-today', label: ui.stations.today },
+  { id: 'pd-method', label: ui.stations.method },
+  ...page.services.map((service, index) => ({ id: `pd-service-${index + 1}`, label: service.short })),
+  { id: 'pd-result', label: ui.stations.result },
+  { id: 'pd-more', label: ui.stations.more },
+];
+---
+
+<main class="pd-page" data-pd-page>
+  <section id="pd-start" class="pd-panel pd-hero" data-pd-panel aria-labelledby="pd-hero-title">
+    <div class="pd-inner pd-hero-layout">
+      <div class="pd-hero-copy">
+        <a class="pd-back" href={parentHref} data-pd-reveal style="--pd-i:0">
+          <svg viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M10 3 5 8l5 5" /></svg>
+          {ui.back}
+        </a>
+        <h1 id="pd-hero-title" data-pd-reveal style="--pd-i:1">
+          <span>{page.hero.title[0]}</span>
+          <span>{page.hero.title[1]}</span>
+        </h1>
+        <p class="pd-lead" data-pd-reveal style="--pd-i:2">{page.hero.copy}</p>
+        <div class="pd-actions" data-pd-reveal style="--pd-i:3">
+          <button type="button" data-contact-trigger>{ui.cta}</button>
+        </div>
+      </div>
+
+      <nav class="pd-hero-route" aria-label={ui.heroRouteLabel} data-pd-reveal style="--pd-i:2">
+        <ol>
+          <li class="pd-hr-item pd-hr-start" style="--pd-k:0">
+            <span class="pd-node pd-node--start" aria-hidden="true"></span>
+            <span class="pd-hr-state">{page.hero.startLabel}</span>
+          </li>
+          {
+            page.services.map((service, index) => (
+              <li class="pd-hr-item" style={`--pd-k:${index + 1}`}>
+                <span class="pd-node pd-node--dot" aria-hidden="true"></span>
+                <a href={`#pd-service-${index + 1}`}>
+                  <span class="pd-hr-term">{service.term}</span>
+                  <span class="pd-hr-blurb">{service.blurb}</span>
+                </a>
+              </li>
+            ))
+          }
+          <li class="pd-hr-item pd-hr-end" style={`--pd-k:${page.services.length + 1}`}>
+            <span class="pd-node pd-node--end" aria-hidden="true"></span>
+            <span class="pd-hr-state">{page.hero.endLabel}</span>
+          </li>
+        </ol>
+      </nav>
+    </div>
+  </section>
+
+  <section id="pd-today" class="pd-panel pd-paper pd-today" data-pd-panel aria-labelledby="pd-today-title">
+    <div class="pd-inner pd-today-layout">
+      <h2 id="pd-today-title" data-pd-reveal style="--pd-i:0">{page.today.title}</h2>
+      <ul class="pd-signs">
+        {
+          page.today.signs.map((sign, index) => (
+            <li data-pd-reveal style={`--pd-i:${index + 1}`}>
+              <span class="pd-node pd-node--start" aria-hidden="true"></span>
+              <span>{sign}</span>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <section id="pd-method" class="pd-panel pd-method" data-pd-panel aria-labelledby="pd-method-title">
+    <div class="pd-inner pd-method-layout">
+      <h2 id="pd-method-title" data-pd-reveal style="--pd-i:0">{page.method.title}</h2>
+      <ol class="pd-steps">
+        {
+          page.method.steps.map((step, index) => (
+            <li class="pd-step" data-pd-reveal style={`--pd-i:${index + 1}`}>
+              <span class="pd-node pd-node--dot" aria-hidden="true"></span>
+              <h3>{step.title}</h3>
+              <p>{step.copy}</p>
+            </li>
+          ))
+        }
+      </ol>
+    </div>
+  </section>
+
+  {
+    page.services.map((service, index) => (
+      <section
+        id={`pd-service-${index + 1}`}
+        class:list={['pd-panel', 'pd-service', { 'pd-service--flip': index % 2 === 1 }]}
+        data-pd-panel
+        aria-labelledby={`pd-service-title-${index + 1}`}
+      >
+        <div class="pd-inner pd-service-layout">
+          <div class="pd-service-copy">
+            <h2 id={`pd-service-title-${index + 1}`} data-pd-reveal style="--pd-i:0">
+              {service.title}
+            </h2>
+            <p class="pd-term" data-pd-reveal style="--pd-i:1">
+              <span class="pd-node pd-node--dot" aria-hidden="true"></span>
+              {service.term}
+            </p>
+            <p class="pd-lead" data-pd-reveal style="--pd-i:2">{service.copy}</p>
+            <p class="pd-receive" data-pd-reveal style="--pd-i:3">
+              <strong>{ui.receive}</strong>
+              <span>{service.receive}</span>
+            </p>
+          </div>
+          <figure class="pd-media" data-pd-reveal style="--pd-i:2">
+            {
+              service.image ? (
+                <img src={service.image.src} alt={service.image.alt} width="1200" height="900" loading="lazy" decoding="async" />
+              ) : (
+                <span class="pd-media-term" aria-hidden="true">{service.term}</span>
+              )
+            }
+          </figure>
+        </div>
+      </section>
+    ))
+  }
+
+  <section id="pd-result" class="pd-panel pd-paper pd-change" data-pd-panel aria-labelledby="pd-change-title">
+    <div class="pd-inner pd-change-layout">
+      <h2 id="pd-change-title" data-pd-reveal style="--pd-i:0">{page.change.title}</h2>
+      <ul class="pd-compare">
+        {
+          page.change.rows.map((row, index) => (
+            <li class="pd-compare-row" data-pd-reveal style={`--pd-i:${index + 1}`}>
+              <p class="pd-before">
+                <strong>{ui.before}</strong>
+                <span>{row.before}</span>
+              </p>
+              <svg class="pd-compare-arrow" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                <path d="M4 12h15M13 6l6 6-6 6" />
+              </svg>
+              <p class="pd-after">
+                <strong>{ui.after}</strong>
+                <span>{row.after}</span>
+              </p>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <section id="pd-more" class="pd-panel pd-more" data-pd-panel aria-labelledby="pd-more-title">
+    <div class="pd-inner pd-more-layout">
+      <div class="pd-more-heading">
+        <h2 id="pd-more-title" data-pd-reveal style="--pd-i:0">{ui.moreTitle}</h2>
+        <a class="pd-parent" href={parentHref} data-pd-reveal style="--pd-i:1">
+          {ui.moreParent}
+          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 12h15M13 6l6 6-6 6" /></svg>
+        </a>
+      </div>
+      <ul class="pd-links">
+        {
+          siblings.map((sibling, index) => (
+            <li data-pd-reveal style={`--pd-i:${index + 1}`}>
+              <a href={getProcessDetailPath(lang, sibling.slug)}>
+                <span class="pd-link-name">{sibling.name}</span>
+                <span class="pd-link-copy">{sibling.summary}</span>
+                <svg class="pd-link-arrow" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                  <path d="M4 12h15M13 6l6 6-6 6" />
+                </svg>
+              </a>
+            </li>
+          ))
+        }
+        {
+          page.crossLink && (
+            <li class="pd-cross" data-pd-reveal style={`--pd-i:${siblings.length + 1}`}>
+              <a href={page.crossLink.href}>
+                <span class="pd-link-name">
+                  <em>{ui.crossLabel}:</em> {page.crossLink.title}
+                </span>
+                <span class="pd-link-copy">{page.crossLink.copy}</span>
+                <svg class="pd-link-arrow" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                  <path d="M4 12h15M13 6l6 6-6 6" />
+                </svg>
+              </a>
+            </li>
+          )
+        }
+      </ul>
+    </div>
+  </section>
+
+  <FinalContactSection copy={contactCopy} />
+
+  <nav class="pd-route" aria-label={ui.routeLabel} data-pd-route>
+    <p class="pd-route-now" aria-hidden="true">
+      <span data-pd-route-label>{stations[0].label}</span>
+      <span data-pd-route-count>{`1 / ${stations.length}`}</span>
+    </p>
+    <div class="pd-route-body">
+      <span class="pd-route-track" aria-hidden="true"><span class="pd-route-fill"></span></span>
+      <ol class="pd-route-list" style={`--pd-stations:${stations.length}`}>
+        {
+          stations.map((station, index) => (
+            <li class="pd-route-item">
+              <a
+                href={`#${station.id}`}
+                data-pd-station={index}
+                data-pd-station-label={station.label}
+                aria-label={`${ui.stationLabel} ${index + 1}: ${station.label}`}
+              >
+                <span class="pd-route-node" aria-hidden="true"></span>
+                <span class="pd-route-label" aria-hidden="true">{station.label}</span>
+              </a>
+            </li>
+          ))
+        }
+      </ol>
+    </div>
+  </nav>
+</main>
+
+<script>
+  import { setupProcessDetailScroll } from './processDetailScroll';
+
+  const start = () => setupProcessDetailScroll();
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', start, { once: true });
+  } else {
+    start();
+  }
+</script>
