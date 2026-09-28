@@ -7,6 +7,7 @@ colors:
   cyan: "#41c8f6"
   cyan-soft: "#8be2ff"
   teal-on-paper: "#1f6f92"
+  title-blue: "#253f6c"
   paper: "#f6fafe"
   white: "#ffffff"
   muted-on-ink: "rgba(180, 197, 219, 0.88)"
@@ -107,6 +108,8 @@ A near-black blue ground, one bright signal, and a cool paper for quiet passages
 ### Secondary
 - **Paper Teal** (#1f6f92): the signal on paper grounds, where cyan fails contrast (5.3:1 on paper). Nodes, labels and arrows on light panels.
 
+- **Title Blue** (#253f6c): titles on paper panels; the same strong blue the site uses for its contact title (9:1 on paper).
+
 ### Neutral
 - **Deep Control-Room Ink** (#020712): main ground of hero, services and the route bar.
 - **Night Navy** (#08152b): alternate dark ground for the method and "more services" panels, media frames and button text.
@@ -117,7 +120,7 @@ A near-black blue ground, one bright signal, and a cool paper for quiet passages
 
 ### Named Rules
 **The Signal Rule.** Cyan appears only where it marks position or invites action. If it is decoration, remove it.
-**The Paper Rule.** Paper panels speak about the reader (their situation, their result); services and method stay on ink. Accent on paper is always Paper Teal.
+**The Paper Rule.** Paper panels speak about the reader (their situation, their result); services and method stay on ink. Titles on paper are Title Blue and the accent on paper is always Paper Teal.
 
 ## Typography
 

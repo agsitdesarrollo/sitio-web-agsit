@@ -9,6 +9,7 @@
 .pd-page {
   --pd-ink: #020712;
   --pd-navy: #08152b;
+  --pd-blue: #253f6c; /* title blue of the site (same as the contact title): 9:1 on paper */
   --pd-cyan: #41c8f6;
   --pd-cyan-soft: #8be2ff;
   --pd-teal: #1f6f92; /* accent on paper: 5.3:1 */
@@ -323,7 +324,7 @@
 }
 
 .pd-paper h2 {
-  color: var(--pd-navy);
+  color: var(--pd-blue);
 }
 
 .pd-signs li {
@@ -352,10 +353,6 @@
 .pd-method-layout {
   display: grid;
   gap: clamp(20px, 6svh, 64px);
-}
-
-.pd-method h2 {
-  max-width: 20ch;
 }
 
 .pd-steps {
@@ -424,10 +421,6 @@
   display: grid;
   gap: var(--pd-gap);
   justify-items: start;
-}
-
-.pd-service-copy h2 {
-  max-width: 17ch;
 }
 
 .pd-term {
@@ -972,11 +965,6 @@
   .pd-service-layout {
     height: var(--pd-content-h);
     grid-template-rows: auto minmax(0, 1fr);
-  }
-
-  .pd-service-copy h2,
-  .pd-method h2 {
-    max-width: none;
   }
 
   .pd-service--flip .pd-media {

@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-09-24T09:08:55Z",
+  "generatedAt": "2026-09-24T19:11:24Z",
   "title": "Design System: AGSIT service pages",
   "extensions": {
     "colorMeta": {
@@ -47,6 +47,21 @@
           "#65afd5",
           "#89d4fb",
           "#dcf3ff"
+        ]
+      },
+      "title-blue": {
+        "role": "secondary",
+        "displayName": "Title Blue",
+        "canonical": "oklch(37.1% 0.084 261)",
+        "tonalRamp": [
+          "#000827",
+          "#0a234d",
+          "#27416e",
+          "#456191",
+          "#6583b5",
+          "#87a6da",
+          "#abcaff",
+          "#e6efff"
         ]
       },
       "ink": {
@@ -232,7 +247,7 @@
       },
       {
         "name": "The Paper Rule",
-        "body": "Paper panels speak about the reader (their situation, their result); services and method stay on ink. Accent on paper is always Paper Teal.",
+        "body": "Paper panels speak about the reader (their situation, their result); services and method stay on ink. Titles on paper are Title Blue and the accent on paper is always Paper Teal.",
         "section": "colors"
       },
       {
