@@ -1,0 +1,52 @@
+---
+import ContactDrawer from '../../../../components/contact/ContactDrawer.astro';
+import Footer from '../../../../components/footer/Footer.astro';
+import Header from '../../../../components/navigation/Header.astro';
+import PageShellScripts from '../../../../components/navigation/PageShellScripts.astro';
+import ProjectManagementDetailPage from '../../../../components/project-management-detail/ProjectManagementDetailPage.astro';
+import { getContactCopy } from '../../../../data/contact';
+import { getFooterCopy } from '../../../../data/footer';
+import {
+  getProjectManagementDetailAlternatePath,
+  getProjectManagementDetailPages,
+  type ProjectManagementDetailContent,
+} from '../../../../data/projectManagementDetail';
+import { getServicesContent } from '../../../../data/services';
+import { useTranslations } from '../../../../i18n/utils';
+import SiteLayout from '../../../../layouts/SiteLayout.astro';
+
+export function getStaticPaths() {
+  return getProjectManagementDetailPages('en').map((page) => ({ params: { slug: page.slug }, props: { page } }));
+}
+
+const lang = 'en';
+const { page } = Astro.props as { page: ProjectManagementDetailContent };
+const alternateHref = getProjectManagementDetailAlternatePath(lang, page.slug);
+const contactCopy = getContactCopy(lang);
+const footerCopy = getFooterCopy(lang);
+const servicesContent = getServicesContent(lang);
+const t = useTranslations(lang);
+---
+
+<SiteLayout
+  title={page.metadata.title}
+  description={page.metadata.description}
+  canonicalUrl={page.metadata.canonicalUrl}
+  image={page.metadata.image}
+  imageAlt={page.metadata.imageAlt}
+  htmlLang={page.metadata.htmlLang}
+  locale={page.metadata.locale}
+  alternates={[
+    { lang: 'es-MX', href: `https://agsit.com.mx${alternateHref}` },
+    { lang: 'en', href: page.metadata.canonicalUrl },
+    { lang: 'x-default', href: `https://agsit.com.mx${alternateHref}` },
+  ]}
+>
+  <div class="app-shell">
+    <Header lang={lang} homeHref="/en/#inicio" servicesHref="/en/#servicios" contactHref="#contacto" alternateHref={alternateHref} />
+    <ProjectManagementDetailPage content={page} contactCopy={contactCopy} />
+    <Footer copy={footerCopy} services={servicesContent.services} homeHref="/en/#inicio" servicesHref="/en/#servicios" contactHref="#contacto" />
+    <ContactDrawer copy={contactCopy} />
+    <PageShellScripts openMenuLabel={t('nav.openMenu')} closeMenuLabel={t('nav.closeMenu')} />
+  </div>
+</SiteLayout>

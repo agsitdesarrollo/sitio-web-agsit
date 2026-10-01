@@ -1,0 +1,116 @@
+---
+import type { ContactCopy } from '../../data/contact';
+import type { ProjectManagementDetailContent } from '../../data/projectManagementDetail';
+import FinalContactSection from '../final-contact/FinalContactSection.astro';
+import ServiceSlidesController from '../service-slides/ServiceSlidesController.astro';
+import './ProjectManagementDetail.css';
+
+type Props = {
+  content: ProjectManagementDetailContent;
+  contactCopy: ContactCopy;
+};
+
+const { content, contactCopy } = Astro.props;
+---
+
+<main class="pm-detail-page" data-project-management-detail>
+  <section class="pm-panel pm-mobile-hero" aria-labelledby="pm-mobile-hero-title">
+    <div class="pm-mobile-hero-copy">
+      <p class="pm-eyebrow">{content.story.eyebrow}</p>
+      <h1 id="pm-mobile-hero-title">{content.hero.title}</h1>
+      <p class="pm-experience-lead">{content.hero.copy}</p>
+      <button class="pm-primary-cta" type="button" data-contact-trigger>{content.hero.primaryCta}</button>
+    </div>
+  </section>
+
+  <section
+    id="pm-start"
+    class="pm-panel pm-story-track pm-experience"
+    aria-labelledby="pm-hero-title"
+    data-service-chapter-track
+    data-active-chapter="0"
+    data-chapter-tone="paper"
+  >
+    <div class="pm-experience-shell">
+      <aside class="pm-experience-rail">
+        <div class="pm-experience-intro">
+          <p class="pm-eyebrow">{content.story.eyebrow}</p>
+          <h1 id="pm-hero-title">{content.hero.title}</h1>
+          <p class="pm-experience-lead">{content.hero.copy}</p>
+          <button class="pm-primary-cta" type="button" data-contact-trigger>{content.hero.primaryCta}</button>
+        </div>
+
+        <nav class="pm-story-nav" aria-label={content.story.instruction}>
+          <p class="pm-story-nav-label">{content.story.instruction}</p>
+          <ol>
+            {content.story.chapters.map((chapter, index) => (
+              <li>
+                <a href={`#pm-chapter-${chapter.id}`} data-service-chapter-link data-service-chapter-index={index}>
+                  <span class="pm-story-nav-node" aria-hidden="true"></span>
+                  <span>{chapter.navLabel}</span>
+                </a>
+              </li>
+            ))}
+          </ol>
+        </nav>
+      </aside>
+
+      <div class="pm-experience-display" role="group" aria-label={content.story.title}>
+        <div class="pm-display-topline">
+          <span>{content.story.title}</span>
+          <span>{content.hero.visualLabel}</span>
+        </div>
+        <div class="pm-story-chapters">
+          {content.story.chapters.map((chapter, index) => (
+            <article
+              id={`pm-chapter-${chapter.id}`}
+              class="pm-story-chapter"
+              data-chapter-kind={chapter.kind}
+              data-chapter-tone={index % 2 === 0 ? 'paper' : 'ink'}
+              aria-labelledby={`pm-chapter-title-${chapter.id}`}
+            >
+              <div class="pm-chapter-copy">
+                <div class="pm-chapter-kicker">
+                  <span class="pm-term">{chapter.term}</span>
+                  <span class="pm-chapter-count">{String(index + 1).padStart(2, '0')} / {String(content.story.chapters.length).padStart(2, '0')}</span>
+                </div>
+                <h2 id={`pm-chapter-title-${chapter.id}`}>{chapter.title}</h2>
+                <p>{chapter.copy}</p>
+                {chapter.kind === 'service' && chapter.includes && (
+                  <div class="pm-chapter-includes">
+                    <h3>{chapter.includesLabel}</h3>
+                    <ul>{chapter.includes.map((item) => <li>{item}</li>)}</ul>
+                  </div>
+                )}
+                {chapter.kind === 'method' && chapter.steps && (
+                  <ol class="pm-method-steps pm-chapter-method-steps">
+                    {chapter.steps.map((step, stepIndex) => (
+                      <li>
+                        <span class="pm-method-node" aria-hidden="true">{String(stepIndex + 1).padStart(2, '0')}</span>
+                        <div><h3>{step.title}</h3><p>{step.copy}</p></div>
+                      </li>
+                    ))}
+                  </ol>
+                )}
+                {chapter.kind === 'outcomes' && chapter.outcomes && (
+                  <div class="pm-chapter-includes pm-chapter-outcomes">
+                    <h3>{chapter.includesLabel}</h3>
+                    <ul>{chapter.outcomes.map((item) => <li>{item}</li>)}</ul>
+                  </div>
+                )}
+              </div>
+              {chapter.kind === 'service' && (
+                <figure class="pm-chapter-visual" aria-label={chapter.imageAlt}>
+                  <span>{chapter.term}</span>
+                </figure>
+              )}
+            </article>
+          ))}
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <FinalContactSection copy={contactCopy} />
+  <ServiceSlidesController />
+</main>

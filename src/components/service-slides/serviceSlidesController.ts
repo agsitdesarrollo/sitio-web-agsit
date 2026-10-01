@@ -6,7 +6,7 @@ gsap.registerPlugin(ScrollTrigger);
 type TrackDefinition = {
   section: string;
   items: string;
-  variant?: 'default' | 'vertical';
+  variant?: 'default' | 'vertical' | 'chapters';
 };
 
 type PageDefinition = {
@@ -20,6 +20,10 @@ type TrackDestination = {
 };
 
 const PAGE_DEFINITIONS: PageDefinition[] = [
+  {
+    root: '.pm-detail-page',
+    tracks: [{ section: '.pm-story-track', items: '.pm-story-chapter', variant: 'chapters' }],
+  },
   {
     root: '.technology-page',
     tracks: [{ section: '.technology-benefits', items: '.technology-benefit-card' }],
@@ -187,6 +191,96 @@ const setupTrack = (
   const matchMedia = gsap.matchMedia();
   const getStart = () => `top top+=${getNavOffset()}`;
   const getEnd = () => `+=${Math.round(getPanelHeight() * Math.max(items.length, 2))}`;
+
+  if (variant === 'chapters') {
+    section.classList.add('service-card-track-chapters');
+    const page = section.closest<HTMLElement>('.pm-detail-page');
+    const links = Array.from(page?.querySelectorAll<HTMLAnchorElement>('[data-service-chapter-link]') ?? []);
+    let activeIndex = -1;
+
+    const setActiveChapter = (nextIndex: number, animate = true) => {
+      const index = Math.max(0, Math.min(items.length - 1, nextIndex));
+      if (index === activeIndex) return;
+
+      const previousIndex = activeIndex;
+      activeIndex = index;
+      const updateContent = () => {
+        section.dataset.activeChapter = String(index);
+
+        items.forEach((item, itemIndex) => {
+          gsap.killTweensOf(item);
+          gsap.set(item, { clearProps: 'transform' });
+          const isActive = itemIndex === index;
+          item.classList.toggle('is-active', isActive);
+          item.setAttribute('aria-hidden', String(!isActive));
+          item.inert = !isActive;
+        });
+
+        links.forEach((link, linkIndex) => {
+          if (linkIndex === index) link.setAttribute('aria-current', 'step');
+          else link.removeAttribute('aria-current');
+        });
+      };
+
+      const updatePalette = () => {
+        section.dataset.chapterTone = index % 2 === 0 ? 'paper' : 'ink';
+      };
+      const paletteChanged = previousIndex >= 0 && index % 2 !== previousIndex % 2;
+      const viewTransitionDocument = document as Document & {
+        startViewTransition?: (callback: () => void) => { finished?: Promise<void> };
+      };
+
+      if (animate && paletteChanged && viewTransitionDocument.startViewTransition) {
+        updateContent();
+        try {
+          viewTransitionDocument.startViewTransition.call(document, updatePalette);
+        } catch {
+          updatePalette();
+        }
+      } else {
+        updateContent();
+        updatePalette();
+      }
+    };
+
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (reduceMotion) {
+      section.classList.add('service-card-track-reduced');
+      gsap.set(items, { clearProps: 'all' });
+      items.forEach((item) => {
+        item.classList.remove('is-active');
+        item.removeAttribute('aria-hidden');
+        item.inert = false;
+      });
+      links.forEach((link) => link.removeAttribute('aria-current'));
+      return;
+    }
+
+    setActiveChapter(0, false);
+    const trigger = ScrollTrigger.create({
+      id: `service-card-track-${trackIndex}-chapters`,
+      trigger: section,
+      start: getStart,
+      end: () => `+=${Math.round(getPanelHeight() * Math.max(items.length - 1, 1))}`,
+      pin: true,
+      pinSpacing: true,
+      anticipatePin: 1,
+      invalidateOnRefresh: true,
+      onUpdate: (self) => setActiveChapter(Math.round(self.progress * (items.length - 1))),
+    });
+
+    return () => {
+      trigger.kill();
+      section.classList.remove('service-card-track-chapters');
+      gsap.set(items, { clearProps: 'all' });
+      items.forEach((item) => {
+        item.classList.remove('is-active');
+        item.removeAttribute('aria-hidden');
+        item.inert = false;
+      });
+      links.forEach((link) => link.removeAttribute('aria-current'));
+    };
+  }
 
   matchMedia.add(
     {
@@ -445,6 +539,28 @@ const setupLandingTrackNavigation = (root: HTMLElement) => {
   const isContactFree = () => html.classList.contains('service-slides-footer-free');
   const isMenuOpen = () => html.classList.contains('mobile-menu-open');
 
+  const onChapterLinkClick = (event: MouseEvent) => {
+    const link = (event.target as Element | null)?.closest<HTMLAnchorElement>('[data-service-chapter-link]');
+    if (!link || event.defaultPrevented || event.metaKey || event.ctrlKey || event.shiftKey) return;
+
+    const section = link.closest<HTMLElement>('[data-service-chapter-track]');
+    const index = Number.parseInt(link.dataset.serviceChapterIndex ?? '', 10);
+    const items = section?.querySelectorAll<HTMLElement>('.pm-story-chapter');
+    if (!section || !items?.length || !Number.isFinite(index)) return;
+
+    const spacer = section.closest<HTMLElement>('.pin-spacer');
+    const destinations = getDestinations().filter((destination) => {
+      if (spacer) return destination.owner === spacer;
+      return destination.owner === section;
+    });
+    const destination = destinations[index];
+    if (!destination) return;
+
+    event.preventDefault();
+    event.stopPropagation();
+    navigateTo(destination.position);
+  };
+
   const queueNavigationDirection = (direction: 1 | -1) => {
     if (!buffersRapidGestures) return;
 
@@ -489,6 +605,7 @@ const setupLandingTrackNavigation = (root: HTMLElement) => {
 
     Array.from(root.children).forEach((child) => {
       if (!(child instanceof HTMLElement)) return;
+      if (child.matches('section') && child.getClientRects().length === 0) return;
 
       // Un pin desplaza visualmente su spacer mientras está activo. offsetTop
       // conserva la coordenada del documento y evita que una parada se mueva.
@@ -678,6 +795,8 @@ const setupLandingTrackNavigation = (root: HTMLElement) => {
     target instanceof Element &&
     Boolean(target.closest('input, textarea, select, button, a, [data-contact-drawer], [data-mobile-menu]'));
 
+  root.addEventListener('click', onChapterLinkClick, true);
+
   window.addEventListener(
     'wheel',
     (event) => {
@@ -829,7 +948,18 @@ export const setupServiceSlides = () => {
   setupTechnologySolutionIntroBridgeProgress(root);
   setupTechnologySolutionJourneyPathProgress(root);
   setupPageSnapState(root);
-  setupLandingTrackNavigation(root);
+  const useNativeReducedMotionScroll =
+    root.matches('.pm-detail-page') && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (!useNativeReducedMotionScroll) setupLandingTrackNavigation(root);
+
+  if (root.matches('.pm-detail-page') && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    const heroItems = Array.from(root.querySelectorAll<HTMLElement>('.pm-experience-intro > *'));
+    gsap.fromTo(
+      heroItems,
+      { autoAlpha: 0, y: 18 },
+      { autoAlpha: 1, y: 0, duration: 0.62, stagger: 0.08, ease: 'power2.out', clearProps: 'willChange' },
+    );
+  }
 
   const refresh = () => ScrollTrigger.refresh();
   requestAnimationFrame(refresh);

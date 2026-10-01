@@ -118,7 +118,8 @@ main {
   .inn-page,
   .quality-page,
   .crm-platform-page,
-  .dm-v2-page
+  .dm-v2-page,
+  .pm-detail-page
 ) {
   padding-top: 0;
 }
