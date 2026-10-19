@@ -100,7 +100,16 @@
 
 .sp-hero__title span {
   display: block;
-  white-space: nowrap;
+  min-width: 0;
+  max-width: 100%;
+  white-space: normal;
+  text-wrap: balance;
+}
+
+/* Extra ink room protects the serif glyphs without changing line geometry.
+   Only the entrance is masked; the finished title never clips wrapped text. */
+.sp-hero.is-entering .sp-hero__title > span {
+  clip-path: inset(-0.24em -0.12em);
 }
 
 .sp-hero__title-accent {
@@ -393,7 +402,7 @@
 }
 
 @media (max-width: 900px) and (orientation: portrait) {
-  .sp-hero__title { font-size: clamp(2.55rem, 10.7vw, 7rem); }
+  .sp-hero__title { font-size: clamp(2.25rem, 9.6vw, 6.4rem); }
 }
 
 @media (orientation: landscape) and (max-height: 620px) {
@@ -405,4 +414,11 @@
   .sp-hero__title-base { margin-top: 0.12em; }
   .sp-hero__copy { width: min(480px, 78vw); --sp-hero-copy-mt: 12px; margin-right: 0; justify-self: center; font-size: clamp(0.72rem, 2.1vw, 0.84rem); line-height: 1.38; text-align: center; }
   .sp-hero__scroll { width: 48px; bottom: 3px; }
+}
+
+/* Marketing keeps the desktop orbit size for mouse-driven landscape.
+   Reserve that orbit's space without inheriting its header overlap. */
+@media (pointer: fine) and (orientation: landscape) and (max-width: 932px) and (max-height: 520px) {
+  .sp-page > .sp-hero { padding-bottom: 104px; }
+  .sp-hero__scroll { width: clamp(76px, 6.2vw, 96px); bottom: 14px; }
 }

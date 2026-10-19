@@ -75,6 +75,28 @@
     // ── Scroll-linked animation (pins, reveal, cards) ──────────────────────
     let activeStage = 0;
     let stageTimeline: gsap.core.Timeline | null = null;
+    const methodItems = Array.from(method.querySelectorAll<HTMLElement>('.js-sp-reveal'));
+    let methodShown = false;
+    let methodTween: gsap.core.Tween | null = null;
+    let methodFallback = 0;
+    const finishMethod = () => {
+      methodTween?.kill();
+      window.clearTimeout(methodFallback);
+      method.classList.remove('is-entering');
+      gsap.set(methodItems, { clearProps: 'opacity,visibility,transform' });
+    };
+    const revealMethod = () => {
+      if (methodShown) return;
+      methodShown = true;
+      method.classList.add('is-entering');
+      // Natural CSS stays visible until the whole section arrives. No step
+      // waits for its own viewport threshold, including the last one.
+      methodFallback = window.setTimeout(finishMethod, 900);
+      methodTween = gsap.fromTo(methodItems, { opacity: 0, y: 12 }, {
+        opacity: 1, y: 0, duration: 0.4, stagger: 0.04,
+        ease: 'power3.out', onComplete: finishMethod,
+      });
+    };
     const context = gsap.context(() => {
       const narrativeTimeline = gsap.timeline({ defaults: { ease: 'none' } });
       narrativeTimeline.from('.js-sp-words .sp-word', { opacity: 0.14, duration: 0.3, stagger: { each: 0.4 } });
@@ -114,7 +136,12 @@
         onUpdate: (self) => setActiveStage(Math.round(self.progress * (stageCount - 1))),
       });
       gsap.fromTo('.js-sp-method-img', { yPercent: 5 }, { yPercent: -5, ease: 'none', scrollTrigger: { trigger: method, start: 'top bottom', end: 'bottom top', scrub: true, refreshPriority: 3 } });
-      gsap.utils.toArray<HTMLElement>('.js-sp-reveal', root).forEach((element) => gsap.from(element, { autoAlpha: 0, y: 30, duration: 0.9, ease: 'power3.out', scrollTrigger: { trigger: element, start: 'top 88%', refreshPriority: 4 } }));
+      gsap.utils.toArray<HTMLElement>('.js-sp-reveal', root).filter((element) => !method.contains(element)).forEach((element) => gsap.from(element, { autoAlpha: 0, y: 30, duration: 0.9, ease: 'power3.out', scrollTrigger: { trigger: element, start: 'top 88%', refreshPriority: 4 } }));
+      ScrollTrigger.create({
+        trigger: method, start: () => top(method), end: () => top(method) + panelHeight(),
+        onEnter: revealMethod, onEnterBack: revealMethod,
+        onLeave: finishMethod, onLeaveBack: finishMethod, refreshPriority: 4,
+      });
     }, root);
 
     // ── Geometry ───────────────────────────────────────────────────────────
@@ -217,7 +244,10 @@
         easing: kind === 'stop' ? stopEase : clampEase,
         lock: true,
         force: true,
-        onComplete: () => { window.clearTimeout(movingTimer); moving = false; },
+        onComplete: () => {
+          window.clearTimeout(movingTimer); moving = false;
+          if (at(y, top(method))) revealMethod();
+        },
       });
     };
 
@@ -298,6 +328,7 @@
       window.removeEventListener('touchstart', onTouchStart); window.removeEventListener('keydown', onKeyDown);
       window.removeEventListener('agsit:viewport-change', refresh); window.removeEventListener('agsit:mobile-menu-change', refresh);
       bodyObserver.disconnect(); gsap.ticker.remove(tick); lenis.destroy(); context.revert();
+      finishMethod();
       root.classList.remove('is-enhanced');
       delete root.dataset.spReady;
     };

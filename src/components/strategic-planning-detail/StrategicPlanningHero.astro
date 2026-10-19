@@ -15,8 +15,8 @@ const orbitId = `${titleId}-scroll-orbit`;
   <div class="sp-hero__content">
     <p class="sp-hero__eyebrow js-sp-hero-eyebrow">{content.eyebrow}</p>
     <h1 id={titleId} class="sp-hero__title">
-      <span class="sp-hero__title-accent js-sp-hero-line">{content.primary}</span>
-      <span class="sp-hero__title-base js-sp-hero-line">{content.secondary}</span>
+      <span class="sp-hero__title-accent"><span class="js-sp-hero-line">{content.primary}</span></span>
+      <span class="sp-hero__title-base"><span class="js-sp-hero-line">{content.secondary}</span></span>
     </h1>
     <p class="sp-hero__copy js-sp-hero-copy">{content.copy}</p>
   </div>
@@ -58,26 +58,43 @@ const orbitId = `${titleId}-scroll-orbit`;
 
       media.add(
         {
+          all: 'all',
           reduceMotion: '(prefers-reduced-motion: reduce)',
         },
         (context) => {
-          if (context.conditions?.reduceMotion) {
-            gsap.set(animatedItems, { clearProps: 'all' });
+          if (context.conditions?.reduceMotion || window.scrollY > 1) {
+            gsap.set(animatedItems, { clearProps: 'opacity,visibility,transform' });
             return;
           }
 
-          gsap.set([eyebrow, copy, scrollControl], { autoAlpha: 0, y: 18 });
-          gsap.set(lines, { autoAlpha: 0, yPercent: 38 });
-
-          const entrance = gsap.timeline({ defaults: { ease: 'power3.out' } });
+          let finished = false;
+          let fallback = 0;
+          const inputs = ['wheel', 'touchstart', 'pointerdown', 'keydown'] as const;
+          const finish = () => {
+            if (finished) return;
+            finished = true;
+            entrance.progress(1).kill();
+            window.clearTimeout(fallback);
+            root.classList.remove('is-entering');
+            gsap.set(animatedItems, { clearProps: 'opacity,visibility,transform' });
+            inputs.forEach((event) => window.removeEventListener(event, finish, true));
+          };
+          const entrance = gsap.timeline({ defaults: { ease: 'power3.out' }, onComplete: finish });
+          root.classList.add('is-entering');
+          // Opacity keeps the button interactive throughout its entrance.
+          gsap.set([eyebrow, copy, scrollControl], { opacity: 0, y: 8 });
+          gsap.set(lines, { yPercent: 110 });
           entrance
-            .to(eyebrow, { autoAlpha: 1, y: 0, duration: 0.55 }, 0.12)
-            .to(lines, { autoAlpha: 1, yPercent: 0, duration: 0.9, stagger: 0.12 }, 0.24)
-            .to(copy, { autoAlpha: 1, y: 0, duration: 0.62 }, 0.62)
-            .to(scrollControl, { autoAlpha: 1, y: 0, duration: 0.52 }, 0.84);
+            .to(lines, { yPercent: 0, duration: 0.66, stagger: 0.09 }, 0)
+            .to(eyebrow, { opacity: 1, y: 0, duration: 0.4 }, 0.28)
+            .to(copy, { opacity: 1, y: 0, duration: 0.4 }, 0.44)
+            .to(scrollControl, { opacity: 1, y: 0, duration: 0.35 }, 0.6);
+          inputs.forEach((event) => window.addEventListener(event, finish, { capture: true, passive: true }));
+          // Fail open even if the animation ticker is interrupted.
+          fallback = window.setTimeout(finish, 1300);
 
           return () => {
-            entrance.kill();
+            finish();
           };
         },
         root,
