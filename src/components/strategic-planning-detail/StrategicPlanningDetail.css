@@ -1,0 +1,1090 @@
+.sp-page {
+  --sp-ink: #020712;
+  --sp-ink-soft: #061228;
+  --sp-blue: #253f6c;
+  --sp-cyan: #41c8f6;
+  --sp-cyan-soft: #8be2ff;
+  --sp-paper: #f8fbff;
+  --sp-line-dark: rgba(242, 248, 255, 0.14);
+  --sp-line-light: rgba(37, 63, 108, 0.16);
+  background: var(--sp-ink);
+  color: #f2f8ff;
+  overflow: visible;
+  /* The fixed header overlays the page; it must not add a second top offset. */
+  padding-top: 0;
+}
+
+/* Lenis drives every scroll on this page (see DigitalStrategyPage.astro).
+   These are the base rules its runtime expects on the document. */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+
+html.lenis.lenis-stopped {
+  overflow: clip;
+}
+
+html.lenis.lenis-smooth iframe {
+  pointer-events: none;
+}
+
+/* Keep the hero as a complete viewport panel, matching the technology
+   solutions track. The header's height is reserved inside the panel only. */
+.sp-page > .sp-hero {
+  min-height: var(--app-panel-h, 100svh);
+  box-sizing: border-box;
+}
+
+.sp-page h1,
+.sp-page h2,
+.sp-page h3,
+.sp-page p,
+.sp-page dl,
+.sp-page dd {
+  margin: 0;
+}
+
+.sp-page ol,
+.sp-page ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.sp-eyebrow {
+  color: var(--sp-cyan);
+  font-family: 'Inter', 'Segoe UI', Tahoma, sans-serif;
+  font-size: clamp(0.68rem, 1vw, 0.78rem);
+  font-weight: 900;
+  letter-spacing: 0.18em;
+  line-height: 1.45;
+  text-transform: uppercase;
+}
+
+/* ─── PINNED NARRATIVE ─── */
+
+.sp-narrative-track {
+  position: relative;
+  background: #020712;
+}
+
+.sp-page.is-enhanced .sp-narrative-track {
+  /* Visible panel + its 1.3-panel word-reveal range. */
+  height: var(--sp-narrative-track-h, 230svh);
+}
+
+.sp-narrative {
+  position: relative;
+  z-index: 3;
+  isolation: isolate;
+  min-height: var(--sp-panel-h, var(--app-panel-h, 100svh));
+  box-sizing: border-box;
+  padding: clamp(46px, 6vw, 84px) clamp(18px, 5vw, 72px);
+  display: grid;
+  align-items: center;
+  background: linear-gradient(180deg, #020712, #061228 60%, #020712);
+}
+
+.sp-large-copy {
+  width: min(1080px, 88vw);
+  margin-inline: auto;
+  color: #f2f8ff;
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: clamp(2.5rem, 4.4vw, 5.4rem);
+  font-weight: 300;
+  line-height: 1.08;
+  text-wrap: balance;
+}
+
+.sp-word {
+  display: inline-block;
+  will-change: opacity;
+}
+
+.sp-serif {
+  color: var(--sp-cyan);
+  font-style: italic;
+  font-weight: 400;
+}
+
+/* ─── LIFECYCLE JOURNEY ─── */
+
+.sp-lifecycle-track {
+  position: relative;
+  z-index: 2;
+  background: linear-gradient(180deg, #020712, #071426);
+}
+
+.sp-page.is-enhanced .sp-lifecycle-track {
+  /* Visible card panel + one panel between consecutive cards. The last
+     card ends exactly where the pin ends, so Method is one panel away. */
+  height: var(--sp-lifecycle-track-h, 500svh);
+}
+
+.sp-lifecycle-intro {
+  min-height: var(--app-panel-h, 100svh);
+  box-sizing: border-box;
+  display: grid;
+  place-items: center;
+  padding: clamp(48px, 8vw, 110px) clamp(18px, 6vw, 92px);
+  background: linear-gradient(180deg, #020712, #071426);
+}
+
+.sp-lifecycle {
+  position: relative;
+  z-index: 3;
+  isolation: isolate;
+  min-height: var(--sp-panel-h, var(--app-panel-h, 100svh));
+  box-sizing: border-box;
+  padding: 0 clamp(18px, 6vw, 92px);
+  display: grid;
+  align-items: center;
+  justify-items: center;
+  background: linear-gradient(180deg, #020712, #071426);
+}
+
+.sp-lifecycle-cards .sp-journey {
+  align-self: center;
+  margin-block: 0;
+}
+
+.sp-heading {
+  width: min(780px, 100%);
+  margin-inline: auto;
+  text-align: center;
+}
+
+.sp-heading h2 {
+  margin-top: 12px;
+  color: #f2f8ff;
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: clamp(2.5rem, 4.8vw, 5.4rem);
+  font-weight: 300;
+  line-height: 1.02;
+  text-wrap: balance;
+}
+
+.sp-heading > p:not(.sp-eyebrow) {
+  max-width: 680px;
+  margin: 18px auto 0;
+  color: rgba(180, 197, 219, 0.86);
+  font-family: 'Inter', 'Segoe UI', Tahoma, sans-serif;
+  font-size: clamp(0.98rem, 1.3vw, 1.12rem);
+  font-weight: 500;
+  line-height: 1.62;
+}
+
+.sp-heading-light h2 {
+  color: var(--sp-blue);
+}
+
+.sp-heading-light > p:not(.sp-eyebrow) {
+  color: rgba(13, 21, 34, 0.72);
+}
+
+.sp-heading-left {
+  margin-inline: 0;
+  text-align: left;
+}
+
+.sp-heading-left > p:not(.sp-eyebrow) {
+  margin-inline: 0;
+}
+
+.sp-journey {
+  width: min(1240px, 100%);
+  margin: clamp(48px, 7vw, 96px) auto 0;
+  display: grid;
+  grid-template-columns: minmax(150px, 190px) minmax(0, 940px);
+  gap: clamp(36px, 5vw, 64px);
+  align-items: center;
+  justify-content: center;
+  place-content: center;
+}
+
+.sp-journey-rail {
+  display: grid;
+  justify-items: start;
+  align-content: center;
+  gap: 22px;
+  justify-self: end;
+}
+
+.sp-journey-counter {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  color: #f2f8ff;
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: clamp(2.4rem, 3vw, 3.4rem);
+  font-weight: 300;
+  line-height: 1;
+}
+
+.sp-journey-counter i {
+  color: rgba(180, 197, 219, 0.55);
+  font-size: 0.95rem;
+  font-style: normal;
+  font-family: 'Inter', 'Segoe UI', Tahoma, sans-serif;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+}
+
+.sp-journey-progress {
+  width: 2px;
+  height: clamp(90px, 16vh, 150px);
+  border-radius: 999px;
+  background: rgba(65, 200, 246, 0.16);
+  overflow: hidden;
+}
+
+.sp-journey-progress i {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(var(--sp-cyan-soft), var(--sp-cyan));
+  transform: scaleY(0.2);
+  transform-origin: 50% 0;
+}
+
+.sp-journey-labels {
+  display: grid;
+  gap: 12px;
+  text-align: left;
+}
+
+.sp-journey-labels li {
+  color: rgba(180, 197, 219, 0.45);
+  font-family: 'Inter', 'Segoe UI', Tahoma, sans-serif;
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  transition: color 260ms ease;
+}
+
+.sp-journey-labels li.is-active {
+  color: var(--sp-cyan);
+}
+
+.sp-journey-stages {
+  width: 100%;
+  justify-self: center;
+  display: grid;
+  place-items: center;
+  align-self: center;
+  gap: clamp(56px, 9vw, 110px);
+}
+
+.sp-stage {
+  width: 100%;
+  margin-inline: auto;
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
+  gap: clamp(28px, 4vw, 64px);
+  align-items: center;
+  justify-items: center;
+  text-align: left;
+}
+
+.sp-stage-body {
+  width: min(100%, 520px);
+  align-self: center;
+}
+
+/* Desktop composition: give the lifecycle track more visual presence while
+   keeping the complete group centered in the panel. The 1.2x scale-up is
+   decorative and needs real spare width to not overflow its own box —
+   at 901px (a tablet landscape width, e.g. iPad's 1024) the enlarged rail
+   and card body no longer fit and clip against the right edge, so this
+   waits for a genuinely wide desktop viewport before enlarging anything. */
+@media (min-width: 1280px) {
+  .sp-journey {
+    width: min(1480px, calc(100% - 72px));
+    grid-template-columns: minmax(180px, 220px) minmax(0, 1120px);
+    gap: clamp(48px, 5vw, 88px);
+  }
+
+  .sp-journey-rail {
+    transform: scale(1.2);
+    transform-origin: center right;
+  }
+
+  .sp-stage-media {
+    /* Leave a real breathing gap after the enlarged image. A 1.2 scale was
+       consuming the entire grid gap and visually pushing the copy into it. */
+    transform: scale(1.08);
+    transform-origin: center center;
+  }
+
+  .sp-stage-body {
+    width: min(100%, 624px);
+    transform: scale(1.08);
+    transform-origin: center left;
+  }
+
+  .sp-stage {
+    gap: clamp(76px, 5vw, 96px);
+  }
+}
+
+.sp-stage-media {
+  border-radius: 24px;
+  border: 1px solid rgba(65, 200, 246, 0.16);
+  overflow: hidden;
+  aspect-ratio: 4 / 3;
+  box-shadow: 0 30px 80px rgba(2, 7, 18, 0.55);
+}
+
+.sp-stage-media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.sp-stage-count {
+  color: rgba(180, 197, 219, 0.5);
+  font-family: 'Inter', 'Segoe UI', Tahoma, sans-serif;
+  font-size: 0.78rem;
+  font-weight: 900;
+  letter-spacing: 0.16em;
+}
+
+.sp-stage-sublabel {
+  margin-top: 10px;
+  color: var(--sp-cyan);
+  font-family: 'Inter', 'Segoe UI', Tahoma, sans-serif;
+  font-size: 0.76rem;
+  font-weight: 900;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.sp-stage h3 {
+  margin-top: 12px;
+  color: #f2f8ff;
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: clamp(2.2rem, 3.4vw, 3.9rem);
+  font-weight: 300;
+  line-height: 1;
+}
+
+.sp-stage-copy {
+  max-width: 480px;
+  margin-top: 16px;
+  color: rgba(180, 197, 219, 0.88);
+  font-family: 'Inter', 'Segoe UI', Tahoma, sans-serif;
+  font-size: clamp(0.95rem, 1.2vw, 1.08rem);
+  font-weight: 500;
+  line-height: 1.62;
+}
+
+/* Desktop + JS: stages overlap for the pinned crossfade */
+@media (min-width: 901px) {
+.sp-page.is-enhanced .sp-journey {
+    min-height: calc(var(--sp-panel-h, var(--app-stable-vh, 100svh)) - var(--nav-h) - 48px);
+  }
+
+  .sp-page.is-enhanced .sp-journey-stages {
+    display: grid;
+    align-content: center;
+  }
+
+  .sp-page.is-enhanced .sp-stage {
+    grid-area: 1 / 1;
+  }
+
+  .sp-page.is-enhanced .sp-stage-count {
+    display: none;
+  }
+
+  /* Keep the same deliberate rhythm between the eyebrow, heading and body
+     copy without allowing the display title to paint over the method image. */
+  .sp-stage h3 {
+    margin-top: clamp(18px, 1.5vw, 26px);
+  }
+
+  .sp-stage-copy {
+    margin-top: clamp(22px, 1.7vw, 30px);
+  }
+
+}
+
+/* The lifecycle is a one-card track on touch screens too. Keeping the
+   stages in the same grid cell prevents the following card from peeking into
+   the active viewport while the user swipes. */
+@media (max-width: 900px) {
+.sp-page.is-enhanced .sp-journey {
+    min-height: calc(var(--sp-panel-h, var(--app-panel-h, 100svh)) - 24px);
+    align-items: center;
+  }
+
+  .sp-page.is-enhanced .sp-journey-stages {
+    display: grid;
+    align-content: center;
+    min-height: 0;
+  }
+
+  .sp-page.is-enhanced .sp-stage {
+    grid-area: 1 / 1;
+    width: 100%;
+  }
+
+  .sp-page.is-enhanced .sp-stage-media {
+    max-height: min(48vh, 360px);
+  }
+}
+
+/* In a short touch landscape viewport, image and copy sit side by side so a
+   complete stage remains visible without reducing the text to unreadable
+   sizes. */
+@media (pointer: coarse) and (orientation: landscape) and (max-width: 1024px) and (max-height: 520px) {
+.sp-page.is-enhanced .sp-journey {
+    min-height: calc(var(--sp-panel-h, var(--app-panel-h, 100svh)) - 16px);
+  }
+
+  .sp-page.is-enhanced .sp-stage {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: clamp(14px, 3vw, 28px);
+  }
+
+  .sp-page.is-enhanced .sp-stage-media {
+    max-height: none;
+    aspect-ratio: 4 / 3;
+  }
+
+  .sp-page.is-enhanced .sp-stage-body {
+    align-self: center;
+  }
+
+  .sp-page.is-enhanced .sp-stage h3 {
+    font-size: clamp(1.7rem, 5.4vw, 2.8rem);
+  }
+
+  .sp-page.is-enhanced .sp-stage-copy {
+    font-size: clamp(0.78rem, 1.8vw, 0.95rem);
+    line-height: 1.4;
+  }
+
+  /* The narrative panel's desktop padding and height-driven size were tuned
+     for a tall viewport; on a short landscape phone they left the copy sized
+     off the wrong dimension. Width is the abundant axis here, so it drives
+     the clamp instead. */
+  .sp-page.is-enhanced .sp-narrative {
+    padding: clamp(16px, 4vh, 28px) clamp(20px, 5vw, 46px);
+  }
+
+  .sp-page.is-enhanced .sp-large-copy {
+    width: min(900px, 100%);
+    font-size: clamp(1.6rem, 4.6vw, 2.5rem);
+    line-height: 1.16;
+  }
+}
+
+/* A landscape viewport can be short on tablets too. The desktop enlargement is
+   intentionally disabled here: it is decorative on tall screens but can make
+   an image or its copy exceed the available panel in landscape. */
+@media (orientation: landscape) and (max-height: 620px) {
+  .sp-page.is-enhanced .sp-journey {
+    width: min(1180px, calc(100% - 32px));
+    /* The fixed header occupies part of a short landscape panel. Size the
+       journey from the remaining visible area so it cannot be centred into
+       the menu above or pushed beyond the bottom edge. */
+    min-height: calc(var(--sp-panel-h, var(--app-panel-h, 100svh)) - var(--nav-h) - 28px);
+    grid-template-columns: minmax(116px, 156px) minmax(0, 1fr);
+    gap: clamp(16px, 3vw, 36px);
+    margin-block: 0;
+  }
+
+  .sp-page.is-enhanced .sp-journey-rail,
+  .sp-page.is-enhanced .sp-stage-media,
+  .sp-page.is-enhanced .sp-stage-body {
+    transform: none;
+  }
+
+  .sp-page.is-enhanced .sp-stage {
+    grid-template-columns: minmax(0, 0.96fr) minmax(0, 1fr);
+    gap: clamp(16px, 3vw, 36px);
+  }
+
+  .sp-page.is-enhanced .sp-stage-media {
+    max-height: calc(var(--sp-panel-h, var(--app-panel-h, 100svh)) - var(--nav-h) - 48px);
+    aspect-ratio: 16 / 10;
+  }
+
+  .sp-page.is-enhanced .sp-stage-count {
+    margin: 0;
+    font-size: 0.64rem;
+  }
+
+  .sp-page.is-enhanced .sp-stage-sublabel {
+    margin-top: 6px;
+    font-size: clamp(0.58rem, 1.35vw, 0.72rem);
+    line-height: 1.2;
+  }
+
+  .sp-page.is-enhanced .sp-stage h3 {
+    margin-top: 12px;
+    font-size: clamp(1.7rem, 4.6vh, 2.75rem);
+    line-height: 0.96;
+  }
+
+  .sp-page.is-enhanced .sp-stage-copy {
+    margin-top: 14px;
+    font-size: clamp(0.74rem, 1.65vw, 0.96rem);
+    line-height: 1.36;
+  }
+
+  /* The header is fixed, so short landscape panels reserve a real safe band
+     for it. This shifts content down without changing panel height or track
+     geometry, and prevents the first image/text line from sitting underneath
+     the navigation. */
+  .sp-page.is-enhanced .sp-narrative {
+    padding-top: calc(var(--nav-h) + 12px);
+    padding-bottom: 18px;
+  }
+
+  .sp-page.is-enhanced .sp-lifecycle-intro {
+    padding-top: calc(var(--nav-h) + 12px);
+    padding-bottom: 18px;
+  }
+
+  .sp-page.is-enhanced .sp-lifecycle {
+    align-items: start;
+    padding-top: calc(var(--nav-h) + 12px);
+    padding-bottom: 14px;
+  }
+}
+
+/* The rail-plus-stage two-column grid above assumes the rail is visible,
+   which is true on tablets. Below 900px the rail is hidden (see the mobile
+   rule near the top of this file), so .sp-journey-stages — now the
+   only grid item — auto-places into that grid's narrow first track instead
+   of using the full width, squeezing the image and copy into a sliver. This
+   comes after the rule above so it wins the equal-specificity tie on phones. */
+@media (orientation: landscape) and (max-height: 620px) and (max-width: 900px) {
+  .sp-page.is-enhanced .sp-journey {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ─── METHOD ─── */
+
+.sp-method {
+  position: relative;
+  z-index: 4;
+  min-height: var(--app-panel-h, 100svh);
+  box-sizing: border-box;
+  display: grid;
+  align-items: center;
+  padding: max(96px, calc(var(--nav-h, 92px) + 18px)) clamp(18px, 6vw, 92px) 28px;
+  background: linear-gradient(180deg, #ffffff, #eef6fb);
+  color: #0d1522;
+}
+
+/* Método es una parada obligatoria entre la quinta tarjeta y Contacto. */
+.sp-page.is-enhanced .sp-method {
+  min-height: var(--sp-panel-h, var(--app-panel-h, 100svh));
+}
+
+.sp-method .sp-heading h2 {
+  font-size: clamp(1.85rem, 3vw, 3.65rem);
+  line-height: 0.98;
+  /* The heading must use the same column width as its eyebrow. Restricting it
+     to a character count wasted available space and turned otherwise balanced
+     titles into three lines. The grid column remains its hard boundary, so it
+     cannot paint over the image. */
+  max-width: min(100%, 31.5rem);
+  white-space: normal;
+  text-wrap: balance;
+}
+
+@media (max-width: 900px) {
+  .sp-method .sp-heading h2 {
+    white-space: normal;
+  }
+}
+
+.sp-method-grid {
+  width: min(1180px, 100%);
+  margin-inline: auto;
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
+  gap: clamp(36px, 6vw, 96px);
+  align-items: center;
+}
+
+.sp-method-list {
+  margin-top: clamp(18px, 2.5vw, 34px);
+  display: grid;
+}
+
+.sp-method-step {
+  display: grid;
+  grid-template-columns: 64px minmax(0, 1fr);
+  gap: 18px;
+  padding: clamp(12px, 1.5vw, 20px) 0;
+  border-top: 1px solid var(--sp-line-light);
+}
+
+.sp-method-number {
+  color: var(--sp-cyan);
+  font-family: 'Inter', 'Segoe UI', Tahoma, sans-serif;
+  font-size: 0.8rem;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  line-height: 2.1;
+}
+
+.sp-method-step h3 {
+  color: var(--sp-blue);
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: clamp(1.7rem, 2.2vw, 2.3rem);
+  font-weight: 500;
+  line-height: 1;
+}
+
+.sp-method-step p {
+  margin-top: 10px;
+  color: rgba(13, 21, 34, 0.7);
+  font-family: 'Inter', 'Segoe UI', Tahoma, sans-serif;
+  font-size: clamp(0.92rem, 1.1vw, 1.02rem);
+  font-weight: 500;
+  line-height: 1.58;
+}
+
+.sp-method-media {
+  border-radius: 24px;
+  overflow: hidden;
+  aspect-ratio: 4 / 5;
+  box-shadow: 0 30px 70px rgba(8, 21, 43, 0.16);
+}
+
+.sp-method-media img {
+  width: 100%;
+  height: 114%;
+  object-fit: cover;
+  display: block;
+  will-change: transform;
+}
+
+@media (min-width: 901px) and (max-height: 850px) {
+  .sp-method {
+    padding-block: 24px;
+  }
+
+  .sp-method-step p {
+    margin-top: 6px;
+    line-height: 1.4;
+  }
+
+  .sp-method-media {
+    aspect-ratio: 5 / 4;
+  }
+}
+
+/* Method has no landscape treatment below 900px at all: it falls through to
+   the portrait-mobile rule right above (image full width, order:-1 above the
+   text) with no height cap, and a 4:3 image at full viewport width is taller
+   than the entire short landscape viewport by itself — landing here shows
+   only a photo, with the heading and every step below the fold. Side by
+   side, like the lifecycle cards already do in this same viewport, keeps a
+   step readable next to a properly capped image instead. */
+@media (pointer: coarse) and (orientation: landscape) and (max-width: 1024px) and (max-height: 520px) {
+  .sp-page.is-enhanced .sp-method {
+    align-items: start;
+    padding: calc(var(--nav-h) + 12px) clamp(20px, 5vw, 46px) clamp(16px, 4vh, 28px);
+  }
+
+  .sp-page.is-enhanced .sp-method-grid {
+    grid-template-columns: minmax(0, 0.85fr) minmax(0, 1fr);
+    align-items: center;
+    gap: clamp(16px, 3vw, 32px);
+  }
+
+  .sp-page.is-enhanced .sp-method-media {
+    order: 0;
+    max-height: calc(var(--sp-panel-h, var(--app-panel-h, 100svh)) - 64px);
+    aspect-ratio: 4 / 3;
+  }
+
+  .sp-page.is-enhanced .sp-method .sp-heading h2 {
+    font-size: clamp(1.5rem, 4.2vw, 2.1rem);
+    white-space: normal;
+  }
+
+  .sp-page.is-enhanced .sp-method .sp-heading > p:not(.sp-eyebrow) {
+    margin-top: 6px;
+    font-size: clamp(0.72rem, 1.6vw, 0.86rem);
+    line-height: 1.36;
+  }
+
+  .sp-page.is-enhanced .sp-method-list {
+    margin-top: 8px;
+  }
+
+  .sp-page.is-enhanced .sp-method-step {
+    padding-block: 6px;
+    grid-template-columns: 30px minmax(0, 1fr);
+    gap: 10px;
+  }
+
+  .sp-page.is-enhanced .sp-method-step h3 {
+    font-size: clamp(1.05rem, 2.5vw, 1.4rem);
+  }
+
+  .sp-page.is-enhanced .sp-method-step p {
+    margin-top: 3px;
+    font-size: clamp(0.68rem, 1.45vw, 0.8rem);
+    line-height: 1.3;
+  }
+}
+
+@media (orientation: landscape) and (max-height: 620px) {
+  .sp-page.is-enhanced .sp-method {
+    padding-top: calc(var(--nav-h) + 12px);
+  }
+}
+
+/* ─── RESPONSIVE ─── */
+
+@media (max-width: 900px) {
+  .sp-journey {
+    grid-template-columns: 1fr;
+  }
+
+  .sp-journey-rail {
+    display: none;
+  }
+
+  .sp-stage {
+    grid-template-columns: 1fr;
+    gap: 20px;
+    justify-items: center;
+    text-align: center;
+  }
+
+  .sp-stage-media,
+  .sp-stage-body {
+    width: min(100%, 620px);
+  }
+
+  .sp-stage-copy {
+    max-width: none;
+  }
+
+  .sp-method-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .sp-method-media {
+    order: -1;
+    aspect-ratio: 4 / 3;
+  }
+
+  .sp-layer-list,
+  .sp-benefit-list {
+    grid-template-columns: 1fr;
+  }
+
+  .sp-contact {
+    grid-template-columns: 1fr;
+  }
+
+  .sp-contact-heading {
+    position: static;
+  }
+
+  .sp-contact-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .sp-hero {
+    padding-inline: 18px;
+  }
+
+  .sp-scroll-hint {
+    display: none;
+  }
+
+  .sp-hero-halo {
+    width: 100vw;
+    min-width: 0;
+  }
+
+  .sp-narrative {
+    min-height: auto;
+    padding: clamp(72px, 16vw, 112px) 18px;
+  }
+
+  .sp-page.is-enhanced .sp-narrative {
+    min-height: var(--sp-panel-h, var(--app-panel-h, 100svh));
+  }
+
+  .sp-large-copy {
+    width: min(720px, 100%);
+    font-size: clamp(1.9rem, 8.6vw, 3.4rem);
+    font-weight: 400;
+    line-height: 1.12;
+  }
+
+  .sp-method-step {
+    grid-template-columns: 44px minmax(0, 1fr);
+  }
+
+  /* Method uses native reading scroll when its complete content is taller than
+     the viewport. Compact spacing keeps the useful copy dense without hiding
+     any of the process steps. */
+  .sp-method {
+    align-items: start;
+    padding: calc(var(--nav-h, 72px) + 24px) 24px 44px;
+  }
+
+  .sp-method-grid {
+    gap: 20px;
+  }
+
+  .sp-method-media {
+    max-height: 250px;
+    border-radius: 18px;
+  }
+
+  .sp-method .sp-heading h2 {
+    font-size: clamp(2rem, 9vw, 2.7rem);
+  }
+
+  .sp-method .sp-heading > p:not(.sp-eyebrow) {
+    margin-top: 12px;
+    font-size: 0.96rem;
+    line-height: 1.5;
+  }
+
+  .sp-method-list {
+    margin-top: 16px;
+  }
+
+  .sp-method-step {
+    gap: 12px;
+    padding: 11px 0;
+  }
+
+  .sp-method-step h3 {
+    font-size: 1.7rem;
+  }
+
+  .sp-method-step p {
+    margin-top: 6px;
+    font-size: 0.92rem;
+    line-height: 1.46;
+  }
+
+  .sp-layer {
+    grid-template-columns: 40px minmax(0, 1fr);
+  }
+
+  .sp-contact-form {
+    padding: 16px;
+  }
+
+  .sp-contact-form .contact-form {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ─── REDUCED MOTION / NO-JS ─── */
+
+@media (prefers-reduced-motion: reduce) {
+  .sp-scroll-hint span {
+    animation: none;
+  }
+
+  .sp-back-link:hover,
+  .sp-primary-cta:hover,
+  .sp-bridge-link:hover {
+    transform: none;
+  }
+}
+
+.sp-page.is-reduced-motion .sp-scroll-hint {
+  display: none;
+}
+
+.sp-page.is-reduced-motion .sp-narrative {
+  min-height: auto;
+}
+
+/* Planning owns its panel geometry. Opening the shared menu never changes it. */
+.sp-page {
+  --sp-safe-top: calc(var(--nav-h) + clamp(12px, 2vh, 24px));
+  --sp-safe-bottom: clamp(16px, 3vh, 32px);
+}
+
+.sp-page > .sp-hero,
+.sp-page .sp-narrative,
+.sp-page > .sp-lifecycle-intro,
+.sp-page .sp-lifecycle,
+.sp-page > .sp-method {
+  height: var(--sp-panel-h, var(--app-panel-h, 100svh));
+  min-height: var(--sp-panel-h, var(--app-panel-h, 100svh));
+  box-sizing: border-box;
+}
+
+.sp-page .sp-narrative,
+.sp-page > .sp-lifecycle-intro,
+.sp-page .sp-lifecycle,
+.sp-page > .sp-method {
+  padding-top: var(--sp-safe-top);
+  padding-bottom: var(--sp-safe-bottom);
+}
+
+.sp-page .sp-lifecycle {
+  align-items: center;
+}
+
+.sp-page.is-enhanced .sp-journey {
+  min-height: 0;
+  height: 100%;
+}
+
+.sp-media-placeholder {
+  width: 100%;
+  height: 100%;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: #08152b;
+  color: #8be2ff;
+  text-align: center;
+}
+
+.sp-media-placeholder span {
+  max-width: 22ch;
+  font: italic 400 clamp(1.05rem, 1.8vw, 1.6rem)/1.3 'Cormorant Garamond', Georgia, serif;
+  opacity: 0.72;
+}
+
+.sp-page .sp-stage-media {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+}
+
+.sp-page .sp-method-grid {
+  gap: clamp(24px, 5vw, 72px);
+}
+
+.sp-page .sp-method-media {
+  width: 100%;
+  max-height: calc(var(--sp-panel-h, var(--app-panel-h, 100svh)) - var(--nav-h) - 64px);
+}
+
+.sp-page .sp-method-list {
+  margin-top: clamp(12px, 2vh, 24px);
+}
+
+.sp-page .sp-method-step {
+  padding-block: clamp(8px, 1.4vh, 16px);
+}
+
+.sp-page .sp-method-step p {
+  margin-top: 6px;
+  line-height: 1.4;
+}
+
+@media (max-width: 900px) and (orientation: portrait) {
+  .sp-page .sp-method-grid {
+    gap: clamp(12px, 2vh, 22px);
+  }
+
+  .sp-page .sp-method-media {
+    aspect-ratio: 4 / 3;
+    width: min(100%, 420px);
+    height: clamp(100px, 18vh, 190px);
+    justify-self: center;
+  }
+
+  .sp-page .sp-method .sp-heading h2 {
+    font-size: clamp(2rem, 7vw, 3rem);
+  }
+
+  .sp-page .sp-method .sp-heading > p:not(.sp-eyebrow) {
+    margin-top: 8px;
+    font-size: clamp(0.86rem, 2.4vw, 1rem);
+    line-height: 1.4;
+  }
+
+  .sp-page .sp-method-step {
+    grid-template-columns: 36px minmax(0, 1fr);
+    gap: 10px;
+    padding-block: clamp(7px, 1.2vh, 12px);
+  }
+
+  .sp-page .sp-method-step h3 {
+    font-size: clamp(1.4rem, 5vw, 1.8rem);
+  }
+
+  .sp-page .sp-method-step p {
+    font-size: clamp(0.86rem, 2.2vw, 1rem);
+    margin-top: 4px;
+  }
+}
+
+/* Apply the short composition to touch and mouse viewports alike. */
+@media (orientation: landscape) and (max-height: 620px) {
+  .sp-page {
+    --sp-safe-top: calc(var(--nav-h) + 10px);
+    --sp-safe-bottom: 12px;
+  }
+
+  .sp-page .sp-method-grid {
+    grid-template-columns: minmax(0, 1.3fr) minmax(0, 0.7fr);
+    align-items: center;
+    gap: clamp(16px, 3vw, 32px);
+  }
+
+  .sp-page .sp-method-media {
+    order: 0;
+    max-height: calc(var(--sp-panel-h, var(--app-panel-h, 100svh)) - var(--nav-h) - 36px);
+    aspect-ratio: 4 / 3;
+  }
+
+  .sp-page .sp-method .sp-heading h2 {
+    margin-top: 5px;
+    font-size: clamp(1.5rem, 4.2vh, 2.1rem);
+  }
+
+  .sp-page .sp-method .sp-heading > p:not(.sp-eyebrow) {
+    margin-top: 5px;
+    font-size: clamp(0.72rem, 1.6vw, 0.86rem);
+    line-height: 1.3;
+  }
+
+  .sp-page .sp-method-list { margin-top: 7px; }
+  .sp-page .sp-method-step { padding-block: 5px; grid-template-columns: 26px minmax(0, 1fr); gap: 8px; }
+  .sp-page .sp-method-step h3 { font-size: clamp(1.05rem, 2.5vw, 1.4rem); }
+  .sp-page .sp-method-step p { margin-top: 3px; font-size: clamp(0.68rem, 1.45vw, 0.8rem); line-height: 1.3; }
+
+  .sp-page .sp-narrative { padding-inline: clamp(20px, 5vw, 46px); }
+  .sp-page .sp-large-copy { width: 100%; font-size: clamp(1.6rem, 4.6vw, 2.5rem); line-height: 1.16; }
+  .sp-page .sp-lifecycle-intro .sp-heading h2 { font-size: clamp(2rem, 5vh, 3rem); }
+  .sp-page .sp-lifecycle-intro .sp-heading > p:not(.sp-eyebrow) { margin-top: 10px; font-size: clamp(0.86rem, 1.5vw, 1rem); line-height: 1.4; }
+}
+
+.sp-page.is-reduced-motion .sp-journey-stages {
+  gap: 0;
+}
+
+.sp-page.is-reduced-motion .sp-lifecycle {
+  height: auto;
+  padding-block: 0;
+}
+
+.sp-page.is-reduced-motion .sp-stage {
+  min-height: var(--app-panel-h, 100svh);
+  padding-block: var(--sp-safe-top) var(--sp-safe-bottom);
+}
+

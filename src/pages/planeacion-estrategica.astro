@@ -12,7 +12,16 @@ import SiteLayout from '../layouts/SiteLayout.astro';
 import { useTranslations } from '../i18n/utils';
 
 const lang = 'es';
-const content = getStrategicPlanningTemplateContent(lang);
+const baseContent = getStrategicPlanningTemplateContent(lang);
+const content = {
+  ...baseContent,
+  capabilities: {
+    ...baseContent.capabilities,
+    items: baseContent.capabilities.items.map((item) => item.code === 'STRAT'
+      ? { ...item, href: '/planeacion-estrategica/planeacion-estrategica-corporativa/', cta: 'Conocer servicio' }
+      : item),
+  },
+};
 const contactCopy = getContactCopy(lang);
 const footerCopy = getFooterCopy(lang);
 const servicesContent = getServicesContent(lang);

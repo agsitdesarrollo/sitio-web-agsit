@@ -1,0 +1,12 @@
+---
+import type { StrategicPlanningMedia } from '../../types/strategicPlanningDetail.types';
+type Props = { media: StrategicPlanningMedia; eager?: boolean; parallax?: boolean };
+const { media, eager = false, parallax = false } = Astro.props;
+---
+{media.pending ? (
+  <div class="sp-media-placeholder" role="img" aria-label={media.alt} data-asset-path={media.src} style={`--sp-media-ratio: ${media.ratio}`}>
+    <span>{media.placeholder}</span>
+  </div>
+) : (
+  <img class:list={{ 'js-sp-method-img': parallax }} src={media.src} alt={media.alt} width="1200" height={media.ratio === '4/5' ? 1500 : 900} loading={eager ? 'eager' : 'lazy'} decoding="async" />
+)}

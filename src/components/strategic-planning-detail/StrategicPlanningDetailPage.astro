@@ -1,0 +1,80 @@
+---
+import FinalContactSection from '../final-contact/FinalContactSection.astro';
+import StrategicPlanningHero from './StrategicPlanningHero.astro';
+import StrategicPlanningMedia from './StrategicPlanningMedia.astro';
+import './StrategicPlanningDetail.css';
+import type { ContactCopy } from '../../data/contact';
+import type { StrategicPlanningDetailContent } from '../../types/strategicPlanningDetail.types';
+
+type Props = { content: StrategicPlanningDetailContent; contactCopy: ContactCopy };
+const { content, contactCopy } = Astro.props;
+---
+
+<main class="sp-page js-sp-page" data-track-controller>
+  <StrategicPlanningHero content={content.hero} titleId="corporate-planning-title" />
+
+  <section class="sp-narrative-track js-sp-narrative-track" aria-label={content.narrative.ariaLabel}>
+    <div class="sp-narrative js-sp-narrative" data-track-native-scroll>
+      <p class="sp-large-copy js-sp-words" aria-label={content.narrative.ariaLabel}>
+        {content.narrative.segments.map((segment) => <>{segment.text}{segment.accent && <span class="sp-serif">{segment.accent}</span>}</>)}
+      </p>
+    </div>
+  </section>
+
+  <section class="sp-lifecycle-intro" aria-labelledby="sp-lifecycle-title">
+    <div class="sp-heading js-sp-reveal">
+      <p class="sp-eyebrow">{content.lifecycle.eyebrow}</p>
+      <h2 id="sp-lifecycle-title">{content.lifecycle.title}</h2>
+      <p>{content.lifecycle.copy}</p>
+    </div>
+  </section>
+
+  <section class="sp-lifecycle-track js-sp-lifecycle-track" aria-label={content.lifecycle.title}>
+    <div class="sp-lifecycle sp-lifecycle-cards js-sp-lifecycle-panel">
+      <div class="sp-journey js-sp-journey">
+        <div class="sp-journey-rail" aria-hidden="true">
+          <p class="sp-journey-counter"><span class="js-sp-counter">01</span><i>/ {String(content.lifecycle.stages.length).padStart(2, '0')}</i></p>
+          <div class="sp-journey-progress"><i class="js-sp-progress"></i></div>
+          <ol class="sp-journey-labels">
+            {content.lifecycle.stages.map((stage, index) => <li class:list={['js-sp-rail-item', { 'is-active': index === 0 }]}>{stage.label}</li>)}
+          </ol>
+        </div>
+        <div class="sp-journey-stages">
+          {content.lifecycle.stages.map((stage, index) => (
+            <article class="sp-stage js-sp-stage">
+              <div class="sp-stage-media"><StrategicPlanningMedia media={stage.media} eager /></div>
+              <div class="sp-stage-body">
+                <p class="sp-stage-count">{String(index + 1).padStart(2, '0')}</p>
+                <p class="sp-stage-sublabel">{stage.sublabel}</p>
+                <h3>{stage.label}</h3>
+                <p class="sp-stage-copy">{stage.copy}</p>
+              </div>
+            </article>
+          ))}
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sp-method" aria-labelledby="sp-method-title">
+    <div class="sp-method-grid">
+      <div class="sp-method-intro">
+        <div class="sp-heading sp-heading-light sp-heading-left js-sp-reveal">
+          <p class="sp-eyebrow">{content.method.eyebrow}</p><h2 id="sp-method-title">{content.method.title}</h2><p>{content.method.copy}</p>
+        </div>
+        <ol class="sp-method-list">
+          {content.method.steps.map((step, index) => <li class="sp-method-step js-sp-reveal"><span class="sp-method-number">{String(index + 1).padStart(2, '0')}</span><div><h3>{step.title}</h3><p>{step.copy}</p></div></li>)}
+        </ol>
+      </div>
+      <div class="sp-method-media js-sp-reveal"><StrategicPlanningMedia media={content.method.media} parallax /></div>
+    </div>
+  </section>
+
+  <FinalContactSection copy={contactCopy} />
+</main>
+
+<script>
+  import { setupStrategicPlanningDetailScroll } from './strategicPlanningDetailScroll';
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', setupStrategicPlanningDetailScroll, { once: true });
+  else setupStrategicPlanningDetailScroll();
+</script>
