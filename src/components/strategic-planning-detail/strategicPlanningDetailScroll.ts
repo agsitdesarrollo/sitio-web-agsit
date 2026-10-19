@@ -38,10 +38,14 @@
     const lifecycleTrack = root.querySelector<HTMLElement>('.js-sp-lifecycle-track');
     const lifecyclePanel = root.querySelector<HTMLElement>('.js-sp-lifecycle-panel');
     const method = root.querySelector<HTMLElement>('.sp-method');
+    const methodTrack = root.querySelector<HTMLElement>('.sp-method-track');
+    const methodSteps = root.querySelector<HTMLElement>('.sp-method-steps');
+    const methodIntro = root.querySelector<HTMLElement>('.sp-method-intro');
+    const methodList = root.querySelector<HTMLOListElement>('.sp-method-list');
     const contact = root.querySelector<HTMLElement>('.final-contact-section');
     const stages = Array.from(root.querySelectorAll<HTMLElement>('.js-sp-stage'));
     const words = root.querySelector<HTMLElement>('.js-sp-words');
-    if (!hero || !narrativeTrack || !narrative || !lifecycleIntro || !lifecycleTrack || !lifecyclePanel || !method || !contact) return;
+    if (!hero || !narrativeTrack || !narrative || !lifecycleIntro || !lifecycleTrack || !lifecyclePanel || !method || !methodTrack || !methodSteps || !methodIntro || !methodList || !contact) return;
     if (words) splitWords(words);
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) { root.classList.add('is-reduced-motion'); return () => { root.classList.remove('is-reduced-motion'); delete root.dataset.spReady; }; }
     root.classList.add('is-enhanced');
@@ -49,8 +53,34 @@
 
     const stageCount = Math.max(1, stages.length);
     const cssValue = (name: string) => Number.parseFloat(getComputedStyle(document.documentElement).getPropertyValue(name)) || 0;
-    const panelHeight = () => Math.max(1, Math.round(cssValue('--app-panel-h') || window.innerHeight));
+    let stablePanelHeight = Math.max(1, Math.round(cssValue('--app-panel-h') || window.innerHeight));
+    const panelHeight = () => stablePanelHeight;
+    const visibleHeight = () => Math.max(1, Math.floor(window.visualViewport?.height || window.innerHeight));
+    let methodSplit = false;
+    let methodPosition: 'overview' | 'steps' = 'overview';
+    const measureMethod = () => {
+      // Measure the original, fully assembled layout at the actual visible
+      // height. Never infer fit from a device breakpoint or from stable vh.
+      root.style.setProperty('--sp-method-panel-h', `${visibleHeight()}px`);
+      root.classList.remove('is-method-split', 'is-method-compact');
+      methodIntro.appendChild(methodList);
+      methodSteps.hidden = true;
+      const styles = getComputedStyle(method);
+      const available = method.clientHeight - Number.parseFloat(styles.paddingTop) - Number.parseFloat(styles.paddingBottom);
+      const grid = method.querySelector<HTMLElement>('.sp-method-grid')!;
+      methodSplit = Math.max(grid.scrollHeight, grid.getBoundingClientRect().height) > available + 0.5;
+      if (methodSplit) {
+        root.classList.add('is-method-split');
+        methodSteps.hidden = false;
+        methodSteps.appendChild(methodList);
+        const stepStyles = getComputedStyle(methodSteps);
+        const stepsAvailable = methodSteps.clientHeight - Number.parseFloat(stepStyles.paddingTop) - Number.parseFloat(stepStyles.paddingBottom);
+        root.classList.toggle('is-method-compact', methodList.scrollHeight > stepsAvailable);
+      }
+      root.dataset.methodStops = methodSplit ? '2' : '1';
+    };
     const setTrackGeometry = () => {
+      stablePanelHeight = Math.max(1, Math.round(cssValue('--app-panel-h') || window.innerHeight));
       const height = panelHeight();
       root.style.setProperty('--sp-panel-h', `${height}px`);
       // Narrative: one visible panel + 1.3 panels of word reveal.
@@ -59,6 +89,7 @@
       // The last card sits exactly at the end of the pin, so the very next
       // stop (Method) is a single panel away and the move is fully visible.
       root.style.setProperty('--sp-lifecycle-track-h', `${Math.round(height * stageCount)}px`);
+      measureMethod();
     };
     // Layout positions, never pinned rectangles.
     const top = (element: HTMLElement) => {
@@ -75,24 +106,25 @@
     // ── Scroll-linked animation (pins, reveal, cards) ──────────────────────
     let activeStage = 0;
     let stageTimeline: gsap.core.Timeline | null = null;
-    const methodItems = Array.from(method.querySelectorAll<HTMLElement>('.js-sp-reveal'));
-    let methodShown = false;
+    const methodItems = Array.from(methodTrack.querySelectorAll<HTMLElement>('.js-sp-reveal'));
+    const methodShown = new Set<HTMLElement>();
     let methodTween: gsap.core.Tween | null = null;
     let methodFallback = 0;
     const finishMethod = () => {
       methodTween?.kill();
       window.clearTimeout(methodFallback);
-      method.classList.remove('is-entering');
+      methodTrack.classList.remove('is-entering');
       gsap.set(methodItems, { clearProps: 'opacity,visibility,transform' });
     };
-    const revealMethod = () => {
-      if (methodShown) return;
-      methodShown = true;
-      method.classList.add('is-entering');
+    const revealMethod = (panel: HTMLElement) => {
+      if (panel.hidden || methodShown.has(panel)) return;
+      finishMethod();
+      methodShown.add(panel);
+      methodTrack.classList.add('is-entering');
       // Natural CSS stays visible until the whole section arrives. No step
       // waits for its own viewport threshold, including the last one.
       methodFallback = window.setTimeout(finishMethod, 900);
-      methodTween = gsap.fromTo(methodItems, { opacity: 0, y: 12 }, {
+      methodTween = gsap.fromTo(Array.from(panel.querySelectorAll<HTMLElement>('.js-sp-reveal')), { opacity: 0, y: 12 }, {
         opacity: 1, y: 0, duration: 0.4, stagger: 0.04,
         ease: 'power3.out', onComplete: finishMethod,
       });
@@ -135,13 +167,13 @@
         // two stops, which also keeps a scrollbar drag in sync.
         onUpdate: (self) => setActiveStage(Math.round(self.progress * (stageCount - 1))),
       });
-      gsap.fromTo('.js-sp-method-img', { yPercent: 5 }, { yPercent: -5, ease: 'none', scrollTrigger: { trigger: method, start: 'top bottom', end: 'bottom top', scrub: true, refreshPriority: 3 } });
-      gsap.utils.toArray<HTMLElement>('.js-sp-reveal', root).filter((element) => !method.contains(element)).forEach((element) => gsap.from(element, { autoAlpha: 0, y: 30, duration: 0.9, ease: 'power3.out', scrollTrigger: { trigger: element, start: 'top 88%', refreshPriority: 4 } }));
-      ScrollTrigger.create({
-        trigger: method, start: () => top(method), end: () => top(method) + panelHeight(),
-        onEnter: revealMethod, onEnterBack: revealMethod,
-        onLeave: finishMethod, onLeaveBack: finishMethod, refreshPriority: 4,
-      });
+      gsap.fromTo('.js-sp-method-img', { yPercent: 5 }, { yPercent: -5, ease: 'none', scrollTrigger: { trigger: method, start: 'top bottom', end: 'bottom top', scrub: true, invalidateOnRefresh: true, refreshPriority: 3 } });
+      gsap.utils.toArray<HTMLElement>('.js-sp-reveal', root).filter((element) => !methodTrack.contains(element)).forEach((element) => gsap.from(element, { autoAlpha: 0, y: 30, duration: 0.9, ease: 'power3.out', scrollTrigger: { trigger: element, start: 'top 88%', refreshPriority: 4 } }));
+      [method, methodSteps].forEach((panel) => ScrollTrigger.create({
+        trigger: panel, start: () => panel.hidden ? top(contact) + 1 : top(panel),
+        end: () => panel.hidden ? top(contact) + 2 : top(panel) + panel.offsetHeight,
+        onEnter: () => revealMethod(panel), onEnterBack: () => revealMethod(panel), refreshPriority: 4,
+      }));
     }, root);
 
     // ── Geometry ───────────────────────────────────────────────────────────
@@ -157,19 +189,20 @@
     };
     type Geometry = {
       hero: number; narrativeStart: number; narrativeEnd: number; intro: number;
-      stages: number[]; method: number; contact: number; methodNative: boolean; trackStops: number[];
+      stages: number[]; method: number; methodLast: number; contact: number; methodNative: boolean; trackStops: number[];
     };
     const geometry = (): Geometry => {
       const n = narrativeRange();
       const j = journeyRange();
       const stageStops = stages.map((_, index) => Math.round(j.start + ((j.end - j.start) * index) / Math.max(1, stageCount - 1)));
       const methodTop = top(method);
+      const methodStops = methodSplit ? [methodTop, top(methodSteps)] : [methodTop];
       const contactTop = top(contact);
       const methodNative = false;
       return {
         hero: top(hero), narrativeStart: n.start, narrativeEnd: n.end, intro: top(lifecycleIntro),
-        stages: stageStops, method: methodTop, contact: contactTop, methodNative,
-        trackStops: [top(hero), n.start, n.end, top(lifecycleIntro), ...stageStops, methodTop, contactTop],
+        stages: stageStops, method: methodTop, methodLast: methodStops[methodStops.length - 1], contact: contactTop, methodNative,
+        trackStops: [top(hero), n.start, n.end, top(lifecycleIntro), ...stageStops, ...methodStops, contactTop],
       };
     };
     const nextStop = (list: number[], y: number, direction: Direction) => {
@@ -192,7 +225,7 @@
       }
       if (at(y, g.contact)) {
         if (direction > 0) return FREE;
-        if (!g.methodNative) return { kind: 'stop', y: g.method };
+        if (!g.methodNative) return { kind: 'stop', y: g.methodLast };
         return ahead <= g.method ? { kind: 'clamp', y: g.method } : FREE;
       }
       // The pinned narrative has two stops: unrevealed and fully revealed.
@@ -246,7 +279,8 @@
         force: true,
         onComplete: () => {
           window.clearTimeout(movingTimer); moving = false;
-          if (at(y, top(method))) revealMethod();
+          if (at(y, top(method))) { methodPosition = 'overview'; revealMethod(method); }
+          if (methodSplit && at(y, top(methodSteps))) { methodPosition = 'steps'; revealMethod(methodSteps); }
         },
       });
     };
@@ -306,10 +340,26 @@
     const refresh = () => {
       window.clearTimeout(refreshTimer);
       refreshTimer = window.setTimeout(() => {
-        if (moving) { refresh(); return; }
+        if (moving || drawerOpen()) { refresh(); return; }
+        // Preserve the semantic stop, including steps -> unified Method and
+        // the visitor's offset inside freely scrolling Contact / footer.
+        const before = geometry();
+        const y = lenis.animatedScroll;
+        const oldStops = before.trackStops;
+        const index = oldStops.reduce((best, stop, i) => Math.abs(stop - y) < Math.abs(oldStops[best] - y) ? i : best, 0);
+        const methodIndex = oldStops.indexOf(before.method);
+        const onSteps = at(y, before.methodLast) && (methodSplit || methodPosition === 'steps');
+        const contactOffset = y >= before.contact - TOLERANCE ? y - before.contact : null;
+        finishMethod();
         setTrackGeometry();
         ScrollTrigger.refresh();
         lenis.resize();
+        const after = geometry();
+        const destination = contactOffset !== null ? after.contact + contactOffset
+          : onSteps ? after.methodLast : after.trackStops[Math.min(index, methodIndex)];
+        if (onSteps) methodPosition = 'steps';
+        lenis.scrollTo(destination, { immediate: true, force: true });
+        ScrollTrigger.update();
       }, 160);
     };
 
@@ -318,6 +368,9 @@
     window.addEventListener('keydown', onKeyDown);
     window.addEventListener('agsit:viewport-change', refresh, { passive: true });
     window.addEventListener('agsit:mobile-menu-change', refresh, { passive: true });
+    window.addEventListener('resize', refresh, { passive: true });
+    window.addEventListener('orientationchange', refresh, { passive: true });
+    window.visualViewport?.addEventListener('resize', refresh, { passive: true });
     window.addEventListener('load', refresh, { once: true });
     document.fonts?.ready.then(refresh);
     root.querySelectorAll('img').forEach((image) => image.addEventListener('load', refresh, { once: true }));
@@ -327,8 +380,12 @@
       root.removeEventListener('agsit:track-next', heroNext);
       window.removeEventListener('touchstart', onTouchStart); window.removeEventListener('keydown', onKeyDown);
       window.removeEventListener('agsit:viewport-change', refresh); window.removeEventListener('agsit:mobile-menu-change', refresh);
+      window.removeEventListener('resize', refresh); window.removeEventListener('orientationchange', refresh);
+      window.visualViewport?.removeEventListener('resize', refresh);
       bodyObserver.disconnect(); gsap.ticker.remove(tick); lenis.destroy(); context.revert();
       finishMethod();
+      methodIntro.appendChild(methodList); methodSteps.hidden = true;
+      root.classList.remove('is-method-split', 'is-method-compact');
       root.classList.remove('is-enhanced');
       delete root.dataset.spReady;
     };

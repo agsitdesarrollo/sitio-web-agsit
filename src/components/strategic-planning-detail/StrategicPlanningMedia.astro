@@ -4,7 +4,7 @@ type Props = { media: StrategicPlanningMedia; eager?: boolean; parallax?: boolea
 const { media, eager = false, parallax = false } = Astro.props;
 ---
 {media.pending ? (
-  <div class="sp-media-placeholder" role="img" aria-label={media.alt} data-asset-path={media.src} style={`--sp-media-ratio: ${media.ratio}`}>
+  <div class:list={['sp-media-placeholder', { 'js-sp-method-img': parallax }]} role="img" aria-label={media.alt} data-asset-path={media.src} style={`--sp-media-ratio: ${media.ratio}`}>
     <span>{media.placeholder}</span>
   </div>
 ) : (

@@ -948,7 +948,7 @@ html.lenis.lenis-smooth iframe {
 .sp-page .sp-narrative,
 .sp-page > .sp-lifecycle-intro,
 .sp-page .sp-lifecycle,
-.sp-page > .sp-method {
+.sp-page .sp-method {
   height: var(--sp-panel-h, var(--app-panel-h, 100svh));
   min-height: var(--sp-panel-h, var(--app-panel-h, 100svh));
   box-sizing: border-box;
@@ -957,7 +957,7 @@ html.lenis.lenis-smooth iframe {
 .sp-page .sp-narrative,
 .sp-page > .sp-lifecycle-intro,
 .sp-page .sp-lifecycle,
-.sp-page > .sp-method {
+.sp-page .sp-method {
   padding-top: var(--sp-safe-top);
   padding-bottom: var(--sp-safe-bottom);
 }
@@ -1111,3 +1111,44 @@ html.lenis.lenis-smooth iframe {
   min-height: var(--app-panel-h, 100svh);
   padding-block: var(--sp-safe-top) var(--sp-safe-bottom);
 }
+
+/* Method alone follows the visible viewport; other tracks keep their stable
+   geometry. Runtime measures the unsplit composition before choosing stops. */
+.sp-page .sp-method,
+.sp-page .sp-method-steps:not([hidden]) {
+  height: var(--sp-method-panel-h, var(--sp-panel-h, 100svh));
+  min-height: var(--sp-method-panel-h, var(--sp-panel-h, 100svh));
+  box-sizing: border-box;
+}
+.sp-method-track { overflow-anchor: none; background: var(--sp-paper); }
+.sp-method-media { background: #08152b; }
+.sp-method-media .sp-media-placeholder { height: 114%; will-change: transform; }
+.sp-method-steps[hidden] { display: none; }
+.sp-page .sp-method-steps:not([hidden]) {
+  display: grid;
+  align-content: center;
+  padding: var(--sp-safe-top) clamp(24px, 5vw, 72px) var(--sp-safe-bottom);
+}
+.sp-page .sp-method-steps .sp-method-list {
+  width: min(780px, 100%);
+  margin: 0 auto;
+}
+.sp-page.is-method-split .sp-method-grid {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(12px, 2vh, 22px);
+}
+.sp-page.is-method-split .sp-method-intro { width: min(780px, 100%); }
+.sp-page.is-method-split .sp-method-media {
+  order: -1;
+  width: min(100%, 420px);
+  height: clamp(100px, calc((var(--sp-method-panel-h) - var(--nav-h)) * 0.3), 190px);
+  min-height: 0;
+  max-height: none;
+  flex: none;
+}
+/* Only used if the measured steps themselves need a more compact setting. */
+.sp-page.is-method-compact .sp-method-steps .sp-method-step { padding-block: 5px; gap: 8px; }
+.sp-page.is-method-compact .sp-method-steps .sp-method-step h3 { font-size: 1.35rem; line-height: 1.1; }
+.sp-page.is-method-compact .sp-method-steps .sp-method-step p { font-size: 0.86rem; line-height: 1.35; margin-top: 3px; }
+.sp-page.is-reduced-motion .sp-method { height: auto; min-height: var(--sp-method-panel-h, 100svh); }

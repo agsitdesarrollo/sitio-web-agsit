@@ -56,6 +56,7 @@ const { content, contactCopy } = Astro.props;
     </div>
   </section>
 
+  <div class="sp-method-track">
   <section class="sp-method" aria-labelledby="sp-method-title">
     <div class="sp-method-grid">
       <div class="sp-method-intro">
@@ -69,6 +70,8 @@ const { content, contactCopy } = Astro.props;
       <div class="sp-method-media js-sp-reveal"><StrategicPlanningMedia media={content.method.media} parallax /></div>
     </div>
   </section>
+  <section class="sp-method-steps" aria-labelledby="sp-method-title" hidden></section>
+  </div>
 
   <FinalContactSection copy={contactCopy} />
 </main>
