@@ -1,0 +1,11 @@
+---
+import type { MarketingServiceContent } from '../../types/marketingService.types';
+type Props = { copy: MarketingServiceContent['problems'] };
+const { copy } = Astro.props;
+---
+<section class="ms-panel ms-problems" data-ms-panel="problems" aria-labelledby="ms-problems-title">
+  <div class="ms-section-content" data-ms-fit>
+    <div class="ms-heading-row"><h2 id="ms-problems-title">{copy.title}</h2><button class="ms-motion-toggle" type="button" aria-pressed="false" data-ms-pause data-pause={copy.pause} data-resume={copy.resume}>{copy.pause}</button></div>
+    <div class="ms-problem-rows">{copy.rows.map(row=><div class="ms-problem-row">{row.map(phrase=><article class="ms-bordered ms-problem-card"><p>{phrase.before}<strong>{phrase.accent}</strong>{phrase.after}</p></article>)}</div>)}</div>
+  </div>
+</section>

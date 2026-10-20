@@ -1,0 +1,22 @@
+---
+import type { MarketingServiceContent } from '../../types/marketingService.types';
+import MarketingServiceEcho from './MarketingServiceEcho.astro';
+type Props = { copy: MarketingServiceContent['hero'] };
+const { copy } = Astro.props;
+---
+<section class="ms-panel ms-hero" data-ms-panel="hero" aria-labelledby="ms-title">
+  <svg class="ms-stars" viewBox="0 0 1200 700" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><g fill="currentColor">{[[90,90],[1060,120],[180,520],[1100,550],[720,70],[870,620],[60,350],[600,650]].map(([x,y],i)=><path data-ms-star d={`M${x},${y-5} Q${x},${y} ${x+5},${y} Q${x},${y} ${x},${y+5} Q${x},${y} ${x-5},${y} Q${x},${y} ${x},${y-5}`} opacity={0.2+i%3*0.12}/> )}</g></svg>
+  <div class="ms-hero__frame" data-ms-fit>
+    <svg class="ms-browser" viewBox="0 0 1000 600" preserveAspectRatio="none" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="1.5" vector-effect="non-scaling-stroke"><path data-ms-draw pathLength="1" d="M40 1 H980 Q999 1 999 20 V580 Q999 599 980 599 H20 Q1 599 1 580 V20 Q1 1 20 1 H40 M1 48 H999"/><circle data-ms-draw pathLength="1" cx="25" cy="25" r="5"/><circle data-ms-draw pathLength="1" cx="45" cy="25" r="5"/><circle data-ms-draw pathLength="1" cx="65" cy="25" r="5"/></g></svg>
+    <span class="ms-browser-echo" aria-hidden="true"></span>
+    <div class="ms-hero__intro">
+      <p class="ms-eyebrow" data-ms-intro>{copy.eyebrow}</p>
+      <h1 id="ms-title" data-ms-intro>{copy.lines.map((line,i)=><span class:list={['ms-hero__line', {'ms-hero__line--fill':i===0}]}>{line}{i===0 && <span class="ms-fill-mask" aria-hidden="true"><span class="ms-fill-text">{line}</span></span>}</span>)}</h1>
+    </div>
+    <div class="ms-hero__finish">
+      <div class="ms-seal"><MarketingServiceEcho text={copy.seal}/></div>
+      <div class="ms-hero__details"><p>{copy.copy}</p><button class="ms-button" type="button" data-contact-trigger>{copy.cta}<span aria-hidden="true">↗</span></button></div>
+    </div>
+    <button class="ms-explore" type="button" data-ms-next>{copy.explore}<span aria-hidden="true">↓</span></button>
+  </div>
+</section>

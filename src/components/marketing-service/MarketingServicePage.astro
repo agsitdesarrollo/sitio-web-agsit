@@ -1,0 +1,28 @@
+---
+import FinalContactSection from '../final-contact/FinalContactSection.astro';
+import type { ContactCopy } from '../../data/contact';
+import type { MarketingServiceContent } from '../../types/marketingService.types';
+import MarketingServiceHero from './MarketingServiceHero.astro';
+import MarketingServiceProblems from './MarketingServiceProblems.astro';
+import MarketingServiceSolution from './MarketingServiceSolution.astro';
+import MarketingServiceAudience from './MarketingServiceAudience.astro';
+import MarketingServiceServices from './MarketingServiceServices.astro';
+import './MarketingServicePage.css';
+type Props = { content: MarketingServiceContent; contactCopy: ContactCopy };
+const { content, contactCopy } = Astro.props;
+---
+<main class="ms-page" data-marketing-service>
+  <div class="ms-experience"><div class="ms-viewport">
+    <MarketingServiceHero copy={content.hero}/>
+    <MarketingServiceProblems copy={content.problems}/>
+    <MarketingServiceSolution copy={content.solution} lang={content.lang}/>
+    <MarketingServiceAudience copy={content.audience} lang={content.lang}/>
+    <MarketingServiceServices copy={content.services} lang={content.lang}/>
+    <nav class="ms-navigation" aria-label={content.navigation.label}><button type="button" data-ms-previous aria-label={content.navigation.previous}>↑</button><span class="ms-position" aria-live="polite" aria-atomic="true"></span><button type="button" data-ms-next aria-label={content.navigation.next}>↓</button><a href="#contacto">{content.navigation.contact}<span aria-hidden="true"> ↗</span></a></nav>
+  </div></div>
+  <FinalContactSection copy={contactCopy}/>
+</main>
+<script>
+  import { setupMarketingServiceScroll } from './marketingServiceScroll';
+  setupMarketingServiceScroll();
+</script>

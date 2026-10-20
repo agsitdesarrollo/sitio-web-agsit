@@ -1,0 +1,9 @@
+---
+import type { MarketingMedia } from '../../types/marketingService.types';
+import type { SupportedLang } from '../../i18n/ui';
+type Props = { media: MarketingMedia; lang: SupportedLang; placeholder?: string; cloud?: boolean };
+const { media, lang, placeholder = '', cloud = false } = Astro.props;
+---
+<div class:list={['ms-media', { 'ms-media--pending': media.pending, 'ms-media--cloud': cloud }]} style={`--media-ratio:${media.ratio}`} data-pending={media.pending}>
+  {media.pending ? cloud ? <span class="ms-cloud-shape" aria-hidden="true"></span> : <div class="ms-media__placeholder" role="img" aria-label={media.alt[lang]}><span class="ms-media__mark" aria-hidden="true"></span><span>{placeholder}</span></div> : <img src={media.src} alt={cloud ? '' : media.alt[lang]} width={media.width} height={media.height} loading="lazy" decoding="async" />}
+</div>
