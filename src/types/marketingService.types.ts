@@ -28,6 +28,8 @@ export type MarketingService = {
 };
 export type MarketingServiceContent = {
     lang: SupportedLang;
+    /** The same page in the other language; used only to measure the longest text of both. */
+    counterpart?: MarketingServiceContent;
     metadata: {
         title: string;
         description: string;

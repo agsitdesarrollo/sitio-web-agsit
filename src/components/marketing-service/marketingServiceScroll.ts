@@ -16,13 +16,14 @@ export function setupMarketingServiceScroll() {
     const serviceCards = Array.from(root.querySelectorAll<HTMLElement>('[data-service-index]'));
     const profiles = Array.from(root.querySelectorAll<HTMLElement>('.ms-profile'));
     const rows = Array.from(root.querySelectorAll<HTMLElement>('.ms-problem-row'));
-    let height = 1, stops: MarketingStop[] = [], index = 0, moving = false, resizeFrame = 0, lastWidth = 0, lastHeight = 0;
+    let height = 1, top = 0, stops: MarketingStop[] = [], index = 0, moving = false, resizeFrame = 0, lastWidth = 0, lastHeight = 0;
     let destination = 0, gestureAt = 0, gestureDirection = 0;
     let disposed = false;
     let motion = createMarketingMotion(root, preference.matches);
     const menuOpen = () => !!document.querySelector('.site-nav nav.is-open');
     const blocked = () => menuOpen() || document.body.classList.contains('drawer-open');
-    const contactY = () => stops.length * height;
+    // The stage is one menu-height taller than the stops, so contact lands flush with the top of the screen.
+    const contactY = () => stops.length * height + top;
     const setHeaderDirection = (direction: number) => {
         if (!blocked())
             header.classList.toggle('is-scroll-hidden', direction > 0);
@@ -33,13 +34,12 @@ export function setupMarketingServiceScroll() {
         const stop = stops[index];
         if (!stop)
             return;
-        if (stop.service !== undefined && stop.panel.dataset.numbers !== 'true')
-            stop.panel.style.setProperty('--deck-space', `${stop.service * 32}px`);
         panels.forEach(p => { const current = p === stop.panel; p.classList.toggle('is-active', current); p.inert = !current; p.setAttribute('aria-hidden', String(!current)); });
         profiles.forEach((p, i) => { const shown = stop.profile === undefined || stop.profile === i; p.classList.toggle('is-current', shown); p.inert = !shown; p.setAttribute('aria-hidden', String(!shown)); });
         rows.forEach((row, i) => row.style.display = stop.problemRow === undefined || stop.problemRow === i ? '' : 'none');
-        serviceCards.forEach((card, i) => { const current = i === stop.service; card.classList.toggle('is-current', current); card.inert = !current; card.setAttribute('aria-hidden', String(!current)); card.dataset.part = current ? stop.part ?? 'all' : 'all'; card.style.visibility = current ? 'visible' : 'hidden'; card.style.zIndex = current ? '2' : '0'; });
-        root.querySelectorAll<HTMLButtonElement>('[data-ms-service]').forEach((b, i) => { b.setAttribute('aria-current', i === stop.service ? 'step' : 'false'); b.style.display = stop.panel.dataset.numbers === 'true' || stop.service === undefined || i < stop.service ? '' : 'none'; });
+        serviceCards.forEach((card, i) => { const current = i === stop.service; card.classList.toggle('is-current', current); card.classList.toggle('is-before', stop.service !== undefined && i < stop.service); card.inert = !current; card.setAttribute('aria-hidden', String(!current)); card.dataset.part = current ? stop.part ?? 'all' : 'all'; });
+        root.querySelectorAll<HTMLButtonElement>('[data-ms-service]').forEach((b, i) => b.setAttribute('aria-current', i === stop.service ? 'step' : 'false'));
+        root.dataset.ground = stop.panel.dataset.msGround ?? 'navy';
         root.querySelector('.ms-position')!.textContent = `${String(index + 1).padStart(2, '0')} / ${String(stops.length).padStart(2, '0')}`;
         root.querySelector<HTMLButtonElement>('[data-ms-previous]')!.disabled = index === 0;
         root.dataset.stop = stop.key;
@@ -60,7 +60,7 @@ export function setupMarketingServiceScroll() {
         finish();
         const target = Math.max(0, Math.min(stops.length, next));
         setHeaderDirection(target - index);
-        destination = target * height;
+        destination = target < stops.length ? target * height : contactY();
         if (target < stops.length)
             applyStop(target, immediate);
         else {
@@ -138,8 +138,10 @@ export function setupMarketingServiceScroll() {
         lastHeight = nextHeight;
         lastWidth = nextWidth;
         height = Math.max(1, nextHeight - nav);
+        top = nav;
         root.style.setProperty('--ms-h', `${height}px`);
-        root.style.setProperty('--ms-top', `${nav + (visualViewport?.offsetTop || 0)}px`);
+        root.style.setProperty('--ms-top', `${nav}px`);
+        root.style.setProperty('--ms-vv', `${visualViewport?.offsetTop || 0}px`);
         root.dataset.visibleHeight = String(height);
         root.classList.add('is-enhanced');
         root.style.setProperty('--ms-stops', '1');

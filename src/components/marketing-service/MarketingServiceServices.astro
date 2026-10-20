@@ -1,14 +1,16 @@
 ---
 import type { MarketingServiceContent } from '../../types/marketingService.types';
 import MarketingServiceMedia from './MarketingServiceMedia.astro';
-type Props = { copy: MarketingServiceContent['services']; lang: MarketingServiceContent['lang'] };
-const { copy, lang } = Astro.props;
+type Props = { copy: MarketingServiceContent['services']; alt: MarketingServiceContent['services']; lang: MarketingServiceContent['lang'] };
+const { copy, alt, lang } = Astro.props;
+const number = (i: number) => String(i + 1).padStart(2, '0');
 ---
 <section class="ms-panel ms-services" data-ms-panel="services" aria-label={copy.title}>
   <div class="ms-deck" style={`--service-count:${copy.items.length}`}>
-    <div class="ms-deck-tabs" aria-label={copy.title}>{copy.items.map((item,i)=><button type="button" data-ms-service={i} aria-label={`${String(i+1).padStart(2,'0')} · ${item.title}`}><span>{String(i+1).padStart(2,'0')}</span></button>)}</div>
-    {copy.items.map((item,i)=><article class="ms-bordered ms-service-card" data-service={item.id} data-service-index={i} aria-labelledby={`ms-service-${item.id}`}>
-      <div class="ms-service-card__body" data-ms-fit><p class="ms-service-number">{String(i+1).padStart(2,'0')}<span> / {String(copy.items.length).padStart(2,'0')}</span></p>{i===0 && <p class="ms-services-intro">{copy.title}</p>}<h2 id={`ms-service-${item.id}`}>{item.title}</h2><p>{item.copy}</p><div class="ms-includes"><p>{copy.includes}</p><ul>{item.includes.map(line=><li><svg viewBox="0 0 16 16" aria-hidden="true"><path d="m3 8 3 3 7-7"/></svg><span>{line}</span></li>)}</ul></div></div>
+    <div class="ms-deck-tabs" aria-label={copy.title}>{copy.items.map((item,i)=><button type="button" data-ms-service={i} aria-label={`${number(i)} · ${item.title}`}><span>{number(i)}</span></button>)}</div>
+    {copy.items.map((item,i)=><article class="ms-bordered ms-service-card" style={`--card-z:${i + 1}`} data-service={item.id} data-service-index={i} aria-labelledby={`ms-service-${item.id}`}>
+      <span class="ms-service-tab" aria-hidden="true">{number(i)}</span>
+      <div class="ms-service-card__body" data-ms-fit><p class="ms-service-number">{number(i)}<span> / {number(copy.items.length)}</span></p>{i===0 && <p class="ms-services-intro" data-ms-alt={alt.title}>{copy.title}</p>}<h2 id={`ms-service-${item.id}`} data-ms-alt={alt.items[i]?.title}>{item.title}</h2><p data-ms-alt={alt.items[i]?.copy}>{item.copy}</p><div class="ms-includes"><p data-ms-alt={alt.includes}>{copy.includes}</p><ul>{item.includes.map((line,j)=><li><svg viewBox="0 0 16 16" aria-hidden="true"><path d="m3 8 3 3 7-7"/></svg><span data-ms-alt={alt.items[i]?.includes[j]}>{line}</span></li>)}</ul></div></div>
       <MarketingServiceMedia media={item.media} lang={lang}/>
     </article>)}
   </div>

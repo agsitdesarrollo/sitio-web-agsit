@@ -1,9 +1,9 @@
 ---
 import type { MarketingServiceContent } from '../../types/marketingService.types';
 import MarketingServiceMedia from './MarketingServiceMedia.astro';
-type Props = { copy: MarketingServiceContent['audience']; lang: MarketingServiceContent['lang'] };
-const { copy, lang } = Astro.props;
+type Props = { copy: MarketingServiceContent['audience']; alt: MarketingServiceContent['audience']; lang: MarketingServiceContent['lang'] };
+const { copy, alt, lang } = Astro.props;
 ---
 <section class="ms-panel ms-audience" data-ms-panel="audience" aria-labelledby="ms-audience-title">
-  <div class="ms-section-content" data-ms-fit><h2 id="ms-audience-title">{copy.title}</h2><div class="ms-profile-grid">{copy.profiles.map(profile=><article class="ms-bordered ms-profile" data-profile={profile.id}><MarketingServiceMedia media={profile.media} lang={lang} placeholder={copy.placeholder}/><div class="ms-profile__text"><h3>{profile.title}</h3><p>{profile.copy}</p></div></article>)}</div></div>
+  <div class="ms-section-content" data-ms-fit><h2 id="ms-audience-title" data-ms-alt={alt.title}>{copy.title}</h2><div class="ms-profile-grid">{copy.profiles.map((profile,i)=><article class="ms-bordered ms-profile" data-profile={profile.id}><MarketingServiceMedia media={profile.media} lang={lang} placeholder={copy.placeholder}/><div class="ms-profile__text"><h3 data-ms-alt={alt.profiles[i]?.title}>{profile.title}</h3><p data-ms-alt={alt.profiles[i]?.copy}>{profile.copy}</p></div></article>)}</div></div>
 </section>

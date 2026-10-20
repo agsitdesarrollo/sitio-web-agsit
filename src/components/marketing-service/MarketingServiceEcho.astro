@@ -1,8 +1,8 @@
 ---
-type Props = { text: string; class?: string };
-const { text, class: className = '' } = Astro.props;
+type Props = { text: string; alt?: string; class?: string };
+const { text, alt = '', class: className = '' } = Astro.props;
 ---
-<span class:list={['ms-echo', className]}>
+<span class:list={['ms-echo', className]} data-ms-alt={alt || undefined}>
   <span class="ms-echo__copy ms-echo__copy--far" aria-hidden="true">{text}</span>
   <span class="ms-echo__copy ms-echo__copy--near" aria-hidden="true">{text}</span>
   <span class="ms-echo__face">{text}</span>

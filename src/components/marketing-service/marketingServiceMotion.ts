@@ -2,21 +2,32 @@ import gsap from 'gsap';
 import type { MarketingStop } from './marketingServiceFit';
 export function createMarketingMotion(root: HTMLElement, reduced: boolean) {
     const q = (s: string) => root.querySelectorAll<HTMLElement>(s);
+    const cssNumber = (name: string) => parseFloat(getComputedStyle(root).getPropertyValue(name)) || 0;
     const hero = root.querySelector<HTMLElement>('.ms-hero')!;
     let entrance: gsap.core.Timeline | undefined;
     let heroTween: gsap.core.Tween | undefined;
     let deadline = 0;
+    // Hero stop 2: the window is drawn, the first line fills, the seal drops in and the details arrive.
     const heroFill = gsap.timeline({ paused: true, defaults: { ease: 'power3.out' } })
+        .fromTo(q('.ms-browser'), { opacity: 0 }, { opacity: 1, duration: .05, ease: 'none' }, 0)
         .fromTo(q('[data-ms-draw]'), { strokeDasharray: 1, strokeDashoffset: 1 }, { strokeDashoffset: 0, duration: .65 }, 0)
+        .fromTo(q('.ms-explore'), { opacity: 1 }, { opacity: 0, duration: .2, ease: 'none' }, 0)
         .fromTo(q('.ms-fill-mask'), { xPercent: -101 }, { xPercent: 0, duration: .65 }, .1)
         .fromTo(q('.ms-fill-text'), { xPercent: 101 }, { xPercent: 0, duration: .65 }, .1)
-        .fromTo(q('.ms-seal'), { opacity: 0, y: -50, scale: .8, rotation: -18 }, { opacity: 1, y: 0, scale: 1, rotation: -8, duration: .65 }, .2)
-        .fromTo(q('.ms-seal .ms-echo__copy'), { opacity: 0, x: 0, y: 0 }, { opacity: 1, x: (i) => (i === 0 ? 2 : 1) * parseFloat(getComputedStyle(root).getPropertyValue('--ms-echo')), y: (i) => (i === 0 ? 2 : 1) * parseFloat(getComputedStyle(root).getPropertyValue('--ms-echo')), duration: .5 }, .35)
-        .fromTo(q('.ms-browser-echo'), { opacity: 0 }, { opacity: 1, duration: .4 }, .5)
+        .fromTo(q('.ms-seal'), { opacity: 0, y: -70, scale: .7, '--seal-rot': '-20deg', '--seal-echo': 0 }, { opacity: 1, y: 0, scale: 1, '--seal-rot': '-8deg', '--seal-echo': 1, duration: .6, ease: 'back.out(1.5)' }, .25)
+        .fromTo(q('.ms-browser-echo'), { opacity: 0 }, { opacity: 1, duration: .35 }, .55)
         .fromTo(q('.ms-hero__details'), { opacity: 0, y: 18 }, { opacity: 1, y: 0, duration: .45 }, .65);
+    // Problems: the two rows drift slowly in opposite directions; the echo is part of each card, so it travels with it.
     const rows = Array.from(q('.ms-problem-row'));
-    const drift = rows.map((row, i) => gsap.fromTo(row, { x: i % 2 ? -4 : 4 }, { x: i % 2 ? 4 : -4, duration: 7 + i, repeat: -1, yoyo: true, ease: 'sine.inOut', paused: true }));
-    const stars = gsap.to(q('[data-ms-star]'), { opacity: .65, duration: 2, stagger: .3, repeat: -1, yoyo: true, ease: 'sine.inOut', paused: true });
+    const drift = rows.map((row, i) => {
+        const sign = i % 2 ? -1 : 1;
+        const tween = gsap.fromTo(row, { x: () => sign * cssNumber('--ms-drift') }, { x: () => -sign * cssNumber('--ms-drift'), duration: 7, repeat: -1, yoyo: true, ease: 'sine.inOut', paused: true, immediateRender: false });
+        tween.progress(.5);
+        return tween;
+    });
+    const stars = gsap.to(q('[data-ms-star]'), { opacity: .9, duration: 2.2, stagger: .25, repeat: -1, yoyo: true, ease: 'sine.inOut', paused: true });
+    const clouds = Array.from(q('.ms-cloud'));
+    const cards = Array.from(q('.ms-service-card'));
     let active: MarketingStop | undefined;
     let pausedByUser = false;
     let hovering = false;
@@ -28,10 +39,15 @@ export function createMarketingMotion(root: HTMLElement, reduced: boolean) {
         drift.forEach(t => visible && active?.panel === problemPanel && !reduced && !pausedByUser && !hovering && !focused ? t.play() : t.pause());
         visible && active?.panel === hero && !reduced ? stars.play() : stars.pause();
     };
-    const pause = () => { pausedByUser = !pausedByUser; if (toggle) {
-        toggle.setAttribute('aria-pressed', String(pausedByUser));
-        toggle.textContent = pausedByUser ? toggle.dataset.resume! : toggle.dataset.pause!;
-    } updateLoops(); };
+    const setPaused = (value: boolean) => {
+        pausedByUser = value;
+        if (toggle) {
+            toggle.setAttribute('aria-pressed', String(value));
+            toggle.textContent = value ? toggle.dataset.resume! : toggle.dataset.pause!;
+        }
+        updateLoops();
+    };
+    const pause = () => setPaused(!pausedByUser);
     const over = () => { hovering = true; updateLoops(); };
     const out = () => { hovering = false; updateLoops(); };
     const focus = () => { focused = true; updateLoops(); };
@@ -39,14 +55,8 @@ export function createMarketingMotion(root: HTMLElement, reduced: boolean) {
         focused = false;
         updateLoops();
     } };
-    const touch = (event: PointerEvent) => { if (event.pointerType === 'touch' && !(event.target as Element).closest('button')) {
-        pausedByUser = true;
-        if (toggle) {
-            toggle.setAttribute('aria-pressed', 'true');
-            toggle.textContent = toggle.dataset.resume!;
-        }
-        updateLoops();
-    } };
+    const touch = (event: PointerEvent) => { if (event.pointerType === 'touch' && !(event.target as Element).closest('button'))
+        setPaused(true); };
     toggle?.addEventListener('click', pause);
     problemPanel.addEventListener('mouseenter', over);
     problemPanel.addEventListener('mouseleave', out);
@@ -55,6 +65,8 @@ export function createMarketingMotion(root: HTMLElement, reduced: boolean) {
     problemPanel.addEventListener('pointerdown', touch);
     document.addEventListener('visibilitychange', updateLoops);
     const finish = () => { clearTimeout(deadline); entrance?.progress(1); heroTween?.progress(1); entrance?.kill(); heroTween?.kill(); };
+    // Where each card of the deck rests when service `current` is the front one.
+    const deckPosition = (k: number, current: number, edge: number) => k < current ? { x: -(current - k) * edge, xPercent: 0 } : k === current ? { x: 0, xPercent: 0 } : { x: window.innerWidth, xPercent: 0 };
     const show = (stop: MarketingStop, previous?: MarketingStop, immediate = false) => {
         finish();
         active = stop;
@@ -66,17 +78,20 @@ export function createMarketingMotion(root: HTMLElement, reduced: boolean) {
             else
                 heroTween = heroFill.tweenTo(target, { duration: 1.1, ease: 'none' });
             root.querySelector<HTMLElement>('.ms-hero__details')!.inert = stop.hero === 0;
+            root.querySelector<HTMLElement>('.ms-explore')!.inert = stop.hero === 1;
             if (!previous && !fast)
-                entrance = gsap.timeline().fromTo(q('[data-ms-intro], .ms-explore'), { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: .7, stagger: .1, ease: 'power3.out' });
+                entrance = gsap.timeline().fromTo(q('[data-ms-intro]'), { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: .7, stagger: .1, ease: 'power3.out' });
         }
         else if (!fast) {
             entrance = gsap.timeline({ defaults: { duration: .8, ease: 'power3.out' } });
             if (stop.panel.dataset.msPanel === 'problems') {
-                entrance.fromTo(rows, { x: (i) => i % 2 ? 45 : -45, opacity: 0 }, { x: 0, opacity: 1, stagger: .1 }, 0);
+                entrance.fromTo(rows, { xPercent: (i) => i % 2 ? 35 : -35, opacity: 0 }, { xPercent: 0, opacity: 1, stagger: .1 }, 0);
                 entrance.fromTo(q('.ms-problem-card p'), { opacity: 0, y: 12 }, { opacity: 1, y: 0, duration: .6 }, .25);
             }
             else if (stop.panel.dataset.msPanel === 'solution') {
-                entrance.fromTo(q('.ms-cloud'), { xPercent: 0, y: 0, opacity: 1 }, { xPercent: (i) => i % 2 ? 100 : -100, y: -30, opacity: 0, duration: 1, ease: 'power2.inOut' }, 0);
+                // The clouds open from behind the title to the sides, and stay there framing the text.
+                const width = (clouds[0]?.parentElement as HTMLElement | undefined)?.clientWidth ?? 0;
+                clouds.forEach(cloud => entrance!.fromTo(cloud, { x: width / 2 - (cloud.offsetLeft + cloud.offsetWidth / 2), opacity: 0 }, { x: 0, opacity: 1, duration: 1.2, ease: 'power3.out' }, 0));
                 entrance.fromTo(q('.ms-solution h2'), { y: 30, opacity: 0, scale: .95 }, { y: 0, opacity: 1, scale: 1 }, .15);
                 entrance.fromTo(q('.ms-solution__copy'), { y: 16, opacity: 0 }, { y: 0, opacity: 1, duration: .55 }, .45);
             }
@@ -84,28 +99,33 @@ export function createMarketingMotion(root: HTMLElement, reduced: boolean) {
                 entrance.fromTo(Array.from(q('.ms-profile')).filter(e => getComputedStyle(e).display !== 'none'), { y: 28, opacity: 0 }, { y: 0, opacity: 1, stagger: .12, duration: .7 });
             }
             else if (stop.service !== undefined) {
-                const card = root.querySelector<HTMLElement>(`[data-service-index="${stop.service}"]`)!;
-                gsap.set(card, { x: 0, xPercent: 0, y: 0, opacity: 1 });
-                const backward = previous?.service !== undefined && previous.service > stop.service;
-                const outgoing = previous?.service !== undefined ? root.querySelector<HTMLElement>(`[data-service-index="${previous.service}"]`) : null;
-                if (backward && outgoing && outgoing !== card) {
-                    gsap.set(outgoing, { visibility: 'visible', zIndex: 4 });
-                    entrance.to(outgoing, { xPercent: 110, opacity: 0, duration: .85, ease: 'power3.inOut' }, 0).set(outgoing, { visibility: 'hidden', zIndex: 0 });
-                }
-                else
-                    entrance.fromTo(card, { xPercent: previous?.service === stop.service ? 0 : 105, opacity: previous?.service === stop.service ? 0 : 1 }, { xPercent: 0, opacity: 1, duration: .85, ease: 'power3.inOut' });
+                const current = stop.service;
+                const edge = root.querySelector<HTMLElement>('.ms-services')?.dataset.numbers === 'true' ? 0 : cssNumber('--ms-deck-edge');
+                const sameService = previous?.service === current;
+                // Coming from outside the deck the front card starts off to the right.
+                if (previous?.service === undefined)
+                    cards.forEach((card, k) => gsap.set(card, k === current ? { x: window.innerWidth, xPercent: 0 } : deckPosition(k, current, edge)));
+                cards.forEach((card, k) => entrance!.to(card, deckPosition(k, current, edge), 0));
+                if (sameService)
+                    entrance.fromTo(cards[current].querySelectorAll('.ms-service-card__body, .ms-media'), { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: .5, clearProps: 'opacity,transform' }, 0);
             }
         }
         if (fast) {
-            gsap.set(q('.ms-service-card'), { opacity: 1, x: 0, xPercent: 0, y: 0 });
-            gsap.set(q('.ms-cloud'), { opacity: 0 });
-            gsap.set(q('.ms-profile, .ms-problem-row, .ms-problem-card p, .ms-solution h2, .ms-solution__copy'), { opacity: 1, x: 0, y: 0, scale: 1 });
+            const current = stop.service ?? -1;
+            const edge = root.querySelector<HTMLElement>('.ms-services')?.dataset.numbers === 'true' ? 0 : cssNumber('--ms-deck-edge');
+            if (stop.service !== undefined)
+                cards.forEach((card, k) => gsap.set(card, deckPosition(k, current, edge)));
+            else if (stop.panel.dataset.msPanel === 'services')
+                cards.forEach(card => gsap.set(card, { x: 0, xPercent: 0 }));
+            gsap.set(clouds, { x: 0, opacity: 1 });
+            gsap.set(q('.ms-profile, .ms-problem-card p, .ms-solution h2, .ms-solution__copy'), { opacity: 1, y: 0, scale: 1 });
+            gsap.set(rows, { opacity: 1, xPercent: 0 });
         }
         // A throttled frame clock must never leave a card transparent or off screen.
         if (!fast)
-            deadline = window.setTimeout(finish, 1150);
+            deadline = window.setTimeout(finish, 1300);
         updateLoops();
     };
-    return { show, finish, updateLoops, destroy() { finish(); entrance?.kill(); heroTween?.kill(); heroFill.revert(); drift.forEach(t => t.revert()); stars.revert(); toggle?.removeEventListener('click', pause); problemPanel.removeEventListener('mouseenter', over); problemPanel.removeEventListener('mouseleave', out); problemPanel.removeEventListener('focusin', focus); problemPanel.removeEventListener('focusout', blur); problemPanel.removeEventListener('pointerdown', touch); document.removeEventListener('visibilitychange', updateLoops); root.querySelectorAll<HTMLElement>('[style]').forEach(el => { if (!el.matches('.ms-media,.ms-cloud,.ms-deck'))
+    return { show, finish, updateLoops, destroy() { finish(); entrance?.kill(); heroTween?.kill(); heroFill.revert(); drift.forEach(t => t.revert()); stars.revert(); toggle?.removeEventListener('click', pause); problemPanel.removeEventListener('mouseenter', over); problemPanel.removeEventListener('mouseleave', out); problemPanel.removeEventListener('focusin', focus); problemPanel.removeEventListener('focusout', blur); problemPanel.removeEventListener('pointerdown', touch); document.removeEventListener('visibilitychange', updateLoops); gsap.set([...cards, ...clouds], { clearProps: 'transform,opacity' }); root.querySelectorAll<HTMLElement>('[style]').forEach(el => { if (!el.matches('.ms-media,.ms-deck,.ms-service-card'))
             el.style.removeProperty('transform'); }); } };
 }

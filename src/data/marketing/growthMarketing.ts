@@ -67,4 +67,6 @@ const content: Record<SupportedLang, MarketingServiceContent> = {
         navigation: { previous: 'Previous', next: 'Next', contact: 'Contact', label: 'Service journey' },
     },
 };
+content.es.counterpart = content.en;
+content.en.counterpart = content.es;
 export const getGrowthMarketingContent = (lang: SupportedLang) => content[lang];

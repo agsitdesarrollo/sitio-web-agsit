@@ -1,4 +1,4 @@
-export type ServicePart = 'all' | 'overview' | 'details' | 'intro' | 'copy';
+export type ServicePart = 'all' | 'text' | 'media';
 export type MarketingStop = {
     panel: HTMLElement;
     key: string;
@@ -8,16 +8,40 @@ export type MarketingStop = {
     part?: ServicePart;
     problemRow?: number;
 };
+/**
+ * Puts the longer of the two languages into every translatable element while we measure, so the
+ * density and the number of stops are the same in Spanish and English. Returns the restore function.
+ */
+function useLongestText(root: HTMLElement) {
+    const saved: Array<[HTMLElement, string]> = [];
+    root.querySelectorAll<HTMLElement>('[data-ms-alt]').forEach(el => {
+        const alt = el.dataset.msAlt;
+        if (!alt)
+            return;
+        const leaves = el.hasAttribute('data-ms-flat') || !el.children.length
+            ? [el]
+            : Array.from(el.querySelectorAll<HTMLElement>('*')).filter(n => !n.children.length && (n.textContent || '').trim());
+        if (!leaves.length)
+            return;
+        const current = (leaves[0].textContent || '').replace(/\s+/g, ' ').trim();
+        if (alt.length <= current.length)
+            return;
+        leaves.forEach(leaf => { saved.push([leaf, leaf.innerHTML]); leaf.textContent = alt; });
+    });
+    return () => saved.forEach(([leaf, html]) => { leaf.innerHTML = html; });
+}
 /** Actual content bounds, after fonts and responsive recomposition. No device-height guesses. */
 export function measureMarketingStops(root: HTMLElement, reduced: boolean): MarketingStop[] {
+    const restoreText = useLongestText(root);
     const panels = Array.from(root.querySelectorAll<HTMLElement>('[data-ms-panel]'));
     const stops: MarketingStop[] = [];
-    const height = Number(root.dataset.visibleHeight);
-    const echo = parseFloat(getComputedStyle(root).getPropertyValue('--ms-echo')) * 2 + 2;
+    const rootStyle = getComputedStyle(root);
+    const echo = parseFloat(rootStyle.getPropertyValue('--ms-echo')) * 2 + 2;
+    const edge = parseFloat(rootStyle.getPropertyValue('--ms-deck-edge')) || 30;
     const fits = (panel: HTMLElement) => {
         const box = panel.getBoundingClientRect();
         const bottom = root.querySelector<HTMLElement>('.ms-navigation')!.getBoundingClientRect().top - 4;
-        const candidates = panel.querySelectorAll<HTMLElement>('[data-ms-fit], .ms-service-card, .ms-profile, .ms-hero__details, .ms-explore, .ms-service-card > .ms-media');
+        const candidates = panel.querySelectorAll<HTMLElement>('[data-ms-fit], .ms-service-card, .ms-profile, .ms-hero__details, .ms-service-card > .ms-media');
         return Array.from(candidates).filter(el => el.getClientRects().length > 0).every(el => {
             // Layout offsets exclude a running entrance transform. We measure the complete resting state.
             let x = el.offsetLeft, y = el.offsetTop, parent = el.offsetParent as HTMLElement | null;
@@ -27,7 +51,14 @@ export function measureMarketingStops(root: HTMLElement, reduced: boolean): Mark
                 parent = parent.offsetParent as HTMLElement | null;
             }
             const left = box.left + x, top = box.top + y;
-            return top >= box.top + 4 && top + el.offsetHeight <= bottom + 1 && left >= 8 && left + el.offsetWidth + echo <= window.innerWidth - 8 && el.scrollWidth <= el.clientWidth + echo;
+            const inside = top >= box.top + 4 && top + el.offsetHeight <= bottom + 1 && left >= 8 && left + el.offsetWidth + echo <= window.innerWidth - 8;
+            const content = el.scrollWidth <= el.clientWidth + echo && (!el.matches('.ms-hero__frame,.ms-service-card') || el.scrollHeight <= el.clientHeight + (el.matches('.ms-hero__frame') ? 10 : 1));
+            // A service card must keep its content clear of its own border, not just inside the stage.
+            const clear = !el.matches('.ms-service-card') || Array.from(el.querySelectorAll<HTMLElement>('.ms-service-card__body, .ms-media')).filter(c => c.getClientRects().length > 0).every(c => {
+                const inner = c.getBoundingClientRect(), outer = el.getBoundingClientRect();
+                return inner.top >= outer.top + 10 && inner.bottom <= outer.bottom - 10;
+            });
+            return inside && content && clear;
         });
     };
     panels.forEach(panel => {
@@ -41,14 +72,11 @@ export function measureMarketingStops(root: HTMLElement, reduced: boolean): Mark
         const profiles = Array.from(panel.querySelectorAll<HTMLElement>('.ms-profile'));
         panel.style.setProperty('--profile-count', String(Math.max(1, profiles.length)));
         if (kind === 'services') {
-            // Reserve edges for arbitrary service counts; use numbers before they steal reading width.
-            const edge = 32;
+            // Reserve the edges of every older card from the first service, so the active card never moves or changes width.
             const edgeSpace = Math.max(0, cards.length - 1) * edge;
-            panel.dataset.numbers = String(window.innerWidth < 760 || edgeSpace > window.innerWidth * .18);
-            panel.style.setProperty('--deck-edge', `${edge}px`);
+            panel.dataset.numbers = String(window.innerWidth < 860 || edgeSpace > window.innerWidth * .16);
             panel.style.setProperty('--deck-space', panel.dataset.numbers === 'true' ? '0px' : `${edgeSpace}px`);
-            panel.querySelectorAll<HTMLElement>('[data-ms-service]').forEach(button => button.style.removeProperty('display'));
-            panel.style.setProperty('--numbers-h', `${(panel.querySelector<HTMLElement>('.ms-deck-tabs')?.offsetHeight || 40) + 6}px`);
+            panel.style.setProperty('--numbers-h', `${(panel.querySelector<HTMLElement>('.ms-deck-tabs')?.offsetHeight || 40) + 8}px`);
         }
         for (const density of ['roomy', 'compact', 'small']) {
             panel.dataset.density = density;
@@ -72,21 +100,15 @@ export function measureMarketingStops(root: HTMLElement, reduced: boolean): Mark
                 stops.push({ panel, key: 'audience' });
         }
         else if (kind === 'services') {
+            // A service is split only when it truly does not fit, and never in more than two stops: text, then image.
             cards.forEach((card, i) => {
                 cards.forEach(c => c.style.display = c === card ? '' : 'none');
                 if (fits(panel))
                     stops.push({ panel, key: `service-${i}`, service: i, part: 'all' });
                 else {
-                    card.dataset.part = 'overview';
-                    if (fits(panel))
-                        stops.push({ panel, key: `service-${i}-overview`, service: i, part: 'overview' });
-                    else {
-                        stops.push({ panel, key: `service-${i}-intro`, service: i, part: 'intro' });
-                        stops.push({ panel, key: `service-${i}-copy`, service: i, part: 'copy' });
-                    }
-                    stops.push({ panel, key: `service-${i}-details`, service: i, part: 'details' });
+                    stops.push({ panel, key: `service-${i}-text`, service: i, part: 'text' });
+                    stops.push({ panel, key: `service-${i}-media`, service: i, part: 'media' });
                 }
-                card.dataset.part = 'all';
             });
             cards.forEach(c => c.style.removeProperty('display'));
         }
@@ -103,13 +125,17 @@ export function measureMarketingStops(root: HTMLElement, reduced: boolean): Mark
     const overflow: string[] = [];
     stops.forEach(stop => {
         const panel = stop.panel;
+        panel.classList.add('is-measuring');
         panel.querySelectorAll<HTMLElement>('.ms-profile').forEach((profile, i) => profile.classList.toggle('is-current', stop.profile === undefined || stop.profile === i));
         panel.querySelectorAll<HTMLElement>('.ms-problem-row').forEach((row, i) => row.style.display = stop.problemRow === undefined || stop.problemRow === i ? '' : 'none');
         panel.querySelectorAll<HTMLElement>('.ms-service-card').forEach((card, i) => { card.style.display = stop.service === i ? '' : 'none'; card.dataset.part = stop.part ?? 'all'; });
         if (!fits(panel))
             overflow.push(stop.key);
+        panel.classList.remove('is-measuring');
     });
     root.querySelectorAll<HTMLElement>('.ms-service-card,.ms-problem-row').forEach(el => el.style.removeProperty('display'));
+    root.querySelectorAll<HTMLElement>('.ms-service-card').forEach(card => { card.dataset.part = 'all'; });
+    restoreText();
     root.dataset.fitOverflow = overflow.join(',');
     return stops;
 }

@@ -2,10 +2,10 @@
 import type { MarketingServiceContent } from '../../types/marketingService.types';
 import MarketingServiceEcho from './MarketingServiceEcho.astro';
 import MarketingServiceMedia from './MarketingServiceMedia.astro';
-type Props = { copy: MarketingServiceContent['solution']; lang: MarketingServiceContent['lang'] };
-const { copy, lang } = Astro.props;
+type Props = { copy: MarketingServiceContent['solution']; alt: MarketingServiceContent['solution']; lang: MarketingServiceContent['lang'] };
+const { copy, alt, lang } = Astro.props;
 ---
-<section class="ms-panel ms-solution" data-ms-panel="solution" aria-labelledby="ms-solution-title">
-  <div class="ms-solution__text" data-ms-fit><p class="ms-eyebrow">{copy.eyebrow}</p><h2 id="ms-solution-title"><MarketingServiceEcho text={copy.title}/></h2><p class="ms-solution__copy">{copy.copy}</p></div>
-  <div class="ms-clouds" aria-hidden="true">{copy.clouds.map((media,i)=><div class="ms-cloud" style={`--cloud-side:${i%2===0?-1:1}`}><MarketingServiceMedia media={media} lang={lang} cloud/></div>)}</div>
+<section class="ms-panel ms-solution" data-ms-panel="solution" data-ms-ground="ink" aria-labelledby="ms-solution-title">
+  <div class="ms-solution__text" data-ms-fit><p class="ms-eyebrow" data-ms-alt={alt.eyebrow}>{copy.eyebrow}</p><h2 id="ms-solution-title"><MarketingServiceEcho text={copy.title} alt={alt.title}/></h2><p class="ms-solution__copy" data-ms-alt={alt.copy}>{copy.copy}</p></div>
+  <div class="ms-clouds" aria-hidden="true">{copy.clouds.map((media,i)=><div class="ms-cloud" data-side={i%2===0?'left':'right'}><MarketingServiceMedia media={media} lang={lang} cloud/></div>)}</div>
 </section>
