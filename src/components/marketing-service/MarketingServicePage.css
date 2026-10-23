@@ -21,6 +21,8 @@ html:has(.ms-page) { background: #08152b; }
 .ms-page :is(h1,h2,h3,p,ul) { margin: 0; }
 .ms-page :is(h1,h2,h3) { font-family: 'Inter', 'Segoe UI', Tahoma, sans-serif; font-weight: 800; letter-spacing: -.04em; text-wrap: balance; }
 .ms-page :is(h1,h2) { text-transform: uppercase; line-height: 1.02; }
+/* The shared contact section keeps its own lettering, as on every other page. */
+.ms-page .final-contact-heading h2 { text-transform: none; }
 .ms-page h2 { font-size: clamp(2rem, 4vw, 4.7rem); }
 .ms-page h3 { font-size: clamp(1.35rem, 2vw, 1.9rem); line-height: 1.15; }
 .ms-page :is(p,li) { font-size: clamp(1rem, 1.16vw, 1.2rem); line-height: 1.55; }
