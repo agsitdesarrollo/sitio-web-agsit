@@ -210,53 +210,101 @@ function initComparison(page: HTMLElement, staticMode: boolean) {
   const inputs = [...root.querySelectorAll<HTMLElement>('[data-sim-input]')];
   const resultPending = root.querySelector<HTMLElement>('[data-result-pending]')!;
   const progress = root.querySelector<HTMLElement>('[data-sim-progress]')!;
+  const curves = [...root.querySelectorAll<SVGGElement>('[data-curve]')].map(element => ({
+    element, values: JSON.parse(element.dataset.values!) as number[],
+    segments: [...element.querySelectorAll<SVGLineElement>('[data-curve-segment]')],
+    cursor: element.querySelector<SVGCircleElement>('[data-curve-cursor]')!,
+  }));
+  const interestLevel = root.querySelector<HTMLElement>('[data-interest-level]')!;
+  const levels = JSON.parse(interestLevel.dataset.levels!) as string[];
+  let previousFinal = false;
+  // Wall-clock time avoids GSAP lag smoothing stretching the simulation on busy frames.
+  const duration = 40_000;
+  let elapsed = 0;
+  let startedAt = 0;
+  let running = false;
+  let frame = 0;
   const render = () => {
     const stage = Math.min(stages.length - 1, Math.floor(state.position / 20));
     range.value = String(Math.round(state.position));
     progress.style.transform = `scaleX(${state.position / 100})`;
     const title = stages[stage].querySelector('h4')!.textContent!;
     range.setAttribute('aria-valuetext', title);
-    root.querySelector('output')!.textContent = title;
-    resultPending.textContent = title;
+    root.querySelector('[data-sim-output]')!.textContent = title;
+    resultPending.textContent = root.dataset.inProgress!;
     const final = state.position >= 99.99;
     resultPending.hidden = final;
     root.querySelectorAll<HTMLElement>('[data-result]').forEach(element => { element.hidden = !final || element.dataset.result !== (withPlan ? 'with' : 'without'); });
     const mode = withPlan ? 'with' : 'without';
-    if (stage !== previousStage || mode !== previousMode) {
+    curves.forEach(curve => {
+      const current = curve.element.dataset.curve === mode;
+      curve.element.toggleAttribute('hidden', !current);
+      if (!current) return;
+      const segment = Math.min(4, Math.floor(state.position / 20));
+      const fraction = Math.min(1, state.position / 20 - segment);
+      curve.segments.forEach((line, i) => { line.style.transform = `scaleX(${Math.max(0, Math.min(1, state.position / 20 - i))})`; });
+      const value = curve.values[segment] + (curve.values[segment + 1] - curve.values[segment]) * fraction;
+      curve.cursor.style.transform = `translate(${20 + (segment + fraction) * 108}px,${210 - value * 190}px)`;
+      interestLevel.textContent = levels[value < .35 ? 0 : value < .68 ? 1 : 2];
+    });
+    if (stage !== previousStage || mode !== previousMode || final !== previousFinal) {
       stages.forEach((element, i) => { element.hidden = i !== stage; });
-      actions.forEach((element, i) => { element.hidden = false; element.style.opacity = i <= stage ? '1' : '0'; element.setAttribute('aria-hidden', String(i > stage)); });
+      actions.forEach((element, i) => { element.hidden = i > stage; });
       nodes.forEach((element, i) => element.classList.toggle('is-current', i <= stage));
       inputs.forEach((element, i) => element.classList.toggle('is-current', i === stage));
+      root.querySelectorAll('[data-interest-reason]').forEach((element, i) => element.classList.toggle('is-current', i === stage));
       root.querySelectorAll<HTMLElement>('[data-with]').forEach(element => { element.hidden = !withPlan; });
       root.querySelectorAll<HTMLElement>('[data-without]').forEach(element => { element.hidden = withPlan; });
       root.dataset.mode = mode;
-      previousStage = stage; previousMode = mode;
+      previousStage = stage; previousMode = mode; previousFinal = final;
+      requestAnimationFrame(() => { if (!signal.aborted) ScrollTrigger.refresh(); });
     }
   };
   const syncButton = () => {
-    const playing = !timeline.paused() && visible && !document.hidden;
+    const playing = running;
     root.dataset.playing = String(playing);
     play.textContent = playing ? root.dataset.pauseLabel! : root.dataset.playLabel!;
   };
-  const timeline = gsap.timeline({ paused: true, onUpdate: render, onComplete: () => { wantsPlay = false; timeline.pause(); syncButton(); } }).to(state, { position: 100, duration: 24, ease: 'none' });
+  const tick = (now: number) => {
+    if (!running) return;
+    state.position = Math.min(100, (elapsed + now - startedAt) / duration * 100);
+    render();
+    if (state.position >= 100) {
+      elapsed = duration; running = false; wantsPlay = false; frame = 0; syncButton();
+    } else frame = requestAnimationFrame(tick);
+  };
+  const freeze = () => {
+    if (running) {
+      elapsed = Math.min(duration, elapsed + performance.now() - startedAt);
+      state.position = elapsed / duration * 100;
+    }
+    running = false; cancelAnimationFrame(frame); frame = 0;
+    render();
+  };
   const sync = () => {
-    if (visible && wantsPlay && !staticMode && !document.hidden) timeline.play(); else timeline.pause();
+    const shouldPlay = visible && wantsPlay && !staticMode && !document.hidden;
+    if (shouldPlay && !running) {
+      running = true; startedAt = performance.now(); frame = requestAnimationFrame(tick);
+    } else if (!shouldPlay && running) freeze();
     syncButton();
   };
   play.addEventListener('click', () => {
     if (staticMode) {
       state.position = state.position >= 100 ? 0 : Math.min(100, state.position + 20);
-      timeline.progress(state.position / 100).pause(); render(); syncButton(); return;
+      elapsed = state.position / 100 * duration; render(); syncButton(); return;
     }
-    if (state.position >= 100) timeline.progress(0);
-    wantsPlay = timeline.paused(); sync();
+    if (state.position >= 100) { elapsed = 0; state.position = 0; render(); }
+    wantsPlay = !running; sync();
   }, { signal });
-  root.querySelector('[data-sim-reset]')?.addEventListener('click', () => { wantsPlay = false; timeline.pause(0); state.position = 0; render(); syncButton(); }, { signal });
-  range.addEventListener('input', () => { wantsPlay = false; timeline.pause(); timeline.progress(Number(range.value) / 100); render(); syncButton(); }, { signal });
+  root.querySelector('[data-sim-reset]')?.addEventListener('click', () => { wantsPlay = false; freeze(); elapsed = 0; state.position = 0; render(); syncButton(); }, { signal });
+  range.addEventListener('input', () => {
+    const position = Number(range.value);
+    wantsPlay = false; freeze(); elapsed = position / 100 * duration; state.position = position; render(); syncButton();
+  }, { signal });
   root.querySelectorAll<HTMLButtonElement>('[data-scenario]').forEach(button => button.addEventListener('click', () => {
     withPlan = button.dataset.scenario === 'with';
     root.querySelectorAll('[data-scenario]').forEach(element => element.setAttribute('aria-pressed', String(element === button)));
-    render(); ScrollTrigger.refresh();
+    render();
   }, { signal }));
   const observer = new IntersectionObserver(entries => {
     const entry = entries[0];
@@ -267,5 +315,5 @@ function initComparison(page: HTMLElement, staticMode: boolean) {
   observer.observe(root);
   document.addEventListener('visibilitychange', sync, { signal });
   render();
-  return () => { observer.disconnect(); abort.abort(); timeline.kill(); root.dataset.playing = 'false'; };
+  return () => { observer.disconnect(); abort.abort(); running = false; cancelAnimationFrame(frame); root.dataset.playing = 'false'; };
 }

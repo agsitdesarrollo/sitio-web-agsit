@@ -16,7 +16,7 @@ const { content, contactCopy } = Astro.props;
   <div class="ms-story-content">
   <ScrollVideoHero content={content.hero} />
   <StoryManifesto content={content.manifesto} />
-  <ScenarioComparison content={content.comparison} />
+  <ScenarioComparison content={content.comparison} lang={content.lang} />
   <ServiceExplorer content={content.services} />
   <ChannelIntegration content={content.integration} />
   <StoryAudiences content={content.audience} />

@@ -58,3 +58,18 @@ const en: MarketingStoryContent = {
   ] },
 };
 export const getGrowthMarketingStory = (lang: SupportedLang): MarketingStoryContent => lang === 'en' ? en : es;
+
+// Curve coordinates describe an illustrative drawing, never measured purchase probabilities.
+export const getGrowthComparisonVisuals = (lang: SupportedLang) => lang === 'en' ? {
+  title: 'How interest develops', reasons: 'What changes at each stage',
+  levels: ['Low', 'Developing', 'High'], current: 'Current interest', inProgress: 'In progress',
+  note: 'An illustrative trend, not percentages or measured results.',
+  withReasons: ['The offer addresses a need.', 'The next step is easy to find.', 'An answer resolves their questions.', 'Clear information supports the decision.', 'Useful follow-up gives them a reason to return.'],
+  withoutReasons: ['The message reaches people without a clear focus.', 'Attention has no clear next step.', 'Waiting for an answer interrupts the conversation.', 'Unanswered questions slow the decision.', 'The relationship fades without follow-up.'],
+} : {
+  title: 'Cómo evoluciona el interés', reasons: 'Qué cambia en cada etapa',
+  levels: ['Bajo', 'En desarrollo', 'Alto'], current: 'Interés actual', inProgress: 'En curso',
+  note: 'Evolución ilustrativa; no representa porcentajes ni resultados medidos.',
+  withReasons: ['La oferta responde a una necesidad.', 'El siguiente paso es fácil de encontrar.', 'Una respuesta ayuda a resolver las dudas.', 'La información clara facilita la decisión.', 'El seguimiento útil da una razón para volver.'],
+  withoutReasons: ['El mensaje llega sin un público bien definido.', 'La atención no tiene un siguiente paso claro.', 'La espera de una respuesta interrumpe la conversación.', 'Las dudas pendientes frenan la decisión.', 'Sin seguimiento, la relación se enfría.'],
+};

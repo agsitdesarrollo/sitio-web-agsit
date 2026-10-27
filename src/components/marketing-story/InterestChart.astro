@@ -1,0 +1,36 @@
+---
+import { getGrowthComparisonVisuals } from '../../data/marketing/growthMarketingStory';
+import type { SupportedLang } from '../../i18n/ui';
+type Props = { lang: SupportedLang; stages: string[] };
+const { lang, stages } = Astro.props;
+const copy = getGrowthComparisonVisuals(lang);
+const curves = [
+  { mode: 'with', values: [.12, .3, .5, .66, .83, .94] },
+  { mode: 'without', values: [.12, .3, .42, .28, .17, .1] },
+];
+const point = (value: number, i: number) => ({ x: 20 + i * 108, y: 210 - value * 190 });
+---
+<div class="ms-sim-panel ms-interest-panel">
+  <h3>{copy.title}</h3>
+  <div class="ms-interest-grid">
+    <figure class="ms-interest-chart" aria-label={`${copy.title}. ${copy.note}`}>
+      <div class="ms-chart-plot">
+        <div class="ms-chart-axis" aria-hidden="true"><span>{copy.levels[2]}</span><span>{copy.levels[1]}</span><span>{copy.levels[0]}</span></div>
+        <svg viewBox="0 0 580 230" preserveAspectRatio="none" role="img" aria-label={copy.title}>
+          {[35, 115, 195].map(y => <line x1="20" x2="560" y1={y} y2={y} class="ms-chart-guide" />)}
+          {curves.map(curve => <g data-curve={curve.mode} data-values={JSON.stringify(curve.values)} hidden={curve.mode === 'without'}>
+            <polyline points={curve.values.map((v, i) => { const p = point(v, i); return `${p.x},${p.y}`; }).join(' ')} class="ms-curve-preview" />
+            {curve.values.slice(0, -1).map((value, i) => {
+              const a = point(value, i), b = point(curve.values[i + 1], i + 1);
+              const angle = Math.atan2(b.y - a.y, b.x - a.x) * 180 / Math.PI;
+              return <g transform={`translate(${a.x} ${a.y}) rotate(${angle})`}><line x1="0" y1="0" x2={Math.hypot(b.x - a.x, b.y - a.y)} y2="0" data-curve-segment={i} class="ms-curve-segment" /></g>;
+            })}
+            <circle r="6" cx="0" cy="0" data-curve-cursor class="ms-curve-cursor" style={`transform:translate(20px,${point(curve.values[0], 0).y}px)`} />
+          </g>)}
+        </svg>
+      </div>
+      <figcaption><span>{copy.current}: <strong data-interest-level data-levels={JSON.stringify(copy.levels)}>{copy.levels[0]}</strong></span><span>{copy.note}</span></figcaption>
+    </figure>
+    <div class="ms-interest-reasons"><h4>{copy.reasons}</h4><ol>{stages.map((stage, i) => <li data-interest-reason class:list={{ 'is-current': i === 0 }}><span>{stage}</span><p data-with>{copy.withReasons[i]}</p><p data-without hidden>{copy.withoutReasons[i]}</p></li>)}</ol></div>
+  </div>
+</div>
