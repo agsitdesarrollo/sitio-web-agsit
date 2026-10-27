@@ -1,0 +1,29 @@
+---
+import FinalContactSection from '../final-contact/FinalContactSection.astro';
+import ScrollVideoHero from './ScrollVideoHero.astro';
+import StoryManifesto from './StoryManifesto.astro';
+import ScenarioComparison from './ScenarioComparison.astro';
+import ServiceExplorer from './ServiceExplorer.astro';
+import ChannelIntegration from './ChannelIntegration.astro';
+import StoryAudiences from './StoryAudiences.astro';
+import type { MarketingStoryContent } from '../../types/marketingStory.types';
+import type { ContactCopy } from '../../data/contact';
+import './marketing-story.css'; // Page-local styles; shared service styles stay untouched.
+type Props = { content: MarketingStoryContent; contactCopy: ContactCopy };
+const { content, contactCopy } = Astro.props;
+---
+<main class="ms-page" data-marketing-story>
+  <div class="ms-story-content">
+  <ScrollVideoHero content={content.hero} />
+  <StoryManifesto content={content.manifesto} />
+  <ScenarioComparison content={content.comparison} />
+  <ServiceExplorer content={content.services} />
+  <ChannelIntegration content={content.integration} />
+  <StoryAudiences content={content.audience} />
+  </div>
+  <FinalContactSection copy={contactCopy} />
+</main>
+<script>
+  import { initMarketingStory } from './marketing-story.controller';
+  initMarketingStory();
+</script>

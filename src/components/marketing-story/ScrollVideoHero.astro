@@ -1,0 +1,41 @@
+---
+import { existsSync } from 'node:fs';
+import type { MarketingStoryContent } from '../../types/marketingStory.types';
+type Props = { content: MarketingStoryContent['hero'] };
+const { content } = Astro.props;
+// Never ship the borrowed demo. An owned, non-pending asset may be used in production.
+const available = (!content.media.pending || import.meta.env.DEV) && existsSync(`${process.cwd()}/public${content.media.src}`);
+---
+<section class="ms-hero" aria-labelledby="ms-title" data-hero data-duration={content.media.duration} data-clips={JSON.stringify(content.media.clips)}>
+  <div class="ms-hero-stage" data-hero-stage>
+    <div class="ms-media-space" aria-hidden="true">
+      <div class="ms-film" data-film>
+        <img class="ms-poster" src={content.poster.src} alt="" width={content.poster.width} height={content.poster.height} fetchpriority="high" />
+        {available && <video data-story-video data-src={content.media.src} muted playsinline preload="none" disablepictureinpicture tabindex="-1" aria-hidden="true"></video>}
+        <div class="ms-film-shade"></div>
+        <div class="ms-captions">
+          {content.chapters.map((chapter, i) => <div class="ms-caption" data-caption aria-hidden="true"><span class="ms-count">{String(i + 1).padStart(2, '0')} <span>/ {String(content.chapters.length).padStart(2, '0')}</span></span><p>{chapter}</p></div>)}
+        </div>
+      </div>
+    </div>
+    <div class="ms-closing-shade" data-closing-shade aria-hidden="true"></div>
+    <div class="ms-claim ms-shell" data-claim>
+      <div>
+        <p class="ms-label">{content.label}</p>
+        <h1 id="ms-title">{content.title}</h1>
+        <p class="ms-lead">{content.copy}</p>
+        <div class="ms-buttons"><button class="ms-button" data-contact-trigger>{content.contact}</button><a class="ms-button ms-button-outline" href="#ms-services">{content.explore}</a></div>
+      </div>
+    </div>
+    <div class="ms-hero-controls ms-shell" data-hero-controls>
+      <button class="ms-skip" data-skip>{content.skip}</button>
+      <button class="ms-skip ms-video-retry" data-video-retry hidden>{content.play}</button>
+      <div class="ms-segments" role="progressbar" aria-label={content.progress} aria-valuemin="1" aria-valuemax={content.chapters.length} aria-valuenow="1">
+        {content.chapters.map((_, i) => <span data-segment class:list={{ 'is-active': i === 0 }}></span>)}
+      </div>
+    </div>
+  </div>
+  <div class="ms-static-chapters ms-shell" data-static-chapters>
+    <h2>{content.sequence}</h2><ol>{content.chapters.map(chapter => <li>{chapter}</li>)}</ol>
+  </div>
+</section>

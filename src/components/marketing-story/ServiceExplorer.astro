@@ -1,0 +1,21 @@
+---
+import type { MarketingStoryContent } from '../../types/marketingStory.types';
+type Props = { content: MarketingStoryContent['services'] };
+const { content } = Astro.props;
+---
+<section class="ms-services ms-light" id="ms-services" aria-labelledby="ms-services-title">
+  <div class="ms-shell ms-section-space">
+    <div class="ms-section-heading"><h2 id="ms-services-title">{content.title}</h2><p class="ms-lead">{content.copy}</p></div>
+    <ol class="ms-service-line" aria-label={content.lineLabel}>{content.items.map((item, i) => <li><b aria-hidden="true"></b><span>{item.name}</span><small>{String(i + 1).padStart(2, '0')}</small></li>)}</ol>
+    <div class="ms-service-composition">
+      {content.items.map((item, i) => <>
+        {i === 3 && <figure class="ms-service-panorama" data-reveal><img src={content.items[2].image.src} alt={content.panoramaAlt} width="1200" height="900" loading="lazy" decoding="async" /><figcaption>{content.items[2].name}</figcaption></figure>}
+        <article class:list={['ms-service-card', `ms-service-${i + 1}`]} data-reveal>
+          {i !== 2 && <img src={item.image.src} alt={item.image.alt} width={item.image.width} height={item.image.height} loading="lazy" decoding="async" />}
+          <div class="ms-service-body"><p class="ms-service-name">{item.name}</p><h3>{item.title}</h3><p>{item.copy}</p><h4>{content.includes}</h4><ul>{item.includes.map(line => <li>{line}</li>)}</ul></div>
+        </article>
+      </>)}
+    </div>
+    <div class="ms-services-cta"><button class="ms-button" data-contact-trigger>{content.cta}</button></div>
+  </div>
+</section>

@@ -1,0 +1,14 @@
+---
+import type { MarketingStoryContent } from '../../types/marketingStory.types';
+type Props = { content: MarketingStoryContent['manifesto'] };
+const { content } = Astro.props;
+---
+<section class="ms-manifesto ms-light" id="ms-manifesto" tabindex="-1" aria-labelledby="ms-manifesto-title">
+  <div class="ms-shell ms-section-space">
+    <div class="ms-rule" data-manifesto-rule aria-hidden="true"><i></i>{[0, 1, 2, 3].map(() => <b></b>)}</div>
+    <div class="ms-manifesto-grid">
+      <h2 id="ms-manifesto-title">{content.words.map(word => <span data-reveal>{word}</span>)}</h2>
+      <div data-reveal><p class="ms-lead">{content.copy}</p><div class="ms-between"><div class="ms-between-line" aria-hidden="true"><i data-between></i></div><div class="ms-between-labels"><span>{content.from}</span><span>{content.to}</span></div><p>{content.conclusion}</p></div></div>
+    </div>
+  </div>
+</section>

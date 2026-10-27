@@ -1,0 +1,24 @@
+---
+import type { MarketingStoryContent } from '../../types/marketingStory.types';
+type Props = { content: MarketingStoryContent['comparison'] };
+const { content } = Astro.props;
+---
+<section class="ms-comparison ms-paper" id="ms-comparison" aria-labelledby="ms-comparison-title" data-comparison data-playing="false" data-mode="with" data-play-label={content.play} data-pause-label={content.pause}>
+  <div class="ms-shell ms-section-space">
+    <div class="ms-section-heading"><h2 id="ms-comparison-title">{content.title}</h2><p class="ms-lead">{content.copy}</p></div>
+    <div class="ms-sim-controls">
+      <div class="ms-scenario-switch" role="group" aria-label={`${content.without} / ${content.with}`}><button data-scenario="without" aria-pressed="false">{content.without}</button><button data-scenario="with" aria-pressed="true">{content.with}</button></div>
+      <div class="ms-play-controls"><button class="ms-button" data-sim-play>{content.play}</button><button class="ms-button ms-button-outline" data-sim-reset>{content.reset}</button></div>
+      <label class="ms-timeline"><span class="ms-sr">{content.timeline}</span><input data-sim-range type="range" min="0" max="100" step="1" value="0" aria-valuetext={content.stages[0].title} /><output data-sim-output>{content.stages[0].title}</output></label>
+    </div>
+    <div class="ms-sim-panels">
+      <div class="ms-sim-panel"><div class="ms-panel-heading"><h3>{content.entries}</h3><p>{content.entriesCopy}</p></div><ol class="ms-inputs">{content.channels.map((name, i) => <li data-sim-input class:list={{ 'is-current': i === 0 }}><span>{String(i + 1).padStart(2, '0')}</span>{name}</li>)}</ol></div>
+      <div class="ms-sim-panel ms-journey-panel"><h3>{content.route}</h3><div class="ms-journey"><div class="ms-journey-track" aria-hidden="true"><i data-sim-progress></i></div><ol>{content.stages.map((stage, i) => <li data-sim-node class:list={{ 'is-current': i === 0 }}><b aria-hidden="true"></b><span>{stage.title}</span></li>)}</ol></div><div class="ms-stage-reading" aria-live="off">{content.stages.map((stage, i) => <div data-stage-reading hidden={i !== 0}><h4>{stage.title}</h4><p data-without hidden>{stage.without}</p><p data-with>{stage.with}</p></div>)}</div></div>
+      <div class="ms-sim-bottom">
+        <div class="ms-sim-panel"><h3>{content.actions}</h3><ol class="ms-action-log">{content.stages.map((stage, i) => <li data-action data-step={i} hidden={i !== 0}><span>{stage.title}</span><p data-without hidden>{stage.without}</p><p data-with>{stage.with}</p></li>)}</ol></div>
+        <div class="ms-sim-panel ms-result"><h3>{content.result}</h3><p data-result-pending>{content.stages[0].title}</p><p data-result="without" hidden>{content.results[0]}</p><p data-result="with" hidden>{content.results[1]}</p><div class="ms-result-mark" aria-hidden="true"><i></i><i></i><i></i></div></div>
+      </div>
+    </div>
+    <p class="ms-note">{content.note}</p>
+  </div>
+</section>

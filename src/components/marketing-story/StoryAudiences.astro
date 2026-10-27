@@ -1,0 +1,6 @@
+---
+import type { MarketingStoryContent } from '../../types/marketingStory.types';
+type Props = { content: MarketingStoryContent['audience'] };
+const { content } = Astro.props;
+---
+<section class="ms-audiences" id="ms-audiences" aria-labelledby="ms-audiences-title"><div class="ms-shell ms-section-space"><h2 id="ms-audiences-title">{content.title}</h2><ul>{content.items.map(item => <li data-reveal><h3>{item.title}</h3><p>{item.copy}</p></li>)}</ul></div></section>

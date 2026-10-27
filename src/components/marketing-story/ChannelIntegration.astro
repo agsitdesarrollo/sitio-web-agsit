@@ -1,0 +1,15 @@
+---
+import type { MarketingStoryContent } from '../../types/marketingStory.types';
+type Props = { content: MarketingStoryContent['integration'] };
+const { content } = Astro.props;
+---
+<section class="ms-integration" id="ms-integration" aria-labelledby="ms-integration-title">
+  <div class="ms-shell ms-section-space ms-integration-grid">
+    <div data-reveal><h2 id="ms-integration-title">{content.title}</h2><p class="ms-lead">{content.copy}</p></div>
+    <div><div class="ms-channel-diagram" role="img" aria-label={content.diagram} data-integration>
+      <ul>{content.channels.map(channel => <li data-integration-source><span>{channel}</span><i data-integration-line aria-hidden="true"></i></li>)}</ul>
+      <div class="ms-channel-center" data-integration-center><strong>AGSIT</strong><span>{content.center}</span></div>
+      <div class="ms-channel-output" data-integration-output><i data-integration-line aria-hidden="true"></i><strong>{content.outcome}</strong></div>
+    </div><p class="ms-note">{content.note}</p></div>
+  </div>
+</section>
