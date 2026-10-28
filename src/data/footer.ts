@@ -1,4 +1,5 @@
 import type { SupportedLang } from '../i18n/ui';
+import { contactInfo } from './contactInfo';
 
 export type FooterCopy = {
   brand: string;
@@ -24,7 +25,7 @@ export const footerCopyByLang: Record<SupportedLang, FooterCopy> = {
     },
     servicesTitle: 'Servicios',
     contactTitle: 'Contacto',
-    location: 'CDMX, México',
+    location: contactInfo.address.es,
   },
   en: {
     brand: 'Business consulting to transform operations, processes and growth with a focus on real results.',
@@ -36,7 +37,7 @@ export const footerCopyByLang: Record<SupportedLang, FooterCopy> = {
     },
     servicesTitle: 'Services',
     contactTitle: 'Contact',
-    location: 'Mexico City, Mexico',
+    location: contactInfo.address.en,
   },
 };
 
