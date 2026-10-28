@@ -47,6 +47,10 @@ export const pageNamesByRoute: Record<SupportedLang, Record<string, string>> = {
     '/administracion-de-procesos/excelencia-operativa/': 'Excelencia Operativa',
     '/administracion-de-procesos/diagnostico-y-auditoria-de-procesos/': 'Diagnóstico y Auditoría de Procesos',
     '/direccion-de-proyectos/pmo-project-governance/': 'PMO y Gobierno de Proyectos',
+    '/direccion-de-proyectos/strategic-project-delivery/': 'Strategic Project Delivery',
+    '/direccion-de-proyectos/agile-project-delivery/': 'Agile Project Delivery',
+    '/direccion-de-proyectos/auditoria-y-recuperacion-de-proyectos/': 'Auditoría y Recuperación de Proyectos',
+    '/direccion-de-proyectos/diagnostico-y-madurez-en-gestion-de-proyectos/': 'Diagnóstico y Madurez en Gestión de Proyectos',
     '/planeacion-estrategica/planeacion-estrategica-corporativa/': 'Planeación Estratégica Corporativa',
   },
   en: {
@@ -76,14 +80,97 @@ export const pageNamesByRoute: Record<SupportedLang, Record<string, string>> = {
     '/en/process-management/operational-excellence/': 'Operational Excellence',
     '/en/process-management/process-diagnosis-and-audit/': 'Process Diagnosis and Audit',
     '/en/project-management/pmo-project-governance/': 'PMO & Project Governance',
+    '/en/project-management/strategic-project-delivery/': 'Strategic Project Delivery',
+    '/en/project-management/agile-project-delivery/': 'Agile Project Delivery',
+    '/en/project-management/project-audit-and-recovery/': 'Project Audit and Recovery',
+    '/en/project-management/project-management-assessment-and-maturity/': 'Project Management Assessment and Maturity',
     '/en/strategic-planning/corporate-strategic-planning/': 'Corporate Strategic Planning',
   },
 };
 
+function createWhatsappMessage(lang: SupportedLang, name?: string) {
+  return lang === 'es'
+    ? `Estoy en la página web ${name ? `de ${name}` : 'principal'} y estoy interesado en contactar a un consultor especializado de AGSIT para una iniciativa de proyecto que estamos desarrollando.`
+    : `I'm on the ${name ? `${name} page` : 'home page'} and I'm interested in contacting a specialized AGSIT consultant for a project initiative we're developing.`;
+}
+
 export const whatsappMessagesByRoute: Record<SupportedLang, Record<string, string>> = {
-  es: {},
-  en: {},
+  es: {
+    '/': createWhatsappMessage('es'),
+    '/soluciones-tecnologicas/': createWhatsappMessage('es', 'soluciones tecnológicas'),
+    '/marketing-digital/': createWhatsappMessage('es', 'marketing digital'),
+    '/administracion-de-procesos/': createWhatsappMessage('es', 'administración de procesos'),
+    '/direccion-de-proyectos/': createWhatsappMessage('es', 'dirección de proyectos'),
+    '/planeacion-estrategica/': createWhatsappMessage('es', 'planeación estratégica'),
+    '/gestion-de-calidad/': createWhatsappMessage('es', 'gestión de calidad'),
+    '/soluciones-tecnologicas/plataforma-empresarial-inteligente/': createWhatsappMessage('es', 'plataforma empresarial inteligente'),
+    '/soluciones-tecnologicas/desarrollo-de-software/': createWhatsappMessage('es', 'desarrollo de software'),
+    '/soluciones-tecnologicas/automatizacion-inteligente-de-procesos/': createWhatsappMessage('es', 'automatización inteligente de procesos'),
+    '/soluciones-tecnologicas/ingenieria-de-datos-y-analitica-estrategica/': createWhatsappMessage('es', 'ingeniería de datos y analítica estratégica'),
+    '/soluciones-tecnologicas/inteligencia-artificial/': createWhatsappMessage('es', 'inteligencia artificial'),
+    '/soluciones-tecnologicas/consultoria-y-transformacion-tecnologica/': createWhatsappMessage('es', 'consultoría y transformación tecnológica'),
+    '/soluciones-tecnologicas/infraestructura-cloud-y-servicios-ti/': createWhatsappMessage('es', 'infraestructura cloud y servicios TI'),
+    '/marketing-digital/growth-marketing-y-estrategia-digital/': createWhatsappMessage('es', 'growth marketing y estrategia digital'),
+    '/marketing-digital/posicionamiento-organico-seo/': createWhatsappMessage('es', 'posicionamiento orgánico SEO'),
+    '/marketing-digital/publicidad-digital/': createWhatsappMessage('es', 'publicidad digital'),
+    '/marketing-digital/content-marketing-social-media/': createWhatsappMessage('es', 'content marketing y social media'),
+    '/marketing-digital/estrategia-ecommerce/': createWhatsappMessage('es', 'estrategia de e-commerce'),
+    '/marketing-digital/analytics-cro/': createWhatsappMessage('es', 'analytics CRO'),
+    '/administracion-de-procesos/modelado-y-optimizacion-de-procesos/': createWhatsappMessage('es', 'modelado y optimización de procesos'),
+    '/administracion-de-procesos/automatizacion-inteligente-de-procesos/': createWhatsappMessage('es', 'automatización inteligente de procesos'),
+    '/administracion-de-procesos/inteligencia-y-gobierno-de-procesos/': createWhatsappMessage('es', 'inteligencia y gobierno de procesos'),
+    '/administracion-de-procesos/excelencia-operativa/': createWhatsappMessage('es', 'excelencia operativa'),
+    '/administracion-de-procesos/diagnostico-y-auditoria-de-procesos/': createWhatsappMessage('es', 'diagnóstico y auditoría de procesos'),
+    '/direccion-de-proyectos/pmo-project-governance/': createWhatsappMessage('es', 'PMO & Project Governance'),
+    '/direccion-de-proyectos/strategic-project-delivery/': createWhatsappMessage('es', 'strategic project delivery'),
+    '/direccion-de-proyectos/agile-project-delivery/': createWhatsappMessage('es', 'agile project delivery'),
+    '/direccion-de-proyectos/auditoria-y-recuperacion-de-proyectos/': createWhatsappMessage('es', 'auditoría y recuperación de proyectos'),
+    '/direccion-de-proyectos/diagnostico-y-madurez-en-gestion-de-proyectos/': createWhatsappMessage('es', 'diagnóstico y madurez en gestión de proyectos'),
+    '/planeacion-estrategica/planeacion-estrategica-corporativa/': createWhatsappMessage('es', 'planeación estratégica corporativa'),
+  },
+  en: {
+    '/en/': createWhatsappMessage('en'),
+    '/en/technology-solutions/': createWhatsappMessage('en', 'technology solutions'),
+    '/en/digital-marketing/': createWhatsappMessage('en', 'digital marketing'),
+    '/en/process-management/': createWhatsappMessage('en', 'process management'),
+    '/en/project-management/': createWhatsappMessage('en', 'project management'),
+    '/en/strategic-planning/': createWhatsappMessage('en', 'strategic planning'),
+    '/en/quality-management/': createWhatsappMessage('en', 'quality management'),
+    '/en/technology-solutions/intelligent-enterprise-platform/': createWhatsappMessage('en', 'intelligent enterprise platform'),
+    '/en/technology-solutions/software-development/': createWhatsappMessage('en', 'software development'),
+    '/en/technology-solutions/intelligent-process-automation/': createWhatsappMessage('en', 'intelligent process automation'),
+    '/en/technology-solutions/data-engineering-and-strategic-analytics/': createWhatsappMessage('en', 'data engineering and strategic analytics'),
+    '/en/technology-solutions/artificial-intelligence/': createWhatsappMessage('en', 'artificial intelligence'),
+    '/en/technology-solutions/technology-consulting-and-transformation/': createWhatsappMessage('en', 'technology consulting and transformation'),
+    '/en/technology-solutions/cloud-infrastructure-and-it-services/': createWhatsappMessage('en', 'cloud infrastructure and IT services'),
+    '/en/digital-marketing/growth-marketing-and-digital-strategy/': createWhatsappMessage('en', 'growth marketing and digital strategy'),
+    '/en/digital-marketing/organic-search-positioning-seo/': createWhatsappMessage('en', 'organic search positioning SEO'),
+    '/en/digital-marketing/digital-advertising/': createWhatsappMessage('en', 'digital advertising'),
+    '/en/digital-marketing/content-marketing-social-media/': createWhatsappMessage('en', 'content marketing and social media'),
+    '/en/digital-marketing/ecommerce-strategy/': createWhatsappMessage('en', 'e-commerce strategy'),
+    '/en/digital-marketing/analytics-cro/': createWhatsappMessage('en', 'analytics CRO'),
+    '/en/process-management/process-modeling-and-optimization/': createWhatsappMessage('en', 'process modeling and optimization'),
+    '/en/process-management/intelligent-process-automation/': createWhatsappMessage('en', 'intelligent process automation'),
+    '/en/process-management/process-intelligence-and-governance/': createWhatsappMessage('en', 'process intelligence and governance'),
+    '/en/process-management/operational-excellence/': createWhatsappMessage('en', 'operational excellence'),
+    '/en/process-management/process-diagnosis-and-audit/': createWhatsappMessage('en', 'process diagnosis and audit'),
+    '/en/project-management/pmo-project-governance/': createWhatsappMessage('en', 'PMO & Project Governance'),
+    '/en/project-management/strategic-project-delivery/': createWhatsappMessage('en', 'strategic project delivery'),
+    '/en/project-management/agile-project-delivery/': createWhatsappMessage('en', 'agile project delivery'),
+    '/en/project-management/project-audit-and-recovery/': createWhatsappMessage('en', 'project audit and recovery'),
+    '/en/project-management/project-management-assessment-and-maturity/': createWhatsappMessage('en', 'project management assessment and maturity'),
+    '/en/strategic-planning/corporate-strategic-planning/': createWhatsappMessage('en', 'corporate strategic planning'),
+  },
 };
+
+// Pendientes sin ruta: se asignarán a whatsappMessagesByRoute cuando se creen las
+// páginas. Esta lista no participa en la resolución de mensajes ni de enlaces.
+export const pendingWhatsappMessages = [
+  { name: 'diagnóstico estratégico', es: createWhatsappMessage('es', 'diagnóstico estratégico'), en: createWhatsappMessage('en', 'strategic assessment') },
+  { name: 'gobierno corporativo', es: createWhatsappMessage('es', 'gobierno corporativo'), en: createWhatsappMessage('en', 'corporate governance') },
+  { name: 'crecimiento empresarial', es: createWhatsappMessage('es', 'crecimiento empresarial'), en: createWhatsappMessage('en', 'business growth') },
+  { name: 'transformación empresarial', es: createWhatsappMessage('es', 'transformación empresarial'), en: createWhatsappMessage('en', 'business transformation') },
+];
 
 function normalizePath(pathname: string) {
   const path = pathname.split(/[?#]/, 1)[0];
@@ -98,8 +185,7 @@ function getNameFromSlug(path: string) {
   } catch {
     // Una secuencia de escape inválida no debe impedir mostrar el contacto.
   }
-  const name = decoded.replace(/-/g, ' ').replace(/\b(seo|cro|pmo|ti|it|crm|bpm|ai|ia)\b/gi, (word) => word.toUpperCase());
-  return name.charAt(0).toUpperCase() + name.slice(1);
+  return decoded.toLowerCase().replace(/-/g, ' ').replace(/\b(agsit|seo|cro|pmo|ti|it|crm|bpm|ai|ia)\b/g, (word) => word.toUpperCase());
 }
 
 export function getContactInfoForPath(pathname: string) {
@@ -107,13 +193,7 @@ export function getContactInfoForPath(pathname: string) {
   const lang: SupportedLang = path.startsWith('/en/') ? 'en' : 'es';
   const pageName = pageNamesByRoute[lang][path] ?? getNameFromSlug(path);
   const isHome = path === '/' || path === '/en/';
-  const generalMessage = lang === 'es'
-    ? isHome
-      ? 'Hola, estoy viendo la página principal del sitio de AGSIT y me gustaría recibir más información.'
-      : `Hola, estoy viendo la página de ${pageName} en el sitio de AGSIT y me gustaría recibir más información.`
-    : isHome
-      ? "Hi, I'm viewing the homepage on the AGSIT website and would like more information."
-      : `Hi, I'm viewing the ${pageName} page on the AGSIT website and would like more information.`;
+  const generalMessage = createWhatsappMessage(lang, isHome ? undefined : getNameFromSlug(path));
   const message = whatsappMessagesByRoute[lang][path]?.trim() || generalMessage;
 
   return {
@@ -122,7 +202,6 @@ export function getContactInfoForPath(pathname: string) {
     pageName,
     address: contactInfo.address[lang],
     emailHref: `mailto:${contactInfo.email.destination}`,
-    phoneHref: `tel:${contactInfo.phone.international}`,
     message,
     whatsappHref: `https://wa.me/${contactInfo.phone.whatsapp}?text=${encodeURIComponent(message)}`,
   };

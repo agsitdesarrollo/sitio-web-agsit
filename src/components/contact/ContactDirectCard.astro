@@ -26,7 +26,7 @@ const contact = getContactInfoForPath(Astro.url.pathname);
       </svg>
     </a>
     <span class="contact-direct-details">
-      <a class="contact-direct-primary" href={contact.phoneHref}>{contact.phone.display}</a>
+      <a class="contact-direct-primary" href={contact.whatsappHref} target="_blank" rel="noopener noreferrer">{contact.phone.display}</a>
       <span class="contact-direct-secondary">{copy.phoneLabel}</span>
     </span>
   </div>
