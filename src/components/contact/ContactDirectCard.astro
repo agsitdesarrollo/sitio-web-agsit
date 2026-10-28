@@ -1,11 +1,13 @@
 ---
 import type { ContactCopy } from '../../data/contact';
+import { getContactInfoForPath } from '../../data/contactInfo';
 
 type Props = {
   copy: ContactCopy['direct'];
 };
 
 const { copy } = Astro.props;
+const contact = getContactInfoForPath(Astro.url.pathname);
 ---
 
 <aside class="contact-direct-card" aria-label={copy.label}>
@@ -14,9 +16,9 @@ const { copy } = Astro.props;
   <div class="contact-direct-channel">
     <a
       class="contact-direct-icon contact-direct-icon-phone"
-      href="https://wa.me/525588905291"
+      href={contact.whatsappHref}
       target="_blank"
-      rel="noreferrer"
+      rel="noopener noreferrer"
       aria-label={copy.whatsappLabel}
     >
       <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
@@ -24,7 +26,7 @@ const { copy } = Astro.props;
       </svg>
     </a>
     <span class="contact-direct-details">
-      <a class="contact-direct-primary" href="tel:+525588905291">+52 55 8890 5291</a>
+      <a class="contact-direct-primary" href={contact.whatsappHref} target="_blank" rel="noopener noreferrer">{contact.phone.display}</a>
       <span class="contact-direct-secondary">{copy.phoneLabel}</span>
     </span>
   </div>
@@ -36,7 +38,7 @@ const { copy } = Astro.props;
       </svg>
     </span>
     <span class="contact-direct-details">
-      <a class="contact-direct-primary" href="mailto:contacto@agsit.com.mx">contacto@agsit.com.mx</a>
+      <a class="contact-direct-primary" href={contact.emailHref}>{contact.email.display}</a>
     </span>
   </div>
 </aside>
