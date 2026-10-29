@@ -11,6 +11,7 @@ export function initMarketingStory() {
   page.dataset.ready = 'true';
   const abort = new AbortController();
   const { signal } = abort;
+  const stopFollowingHeader = followComparisonHeader(page);
   const connection = (navigator as StoryNavigator).connection;
   const mediaQuery = gsap.matchMedia();
   let comparisonCleanup: (() => void) | undefined;
@@ -189,7 +190,45 @@ export function initMarketingStory() {
   });
   // Save-data can change while the page is open; rebuild only this page's animations.
   connection?.addEventListener('change', () => gsap.matchMediaRefresh(), { signal });
-  document.addEventListener('astro:before-swap', () => { mediaQuery.revert(); abort.abort(); }, { once: true, signal });
+  document.addEventListener('astro:before-swap', () => { stopFollowingHeader(); mediaQuery.revert(); abort.abort(); }, { once: true, signal });
+}
+
+// Read the shared menu's state and animated edge; never mutate the menu or its timing.
+function followComparisonHeader(page: HTMLElement) {
+  const header = document.querySelector<HTMLElement>('.site-nav');
+  const navigation = header?.querySelector<HTMLElement>('nav');
+  const bar = page.querySelector<HTMLElement>('.ms-sim-controls');
+  if (!header || !bar) return () => {};
+  const abort = new AbortController();
+  const { signal } = abort;
+  let frame = 0;
+  let offset = 0;
+  const update = () => {
+    frame = 0;
+    const headerBottom = header.getBoundingClientRect().bottom;
+    const navigationStyle = navigation && getComputedStyle(navigation);
+    const openOverlay = navigationStyle?.position === 'absolute' && (navigation!.classList.contains('is-open') || Number(navigationStyle.opacity) > 0);
+    const edge = Math.max(0, headerBottom, openOverlay ? navigation!.getBoundingClientRect().bottom : 0);
+    const naturalTop = bar.getBoundingClientRect().top - offset;
+    offset = Math.max(0, edge - Math.max(0, naturalTop));
+    bar.style.transform = `translateY(${offset}px)`;
+    // Sampling the actual CSS transition keeps duration, curve and interruptions in sync.
+    if ([header, navigation].some(element => element?.getAnimations().some(animation => animation.playState === 'running'))) schedule();
+  };
+  const schedule = () => { if (!frame) frame = requestAnimationFrame(update); };
+  const mutations = new MutationObserver(schedule);
+  mutations.observe(header, { attributes: true, attributeFilter: ['class'] });
+  if (navigation) mutations.observe(navigation, { attributes: true, attributeFilter: ['class'] });
+  const sizes = new ResizeObserver(schedule);
+  sizes.observe(header); sizes.observe(bar);
+  if (navigation) sizes.observe(navigation);
+  window.addEventListener('scroll', schedule, { passive: true, signal });
+  window.addEventListener('resize', schedule, { passive: true, signal });
+  window.addEventListener('orientationchange', schedule, { signal });
+  header.addEventListener('transitionrun', schedule, { signal });
+  header.addEventListener('transitionend', schedule, { signal });
+  schedule();
+  return () => { abort.abort(); mutations.disconnect(); sizes.disconnect(); cancelAnimationFrame(frame); bar.style.removeProperty('transform'); };
 }
 
 function initComparison(page: HTMLElement, staticMode: boolean) {

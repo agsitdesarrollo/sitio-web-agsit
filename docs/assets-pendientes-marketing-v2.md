@@ -5,7 +5,18 @@
 Los datos están en `src/data/marketing/growthMarketingStory.ts`, propiedad `hero.media`.
 El archivo temporal es `public/_demo-local/hero-1080.mp4`, descargado de
 https://media.predictivemobility.ai/hero-1080.mp4 únicamente para mostrar el comportamiento.
-La carpeta completa está ignorada por Git. No agregar con `git add -f`.
+El póster temporal es `public/_demo-local/hero-poster.webp`: el primer cuadro del
+mismo video, extraído con el comando siguiente (WebP sin pérdida):
+
+```sh
+ffmpeg -i public/_demo-local/hero-1080.mp4 -frames:v 1 -c:v libwebp -lossless 1 public/_demo-local/hero-poster.webp
+```
+
+La carpeta completa está ignorada por Git, incluidos video y póster. No agregar con `git add -f`.
+En desarrollo el póster solo se muestra si existen ambos archivos. Si falta la demo,
+o en producción mientras `pending` siga en `true`, se usa el fondo de colores AGSIT;
+el hero nunca utiliza la captura de la página anterior. El póster y el video tienen
+el mismo encuadre y opacidad para evitar un salto visual al cargar el primer cuadro.
 `pending: true` permite usar el demo solo en desarrollo: el HTML de producción
 no solicita el video prestado. Sin archivo, sin JavaScript, con ahorro de datos o
 con movimiento reducido, la página conserva contenido legible y un fondo AGSIT.
@@ -16,12 +27,15 @@ Cuando esté listo el video propio:
 1. Guardarlo en `public/assets/marketing/growth/hero.mp4`.
 2. Cambiar `media.src` a `/assets/marketing/growth/hero.mp4` y `pending` a `false`.
 3. Ajustar `media.duration` a la duración real y mantener ocho tramos de igual duración.
-4. Opcionalmente sustituir `hero.poster` por un fotograma propio. Su punto focal debe
-   sobrevivir al recorte vertical y dejar espacio para texto en la parte inferior izquierda.
+4. Extraer el **primer cuadro del video propio** como `public/assets/marketing/growth/hero-poster.webp`,
+   con el mismo comando cambiando las rutas. Actualizar `hero.poster.src`, `width` y `height`
+   en los datos de ambos idiomas. El póster definitivo debe coincidir con el primer cuadro,
+   su resolución y encuadre; no usar una captura de la página ni otra imagen de servicios.
+   El punto focal debe sobrevivir al recorte vertical y dejar espacio para texto abajo a la izquierda.
 5. Añadir los clips iOS a `media.clips` en orden, si se entregan (ver abajo).
 6. Repetir la revisión visual en ambos idiomas y en Safari iOS real.
 
-Para una compilación/deploy manual desde esta máquina, retirar antes el demo del
+Para una compilación/deploy manual desde esta máquina, retirar antes el video y el póster demo del
 directorio `public`: Astro copia los archivos públicos al build aunque no estén en Git.
 La compilación de CI parte de un checkout sin ese archivo. Nunca publicar el demo.
 

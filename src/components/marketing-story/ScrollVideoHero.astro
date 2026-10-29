@@ -5,13 +5,14 @@ type Props = { content: MarketingStoryContent['hero'] };
 const { content } = Astro.props;
 // Never ship the borrowed demo. An owned, non-pending asset may be used in production.
 const available = (!content.media.pending || import.meta.env.DEV) && existsSync(`${process.cwd()}/public${content.media.src}`);
+const posterAvailable = available && existsSync(`${process.cwd()}/public${content.poster.src}`);
 ---
 <section class="ms-hero" aria-labelledby="ms-title" data-hero data-duration={content.media.duration} data-clips={JSON.stringify(content.media.clips)}>
   <div class="ms-hero-stage" data-hero-stage>
     <div class="ms-media-space" aria-hidden="true">
       <div class="ms-film" data-film>
-        <img class="ms-poster" src={content.poster.src} alt="" width={content.poster.width} height={content.poster.height} fetchpriority="high" />
-        {available && <video data-story-video data-src={content.media.src} muted playsinline preload="none" disablepictureinpicture tabindex="-1" aria-hidden="true"></video>}
+        {posterAvailable && <img class="ms-poster" src={content.poster.src} alt="" width={content.poster.width} height={content.poster.height} fetchpriority="high" />}
+        {available && <video data-story-video data-src={content.media.src} poster={posterAvailable ? content.poster.src : undefined} muted playsinline preload="none" disablepictureinpicture tabindex="-1" aria-hidden="true"></video>}
         <div class="ms-film-shade"></div>
         <div class="ms-captions">
           {content.chapters.map((chapter, i) => <div class="ms-caption" data-caption aria-hidden="true"><span class="ms-count">{String(i + 1).padStart(2, '0')} <span>/ {String(content.chapters.length).padStart(2, '0')}</span></span><p>{chapter}</p></div>)}
