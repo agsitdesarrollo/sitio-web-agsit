@@ -8,6 +8,7 @@ type Props = {
 
 const { copy } = Astro.props;
 const contact = getContactInfoForPath(Astro.url.pathname);
+const directionsLabel = contact.lang === 'es' ? 'Cómo llegar con Waze' : 'Get directions with Waze';
 ---
 
 <aside class="contact-direct-card" aria-label={copy.label}>
@@ -39,6 +40,23 @@ const contact = getContactInfoForPath(Astro.url.pathname);
     </span>
     <span class="contact-direct-details">
       <a class="contact-direct-primary" href={contact.emailHref}>{contact.email.display}</a>
+    </span>
+  </div>
+  <div class="contact-direct-channel">
+    <a
+      class="contact-direct-icon"
+      href={contact.wazeUrl}
+      target="_blank"
+      rel="noopener noreferrer"
+      aria-label={directionsLabel}
+    >
+      <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+        <path d="M20 10c0 6-8 11-8 11S4 16 4 10a8 8 0 1 1 16 0Z" />
+        <circle cx="12" cy="10" r="3" />
+      </svg>
+    </a>
+    <span class="contact-direct-details">
+      <a class="contact-direct-primary" href={contact.wazeUrl} target="_blank" rel="noopener noreferrer">{contact.address}</a>
     </span>
   </div>
 </aside>
