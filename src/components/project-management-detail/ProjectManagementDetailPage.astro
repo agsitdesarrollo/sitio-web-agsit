@@ -13,7 +13,7 @@ type Props = {
 const { content, contactCopy } = Astro.props;
 ---
 
-<main class="pm-detail-page" data-project-management-detail>
+<main class="pm-detail-page" data-project-management-detail style={`--pm-chapter-count: ${content.story.chapters.length}`}>
   <section class="pm-panel pm-mobile-hero" aria-labelledby="pm-mobile-hero-title">
     <div class="pm-mobile-hero-copy">
       <p class="pm-eyebrow">{content.story.eyebrow}</p>
@@ -100,8 +100,14 @@ const { content, contactCopy } = Astro.props;
                 )}
               </div>
               {chapter.kind === 'service' && (
-                <figure class="pm-chapter-visual" aria-label={chapter.imageAlt}>
-                  <span>{chapter.term}</span>
+                <figure class="pm-chapter-visual" data-image-status={chapter.imageStatus} aria-label={chapter.imageAlt}>
+                  <div class="pm-image-frame">
+                    {chapter.imageStatus === 'ready' && chapter.imageSrc ? (
+                      <img src={chapter.imageSrc} alt={chapter.imageAlt} width="1600" height="700" loading="lazy" />
+                    ) : (
+                      <span class="pm-image-pending">pending · {chapter.term}</span>
+                    )}
+                  </div>
                 </figure>
               )}
             </article>

@@ -17,7 +17,7 @@ const routes = [
   '/soluciones-tecnologicas/automatizacion-inteligente-de-procesos/',
   '/planeacion-estrategica/',
   '/direccion-de-proyectos/',
-  '/direccion-de-proyectos/pmo-project-governance/',
+  '/direccion-de-proyectos/pmo-y-gobierno-de-proyectos/',
   '/administracion-de-procesos/',
   '/administracion-de-procesos/modelado-y-optimizacion-de-procesos/',
   '/administracion-de-procesos/automatizacion-inteligente-de-procesos/',

@@ -345,7 +345,9 @@ export const projectManagementTemplateByLang: Record<SupportedLang, TechnologySo
         {
           code: 'GOV',
           label: 'Governance',
-          title: 'PMO & Project Governance',
+          title: 'PMO y Gobierno de Proyectos',
+          href: '/direccion-de-proyectos/pmo-y-gobierno-de-proyectos/',
+          cta: 'Ver servicios',
           copy:
             'Establecemos una dirección clara para tus proyectos, alineando prioridades, responsables y objetivos para mantener el control de principio a fin.',
         },
@@ -483,6 +485,8 @@ export const projectManagementTemplateByLang: Record<SupportedLang, TechnologySo
           code: 'GOV',
           label: 'Governance',
           title: 'PMO & Project Governance',
+          href: '/en/project-management/pmo-project-governance/',
+          cta: 'View services',
           copy:
             'We establish clear direction for your projects, aligning priorities, owners and objectives to maintain control from start to finish.',
         },
