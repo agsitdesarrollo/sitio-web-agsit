@@ -35,6 +35,158 @@ export type ProjectManagementDetailContent = {
 const origin = 'https://agsit.com.mx';
 
 const projectManagementDetailPages: Record<string, Record<SupportedLang, ProjectManagementDetailContent>> = {
+  'agile-delivery': {
+    es: {
+      id: 'agile-delivery',
+      slug: 'gestion-agil-de-proyectos',
+      metadata: {
+        title: 'Gestión Ágil de Proyectos | AGSIT',
+        description: 'Adapta tus proyectos a lo que necesita tu negocio. AGSIT aplica Scrum, Kanban y prácticas ágiles para revisar entregas, ordenar tareas y ajustar prioridades.',
+        canonicalUrl: `${origin}/direccion-de-proyectos/gestion-agil-de-proyectos/`,
+        image: '/assets/social/gestion-agil-de-proyectos-es.jpg',
+        imageAlt: 'AGSIT — Gestión Ágil de Proyectos: entregas pequeñas y ajustes a tiempo.',
+        htmlLang: 'es-MX',
+        locale: 'es_MX',
+      },
+      hero: {
+        title: 'Gestión Ágil de Proyectos',
+        copy: 'Cuando las necesidades cambian, conviene revisar el trabajo antes de avanzar demasiado. Ayudamos a tu equipo a organizar entregas pequeñas, recibir comentarios y ajustar prioridades con un objetivo claro.',
+        primaryCta: 'Hablemos de tus proyectos',
+        visualLabel: 'Adaptación y entregas frecuentes',
+      },
+      story: {
+        eyebrow: 'Dirección de Proyectos · Adaptación y entregas frecuentes',
+        title: 'Revisar a tiempo para ajustar el trabajo',
+        instruction: 'Elige un tema o avanza para conocerlo.',
+        chapters: [
+          {
+            id: 'problem', navLabel: 'Reto', kind: 'problem', term: 'El reto',
+            title: 'Descubrir demasiado tarde que hacía falta algo distinto.',
+            copy: 'Un proyecto puede seguir ocupado durante semanas y aun así alejarse de lo que el negocio necesita. Si el resultado se revisa solo al final, corregirlo se vuelve más difícil. Acercamos esas revisiones al trabajo cotidiano.',
+          },
+          {
+            id: 'scrum', navLabel: 'Scrum', kind: 'service', term: 'Scrum',
+            title: 'Entregas pequeñas que se revisan en periodos cortos.',
+            copy: 'Scrum organiza el trabajo en ciclos breves, con responsabilidades y momentos de revisión definidos. AGSIT ayuda a ordenar lo pendiente, acordar qué abordar y revisar lo terminado. Puedes ver resultados parciales y dar comentarios antes de continuar.',
+            imageStatus: 'pending',
+            imageAlt: 'Espacio reservado: equipo revisando una entrega parcial y acordando el siguiente ciclo de trabajo con Scrum',
+          },
+          {
+            id: 'kanban', navLabel: 'Kanban', kind: 'service', term: 'Kanban',
+            title: 'Ver el trabajo y detectar dónde se acumula.',
+            copy: 'Kanban hace visible qué está pendiente, en curso y terminado, y limita cuántas tareas se atienden a la vez. Organizamos el flujo con tu equipo para reconocer bloqueos y evitar sobrecargas. Tú puedes entender qué frena las entregas y qué conviene terminar primero.',
+            imageStatus: 'pending',
+            imageAlt: 'Espacio reservado: equipo observando tareas pendientes, en curso y terminadas para identificar bloqueos con Kanban',
+          },
+          {
+            id: 'agile-frameworks', navLabel: 'Agile Frameworks', kind: 'service', term: 'Agile Frameworks',
+            title: 'Una forma de trabajo que permita adaptarse.',
+            copy: 'Son marcos que orientan cómo colaborar, entregar y aprender mientras avanza un proyecto. Elegimos y ajustamos las prácticas según tus necesidades y la capacidad del equipo. Obtienes una manera de responder a cambios sin perder de vista las prioridades.',
+            imageStatus: 'pending',
+            imageAlt: 'Espacio reservado: equipo y consultor eligiendo prácticas ágiles según las necesidades del proyecto y su capacidad de trabajo',
+          },
+          {
+            id: 'method', navLabel: 'Método', kind: 'method', term: 'Cómo trabajamos',
+            title: 'Probar, revisar y mejorar la forma de trabajar.',
+            copy: 'Empezamos con tu trabajo actual y aprendemos de las primeras entregas para ajustar la colaboración.',
+            steps: [
+              { title: 'Observar', copy: 'Entendemos cómo llegan las solicitudes y dónde se atascan.' },
+              { title: 'Preparar', copy: 'Elegimos prácticas y acordamos responsabilidades.' },
+              { title: 'Probar', copy: 'Las aplicamos en un primer tramo de trabajo.' },
+              { title: 'Aprender', copy: 'Revisamos las entregas y ajustamos con el equipo.' },
+            ],
+          },
+          {
+            id: 'outcomes', navLabel: 'Result.', kind: 'outcomes', term: 'Lo que buscamos',
+            title: 'Oportunidades de corregir mientras el proyecto avanza.',
+            copy: 'Buscamos facilitar que el equipo revise lo que entrega y decida qué ajustar a continuación.',
+            includesLabel: 'Lo que puedes mejorar',
+            outcomes: [
+              'Trabajo pendiente y bloqueos visibles.',
+              'Entregas que puedas revisar con frecuencia.',
+              'Prioridades actualizadas con criterio.',
+              'Una carga de trabajo acorde con la capacidad del equipo.',
+            ],
+          },
+        ],
+      },
+    },
+    en: {
+      id: 'agile-delivery',
+      slug: 'agile-project-delivery',
+      metadata: {
+        title: 'Agile Project Delivery | AGSIT',
+        description: 'Adapt projects as business needs change. AGSIT uses Scrum, Kanban, and agile practices to review deliverables, organize tasks, and adjust priorities.',
+        canonicalUrl: `${origin}/en/project-management/agile-project-delivery/`,
+        image: '/assets/social/agile-project-delivery-en.jpg',
+        imageAlt: 'AGSIT — Agile Project Delivery: small deliveries and timely adjustments.',
+        htmlLang: 'en',
+        locale: 'en_US',
+      },
+      hero: {
+        title: 'Agile Project Delivery',
+        copy: 'When needs change, it helps to review the work before going too far. We help your team organize small deliveries, gather feedback, and adjust priorities while keeping a clear goal.',
+        primaryCta: 'Talk about your projects',
+        visualLabel: 'Adaptation and frequent deliveries',
+      },
+      story: {
+        eyebrow: 'Project Management · Adaptation and frequent deliveries',
+        title: 'Review early to adjust the work',
+        instruction: 'Choose a topic or move forward to explore it.',
+        chapters: [
+          {
+            id: 'problem', navLabel: 'Need', kind: 'problem', term: 'The challenge',
+            title: 'Finding out too late that something different was needed.',
+            copy: 'A project can keep people busy for weeks and still move away from what the business needs. If results are only reviewed at the end, correcting them becomes harder. We bring those reviews into everyday work.',
+          },
+          {
+            id: 'scrum', navLabel: 'Scrum', kind: 'service', term: 'Scrum',
+            title: 'Small deliveries reviewed in short cycles.',
+            copy: 'Scrum organizes work in short cycles, with clear responsibilities and agreed review points. AGSIT helps organize pending work, agree on what to tackle, and review what is finished. You can see partial results and give feedback before the team continues.',
+            imageStatus: 'pending',
+            imageAlt: 'Reserved space: a team reviewing a partial delivery and agreeing on its next work cycle with Scrum',
+          },
+          {
+            id: 'kanban', navLabel: 'Kanban', kind: 'service', term: 'Kanban',
+            title: 'See the work and spot where it builds up.',
+            copy: 'Kanban shows what is pending, in progress, and finished, and limits how many tasks are handled at once. We organize the flow with your team to spot blockers and avoid overload. You can understand what slows deliveries and what should be finished first.',
+            imageStatus: 'pending',
+            imageAlt: 'Reserved space: a team reviewing pending, ongoing, and completed tasks to spot blockers with Kanban',
+          },
+          {
+            id: 'agile-frameworks', navLabel: 'Agile Frameworks', kind: 'service', term: 'Agile Frameworks',
+            title: 'A way of working that leaves room to adapt.',
+            copy: 'Agile Frameworks guide how people collaborate, deliver, and learn as a project moves forward. We choose and adjust practices to fit your needs and your team’s capacity. You gain a way to respond to change while keeping priorities in view.',
+            imageStatus: 'pending',
+            imageAlt: 'Reserved space: a team and consultant choosing agile practices to suit project needs and the team’s capacity',
+          },
+          {
+            id: 'method', navLabel: 'Method', kind: 'method', term: 'How we work',
+            title: 'Try, review, and improve the way you work.',
+            copy: 'We start with your current work and learn from the first deliveries to adjust how the team collaborates.',
+            steps: [
+              { title: 'Observe', copy: 'We understand how requests arrive and where they get stuck.' },
+              { title: 'Prepare', copy: 'We choose practices and agree on responsibilities.' },
+              { title: 'Try', copy: 'We apply them to an initial part of the work.' },
+              { title: 'Learn', copy: 'We review deliveries and make adjustments with the team.' },
+            ],
+          },
+          {
+            id: 'outcomes', navLabel: 'Results', kind: 'outcomes', term: 'What we aim for',
+            title: 'Chances to make corrections as the project moves forward.',
+            copy: 'We aim to help the team review what it delivers and decide what to adjust next.',
+            includesLabel: 'What you can improve',
+            outcomes: [
+              'Visible pending work and blockers.',
+              'Deliveries you can review frequently.',
+              'Priorities updated with clear reasons.',
+              'A workload that fits your team’s capacity.',
+            ],
+          },
+        ],
+      },
+    },
+  },
   'strategic-delivery': {
     es: {
       id: 'strategic-delivery',

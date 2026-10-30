@@ -363,7 +363,9 @@ export const projectManagementTemplateByLang: Record<SupportedLang, TechnologySo
         {
           code: 'AGILE',
           label: 'Agile',
-          title: 'Agile Project Delivery',
+          title: 'Gestión Ágil de Proyectos',
+          href: '/direccion-de-proyectos/gestion-agil-de-proyectos/',
+          cta: 'Ver servicios',
           copy:
             'Impulsamos una gestión ágil que facilita la colaboración, adaptación y entrega continua de valor durante el proyecto.',
         },
@@ -505,6 +507,8 @@ export const projectManagementTemplateByLang: Record<SupportedLang, TechnologySo
           code: 'AGILE',
           label: 'Agile',
           title: 'Agile Project Delivery',
+          href: '/en/project-management/agile-project-delivery/',
+          cta: 'View services',
           copy:
             'We drive agile management that enables collaboration, adaptation and continuous value delivery throughout the project.',
         },

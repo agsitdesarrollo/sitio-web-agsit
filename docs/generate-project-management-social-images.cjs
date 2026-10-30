@@ -21,6 +21,8 @@ async function browserExecutable(chromium) {
   throw new Error('Set SOCIAL_CHROMIUM_EXECUTABLE to an installed Chromium headless executable.');
 }
 const cards = [
+  { file: 'gestion-agil-de-proyectos-es', lang: 'es', title: 'Gestión Ágil<br>de Proyectos', promise: 'Entregas pequeñas. Ajustes a tiempo.', stops: ['El reto','Scrum','Kanban','Agile Frameworks','Método','Resultados'] },
+  { file: 'agile-project-delivery-en', lang: 'en', title: 'Agile Project<br>Delivery', promise: 'Small deliveries. Timely adjustments.', stops: ['The challenge','Scrum','Kanban','Agile Frameworks','Method','Results'] },
   { file: 'pmo-y-gobierno-de-proyectos-es', lang: 'es', title: 'PMO y Gobierno<br>de Proyectos', promise: 'Prioridades y decisiones claras.', stops: ['El reto','PMO','Project Governance','Portfolio Governance','Program Governance','Método','Resultados'] },
   { file: 'pmo-project-governance-en', lang: 'en', title: 'PMO &amp; Project<br>Governance', promise: 'Clear priorities and decisions.', stops: ['The challenge','PMO','Project Governance','Portfolio Governance','Program Governance','Method','Results'] },
   { file: 'direccion-estrategica-de-proyectos-es', lang: 'es', title: 'Dirección<br>Estratégica<br>de Proyectos', promise: 'Del objetivo a las entregas.', stops: ['El reto','Project Management','Program Management','Portfolio Management','Método','Resultados'] },
