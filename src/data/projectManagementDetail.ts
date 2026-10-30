@@ -35,6 +35,158 @@ export type ProjectManagementDetailContent = {
 const origin = 'https://agsit.com.mx';
 
 const projectManagementDetailPages: Record<string, Record<SupportedLang, ProjectManagementDetailContent>> = {
+  'strategic-delivery': {
+    es: {
+      id: 'strategic-delivery',
+      slug: 'direccion-estrategica-de-proyectos',
+      metadata: {
+        title: 'Dirección Estratégica de Proyectos | AGSIT',
+        description: 'Dirigimos proyectos, coordinamos programas y administramos portafolios para convertir tus objetivos de negocio en entregas concretas.',
+        canonicalUrl: `${origin}/direccion-de-proyectos/direccion-estrategica-de-proyectos/`,
+        image: '/assets/social/direccion-proyectos-es.jpg',
+        imageAlt: 'Dirección de proyectos AGSIT',
+        htmlLang: 'es-MX',
+        locale: 'es_MX',
+      },
+      hero: {
+        title: 'Dirección Estratégica de Proyectos',
+        copy: 'Convertimos tus objetivos de negocio en trabajo organizado. AGSIT dirige proyectos, coordina esfuerzos relacionados y administra prioridades para que las decisiones se traduzcan en entregas concretas.',
+        primaryCta: 'Hablemos de tus proyectos',
+        visualLabel: 'De la estrategia a las entregas',
+      },
+      story: {
+        eyebrow: 'Dirección de Proyectos · De la estrategia a la ejecución',
+        title: 'Del objetivo al trabajo de cada equipo',
+        instruction: 'Elige un tema o avanza para conocerlo.',
+        chapters: [
+          {
+            id: 'problem', navLabel: 'Reto', kind: 'problem', term: 'El reto',
+            title: 'Tener un plan no basta para llevarlo a término.',
+            copy: 'El trabajo diario desplaza las iniciativas importantes, las fechas cambian y varias áreas necesitan a las mismas personas. Hace falta alguien que coordine la ejecución, atienda los obstáculos y mantenga el objetivo presente.',
+          },
+          {
+            id: 'project-management', navLabel: 'Proy.', kind: 'service', term: 'Project Management',
+            title: 'Dirección del trabajo de principio a fin.',
+            copy: 'Es organizar y conducir un proyecto para entregar lo acordado. Definimos qué debe hacerse, con qué recursos y en qué fechas; después damos seguimiento y atendemos desviaciones. Tú puedes conocer el avance y las decisiones pendientes sin reconstruir la historia en cada reunión.',
+            imageStatus: 'pending',
+            imageAlt: 'Espacio reservado: responsable y equipo revisando entregas, fechas y recursos de un proyecto',
+          },
+          {
+            id: 'program-management', navLabel: 'Prog.', kind: 'service', term: 'Program Management',
+            title: 'Coordinación de proyectos con una meta compartida.',
+            copy: 'Cuando un resultado depende de varios proyectos, sus planes deben encajar. AGSIT coordina entregas, equipos y tareas que dependen unas de otras. Tu empresa gana una ejecución conjunta, con atención a los problemas que un proyecto puede provocar en otro.',
+            imageStatus: 'pending',
+            imageAlt: 'Espacio reservado: líderes coordinando entregas y dependencias entre proyectos con una meta compartida',
+          },
+          {
+            id: 'portfolio-management', navLabel: 'Port.', kind: 'service', term: 'Portfolio Management',
+            title: 'Administración del conjunto de iniciativas.',
+            copy: 'Consiste en organizar los proyectos que compiten por tiempo, personas y presupuesto. Revisamos sus objetivos, necesidades y avance para proponer prioridades y ajustes. Puedes distribuir tus recursos con una visión del conjunto, en lugar de responder solo a la urgencia del día.',
+            imageStatus: 'pending',
+            imageAlt: 'Espacio reservado: dirección distribuyendo recursos entre iniciativas según sus objetivos y avance',
+          },
+          {
+            id: 'method', navLabel: 'Método', kind: 'method', term: 'Cómo trabajamos',
+            title: 'Del objetivo a las entregas.',
+            copy: 'Organizamos lo que hay que conseguir y acompañamos el trabajo hasta revisar lo entregado.',
+            steps: [
+              { title: 'Precisar', copy: 'Acordamos qué necesita conseguir el negocio y cómo reconocer una entrega aceptable.' },
+              { title: 'Planear', copy: 'Organizamos actividades, recursos y compromisos.' },
+              { title: 'Dirigir', copy: 'Coordinamos al equipo y resolvemos las decisiones de ejecución.' },
+              { title: 'Cerrar', copy: 'Revisamos lo entregado y documentamos pendientes y aprendizajes.' },
+            ],
+          },
+          {
+            id: 'outcomes', navLabel: 'Result.', kind: 'outcomes', term: 'Lo que buscamos',
+            title: 'Saber qué se está entregando y qué requiere atención.',
+            copy: 'El trabajo busca dejarte una visión útil de la ejecución y sus próximos pasos.',
+            includesLabel: 'Tu empresa cuenta con',
+            outcomes: [
+              'Entregas definidas y responsables asignados.',
+              'Fechas y recursos revisados durante la ejecución.',
+              'Dependencias atendidas entre equipos.',
+              'Decisiones tomadas con la foto completa de tus proyectos.',
+            ],
+          },
+        ],
+      },
+    },
+    en: {
+      id: 'strategic-delivery',
+      slug: 'strategic-project-delivery',
+      metadata: {
+        title: 'Strategic Project Delivery | AGSIT',
+        description: 'We lead projects, coordinate programs, and manage portfolios to turn your business goals into concrete deliverables.',
+        canonicalUrl: `${origin}/en/project-management/strategic-project-delivery/`,
+        image: '/assets/social/project-management-en.jpg',
+        imageAlt: 'AGSIT project management',
+        htmlLang: 'en',
+        locale: 'en_US',
+      },
+      hero: {
+        title: 'Strategic Project Delivery',
+        copy: 'We turn your business goals into organized work. AGSIT leads projects, coordinates related efforts, and manages priorities so decisions lead to concrete deliverables.',
+        primaryCta: 'Talk about your projects',
+        visualLabel: 'From strategy to delivery',
+      },
+      story: {
+        eyebrow: 'Project Management · From strategy to execution',
+        title: 'From business goals to each team’s work',
+        instruction: 'Choose a topic or move forward to explore it.',
+        chapters: [
+          {
+            id: 'problem', navLabel: 'Need', kind: 'problem', term: 'The challenge',
+            title: 'Having a plan is only the beginning.',
+            copy: 'Daily work pushes important initiatives aside, dates change, and several teams need the same people. Someone needs to coordinate delivery, address obstacles, and keep the goal in view.',
+          },
+          {
+            id: 'project-management', navLabel: 'Proj.', kind: 'service', term: 'Project Management',
+            title: 'Leading the work from start to finish.',
+            copy: 'Project Management means organizing and leading a project to deliver what was agreed. We define the work, resources, and dates, then track progress and address changes to the plan. You can see progress and pending decisions without piecing the story together at every meeting.',
+            imageStatus: 'pending',
+            imageAlt: 'Reserved space: a project lead and team reviewing deliverables, dates, and resources',
+          },
+          {
+            id: 'program-management', navLabel: 'Prog.', kind: 'service', term: 'Program Management',
+            title: 'Coordinating projects that share a goal.',
+            copy: 'A program brings together projects working toward a shared goal. When a result depends on several projects, their plans need to fit together. AGSIT coordinates deliverables, teams, and tasks that depend on each other, addressing problems in one project that could affect another.',
+            imageStatus: 'pending',
+            imageAlt: 'Reserved space: project leads coordinating deliverables and dependencies toward a shared goal',
+          },
+          {
+            id: 'portfolio-management', navLabel: 'Port.', kind: 'service', term: 'Portfolio Management',
+            title: 'Managing your initiatives as a whole.',
+            copy: 'A portfolio brings together projects that compete for time, people, and budget. We review their goals, needs, and progress to recommend priorities and adjustments. You can allocate resources with the whole picture in view, instead of only responding to the day’s most urgent request.',
+            imageStatus: 'pending',
+            imageAlt: 'Reserved space: leaders allocating resources across initiatives based on goals and progress',
+          },
+          {
+            id: 'method', navLabel: 'Method', kind: 'method', term: 'How we work',
+            title: 'From goals to deliverables.',
+            copy: 'We organize what needs to be achieved and support the work through to reviewing what was delivered.',
+            steps: [
+              { title: 'Clarify', copy: 'We agree on what the business needs and what an acceptable deliverable looks like.' },
+              { title: 'Plan', copy: 'We organize activities, resources, and commitments.' },
+              { title: 'Lead', copy: 'We coordinate the team and make the decisions needed to move the work forward.' },
+              { title: 'Close', copy: 'We review deliverables and document open items and lessons learned.' },
+            ],
+          },
+          {
+            id: 'outcomes', navLabel: 'Results', kind: 'outcomes', term: 'What we aim for',
+            title: 'Know what is being delivered and what needs attention.',
+            copy: 'The work aims to give you a useful view of delivery and the next steps.',
+            includesLabel: 'Your business gains',
+            outcomes: [
+              'Defined deliverables with clear owners.',
+              'Dates and resources reviewed as work progresses.',
+              'Dependencies addressed across teams.',
+              'Decisions made with the full picture of your projects.',
+            ],
+          },
+        ],
+      },
+    },
+  },
   'pmo-governance': {
     es: {
       id: 'pmo-governance',

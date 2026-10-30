@@ -677,6 +677,14 @@ html:has(.pm-detail-page) .site-nav {
   color: var(--pm-muted-ink);
 }
 
+.pm-detail-page .pm-story-track[data-chapter-tone='paper'] .pm-chapter-method-steps h3 {
+  color: var(--pm-track-text);
+}
+
+.pm-detail-page .pm-story-track[data-chapter-tone='paper'] .pm-chapter-method-steps p {
+  color: var(--pm-track-muted);
+}
+
 .pm-method-layout {
   display: grid;
   grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);

@@ -354,7 +354,9 @@ export const projectManagementTemplateByLang: Record<SupportedLang, TechnologySo
         {
           code: 'DELIV',
           label: 'Delivery',
-          title: 'Strategic Project Delivery',
+          title: 'Dirección Estratégica de Proyectos',
+          href: '/direccion-de-proyectos/direccion-estrategica-de-proyectos/',
+          cta: 'Ver servicios',
           copy:
             'Dirigimos tus proyectos con una ejecución estructurada para cumplir objetivos y convertir la estrategia en resultados.',
         },
@@ -494,6 +496,8 @@ export const projectManagementTemplateByLang: Record<SupportedLang, TechnologySo
           code: 'DELIV',
           label: 'Delivery',
           title: 'Strategic Project Delivery',
+          href: '/en/project-management/strategic-project-delivery/',
+          cta: 'View services',
           copy:
             'We lead your projects through structured execution to meet objectives and turn strategy into results.',
         },
