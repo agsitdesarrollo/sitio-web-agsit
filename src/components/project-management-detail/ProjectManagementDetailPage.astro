@@ -14,10 +14,10 @@ const { content, contactCopy } = Astro.props;
 ---
 
 <main class="pm-detail-page" data-project-management-detail style={`--pm-chapter-count: ${content.story.chapters.length}`}>
-  <section class="pm-panel pm-mobile-hero" aria-labelledby="pm-mobile-hero-title">
+  <section class="pm-panel pm-mobile-hero" aria-labelledby="pm-hero-title">
     <div class="pm-mobile-hero-copy">
       <p class="pm-eyebrow">{content.story.eyebrow}</p>
-      <h1 id="pm-mobile-hero-title">{content.hero.title}</h1>
+      <h1 id="pm-hero-title" data-pm-page-title>{content.hero.title}</h1>
       <p class="pm-experience-lead">{content.hero.copy}</p>
       <button class="pm-primary-cta" type="button" data-contact-trigger>{content.hero.primaryCta}</button>
     </div>
@@ -35,7 +35,6 @@ const { content, contactCopy } = Astro.props;
       <aside class="pm-experience-rail">
         <div class="pm-experience-intro">
           <p class="pm-eyebrow">{content.story.eyebrow}</p>
-          <h1 id="pm-hero-title">{content.hero.title}</h1>
           <p class="pm-experience-lead">{content.hero.copy}</p>
           <button class="pm-primary-cta" type="button" data-contact-trigger>{content.hero.primaryCta}</button>
         </div>
@@ -118,5 +117,24 @@ const { content, contactCopy } = Astro.props;
   </section>
 
   <FinalContactSection copy={contactCopy} />
+  <script is:inline>
+    (() => {
+      const page = document.currentScript.closest('[data-project-management-detail]');
+      const title = page?.querySelector('[data-pm-page-title]');
+      const mobileLead = page?.querySelector('.pm-mobile-hero-copy .pm-experience-lead');
+      const desktopLead = page?.querySelector('.pm-experience-intro .pm-experience-lead');
+      if (!title || !mobileLead || !desktopLead) return;
+
+      // Both compositions share this heading. Move the same node before the
+      // slide controller starts, preserving the existing typography and layout.
+      const compact = window.matchMedia('(max-width: 1023px)');
+      const placeTitle = () => {
+        const lead = compact.matches ? mobileLead : desktopLead;
+        if (title.nextElementSibling !== lead) lead.before(title);
+      };
+      placeTitle();
+      compact.addEventListener('change', placeTitle);
+    })();
+  </script>
   <ServiceSlidesController />
 </main>
