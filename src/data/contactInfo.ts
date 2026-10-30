@@ -121,7 +121,7 @@ export const whatsappMessagesByRoute: Record<SupportedLang, Record<string, strin
     '/administracion-de-procesos/inteligencia-y-gobierno-de-procesos/': createWhatsappMessage('es', 'inteligencia y gobierno de procesos'),
     '/administracion-de-procesos/excelencia-operativa/': createWhatsappMessage('es', 'excelencia operativa'),
     '/administracion-de-procesos/diagnostico-y-auditoria-de-procesos/': createWhatsappMessage('es', 'diagnóstico y auditoría de procesos'),
-    '/direccion-de-proyectos/pmo-y-gobierno-de-proyectos/': createWhatsappMessage('es', 'pmo y gobierno de proyectos'),
+    '/direccion-de-proyectos/pmo-y-gobierno-de-proyectos/': createWhatsappMessage('es', 'PMO y gobierno de proyectos'),
     '/direccion-de-proyectos/strategic-project-delivery/': createWhatsappMessage('es', 'strategic project delivery'),
     '/direccion-de-proyectos/agile-project-delivery/': createWhatsappMessage('es', 'agile project delivery'),
     '/direccion-de-proyectos/auditoria-y-recuperacion-de-proyectos/': createWhatsappMessage('es', 'auditoría y recuperación de proyectos'),
