@@ -382,6 +382,8 @@ export const projectManagementTemplateByLang: Record<SupportedLang, TechnologySo
           code: 'ASSESS',
           label: 'Assessment',
           title: 'Diagnóstico y Madurez en Gestión de Proyectos',
+          href: '/direccion-de-proyectos/diagnostico-y-madurez-en-gestion-de-proyectos/',
+          cta: 'Ver servicios',
           copy:
             'Evaluamos la forma en que tu empresa gestiona sus proyectos para identificar oportunidades y fortalecer sus capacidades de gestión.',
         },
@@ -526,7 +528,9 @@ export const projectManagementTemplateByLang: Record<SupportedLang, TechnologySo
         {
           code: 'ASSESS',
           label: 'Assessment',
-          title: 'Project Management Diagnosis & Maturity',
+          title: 'Project Management Assessment and Maturity',
+          href: '/en/project-management/project-management-assessment-and-maturity/',
+          cta: 'View services',
           copy:
             'We assess how your company manages projects to identify opportunities and strengthen its management capabilities.',
         },

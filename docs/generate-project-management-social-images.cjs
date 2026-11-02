@@ -21,6 +21,8 @@ async function browserExecutable(chromium) {
   throw new Error('Set SOCIAL_CHROMIUM_EXECUTABLE to an installed Chromium headless executable.');
 }
 const cards = [
+  { file: 'diagnostico-y-madurez-en-gestion-de-proyectos-es', lang: 'es', titleSize: 64, title: 'Diagnóstico y<br>Madurez en Gestión<br>de Proyectos', promise: 'Conoce tus capacidades<br>y qué mejorar.', stops: ['El reto','Project Assessment','OPM3','Organizational Assessment','Método','Resultados'] },
+  { file: 'project-management-assessment-and-maturity-en', lang: 'en', titleSize: 64, title: 'Project Management<br>Assessment and<br>Maturity', promise: 'Understand your capabilities<br>and what to improve.', stops: ['The challenge','Project Assessment','OPM3','Organizational Assessment','Method','Results'] },
   { file: 'auditoria-y-recuperacion-de-proyectos-es', lang: 'es', title: 'Auditoría y<br>Recuperación<br>de Proyectos', promise: 'Evalúa la situación<br>y decide cómo continuar.', stops: ['El reto','Project Audits','Rescue Projects','Change Management','Método','Resultados'] },
   { file: 'project-audit-and-recovery-en', lang: 'en', title: 'Project Audit<br>and Recovery', promise: 'Assess the situation<br>and decide how to proceed.', stops: ['The challenge','Project Audits','Rescue Projects','Change Management','Method','Results'] },
   { file: 'gestion-agil-de-proyectos-es', lang: 'es', title: 'Gestión Ágil<br>de Proyectos', promise: 'Entregas pequeñas. Ajustes a tiempo.', stops: ['El reto','Scrum','Kanban','Agile Frameworks','Método','Resultados'] },
@@ -60,7 +62,7 @@ async function main() {
     main{height:554px;display:grid;grid-template-columns:560px 480px;gap:64px;align-items:center;padding:0 48px;background:radial-gradient(ellipse at 73% 0%,#0d2c3b 0%,#061321 38%,#020712 78%)}
     .copy{text-align:left}
     .eyebrow{margin:0 0 18px;color:#8be2ff;font-size:12px;font-weight:800;letter-spacing:1.8px;line-height:1.4}
-    h1{margin:0;font-family:Cormorant,Georgia,serif;font-size:76px;font-weight:300;line-height:.98;letter-spacing:0}
+    h1{margin:0;font-family:Cormorant,Georgia,serif;font-size:${card.titleSize || 76}px;font-weight:300;line-height:.98;letter-spacing:0}
     .promise{margin:18px 0 0;color:rgba(180,197,219,.88);font-size:26px;line-height:1.4;font-weight:500}
     .cta{display:flex;align-items:center;justify-content:center;margin-top:24px;width:${isEnglish ? 210 : 246}px;height:48px;border-radius:999px;background:#41c8f6;color:#08152b;font-size:11px;font-weight:800;letter-spacing:.8px}
     .route-card{justify-self:center;width:400px;padding:30px 32px;border:1px solid rgba(242,248,255,.16);background:#020712}

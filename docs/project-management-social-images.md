@@ -3,7 +3,7 @@
 ## Alcance y archivos
 
 Cada página tiene una pieza española y otra inglesa, independientes de las
-imágenes de contenido `pending`. Las ocho piezas actuales son:
+imágenes de contenido `pending`. Las diez piezas actuales son:
 
 - `public/assets/social/pmo-y-gobierno-de-proyectos-es.jpg`
 - `public/assets/social/pmo-project-governance-en.jpg`
@@ -13,6 +13,8 @@ imágenes de contenido `pending`. Las ocho piezas actuales son:
 - `public/assets/social/agile-project-delivery-en.jpg`
 - `public/assets/social/auditoria-y-recuperacion-de-proyectos-es.jpg`
 - `public/assets/social/project-audit-and-recovery-en.jpg`
+- `public/assets/social/diagnostico-y-madurez-en-gestion-de-proyectos-es.jpg`
+- `public/assets/social/project-management-assessment-and-maturity-en.jpg`
 
 La referencia visual es `public/assets/social/desarrollo-software-es.jpg`.
 El diseño de PMO ES se aprobó antes de exportar las demás variantes.
@@ -31,7 +33,7 @@ nombre sin extensión:
 node docs/generate-project-management-social-images.cjs pmo-project-governance-en
 ```
 
-Se pueden pasar varios nombres. Sin argumentos se regeneran las ocho piezas
+Se pueden pasar varios nombres. Sin argumentos se regeneran las diez piezas
 del catálogo `cards`; no se crean imágenes de páginas aún no implementadas.
 
 ```powershell
@@ -63,6 +65,8 @@ Estos archivos de revisión no se guardan bajo `public/` ni se agregan al commit
   cargadas desde `public/fonts/`. Se espera `document.fonts.ready` antes de capturar.
 - Fondo azul oscuro con los colores del sitio: `#020712`, `#061321` y `#0d2c3b`.
 - Título blanco a 76 px, frase a 26 px y antetítulo cian `#8be2ff`.
+  Diagnóstico y Madurez usa 64 px en ambos idiomas (`titleSize` en su entrada)
+  para mantener su título largo en tres líneas, dentro de la misma columna.
 - Dos columnas: texto de 560 px y área derecha de 480 px, separadas por 64 px.
 - Botón cian `#41c8f6`: «HABLAR CON UN ESPECIALISTA» / «TALK TO A SPECIALIST».
 - Menú ES: INICIO, SERVICIOS, CONTACTO, EN. Menú EN: HOME, SERVICES, CONTACT, ES.
@@ -72,7 +76,7 @@ Estos archivos de revisión no se guardan bajo `public/` ni se agregan al commit
   de la navegación real en su paleta oscura.
 - No se añade una segunda lista de servicios al pie.
 
-PMO tiene siete paradas; Dirección Estratégica, Gestión Ágil y Auditoría y Recuperación tienen seis.
+PMO tiene siete paradas; las otras cuatro páginas tienen seis.
 Los nombres oficiales de los servicios se conservan en ambos idiomas; reto,
 método y resultados se traducen.
 Los saltos de línea del título son explícitos para conservar su legibilidad.
@@ -81,6 +85,13 @@ En Auditoría y Recuperación la frase también se divide en dos líneas explíc
 «Evalúa la situación / y decide cómo continuar.» y «Assess the situation / and
 decide how to proceed.». Se mantiene Inter a 26 px y su interlineado de 1.4,
 sin reducir la tipografía para hacer caber la frase. Revisar ambas a 400 × 210.
+
+En Diagnóstico y Madurez se conservan tres líneas de título con saltos explícitos:
+«Diagnóstico y / Madurez en Gestión / de Proyectos» y «Project Management /
+Assessment and / Maturity». Las frases usan dos líneas: «Conoce tus capacidades /
+y qué mejorar.» y «Understand your capabilities / and what to improve.».
+Revisar que el título no desborde su columna ni se acerque a la tarjeta, y comprobar
+la legibilidad de título y frase en la reducción de 400 × 210.
 
 ## Exportación y control de calidad
 

@@ -35,6 +35,158 @@ export type ProjectManagementDetailContent = {
 const origin = 'https://agsit.com.mx';
 
 const projectManagementDetailPages: Record<string, Record<SupportedLang, ProjectManagementDetailContent>> = {
+  'assessment-maturity': {
+    es: {
+      id: 'assessment-maturity',
+      slug: 'diagnostico-y-madurez-en-gestion-de-proyectos',
+      metadata: {
+        title: 'Diagnóstico y Madurez en Gestión de Proyectos | AGSIT',
+        description: 'Descubre qué funciona y qué conviene mejorar al gestionar proyectos. AGSIT evalúa prácticas, personas y organización para priorizar mejoras que puedas sostener.',
+        canonicalUrl: `${origin}/direccion-de-proyectos/diagnostico-y-madurez-en-gestion-de-proyectos/`,
+        image: '/assets/social/diagnostico-y-madurez-en-gestion-de-proyectos-es.jpg',
+        imageAlt: 'AGSIT — Diagnóstico y Madurez en Gestión de Proyectos: conoce tus capacidades y qué mejorar.',
+        htmlLang: 'es-MX',
+        locale: 'es_MX',
+      },
+      hero: {
+        title: 'Diagnóstico y Madurez en Gestión de Proyectos',
+        copy: 'Conoce qué hace bien tu empresa al gestionar proyectos y qué necesita fortalecer. Evaluamos prácticas, personas y organización para proponer mejoras que puedas priorizar y sostener.',
+        primaryCta: 'Hablemos de tus proyectos',
+        visualLabel: 'Capacidades y mejora',
+      },
+      story: {
+        eyebrow: 'Dirección de Proyectos · Capacidades y mejora',
+        title: 'Conocer tus capacidades para elegir qué mejorar',
+        instruction: 'Elige un tema o avanza para conocerlo.',
+        chapters: [
+          {
+            id: 'problem', navLabel: 'Reto', kind: 'problem', term: 'El reto',
+            title: 'Los proyectos dependen demasiado de quién los dirige.',
+            copy: 'Un equipo obtiene buenos resultados y otro tropieza con los mismos problemas. Cuesta distinguir qué prácticas funcionan, cuáles faltan y por dónde empezar a mejorar. Una evaluación permite tomar esas decisiones con evidencia.',
+          },
+          {
+            id: 'project-assessment', navLabel: 'Project Assessment', kind: 'service', term: 'Project Assessment',
+            title: 'Entender cómo se está gestionando un proyecto.',
+            copy: 'Es una evaluación de su organización, planeación y seguimiento. Revisamos cómo se asigna el trabajo, se atienden los riesgos y se informa el avance. Obtienes un diagnóstico de fortalezas y necesidades para orientar mejoras en su gestión.',
+            imageStatus: 'pending',
+            imageAlt: 'Espacio reservado: revisión de la planeación, las responsabilidades y el seguimiento de un proyecto',
+          },
+          {
+            id: 'opm3', navLabel: 'OPM3', kind: 'service', term: 'OPM3',
+            title: 'Evaluar qué tan consistente es la gestión de proyectos.',
+            copy: 'OPM3 es un modelo de referencia para revisar las capacidades de una organización al gestionar proyectos, programas y portafolios. AGSIT analiza qué prácticas se aplican, cómo se miden y cómo se mejoran. Te ayuda a identificar brechas y trazar un camino de desarrollo.',
+            imageStatus: 'pending',
+            imageAlt: 'Espacio reservado: equipo comparando sus prácticas de gestión con un modelo de referencia para identificar mejoras',
+          },
+          {
+            id: 'organizational-assessment', navLabel: 'Organizational Assessment', kind: 'service', term: 'Organizational Assessment',
+            title: 'Revisar si la organización facilita los proyectos.',
+            copy: 'Esta evaluación examina responsabilidades, habilidades, comunicación y formas de colaboración. Identificamos condiciones de la empresa que apoyan o dificultan el trabajo. Así puedes distinguir qué necesita cambiar en la organización para que los equipos dirijan mejor sus proyectos.',
+            imageStatus: 'pending',
+            imageAlt: 'Espacio reservado: responsables de distintas áreas revisando cómo colaboran y qué dificulta la gestión de sus proyectos',
+          },
+          {
+            id: 'method', navLabel: 'Método', kind: 'method', term: 'Cómo trabajamos',
+            title: 'Evaluar para elegir por dónde mejorar.',
+            copy: 'Revisamos la situación de tu empresa y ordenamos las oportunidades de mejora contigo.',
+            steps: [
+              { title: 'Delimitar', copy: 'Acordamos qué capacidades y áreas vamos a revisar.' },
+              { title: 'Recabar', copy: 'Analizamos documentos, prácticas y experiencias del equipo.' },
+              { title: 'Comparar', copy: 'Identificamos fortalezas y diferencias frente a buenas prácticas reconocidas.' },
+              { title: 'Priorizar', copy: 'Proponemos una ruta de mejora según su importancia y viabilidad.' },
+            ],
+          },
+          {
+            id: 'outcomes', navLabel: 'Result.', kind: 'outcomes', term: 'Lo que buscamos',
+            title: 'Un punto de partida para desarrollar capacidades.',
+            copy: 'La evaluación busca darte una base para decidir qué fortalecer y cómo revisar el avance.',
+            includesLabel: 'Lo que puedes obtener',
+            outcomes: [
+              'Lo que ya haces bien, con ejemplos concretos',
+              'Lo que conviene mejorar y por qué ocurre',
+              'Acciones ordenadas por prioridad.',
+              'Una referencia para revisar avances posteriores.',
+            ],
+          },
+        ],
+      },
+    },
+    en: {
+      id: 'assessment-maturity',
+      slug: 'project-management-assessment-and-maturity',
+      metadata: {
+        title: 'Project Management Assessment and Maturity | AGSIT',
+        description: 'Find what works and what needs improvement in project management. AGSIT reviews practices, people, and organization to help you prioritize lasting improvements.',
+        canonicalUrl: `${origin}/en/project-management/project-management-assessment-and-maturity/`,
+        image: '/assets/social/project-management-assessment-and-maturity-en.jpg',
+        imageAlt: 'AGSIT — Project Management Assessment and Maturity: understand your capabilities and what to improve.',
+        htmlLang: 'en',
+        locale: 'en_US',
+      },
+      hero: {
+        title: 'Project Management Assessment and Maturity',
+        copy: 'Understand what your company does well when managing projects and what needs strengthening. We assess practices, people, and organization to propose improvements you can prioritize and sustain.',
+        primaryCta: 'Talk about your projects',
+        visualLabel: 'Capabilities and improvement',
+      },
+      story: {
+        eyebrow: 'Project Management · Capabilities and improvement',
+        title: 'Understand your capabilities and choose what to improve',
+        instruction: 'Choose a topic or move forward to explore it.',
+        chapters: [
+          {
+            id: 'problem', navLabel: 'Need', kind: 'problem', term: 'The challenge',
+            title: 'Projects depend too much on who leads them.',
+            copy: 'One team gets good results while another runs into the same problems. It can be hard to tell which practices work, what is missing, and where to start improving. An assessment gives you evidence to make those decisions.',
+          },
+          {
+            id: 'project-assessment', navLabel: 'Project Assessment', kind: 'service', term: 'Project Assessment',
+            title: 'Understand how a project is being managed.',
+            copy: 'Project Assessment reviews a project’s organization, planning, and follow-up. We examine how work is assigned, risks are handled, and progress is reported. You receive a clear picture of strengths and needs to guide improvements in its management.',
+            imageStatus: 'pending',
+            imageAlt: 'Reserved space: a review of a project’s planning, responsibilities, and progress tracking',
+          },
+          {
+            id: 'opm3', navLabel: 'OPM3', kind: 'service', term: 'OPM3',
+            title: 'Assess how consistently projects are managed.',
+            copy: 'OPM3 is a reference model for reviewing an organization’s ability to manage projects, programs, and portfolios. AGSIT examines which practices are used, how they are measured, and how they are improved. It helps you identify gaps and plan how to build your capabilities.',
+            imageStatus: 'pending',
+            imageAlt: 'Reserved space: a team comparing its management practices with a reference model to identify improvements',
+          },
+          {
+            id: 'organizational-assessment', navLabel: 'Organizational Assessment', kind: 'service', term: 'Organizational Assessment',
+            title: 'Check whether the organization helps projects move forward.',
+            copy: 'Organizational Assessment examines responsibilities, skills, communication, and collaboration. We identify conditions within the company that help or hinder the work. You can see what needs to change in the organization so teams can manage their projects better.',
+            imageStatus: 'pending',
+            imageAlt: 'Reserved space: people from different departments reviewing how they collaborate and what makes managing projects harder',
+          },
+          {
+            id: 'method', navLabel: 'Method', kind: 'method', term: 'How we work',
+            title: 'Assess where to focus your improvements.',
+            copy: 'We review your company’s situation and work with you to prioritize opportunities for improvement.',
+            steps: [
+              { title: 'Define', copy: 'We agree on the capabilities and areas to review.' },
+              { title: 'Gather', copy: 'We examine documents, practices, and the team’s experiences.' },
+              { title: 'Compare', copy: 'We identify strengths and differences compared with recognized good practices.' },
+              { title: 'Prioritize', copy: 'We propose an improvement plan based on importance and feasibility.' },
+            ],
+          },
+          {
+            id: 'outcomes', navLabel: 'Results', kind: 'outcomes', term: 'What we aim for',
+            title: 'A starting point for building capabilities.',
+            copy: 'The assessment aims to help you decide what to strengthen and how to review progress.',
+            includesLabel: 'What you can gain',
+            outcomes: [
+              'What you already do well, with concrete examples',
+              'What needs improvement and why it happens',
+              'Actions ordered by priority.',
+              'A reference for reviewing future progress.',
+            ],
+          },
+        ],
+      },
+    },
+  },
   'audit-recovery': {
     es: {
       id: 'audit-recovery',
