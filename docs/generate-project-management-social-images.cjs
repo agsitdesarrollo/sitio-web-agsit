@@ -21,6 +21,8 @@ async function browserExecutable(chromium) {
   throw new Error('Set SOCIAL_CHROMIUM_EXECUTABLE to an installed Chromium headless executable.');
 }
 const cards = [
+  { file: 'auditoria-y-recuperacion-de-proyectos-es', lang: 'es', title: 'Auditoría y<br>Recuperación<br>de Proyectos', promise: 'Evalúa la situación<br>y decide cómo continuar.', stops: ['El reto','Project Audits','Rescue Projects','Change Management','Método','Resultados'] },
+  { file: 'project-audit-and-recovery-en', lang: 'en', title: 'Project Audit<br>and Recovery', promise: 'Assess the situation<br>and decide how to proceed.', stops: ['The challenge','Project Audits','Rescue Projects','Change Management','Method','Results'] },
   { file: 'gestion-agil-de-proyectos-es', lang: 'es', title: 'Gestión Ágil<br>de Proyectos', promise: 'Entregas pequeñas. Ajustes a tiempo.', stops: ['El reto','Scrum','Kanban','Agile Frameworks','Método','Resultados'] },
   { file: 'agile-project-delivery-en', lang: 'en', title: 'Agile Project<br>Delivery', promise: 'Small deliveries. Timely adjustments.', stops: ['The challenge','Scrum','Kanban','Agile Frameworks','Method','Results'] },
   { file: 'pmo-y-gobierno-de-proyectos-es', lang: 'es', title: 'PMO y Gobierno<br>de Proyectos', promise: 'Prioridades y decisiones claras.', stops: ['El reto','PMO','Project Governance','Portfolio Governance','Program Governance','Método','Resultados'] },

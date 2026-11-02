@@ -35,6 +35,158 @@ export type ProjectManagementDetailContent = {
 const origin = 'https://agsit.com.mx';
 
 const projectManagementDetailPages: Record<string, Record<SupportedLang, ProjectManagementDetailContent>> = {
+  'audit-recovery': {
+    es: {
+      id: 'audit-recovery',
+      slug: 'auditoria-y-recuperacion-de-proyectos',
+      metadata: {
+        title: 'Auditoría y Recuperación de Proyectos | AGSIT',
+        description: 'Conoce el estado real de tus proyectos. AGSIT revisa avances, riesgos y desvíos para definir un plan de recuperación y acompañar los cambios con tu equipo.',
+        canonicalUrl: `${origin}/direccion-de-proyectos/auditoria-y-recuperacion-de-proyectos/`,
+        image: '/assets/social/auditoria-y-recuperacion-de-proyectos-es.jpg',
+        imageAlt: 'AGSIT — Auditoría y Recuperación de Proyectos: evalúa la situación y decide cómo continuar.',
+        htmlLang: 'es-MX',
+        locale: 'es_MX',
+      },
+      hero: {
+        title: 'Auditoría y Recuperación de Proyectos',
+        copy: 'Si un proyecto acumula retrasos, sobrecostos o dudas sobre su avance, necesitas conocer su situación real. AGSIT revisa lo ocurrido y te ayuda a decidir y poner en marcha los siguientes pasos.',
+        primaryCta: 'Hablemos de tus proyectos',
+        visualLabel: 'Evaluación y recuperación',
+      },
+      story: {
+        eyebrow: 'Dirección de Proyectos · Evaluación y recuperación',
+        title: 'De los hechos a un plan para continuar',
+        instruction: 'Elige un tema o avanza para conocerlo.',
+        chapters: [
+          {
+            id: 'problem', navLabel: 'Reto', kind: 'problem', term: 'El reto',
+            title: 'Seguir invirtiendo sin saber qué se puede recuperar.',
+            copy: 'Las fechas se recorren, aparecen pendientes que parecían resueltos y el equipo ofrece versiones distintas del problema. Antes de exigir otro compromiso, conviene comprobar qué está terminado, qué falta y qué impide continuar.',
+          },
+          {
+            id: 'project-audits', navLabel: 'Project Audits', kind: 'service', term: 'Project Audits',
+            title: 'Una revisión sustentada del estado del proyecto.',
+            copy: 'Una auditoría contrasta planes, entregas y evidencia de avance. Revisamos compromisos, costos, riesgos y pendientes para identificar diferencias y sus posibles causas. Recibes una evaluación que te ayuda a decidir qué corregir y qué necesita una revisión más profunda.',
+            imageStatus: 'pending',
+            imageAlt: 'Espacio reservado: revisión de planes, entregas y evidencia para evaluar el estado real de un proyecto',
+          },
+          {
+            id: 'rescue-projects', navLabel: 'Rescue Projects', kind: 'service', term: 'Rescue Projects',
+            title: 'Un plan viable para atender un proyecto en dificultades.',
+            copy: 'Es reorganizar un proyecto que se ha desviado de lo acordado. Evaluamos qué puede recuperarse, replanteamos compromisos y acompañamos las acciones prioritarias. Puedes valorar si conviene continuar, ajustar o detener parte del trabajo con una base más clara.',
+            imageStatus: 'pending',
+            imageAlt: 'Espacio reservado: responsables replanteando compromisos y acciones prioritarias para recuperar un proyecto en dificultades',
+          },
+          {
+            id: 'change-management', navLabel: 'Change Management', kind: 'service', term: 'Change Management',
+            title: 'Preparar a las personas para adoptar los cambios.',
+            copy: 'Los ajustes al proyecto también afectan responsabilidades y formas de trabajar. AGSIT identifica a las personas involucradas, prepara la comunicación y acompaña la adopción. Tu equipo entiende qué cambia, por qué y qué necesita hacer para sostenerlo.',
+            imageStatus: 'pending',
+            imageAlt: 'Espacio reservado: equipo revisando los cambios en sus responsabilidades y la forma de ponerlos en práctica',
+          },
+          {
+            id: 'method', navLabel: 'Método', kind: 'method', term: 'Cómo trabajamos',
+            title: 'Primero los hechos; después, los nuevos compromisos.',
+            copy: 'Aclaramos la situación antes de acordar nuevas acciones y acompañar su puesta en marcha.',
+            steps: [
+              { title: 'Comprobar', copy: 'Reunimos evidencia y escuchamos a los involucrados.' },
+              { title: 'Explicar', copy: 'Identificamos causas, consecuencias y alternativas.' },
+              { title: 'Replantear', copy: 'Acordamos un plan realista con responsables.' },
+              { title: 'Acompañar', copy: 'Seguimos las acciones y la adopción de los ajustes.' },
+            ],
+          },
+          {
+            id: 'outcomes', navLabel: 'Result.', kind: 'outcomes', term: 'Lo que buscamos',
+            title: 'Una base para decidir cómo continuar.',
+            copy: 'La intervención busca aportar información y opciones para valorar el siguiente paso.',
+            includesLabel: 'Lo que puedes obtener',
+            outcomes: [
+              'Una evaluación documentada de la situación.',
+              'Riesgos y pendientes que requieren atención.',
+              'Opciones de recuperación con sus condiciones.',
+              'Compromisos revisados y acciones de seguimiento.',
+            ],
+          },
+        ],
+      },
+    },
+    en: {
+      id: 'audit-recovery',
+      slug: 'project-audit-and-recovery',
+      metadata: {
+        title: 'Project Audit and Recovery | AGSIT',
+        description: 'Understand where your projects stand. AGSIT reviews progress, risks, and delays to shape a recovery plan and help your team put changes into practice.',
+        canonicalUrl: `${origin}/en/project-management/project-audit-and-recovery/`,
+        image: '/assets/social/project-audit-and-recovery-en.jpg',
+        imageAlt: 'AGSIT — Project Audit and Recovery: assess the situation and decide how to proceed.',
+        htmlLang: 'en',
+        locale: 'en_US',
+      },
+      hero: {
+        title: 'Project Audit and Recovery',
+        copy: 'If a project faces delays, rising costs, or doubts about its progress, you need to know where it stands. AGSIT reviews what happened and helps you decide on the next steps and put them into practice.',
+        primaryCta: 'Talk about your projects',
+        visualLabel: 'Assessment and recovery',
+      },
+      story: {
+        eyebrow: 'Project Management · Assessment and recovery',
+        title: 'From the facts to a plan for moving forward',
+        instruction: 'Choose a topic or move forward to explore it.',
+        chapters: [
+          {
+            id: 'problem', navLabel: 'Need', kind: 'problem', term: 'The challenge',
+            title: 'Keep investing without knowing what can be recovered.',
+            copy: 'Dates keep moving, tasks thought to be finished resurface, and the team offers different versions of the problem. Before asking for another commitment, it helps to check what is complete, what is missing, and what prevents the project from moving forward.',
+          },
+          {
+            id: 'project-audits', navLabel: 'Project Audits', kind: 'service', term: 'Project Audits',
+            title: 'An evidence-based review of the project’s condition.',
+            copy: 'A project audit compares plans, deliverables, and evidence of progress. We review commitments, costs, risks, and open tasks to identify differences and possible causes. You receive an assessment to help you decide what to correct and what needs a closer look.',
+            imageStatus: 'pending',
+            imageAlt: 'Reserved space: plans, deliverables, and evidence being reviewed to assess a project’s actual condition',
+          },
+          {
+            id: 'rescue-projects', navLabel: 'Rescue Projects', kind: 'service', term: 'Rescue Projects',
+            title: 'A workable plan for a project in difficulty.',
+            copy: 'Rescue Projects means reorganizing a project that has moved away from what was agreed. We assess what can be recovered, rethink commitments, and support priority actions. You can weigh whether to continue, adjust, or stop part of the work on a clearer basis.',
+            imageStatus: 'pending',
+            imageAlt: 'Reserved space: project owners rethinking commitments and priority actions to recover a project in difficulty',
+          },
+          {
+            id: 'change-management', navLabel: 'Change Management', kind: 'service', term: 'Change Management',
+            title: 'Prepare people to adopt the changes.',
+            copy: 'Change Management helps people adopt changes to their responsibilities and ways of working. AGSIT identifies who is involved, prepares communication, and supports adoption. Your team understands what is changing, why, and what they need to do to sustain it.',
+            imageStatus: 'pending',
+            imageAlt: 'Reserved space: a team reviewing changes to its responsibilities and how to put them into practice',
+          },
+          {
+            id: 'method', navLabel: 'Method', kind: 'method', term: 'How we work',
+            title: 'The facts first, then new commitments.',
+            copy: 'We clarify the situation before agreeing on new actions and supporting their implementation.',
+            steps: [
+              { title: 'Check', copy: 'We gather evidence and listen to the people involved.' },
+              { title: 'Explain', copy: 'We identify causes, consequences, and alternatives.' },
+              { title: 'Rethink', copy: 'We agree on a realistic plan with clear owners.' },
+              { title: 'Support', copy: 'We follow up on actions and adoption of the changes.' },
+            ],
+          },
+          {
+            id: 'outcomes', navLabel: 'Results', kind: 'outcomes', term: 'What we aim for',
+            title: 'A basis for deciding how to continue.',
+            copy: 'The work aims to give you information and options for assessing the next step.',
+            includesLabel: 'What you can gain',
+            outcomes: [
+              'A documented assessment of the situation.',
+              'Risks and open tasks that need attention.',
+              'Recovery options and their conditions.',
+              'Revised commitments and follow-up actions.',
+            ],
+          },
+        ],
+      },
+    },
+  },
   'agile-delivery': {
     es: {
       id: 'agile-delivery',

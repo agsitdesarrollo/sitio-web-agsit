@@ -3,7 +3,7 @@
 ## Alcance y archivos
 
 Cada página tiene una pieza española y otra inglesa, independientes de las
-imágenes de contenido `pending`. Las seis piezas actuales son:
+imágenes de contenido `pending`. Las ocho piezas actuales son:
 
 - `public/assets/social/pmo-y-gobierno-de-proyectos-es.jpg`
 - `public/assets/social/pmo-project-governance-en.jpg`
@@ -11,6 +11,8 @@ imágenes de contenido `pending`. Las seis piezas actuales son:
 - `public/assets/social/strategic-project-delivery-en.jpg`
 - `public/assets/social/gestion-agil-de-proyectos-es.jpg`
 - `public/assets/social/agile-project-delivery-en.jpg`
+- `public/assets/social/auditoria-y-recuperacion-de-proyectos-es.jpg`
+- `public/assets/social/project-audit-and-recovery-en.jpg`
 
 La referencia visual es `public/assets/social/desarrollo-software-es.jpg`.
 El diseño de PMO ES se aprobó antes de exportar las demás variantes.
@@ -29,7 +31,7 @@ nombre sin extensión:
 node docs/generate-project-management-social-images.cjs pmo-project-governance-en
 ```
 
-Se pueden pasar varios nombres. Sin argumentos se regeneran las seis piezas
+Se pueden pasar varios nombres. Sin argumentos se regeneran las ocho piezas
 del catálogo `cards`; no se crean imágenes de páginas aún no implementadas.
 
 ```powershell
@@ -70,10 +72,15 @@ Estos archivos de revisión no se guardan bajo `public/` ni se agregan al commit
   de la navegación real en su paleta oscura.
 - No se añade una segunda lista de servicios al pie.
 
-PMO tiene siete paradas; Dirección Estratégica y Gestión Ágil tienen seis.
+PMO tiene siete paradas; Dirección Estratégica, Gestión Ágil y Auditoría y Recuperación tienen seis.
 Los nombres oficiales de los servicios se conservan en ambos idiomas; reto,
 método y resultados se traducen.
 Los saltos de línea del título son explícitos para conservar su legibilidad.
+
+En Auditoría y Recuperación la frase también se divide en dos líneas explícitas:
+«Evalúa la situación / y decide cómo continuar.» y «Assess the situation / and
+decide how to proceed.». Se mantiene Inter a 26 px y su interlineado de 1.4,
+sin reducir la tipografía para hacer caber la frase. Revisar ambas a 400 × 210.
 
 ## Exportación y control de calidad
 

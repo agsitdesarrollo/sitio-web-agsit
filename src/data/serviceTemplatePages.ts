@@ -373,6 +373,8 @@ export const projectManagementTemplateByLang: Record<SupportedLang, TechnologySo
           code: 'REC',
           label: 'Recovery',
           title: 'Auditoría y Recuperación de Proyectos',
+          href: '/direccion-de-proyectos/auditoria-y-recuperacion-de-proyectos/',
+          cta: 'Ver servicios',
           copy:
             'Evaluamos el estado de tus proyectos y definimos acciones para recuperar el control, fortalecer su ejecución y encaminarlos hacia sus objetivos.',
         },
@@ -515,7 +517,9 @@ export const projectManagementTemplateByLang: Record<SupportedLang, TechnologySo
         {
           code: 'REC',
           label: 'Recovery',
-          title: 'Project Audit & Recovery',
+          title: 'Project Audit and Recovery',
+          href: '/en/project-management/project-audit-and-recovery/',
+          cta: 'View services',
           copy:
             'We assess your projects and define actions to regain control, strengthen execution and guide them toward their objectives.',
         },
