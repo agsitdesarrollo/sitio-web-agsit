@@ -219,6 +219,12 @@ body.drawer-open {
   line-height: 1.45;
 }
 
+.contact-form-required {
+  margin: 0;
+  color: #414042;
+  font: 500 0.8rem/1.4 'Inter', 'Segoe UI', Tahoma, sans-serif;
+}
+
 .contact-form-status[data-status='success'] {
   color: #247347;
 }

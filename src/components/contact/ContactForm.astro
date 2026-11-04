@@ -1,5 +1,5 @@
 ---
-import type { ContactFormCopy } from '../../data/contact';
+import { contactFieldConfig, type ContactFormCopy } from '../../data/contact';
 
 type Props = {
   copy: ContactFormCopy;
@@ -26,7 +26,7 @@ const phonePattern = "\\+?[0-9][0-9\\s().-]{7,19}";
     </label>
   </div>
   <label>
-    {copy.name}
+    <span>{copy.name}{contactFieldConfig.name.required && <span aria-hidden="true"> *</span>}</span>
     <input
       type="text"
       name="name"
@@ -36,11 +36,11 @@ const phonePattern = "\\+?[0-9][0-9\\s().-]{7,19}";
       maxlength="60"
       pattern={personNamePattern}
       title="Usa solo letras y separadores validos como espacio, apostrofo, punto o guion."
-      required
+      required={contactFieldConfig.name.required}
     />
   </label>
   <label>
-    {copy.lastName}
+    <span>{copy.lastName}{contactFieldConfig.lastName.required && <span aria-hidden="true"> *</span>}</span>
     <input
       type="text"
       name="lastName"
@@ -50,11 +50,11 @@ const phonePattern = "\\+?[0-9][0-9\\s().-]{7,19}";
       maxlength="80"
       pattern={personNamePattern}
       title="Usa solo letras y separadores validos como espacio, apostrofo, punto o guion."
-      required
+      required={contactFieldConfig.lastName.required}
     />
   </label>
   <label>
-    {copy.phone}
+    <span>{copy.phone}{contactFieldConfig.phone.required && <span aria-hidden="true"> *</span>}</span>
     <input
       type="tel"
       name="phone"
@@ -65,35 +65,36 @@ const phonePattern = "\\+?[0-9][0-9\\s().-]{7,19}";
       maxlength="20"
       pattern={phonePattern}
       title="Usa un telefono valido, por ejemplo +525512345678."
-      required
+      required={contactFieldConfig.phone.required}
     />
   </label>
   <label>
-    {copy.email}
+    <span>{copy.email}{contactFieldConfig.email.required && <span aria-hidden="true"> *</span>}</span>
     <input
       type="email"
       name="email"
       placeholder={copy.emailPlaceholder}
       autocomplete="email"
       maxlength="120"
-      required
+      required={contactFieldConfig.email.required}
     />
   </label>
   <label class="contact-form-wide">
-    {copy.company}
+    <span>{copy.company}{contactFieldConfig.company.required && <span aria-hidden="true"> *</span>}</span>
     <input
       type="text"
       name="company"
       placeholder={copy.companyPlaceholder}
       autocomplete="organization"
       maxlength="120"
-      required
+      required={contactFieldConfig.company.required}
     />
   </label>
   <label class="contact-form-wide">
-    {copy.message}
-    <textarea name="message" placeholder={copy.messagePlaceholder} rows="4" maxlength="1000" required></textarea>
+    <span>{copy.message}{contactFieldConfig.message.required && <span aria-hidden="true"> *</span>}</span>
+    <textarea name="message" placeholder={copy.messagePlaceholder} rows="4" maxlength="1000" required={contactFieldConfig.message.required}></textarea>
   </label>
+  <p class="contact-form-required contact-form-wide">{copy.requiredFields}</p>
   <p class="contact-form-status contact-form-wide" role="status" aria-live="polite" data-contact-status></p>
   <button class="contact-submit" type="submit" data-contact-submit>{copy.submit}</button>
 </form>

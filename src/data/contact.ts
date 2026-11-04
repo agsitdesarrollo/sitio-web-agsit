@@ -1,6 +1,18 @@
 import type { SupportedLang } from '../i18n/ui';
 
+export const contactFieldConfig = {
+  name: { required: true },
+  lastName: { required: true },
+  phone: { required: true },
+  email: { required: true },
+  company: { required: true },
+  message: { required: true },
+} as const;
+
+export type ContactFieldName = keyof typeof contactFieldConfig;
+
 export type ContactFormCopy = {
+  requiredFields: string;
   name: string;
   namePlaceholder: string;
   lastName: string;
@@ -61,18 +73,19 @@ export const contactCopyByLang: Record<SupportedLang, ContactCopy> = {
       copy: 'Un especialista de AGSIT revisará tu solicitud para orientar el siguiente paso.',
     },
     form: {
+      requiredFields: '* Campos obligatorios',
       name: 'Nombre',
       namePlaceholder: 'Tu nombre',
       lastName: 'Apellido',
       lastNamePlaceholder: 'Tu apellido',
       phone: 'Teléfono',
-      phonePlaceholder: '+52 55 1234 5678 o 55 1234 5678',
+      phonePlaceholder: 'Tu número de teléfono',
       email: 'Email',
-      emailPlaceholder: 'correo@empresa.com',
+      emailPlaceholder: 'Tu correo electrónico',
       company: 'Nombre de la compañía',
-      companyPlaceholder: 'Empresa',
+      companyPlaceholder: 'Nombre de la empresa a la que representas',
       message: 'Comentario',
-      messagePlaceholder: 'Describe brevemente el proyecto o necesidad',
+      messagePlaceholder: 'Describe brevemente el proyecto o necesidad.',
       sending: 'Enviando...',
       success: 'Solicitud enviada. Te contactaremos pronto.',
       error: 'No se pudo enviar la solicitud. Intenta de nuevo o usa los datos de contacto directo.',
@@ -99,18 +112,19 @@ export const contactCopyByLang: Record<SupportedLang, ContactCopy> = {
       copy: 'An AGSIT specialist will review your request and guide the next step.',
     },
     form: {
+      requiredFields: '* Required fields',
       name: 'First name',
       namePlaceholder: 'Your first name',
       lastName: 'Last name',
       lastNamePlaceholder: 'Your last name',
       phone: 'Phone',
-      phonePlaceholder: '+1 202 555 0123 or 202 555 0123',
+      phonePlaceholder: 'Your phone number',
       email: 'Email',
-      emailPlaceholder: 'email@company.com',
+      emailPlaceholder: 'Your email address',
       company: 'Company name',
-      companyPlaceholder: 'Company',
+      companyPlaceholder: 'Name of the company you represent',
       message: 'Message',
-      messagePlaceholder: 'Briefly describe the project or need',
+      messagePlaceholder: 'Briefly describe the project or need.',
       submit: 'Request consultation',
       sending: 'Sending...',
       success: 'Request sent. We will contact you soon.',

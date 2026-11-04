@@ -1,3 +1,5 @@
+import { contactFieldConfig, type ContactFieldName } from '../data/contact';
+
 type ContactFormResponse = {
   ok?: boolean;
   leadId?: number;
@@ -22,8 +24,6 @@ type ContactFormPayload = {
     term: string;
   };
 };
-
-type ContactFieldName = 'name' | 'lastName' | 'phone' | 'email' | 'company' | 'message';
 
 type ValidationMessageSet = Record<
   ContactFieldName,
@@ -250,7 +250,7 @@ const validateContactField = (form: HTMLFormElement, name: ContactFieldName) => 
     message: () => validateText(field, messages.message, 10, 1000),
   };
 
-  const message = validators[name]();
+  const message = !contactFieldConfig[name].required && !field.value.trim() ? '' : validators[name]();
   setFieldError(field, message);
 
   return message ? { field, message } : null;

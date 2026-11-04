@@ -1,4 +1,5 @@
 import { z } from 'astro/zod';
+import { contactFieldConfig, type ContactFieldName } from '../data/contact';
 import type { BitrixLeadResult, ContactLeadInput } from '../types/contactLead';
 
 type BitrixLeadFields = Record<string, string | Array<Record<string, string>>>;
@@ -44,7 +45,7 @@ const requiredPersonName = z
   .max(80, 'El apellido no puede superar 80 caracteres.')
   .regex(personNameRegex, 'El apellido solo puede contener letras y separadores validos.');
 
-const contactLeadSchema = z.object({
+const contactLeadFields = {
   name: z
     .string()
     .min(2, 'El nombre debe tener al menos 2 caracteres.')
@@ -64,6 +65,15 @@ const contactLeadSchema = z.object({
   email: z.email('Agrega un email valido.').max(120, 'El email no puede superar 120 caracteres.'),
   company: requiredText(2, 120, 'La compania es obligatoria.', 'La compania no puede superar 120 caracteres.'),
   message: requiredText(10, 1000, 'El comentario debe tener al menos 10 caracteres.', 'El comentario no puede superar 1000 caracteres.'),
+};
+
+const configuredField = (name: ContactFieldName, schema: z.ZodType<string>) =>
+  contactFieldConfig[name].required ? schema : z.union([schema, z.literal('')]);
+
+const contactLeadSchema = z.object({
+  ...Object.fromEntries(
+    Object.entries(contactLeadFields).map(([name, schema]) => [name, configuredField(name as ContactFieldName, schema)]),
+  ),
   pageUrl: z.union([z.literal(''), z.url('La URL de origen es invalida.')]).default(''),
   pageTitle: z.string().max(200, 'El titulo de pagina no puede superar 200 caracteres.').default(''),
   website: z.string().max(200).default(''),
