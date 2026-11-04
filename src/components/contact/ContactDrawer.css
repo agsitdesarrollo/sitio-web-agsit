@@ -225,6 +225,42 @@ body.drawer-open {
   font: 500 0.8rem/1.4 'Inter', 'Segoe UI', Tahoma, sans-serif;
 }
 
+.contact-form .iti,
+.contact-form .iti--inline-country-selector {
+  --iti-border-color: rgba(37, 63, 108, 0.16);
+  --iti-country-selector-bg: #ffffff;
+  --iti-hover-color: #eaf3f8;
+  --iti-icon-color: #253f6c;
+  color: #414042;
+  font: 500 0.96rem/1.4 'Inter', 'Segoe UI', Tahoma, sans-serif;
+  letter-spacing: normal;
+  text-transform: none;
+}
+
+.contact-form .iti { width: 100%; min-width: 0; }
+.contact-form .iti__selected-country { border-radius: 14px 0 0 14px; color: #253f6c; }
+.contact-form .iti__selected-country:focus-visible { outline: 2px solid #287ca1; outline-offset: -3px; }
+.contact-form input::placeholder,
+.contact-form textarea::placeholder { color: #626775; opacity: 1; letter-spacing: normal; }
+
+/* Detached selectors are body children, outside the drawer's scrolling panel. */
+.iti--detached-country-selector {
+  z-index: 1100;
+  color: #414042;
+  font: 500 0.96rem/1.4 'Inter', 'Segoe UI', Tahoma, sans-serif;
+  letter-spacing: normal;
+  text-transform: none;
+  --iti-border-color: rgba(37, 63, 108, 0.16);
+  --iti-country-selector-bg: #ffffff;
+  --iti-hover-color: #eaf3f8;
+  --iti-icon-color: #253f6c;
+}
+.iti--detached-country-selector .iti__country-selector { border-radius: 14px; }
+.iti--detached-country-selector:not(.iti--fullscreen-popup) .iti__country-selector { overflow: hidden; }
+.iti--detached-country-selector .iti__search-input { color: #414042; font: inherit; min-height: 48px; background: #f7f8fb; }
+.iti--detached-country-selector .iti__search-input:focus-visible { outline: 2px solid #287ca1; outline-offset: -3px; }
+.iti--detached-country-selector .iti__country { min-height: 44px; }
+
 .contact-form-status[data-status='success'] {
   color: #247347;
 }

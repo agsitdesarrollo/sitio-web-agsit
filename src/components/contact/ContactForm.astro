@@ -1,5 +1,6 @@
 ---
 import { contactFieldConfig, type ContactFormCopy } from '../../data/contact';
+import 'intl-tel-input/styles';
 
 type Props = {
   copy: ContactFormCopy;
@@ -7,7 +8,7 @@ type Props = {
 
 const { copy } = Astro.props;
 const personNamePattern = "[A-Za-zÀ-ÖØ-öø-ÿ]+(?:[ '\\.-][A-Za-zÀ-ÖØ-öø-ÿ]+)*";
-const phonePattern = "\\+?[0-9][0-9\\s().-]{7,19}";
+const lang = Astro.url.pathname.startsWith('/en/') ? 'en' : 'es';
 ---
 
 <form
@@ -19,6 +20,7 @@ const phonePattern = "\\+?[0-9][0-9\\s().-]{7,19}";
   data-success-text={copy.success}
   data-error-text={copy.error}
 >
+  <input type="hidden" name="lang" value={lang} />
   <div class="contact-form-hp" aria-hidden="true">
     <label>
       Website
@@ -58,13 +60,11 @@ const phonePattern = "\\+?[0-9][0-9\\s().-]{7,19}";
     <input
       type="tel"
       name="phone"
+      aria-label={copy.phone}
       placeholder={copy.phonePlaceholder}
       autocomplete="tel"
       inputmode="tel"
-      minlength="8"
-      maxlength="20"
-      pattern={phonePattern}
-      title="Usa un telefono valido, por ejemplo +525512345678."
+      maxlength="40"
       required={contactFieldConfig.phone.required}
     />
   </label>
