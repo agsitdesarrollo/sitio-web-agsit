@@ -97,8 +97,8 @@ body.drawer-open {
 
 .contact-drawer-content {
   display: grid;
-  grid-template-columns: minmax(0, 0.8fr) minmax(360px, 1.15fr) minmax(260px, 0.52fr);
-  gap: clamp(24px, 4vw, 56px);
+  grid-template-columns: minmax(0, 0.75fr) minmax(360px, 1.2fr) minmax(310px, 0.85fr);
+  gap: clamp(24px, 3vw, 40px);
   align-items: start;
   max-width: 1280px;
   margin: 0 auto;
@@ -114,13 +114,21 @@ body.drawer-open {
   text-transform: uppercase;
 }
 
-.contact-drawer-heading h2 {
+.contact-drawer-content .contact-drawer-heading h2 {
   margin: 0;
+  max-width: 16ch;
   color: #253f6c;
   font-family: 'Cormorant Garamond', Georgia, serif;
-  font-size: clamp(2.7rem, 4.4vw, 5.1rem);
+  font-size: clamp(2.2rem, 3vw, 3.5rem);
   font-weight: 300;
-  line-height: 0.98;
+  line-height: 1.04;
+  text-wrap: balance;
+}
+
+.contact-drawer-content .contact-direct-card { min-width: 0; }
+.contact-drawer-content .contact-direct-card a[href^='mailto:'] {
+  white-space: nowrap;
+  overflow-wrap: normal;
 }
 
 .contact-drawer-heading span {
@@ -366,7 +374,7 @@ a.contact-direct-icon:focus-visible {
   stroke-width: 1.8;
 }
 
-@media (max-width: 1080px) {
+@media (max-width: 1180px) {
   .contact-drawer-content {
     grid-template-columns: 1fr 1.1fr;
   }
@@ -390,7 +398,7 @@ a.contact-direct-icon:focus-visible {
     grid-template-columns: 1fr;
   }
 
-  .contact-drawer-heading h2 {
-    max-width: 88%;
+  .contact-drawer-content .contact-drawer-heading h2 {
+    max-width: 100%;
   }
 }
