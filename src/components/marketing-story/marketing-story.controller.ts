@@ -5,7 +5,8 @@ import { createStoryVideo } from './marketing-story.video';
 
 gsap.registerPlugin(ScrollTrigger);
 type Direction = -1 | 1;
-type Stop = 'heroEnd' | 'openingEnd';
+const STOPS = ['heroEnd', 'openingEnd', 'attractEnd', 'accompanyEnd', 'growEnd'] as const;
+type Stop = typeof STOPS[number];
 type MotionTarget = Stop | 'start' | 'end' | HTMLElement;
 type Decision = { kind: 'free' } | { kind: 'clamp' | 'stop'; stop: Stop };
 type Connection = EventTarget & { saveData?: boolean };
@@ -44,13 +45,17 @@ export function initMarketingStory() {
     const claim = hero.querySelector<HTMLElement>('[data-claim]')!;
     const controls = hero.querySelector<HTMLElement>('[data-hero-controls]')!;
     const captions = [...hero.querySelectorAll<HTMLElement>('[data-caption]')];
-    const upper = split.querySelector<HTMLElement>('[data-split-upper]')!;
-    const lower = split.querySelector<HTMLElement>('[data-split-lower]')!;
+    const left = split.querySelector<HTMLElement>('[data-split-left]')!;
+    const right = split.querySelector<HTMLElement>('[data-split-right]')!;
+    const words = [...manifesto.querySelectorAll<HTMLElement>('[data-manifesto-word]')];
+    const copy = manifesto.querySelector<HTMLElement>('[data-manifesto-copy]')!;
+    const detail = manifesto.querySelector<HTMLElement>('[data-manifesto-detail]')!;
+    const thread = manifesto.querySelector<HTMLElement>('[data-manifesto-thread]')!;
     const local = new AbortController();
     const { signal } = local;
     page.dataset.motion = 'enhanced';
     const media = createStoryVideo(hero, signal);
-    let g = { panel: 1, start: 0, heroEnd: 0, openingEnd: 0, contact: 0, stageHeight: 1 };
+    let g = { panel: 1, start: 0, heroEnd: 0, openingEnd: 0, attractEnd: 0, accompanyEnd: 0, growEnd: 0, contact: 0, stageHeight: 1 };
     let lenis: Lenis;
     let trigger: ScrollTrigger;
     let moving = false;
@@ -71,16 +76,16 @@ export function initMarketingStory() {
       page.style.setProperty('--ms-panel-h', `${panel}px`);
       page.style.setProperty('--ms-header-h', `${nav}px`);
       const start = Math.round(documentTop(track));
-      g = { ...g, panel, start, heroEnd: Math.round(start + panel * (VIDEO_PANELS + WORD_PANELS)), openingEnd: Math.round(start + panel * (VIDEO_PANELS + WORD_PANELS + OPENING_PANELS)) };
+      const heroEnd = Math.round(start + panel * (VIDEO_PANELS + WORD_PANELS));
+      g = { ...g, panel, start, heroEnd, openingEnd: heroEnd + panel, attractEnd: heroEnd + panel * 2, accompanyEnd: heroEnd + panel * 3, growEnd: heroEnd + panel * 4 };
     };
-    const measureReading = () => {
-      g.stageHeight = Math.max(g.panel, manifesto.offsetHeight);
-      track.style.height = `${g.stageHeight + g.openingEnd - g.start}px`;
+    const measureTrack = () => {
+      g.stageHeight = g.panel;
+      track.style.height = `${g.stageHeight + g.growEnd - g.start}px`;
       g.contact = documentTop(contact);
-      page.dataset.heroEnd = String(g.heroEnd);
-      page.dataset.openingEnd = String(g.openingEnd);
+      for (const name of STOPS) page.dataset[name] = String(g[name]);
     };
-    measurePanel(); measureReading();
+    measurePanel(); measureTrack();
 
     // One reversible timeline and one pin for the entire existing journey.
     // Its physical scroll position is the source of truth in both directions.
@@ -90,7 +95,10 @@ export function initMarketingStory() {
     gsap.set(captions, { opacity: 0, x: -28 });
     gsap.set(captions[0], { opacity: 1, x: 0 });
     gsap.set(split, { autoAlpha: 0 });
-    gsap.set(manifesto, { autoAlpha: 0 });
+    gsap.set(manifesto, { autoAlpha: 0, xPercent: 100 });
+    gsap.set(words, { autoAlpha: 0, y: 36 });
+    gsap.set([copy, detail], { autoAlpha: 0, y: 20 });
+    gsap.set(thread, { scaleX: 0 });
     const span = VIDEO_PANELS * .82 / captions.length;
     captions.forEach((caption, index) => {
       const start = index * span;
@@ -103,14 +111,24 @@ export function initMarketingStory() {
       .to(claim, { opacity: 1, y: 0, duration: VIDEO_PANELS * .1 }, VIDEO_PANELS * .86)
       .to(claim, { opacity: 0, duration: .28 }, VIDEO_PANELS + .05)
       .to(split, { autoAlpha: 1, duration: .4 }, VIDEO_PANELS + .12)
-      .to(manifesto, { autoAlpha: 1, duration: .01 }, VIDEO_PANELS + WORD_PANELS - .1)
-      .to(upper, { yPercent: -52, duration: OPENING_PANELS }, VIDEO_PANELS + WORD_PANELS)
-      .to(lower, { yPercent: 52, duration: OPENING_PANELS }, VIDEO_PANELS + WORD_PANELS);
+      .set(manifesto, { autoAlpha: 1 }, VIDEO_PANELS + WORD_PANELS)
+      .to(manifesto, { xPercent: 0, duration: OPENING_PANELS }, VIDEO_PANELS + WORD_PANELS)
+      .to(left, { xPercent: -104, duration: OPENING_PANELS }, VIDEO_PANELS + WORD_PANELS)
+      .to(right, { xPercent: 104, duration: OPENING_PANELS }, VIDEO_PANELS + WORD_PANELS);
+    const arrival = VIDEO_PANELS + WORD_PANELS + OPENING_PANELS;
+    words.forEach((word, index) => {
+      master.to(word, { autoAlpha: 1, y: 0, duration: .65, ease: 'expo.out' }, arrival + index + .15)
+        .to(thread, { scaleX: (index + 1) / words.length, duration: .8 }, arrival + index + .1);
+    });
+    master.to([copy, detail], { autoAlpha: 1, y: 0, duration: .65 }, arrival + 2.2)
+      .to({}, { duration: 3 }, arrival);
     const render = () => {
       const y = window.scrollY;
       const units = (y - g.start) / g.panel;
       const opening = clamp01((y - g.heroEnd) / (g.openingEnd - g.heroEnd));
-      const mode = y < g.heroEnd - EPSILON ? 'continuous' : y < g.openingEnd - EPSILON ? 'opening' : 'reading';
+      const mode = y < g.heroEnd - EPSILON ? 'continuous' : y < g.openingEnd - EPSILON ? 'opening' : y <= g.growEnd + EPSILON ? 'manifesto' : 'reading';
+      const step = String(y < g.openingEnd - EPSILON ? 0 : Math.min(4, 1 + Math.floor((y - g.openingEnd + EPSILON) / g.panel)));
+      if (page.dataset.manifestoStep !== step) page.dataset.manifestoStep = step;
       if (page.dataset.scrollStage !== mode) page.dataset.scrollStage = mode;
       const progressValue = opening.toFixed(4);
       if (page.dataset.openingProgress !== progressValue) page.dataset.openingProgress = progressValue;
@@ -126,22 +144,25 @@ export function initMarketingStory() {
       split.classList.toggle('is-open', opening >= 1);
       const changing = opening > 0 && opening < 1;
       const hint = changing ? 'transform' : '';
-      if (upper.style.willChange !== hint) { upper.style.willChange = hint; lower.style.willChange = hint; }
+      if (left.style.willChange !== hint) {
+        left.style.willChange = hint; right.style.willChange = hint; manifesto.style.willChange = hint;
+      }
     };
     trigger = ScrollTrigger.create({
       id: 'marketing-story-journey', trigger: track, start: 'top top',
-      end: () => `+=${g.openingEnd - g.start}`,
+      end: () => `+=${g.growEnd - g.start}`,
       pin: stage, pinSpacing: false, scrub: true, animation: master,
-      onUpdate: render,
     });
 
     const decide = (y: number, direction: Direction, distance: number): Decision => {
       const ahead = y + direction * distance;
-      if (y < g.heroEnd - EPSILON) return direction > 0 && ahead >= g.heroEnd ? { kind: 'clamp', stop: 'heroEnd' } : { kind: 'free' };
-      if (y > g.openingEnd + EPSILON) return direction < 0 && ahead <= g.openingEnd ? { kind: 'clamp', stop: 'openingEnd' } : { kind: 'free' };
+      if (y < g.heroEnd - EPSILON) return direction > 0 && ahead >= g.heroEnd - EPSILON ? { kind: 'clamp', stop: 'heroEnd' } : { kind: 'free' };
+      if (y > g.growEnd + EPSILON) return direction < 0 && ahead <= g.growEnd + EPSILON ? { kind: 'clamp', stop: 'growEnd' } : { kind: 'free' };
       if (Math.abs(y - g.heroEnd) <= EPSILON && direction < 0) return { kind: 'free' };
-      if (Math.abs(y - g.openingEnd) <= EPSILON && direction > 0) return { kind: 'free' };
-      return { kind: 'stop', stop: direction > 0 ? 'openingEnd' : 'heroEnd' };
+      if (Math.abs(y - g.growEnd) <= EPSILON && direction > 0) return { kind: 'free' };
+      const candidates = direction > 0 ? STOPS : [...STOPS].reverse();
+      const stop = candidates.find(name => direction > 0 ? g[name] > y + EPSILON : g[name] < y - EPSILON);
+      return stop ? { kind: 'stop', stop } : { kind: 'free' };
     };
     const resolveTarget = (target: MotionTarget) => {
       if (target instanceof HTMLElement) return target === manifesto ? g.openingEnd : Math.max(0, documentTop(target) - (header?.offsetHeight || 0));
@@ -190,7 +211,8 @@ export function initMarketingStory() {
       prevent: node => node.classList.contains('contact-drawer') || node.closest('.site-nav nav.is-open') !== null,
       virtualScroll: gate,
     });
-    lenis.on('scroll', ScrollTrigger.update);
+    // Update once per position, including free scroll after the pin has ended.
+    lenis.on('scroll', () => { ScrollTrigger.update(); render(); });
     // Lenis receives wall-clock milliseconds without changing GSAP's global lag policy.
     const tick = () => { const now = performance.now(); lenis.raf(now); media.tick(now); };
     gsap.ticker.add(tick);
@@ -210,6 +232,7 @@ export function initMarketingStory() {
       if (moving || lenis.isLocked) return;
       const distance = event.key.startsWith('Arrow') ? 90 : g.panel * .8;
       const decision = decide(lenis.targetScroll, direction, distance);
+      if (event.repeat && decision.kind === 'stop') return; // A held key is one gesture.
       if (decision.kind === 'free') lenis.scrollTo(lenis.targetScroll + direction * distance, { duration: .3, easing: easeClamp });
       else goTo(g[decision.stop], decision.kind, decision.stop);
     };
@@ -242,18 +265,18 @@ export function initMarketingStory() {
       const old = g;
       const y = lenis.animatedScroll;
       const units = (y - old.start) / old.panel;
-      const reading = y > old.openingEnd;
+      const reading = y > old.growEnd;
       const pastContact = y >= old.contact;
-      const readingRatio = (y - old.openingEnd) / Math.max(1, old.contact - old.openingEnd);
+      const readingRatio = (y - old.growEnd) / Math.max(1, old.contact - old.growEnd);
       const resume = motionTarget;
       const resumeKind = motionKind;
       moving = false; motionTarget = null;
       lenis.scrollTo(y, { immediate: true, force: true });
       measurePanel();
-      trigger.refresh(); // Restores natural width before measuring the manifesto after rotation.
-      measureReading();
+      trigger.refresh();
+      measureTrack();
       lenis.resize();
-      const next = !reading ? g.start + units * g.panel : pastContact ? g.contact + y - old.contact : g.openingEnd + readingRatio * (g.contact - g.openingEnd);
+      const next = !reading ? g.start + units * g.panel : pastContact ? g.contact + y - old.contact : g.growEnd + readingRatio * (g.contact - g.growEnd);
       lenis.scrollTo(Math.max(0, next), { immediate: true, force: true });
       ScrollTrigger.update(); render();
       if (resume) goTo(resolveTarget(resume), resumeKind, resume);
@@ -291,12 +314,12 @@ export function initMarketingStory() {
       overlayObserver.disconnect(); navSize.disconnect();
       gsap.ticker.remove(tick); lenis.destroy(); media.dispose();
       hero.inert = false; claim.inert = false; controls.inert = false; manifesto.inert = false;
-      upper.style.removeProperty('will-change'); lower.style.removeProperty('will-change');
+      for (const element of [left, right, manifesto]) element.style.removeProperty('will-change');
       split.classList.remove('is-open');
       hero.classList.remove('is-occluded');
       track.style.removeProperty('height');
       page.style.removeProperty('--ms-panel-h'); page.style.removeProperty('--ms-header-h');
-      for (const name of ['motion', 'heroEnd', 'openingEnd', 'scrollStage', 'openingProgress']) delete page.dataset[name];
+      for (const name of ['motion', ...STOPS, 'scrollStage', 'openingProgress', 'manifestoStep']) delete page.dataset[name];
     };
   }, page);
   connection?.addEventListener('change', () => gsap.matchMediaRefresh(), { signal: lifetime.signal });

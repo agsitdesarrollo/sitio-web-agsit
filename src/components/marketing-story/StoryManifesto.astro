@@ -4,11 +4,17 @@ type Props = { content: MarketingStoryContent['manifesto'] };
 const { content } = Astro.props;
 ---
 <section class="ms-manifesto ms-light" id="ms-manifesto" tabindex="-1" aria-labelledby="ms-manifesto-title">
-  <div class="ms-shell ms-section-space">
-    <div class="ms-rule" data-manifesto-rule aria-hidden="true"><i></i>{[0, 1, 2, 3].map(() => <b></b>)}</div>
-    <div class="ms-manifesto-grid">
-      <h2 id="ms-manifesto-title">{content.words.map(word => <span>{word}</span>)}</h2>
-      <div><p class="ms-lead">{content.copy}</p><div class="ms-between"><div class="ms-between-line" aria-hidden="true"><i data-between></i></div><div class="ms-between-labels"><span>{content.from}</span><span>{content.to}</span></div><p>{content.conclusion}</p></div></div>
+  <div class="ms-shell ms-manifesto-inner">
+    <div class="ms-manifesto-body">
+      <h2 id="ms-manifesto-title">{content.words.map(word => <span data-manifesto-word>{word}</span>)}</h2>
+      <p class="ms-manifesto-copy" data-manifesto-copy>{content.copy}</p>
+    </div>
+    <div class="ms-manifesto-diagram">
+      <div class="ms-rule" data-manifesto-rule aria-hidden="true"><i data-manifesto-thread></i>{[0, 1, 2, 3].map(() => <b></b>)}</div>
+      <div data-manifesto-detail>
+        <div class="ms-manifesto-labels"><span>{content.from}</span><span>{content.to}</span></div>
+        <p class="ms-manifesto-conclusion">{content.conclusion}</p>
+      </div>
     </div>
   </div>
 </section>

@@ -74,47 +74,49 @@
 .ms-segments span { width: clamp(15px,2.2vw,30px); height: 2px; background: rgba(255,255,255,.32); }
 .ms-segments span.is-active { background: var(--ms-cyan); }
 
-.ms-rule { position: relative; display: flex; justify-content: space-between; align-items: center; height: 16px; margin-bottom: 64px; }
+.ms-manifesto-inner { min-height: var(--ms-panel-h,100svh); display: grid; grid-template-rows: 1fr auto; gap: clamp(20px,4svh,48px); padding-block: max(calc(var(--ms-header-h,var(--nav-h)) + 24px),6svh) max(28px,env(safe-area-inset-bottom)); }
+.ms-manifesto-body { display: grid; grid-template-columns: 7fr 5fr; align-items: center; gap: clamp(24px,4vw,64px); }
+.ms-manifesto h2 { font-size: clamp(3rem,8.5vw,min(8.5rem,16svh)); font-weight: 300; line-height: .98; }
+.ms-manifesto h2 span { display: block; }
+.ms-manifesto h2 span:nth-child(2) { margin-left: 8%; }
+.ms-manifesto h2 span:nth-child(3) { margin-left: 16%; }
+.ms-manifesto-copy { max-width: 22ch; font-size: clamp(1.1rem,2vw,1.6rem); line-height: 1.45; }
+.ms-rule { position: relative; display: flex; justify-content: space-between; align-items: center; height: 12px; }
 .ms-rule::before, .ms-rule i { content: ''; position: absolute; width: 100%; height: 1px; background: rgba(37,63,108,.2); }
 .ms-rule i { height: 2px; background: var(--ms-teal); transform-origin: left; }
 .ms-rule b { position: relative; width: 9px; height: 9px; border-radius: 50%; background: var(--ms-blue); }
 .ms-rule b:last-child { background: var(--ms-teal); }
-.ms-manifesto-grid { display: grid; grid-template-columns: 7fr 5fr; gap: 64px; }
-.ms-manifesto h2 { font-size: clamp(4.5rem,8.5vw,8rem); font-weight: 600; }
-.ms-manifesto h2 span { display: block; }
-.ms-manifesto h2 span:nth-child(2) { margin-left: 10%; }
-.ms-manifesto h2 span:nth-child(3) { margin-left: 20%; }
-.ms-between { border-top: 1px solid rgba(37,63,108,.2); margin-top: 40px; padding-top: 32px; }
-.ms-between-line { height: 2px; position: relative; background: rgba(37,63,108,.2); }
-.ms-between-line i { display: block; height: 2px; background: var(--ms-teal); transform-origin: left; }
-.ms-between-line::before, .ms-between-line::after { content: ''; position: absolute; z-index: 1; top: -4px; width: 10px; height: 10px; border-radius: 50%; background: var(--ms-teal); }
-.ms-between-line::before { left: 0; }
-.ms-between-line::after { right: 0; background: var(--ms-blue); }
-.ms-between-labels { display: flex; justify-content: space-between; color: var(--ms-teal); font-size: 1rem; padding-top: 14px; }
-.ms-between p { font: 400 clamp(1.7rem,2.7vw,2.4rem)/1.15 'Cormorant Garamond',Georgia,serif; margin-top: 20px; }
+.ms-manifesto-labels { display: flex; justify-content: space-between; color: var(--ms-teal); font-size: .875rem; line-height: 1.4; margin-top: 12px; }
+.ms-manifesto-conclusion { font: 400 clamp(1.4rem,2.5vw,2rem)/1.15 'Cormorant Garamond',Georgia,serif; margin-top: 16px !important; max-width: 40ch; }
 
 /* Default/static document stays readable without JS or with reduced motion. */
 .ms-journey-stage { position: relative; }
 .ms-split { position: relative; display: grid; place-items: center; min-height: var(--ms-panel-h,100svh); background: var(--ms-ink); color: var(--ms-paper); }
 .ms-split-static, .ms-split-half span { font: 300 clamp(3rem,19vw,min(18rem,38svh))/1 'Cormorant Garamond',Georgia,serif; letter-spacing: 0; white-space: nowrap; }
 .ms-split-half { display: none; }
-.ms-manifesto .ms-section-space { padding-top: max(clamp(80px,10vw,144px),calc(var(--ms-header-h,var(--nav-h)) + 24px)); }
 
 html.lenis:has(.ms-page[data-motion='enhanced']),
 html.lenis:has(.ms-page[data-motion='enhanced']) body { height: auto; }
 html.lenis.lenis-stopped:has(.ms-page[data-motion='enhanced']) { overflow: clip; }
-.ms-page[data-motion='enhanced'] .ms-journey-stage { min-height: var(--ms-panel-h); background: #fff; }
+.ms-page[data-motion='enhanced'] .ms-journey-stage { height: var(--ms-panel-h); overflow: clip; background: var(--ms-ink); }
+.ms-page[data-motion='enhanced'] .ms-manifesto { height: var(--ms-panel-h); }
+.ms-page[data-motion='enhanced'] .ms-manifesto-inner { height: 100%; min-height: 0; }
 .ms-page[data-motion='enhanced'] .ms-journey-stage > .ms-hero { position: absolute; inset: 0 0 auto; height: var(--ms-panel-h); z-index: 2; }
 .ms-page[data-motion='enhanced'] .ms-hero.is-occluded { visibility: hidden; }
 .ms-page[data-motion='enhanced'] .ms-split { position: absolute; inset: 0 0 auto; height: var(--ms-panel-h); min-height: 0; overflow: clip; z-index: 3; pointer-events: none; background: transparent; }
 .ms-page[data-motion='enhanced'] .ms-split-static { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
-.ms-page[data-motion='enhanced'] .ms-split-half { position: absolute; inset: 0; display: grid; place-items: center; background: var(--ms-ink); }
-.ms-split-upper { clip-path: inset(0 0 50% 0); }
-.ms-split-lower { clip-path: inset(50% 0 0 0); }
+.ms-page[data-motion='enhanced'] .ms-split-half { position: absolute; inset: 0; display: block; }
+.ms-split-panel { position: absolute; top: 0; bottom: 0; width: 50%; overflow: clip; background: var(--ms-ink); }
+.ms-split-left .ms-split-panel { left: 0; }
+.ms-split-right .ms-split-panel { left: 50%; }
+.ms-split-panel span { position: absolute; top: 0; bottom: 0; left: 0; width: 200%; display: grid; place-items: center; }
+.ms-split-right .ms-split-panel span { left: -100%; }
+.ms-split-left { clip-path: inset(0 50% 0 0); }
+.ms-split-right { clip-path: inset(0 0 0 50%); }
 .ms-page[data-motion='enhanced'] .ms-split.is-open { visibility: hidden !important; }
 
 @media (max-width: 1023px) {
-  .ms-manifesto-grid { grid-template-columns: 1fr; gap: 32px; }
+  .ms-manifesto-body { grid-template-columns: 1fr; gap: 20px; align-content: center; }
   .ms-manifesto h2 span:nth-child(n) { margin-left: 0; }
 }
 @media (max-width: 699px) {
@@ -122,7 +124,6 @@ html.lenis.lenis-stopped:has(.ms-page[data-motion='enhanced']) { overflow: clip;
   .ms-story-content h1 { font-size: clamp(2.5rem,10vw,3.4rem); }
   .ms-story-content h2 { font-size: 2.7rem; }
   .ms-section-space { padding-block: 76px; }
-  .ms-manifesto .ms-section-space { padding-top: max(76px,calc(var(--ms-header-h,var(--nav-h)) + 24px)); }
   .ms-media-space { inset: calc(var(--nav-h) + 20px) 0 105px; }
   .ms-film { width: 100%; height: 100%; aspect-ratio: auto; }
   .ms-caption { bottom: 24px; }
@@ -140,10 +141,16 @@ html.lenis.lenis-stopped:has(.ms-page[data-motion='enhanced']) { overflow: clip;
   .ms-segments { gap: 5px; }
   .ms-segments span { width: 15px; }
   .ms-static-chapters ol { grid-template-columns: 1fr; }
-  .ms-manifesto h2 { font-size: clamp(3.4rem,17vw,4.7rem); }
-  .ms-rule { margin-bottom: 40px; }
+  .ms-manifesto h2 { font-size: clamp(3rem,15vw,4.5rem); }
+  .ms-manifesto-copy { font-size: 1rem; max-width: 30ch; }
 }
 @media (max-height: 520px) and (orientation: landscape) {
+  .ms-manifesto-inner { padding-block: calc(var(--ms-header-h,var(--nav-h)) + 12px) 18px; gap: 16px; }
+  .ms-manifesto-body { grid-template-columns: 7fr 5fr; gap: 24px; }
+  .ms-manifesto h2 { font-size: clamp(2.3rem,5.8vw,3.2rem); }
+  .ms-manifesto-copy { font-size: .95rem; }
+  .ms-manifesto-conclusion { font-size: 1.3rem; margin-top: 10px !important; }
+  .ms-manifesto-labels { margin-top: 8px; }
   .ms-story-content h1 { font-size: clamp(2rem,4.7vw,3.1rem); }
   .ms-story-content .ms-claim h1 { font-size: clamp(2rem,4.7vw,3.1rem); max-width: 28ch; }
   .ms-media-space { inset: var(--nav-h) 0 0; }

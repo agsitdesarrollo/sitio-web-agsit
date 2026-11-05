@@ -4,6 +4,6 @@ const { word } = Astro.props;
 ---
 <div class="ms-split" data-hero-split>
   <p class="ms-split-static">{word}</p>
-  <div class="ms-split-half ms-split-upper" data-split-upper aria-hidden="true"><span>{word}</span></div>
-  <div class="ms-split-half ms-split-lower" data-split-lower aria-hidden="true"><span>{word}</span></div>
+  <div class="ms-split-half ms-split-left" aria-hidden="true"><div class="ms-split-panel" data-split-left><span>{word}</span></div></div>
+  <div class="ms-split-half ms-split-right" aria-hidden="true"><div class="ms-split-panel" data-split-right><span>{word}</span></div></div>
 </div>
