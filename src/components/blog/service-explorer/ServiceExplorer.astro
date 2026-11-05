@@ -1,0 +1,22 @@
+---
+import type { BlogServiceExplorerContent } from '../../../types/blogServiceExplorer.types';
+import './service-explorer.css';
+type Props = { content: BlogServiceExplorerContent; id?: string; ctaHref: string; useDrawer?: boolean; reveal?: boolean };
+const { content, id = 'blog-services', ctaHref, useDrawer = false, reveal = false } = Astro.props;
+const titleId = `${id}-title`;
+---
+<section class="bse-services" id={id} aria-labelledby={titleId}>
+  <div class="bse-shell bse-section-space">
+    <div class="bse-section-heading"><h2 id={titleId}>{content.title}</h2><p class="bse-lead">{content.copy}</p></div>
+    <ol class="bse-service-line" aria-label={content.lineLabel}>{content.items.map((item, i) => <li><b aria-hidden="true"></b><span>{item.name}</span><small>{String(i + 1).padStart(2, '0')}</small></li>)}</ol>
+    <div class="bse-service-composition">
+      {content.items.map((item, i) =>
+        <article class:list={['bse-service-card', `bse-service-${i + 1}`]} data-reveal={reveal || undefined}>
+          <img src={item.image.src} alt={item.image.alt} width={item.image.width} height={item.image.height} loading="lazy" decoding="async" />
+          <div class="bse-service-body"><p class="bse-service-name">{item.name}</p><h3>{item.title}</h3><p>{item.copy}</p><h4>{content.includes}</h4><ul>{item.includes.map(line => <li>{line}</li>)}</ul></div>
+        </article>
+      )}
+    </div>
+    <div class="bse-services-cta">{useDrawer ? <button class="bse-button" data-contact-trigger>{content.cta}</button> : <a class="bse-button" href={ctaHref}>{content.cta}</a>}</div>
+  </div>
+</section>

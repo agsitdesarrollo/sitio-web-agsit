@@ -3,7 +3,8 @@ import FinalContactSection from '../final-contact/FinalContactSection.astro';
 import ScrollVideoHero from './ScrollVideoHero.astro';
 import StoryManifesto from './StoryManifesto.astro';
 import ScenarioComparison from './ScenarioComparison.astro';
-import ServiceExplorer from './ServiceExplorer.astro';
+import ServiceExplorer from '../blog/service-explorer/ServiceExplorer.astro';
+import { getGrowthServiceExplorer } from '../../data/blog/growthServiceExplorer';
 import ChannelIntegration from './ChannelIntegration.astro';
 import StoryAudiences from './StoryAudiences.astro';
 import type { MarketingStoryContent } from '../../types/marketingStory.types';
@@ -17,7 +18,7 @@ const { content, contactCopy } = Astro.props;
   <ScrollVideoHero content={content.hero} />
   <StoryManifesto content={content.manifesto} />
   <ScenarioComparison content={content.comparison} lang={content.lang} />
-  <ServiceExplorer content={content.services} />
+  <ServiceExplorer content={getGrowthServiceExplorer(content.lang)} id="ms-services" ctaHref="#contacto" useDrawer reveal />
   <ChannelIntegration content={content.integration} />
   <StoryAudiences content={content.audience} />
   </div>
