@@ -121,3 +121,23 @@ Atraer usa una herradura acostada con abertura izquierda, polos más intensos y 
 Verificación de esta corrección: build y git diff --check correctos; una pasada ES en 390×844 y 1366×768, bajando y subiendo, con 16 capturas finales (tres estados del manifiesto y la frase por sentido y tamaño). Se comprobaron la línea horizontal debajo del texto central, su ancho respecto a la frase, la ausencia de marco en esa parada, el centrado de la columna en escritorio, el tamaño de las figuras, textos dentro de pantalla y consola sin errores.
 
 Una sola medición en una página nueva de 390×844 con CPU 4×: cinco segundos de la figura de Crecer animándose, 240 puntos, p95 entre requestAnimationFrame de 16.7 ms y cero tareas largas. No se repitió la medición ni se midieron los servicios, el escritorio, inglés o movimiento reducido.
+
+## Reactivación al regresar y pulido de animaciones
+
+La escena mejorada ya no depende del último valor de IntersectionObserver para reactivarse dentro del stage fijado. El controlador proyecta la posición real sobre las figuras y activa el renderer según su tramo; el ticker también detecta cambios de window.scrollY que no hayan llegado por el evento de Lenis (barra de scroll, restauraciones o saltos). Al reentrar se solicita un dibujo nuevo, y al volver a una pestaña visible se recalculan estado y canvas. IntersectionObserver solo gobierna el contenido estático en flujo libre. Se mantienen las pausas fuera del tramo visible, con pestaña oculta y drawer abierto.
+
+El renderer registra por separado la figura seleccionada y la figura efectivamente pintada, además de un contador numérico de dibujos. La verificación del regreso compara esos valores con la palabra o tarjeta y comprueba también que los píxeles cambien entre figuras distintas, para detectar un canvas congelado aunque cambie el HTML.
+
+Para igualar la densidad solicitada, el manifiesto comparte ahora el presupuesto de servicios: 450 puntos en teléfono y 1,200 en escritorio; sustituye el límite anterior de 240 para esta escena. Conserva el muestreo hexagonal, contornos precalculados, radio uniforme, DPR 1 / 1.5 y 30 / 60 fps. En dos columnas, el centro de dibujo acompaña el centro de las palabras ya visibles, con posiciones medidas durante el recálculo del viewport, sin leer layout en cada cuadro.
+
+El imán vuelve a U vertical con abertura superior y polos de acento rellenos como bloques vectoriales; sus partículas llegan desde arriba y se adhieren brevemente. Las personas tienen cabeza separada y hombros anchos y redondeados, con mayor balanceo. Crecer conserva las barras de puntos y suma una flecha vectorial sólida, con astil grueso y punta triangular, que se traza sobre ellas. Los trazados sólidos se crean una vez y se dibujan en el mismo canvas, con opacidad reversible durante el cambio de figura; el respaldo estático reutiliza estos trazados.
+
+El embudo dedica 40% del presupuesto al flujo brillante, a mayor velocidad y con fases precalculadas distintas para evitar escalones en el tubo. El cerebro marca los contornos que pertenecen a los surcos y hace viajar destellos claros solo por ellos. El engrane pasa de .15 a .42 rad/s. Diana y globos no cambian.
+
+La frase termina de desaparecer en el 20% del gesto 7; la diana empieza a formarse en el 25% y el marco aparece a partir del 40%. Al regresar se oculta antes de que la frase vuelva a aparecer.
+
+### Verificación de reactivación
+
+Build y git diff --check correctos. Una prueba por tamaño recorrió todas las paradas hasta Canales conectados, contacto y el fondo del footer, y volvió parada por parada hasta Atraer: rueda en 1366×768 y swipe CDP simulado en 390×844, 844×390, 768×1024 y 1024×768. En los cinco casos coincidieron figura seleccionada, figura efectivamente dibujada, contador/tarjeta o palabras visibles; se verificó tinta no vacía y cambio del contenido de píxeles entre figuras diferentes. No hubo discrepancias ni errores de consola, y se guardó una captura por tamaño.
+
+Una pasada adicional en 1366×768 guardó únicamente seis estados finales: Atraer, Acompañar, Crecer, embudo, cerebro y engrane. Una sola medición en página nueva de 390×844 con CPU 4× observó cinco segundos de embudo animado: p95 rAF de 16.8 ms, cero tareas largas. No se repitió la medición ni se midió escritorio. Teclado, barra de scroll, regreso de pestaña y movimiento reducido se cubren en la implementación pero no se agregaron pasadas de prueba fuera del alcance solicitado.

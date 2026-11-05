@@ -84,6 +84,7 @@ export function initMarketingStory() {
     const phraseLine = mapStoryShape(storyShapes.planTransit,lineSpace);
     const entryLine = mapStoryShape(storyShapes.servicesFocus,entrySpace);
     let mappedShapes: StoryShape[] = [];
+    let manifestoCenters = [.5,.5,.5];
     let announced = -1;
     let g = { panel: 1, start: 0, heroEnd: 0, attractEnd: 0, accompanyEnd: 0, growEnd: 0, boostEnd: 0, planEnd: 0, revealEnd: 0, strategyEnd: 0, journeyEnd: 0, intelligenceEnd: 0, automationEnd: 0, channelsEnd: 0, contactEntry: 0, contact: 0, stageHeight: 1 };
     let lenis: Lenis;
@@ -128,6 +129,9 @@ export function initMarketingStory() {
       const space = { cx: (bounds.left - field.left + bounds.width / 2) / field.width, cy: (bounds.top - field.top + bounds.height / 2) / field.height, sx: side / field.width, sy: side / field.height };
       mappedShapes = serviceShapes.map(shape => mapStoryShape(shape,space));
       planParticles.setShapeSize(side);
+      const columns = matchMedia('(min-width: 800px), (max-height: 520px)').matches;
+      const firstTop = documentTop(groups[0]), fieldTop = documentTop(canvas);
+      manifestoCenters = groups.map(group => columns ? Math.max(.34,Math.min(.66,((firstTop + documentTop(group) + group.offsetHeight) / 2 - fieldTop) / Math.max(1,canvas.offsetHeight))) : .5);
     };
     measurePanel(); measureTrack();
 
@@ -184,8 +188,8 @@ export function initMarketingStory() {
       .to(lower, { yPercent: 110, duration: .8, ease: 'power2.inOut' }, HERO_END + 5.05)
       .to(cue, { autoAlpha: 1, duration: .4 }, HERO_END + 5.25)
       .to(planCanvas, { autoAlpha: 1, duration: .15 }, HERO_END + 5.05)
-      .to(frame, { autoAlpha: 1, duration: .4 }, HERO_END + 6.08)
-      .to([upper, lower, cue], { autoAlpha: 0, duration: .3 }, HERO_END + 6.02)
+      .to(frame, { autoAlpha: 1, duration: .3 }, HERO_END + 6.4)
+      .to([upper, lower, cue], { autoAlpha: 0, duration: .18 }, HERO_END + 6.02)
       .to(services, { autoAlpha: 1, duration: .3 }, HERO_END + 6.3)
       .to({}, { duration: 11 }, HERO_END);
     cards.forEach((card, index) => {
@@ -193,8 +197,10 @@ export function initMarketingStory() {
       if (index) master.to(cards[index - 1], { autoAlpha: 0, y: -12, duration: .25 }, start + .05);
       master.to(card, { autoAlpha: 1, y: 0, duration: .45, ease: 'expo.out' }, start + .45);
     });
+    let renderedY = NaN;
     const render = () => {
       const y = window.scrollY;
+      renderedY = y;
       const units = y <= g.heroEnd ? clamp01((y - g.start) / (g.heroEnd - g.start)) * HERO_END : HERO_END + (y - g.heroEnd) / g.panel;
       master.time(Math.max(0, Math.min(HERO_END + 11, units)));
       const localProgress = units - HERO_END;
@@ -208,6 +214,8 @@ export function initMarketingStory() {
       if (canvas.getAttribute('aria-label') !== figureLabels[figureIndex]) canvas.setAttribute('aria-label', figureLabels[figureIndex]);
       const t = clamp01(localProgress < 1 ? (localProgress - .1) / .88 : localProgress < 2 ? localProgress - 1 : localProgress - 2);
       const eased = t * t * (3 - 2 * t);
+      const centerIndex = localProgress < 2 ? 0 : 1;
+      particles.setCenterY(localProgress < 1 ? manifestoCenters[0] : manifestoCenters[centerIndex] + (manifestoCenters[centerIndex + 1] - manifestoCenters[centerIndex]) * eased);
       particles.setMorph(localProgress < 1 ? storyShapes.scatter : localProgress < 2 ? storyShapes.attract : storyShapes.path,
         localProgress < 1 ? storyShapes.attract : localProgress < 2 ? storyShapes.path : storyShapes.growth, eased);
       particles.setActive(!overlayOpen() && localProgress > 0 && localProgress < 3.5);
@@ -220,7 +228,7 @@ export function initMarketingStory() {
         const progress = clamp01((localProgress - 6 - segment - (segment === 0 ? .25 : .08)) / (segment === 0 ? .70 : .82));
         planParticles.setMorph(segment === 0 ? entryLine : mappedShapes[segment - 1], mappedShapes[segment], progress * progress * (3 - 2 * progress));
       }
-      planParticles.setActive(!overlayOpen() && localProgress > 5.05 && localProgress < 12.01);
+      planParticles.setActive(!overlayOpen() && localProgress > 5.05 && localProgress < 12);
       const expansion = clamp01(localProgress - 6);
       const expand = expansion * expansion * (3 - 2 * expansion);
       frame.style.transform = `scale(${.96 + .04 * expand})`;
@@ -325,7 +333,12 @@ export function initMarketingStory() {
     // Update once per position, including free scroll after the pin has ended.
     lenis.on('scroll', () => { ScrollTrigger.update(); render(); });
     // Lenis receives wall-clock milliseconds without changing GSAP's global lag policy.
-    const tick = () => { const now = performance.now(); lenis.raf(now); media.tick(now); particles.tick(now); planParticles.tick(now); };
+    const tick = () => {
+      const now = performance.now(); lenis.raf(now);
+      // Native scrollbar/history jumps need the same projection as Lenis input.
+      if (window.scrollY !== renderedY) { ScrollTrigger.update(); render(); }
+      media.tick(now); particles.tick(now); planParticles.tick(now);
+    };
     gsap.ticker.add(tick);
 
     const onKey = (event: KeyboardEvent) => {
@@ -420,6 +433,7 @@ export function initMarketingStory() {
     window.addEventListener('agsit:viewport-change', scheduleRefresh, { passive: true, signal });
     window.visualViewport?.addEventListener('resize', scheduleRefresh, { passive: true, signal });
     window.addEventListener('pageshow', scheduleRefresh, { signal });
+    document.addEventListener('visibilitychange', () => { if (!document.hidden) { renderedY = NaN; render(); particles.invalidate(); planParticles.invalidate(); } }, { signal });
     void document.fonts.ready.then(() => { if (!signal.aborted) scheduleRefresh(); });
     render();
     return () => {

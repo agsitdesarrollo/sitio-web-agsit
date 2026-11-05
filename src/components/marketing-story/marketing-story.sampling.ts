@@ -25,6 +25,8 @@ export function sampleStoryVector(vector: StoryVector, budget: number, displaySi
     let area = 0; for (let i = 3; i < mask.length; i += 4) if (mask[i] > 127) area++;
     const path = document.createElementNS('http://www.w3.org/2000/svg','path'); path.setAttribute('d',layer.d);
     const length = path.getTotalLength(), contourCount = Math.min(quota,Math.round(quota * (layer.contour ?? .33)));
+    let glintStart = Infinity;
+    if (layer.glintStart) { const prefix = document.createElementNS('http://www.w3.org/2000/svg','path'); prefix.setAttribute('d',layer.glintStart); glintStart = prefix.getTotalLength(); }
     const contour = new Float32Array(contourCount * 2);
     for (let i = 0; i < contourCount; i++) {
       const point = path.getPointAtLength((i + .5) / contourCount * length);
@@ -52,7 +54,9 @@ export function sampleStoryVector(vector: StoryVector, budget: number, displaySi
     }
     for (let i = 0; i < contourCount && offset < budget; i++,offset++) {
       result.rest[offset * 2] = contour[i * 2]; result.rest[offset * 2 + 1] = contour[i * 2 + 1];
-      result.parts[offset] = layer.part; result.edges[offset] = 1; result.phases[offset] = i / Math.max(1,contourCount);
+      result.parts[offset] = layer.part; result.edges[offset] = 1;
+      const arc = (i + .5) / Math.max(1,contourCount) * length;
+      result.phases[offset] = layer.glintStart ? arc >= glintStart ? 1 + (arc - glintStart) / Math.max(1,length - glintStart) : -1 : i / Math.max(1,contourCount);
     }
     // Keep a deterministic reserve for every layer, including small arrow and typing details.
     const reservedEnd = Math.min(budget,Math.floor(budget * vector.layers.slice(0,layerIndex + 1).reduce((total,item) => total + item.weight,0) / weight));

@@ -5,7 +5,7 @@ const fract = (value: number) => value - Math.floor(value);
 export function animateStoryPoints(points: PreparedStoryPoints, time: number, fixed: boolean) {
   if (points.time === time) return;
   points.time = time;
-  const rotation = fixed ? 0 : time * .15, cos = Math.cos(rotation), sin = Math.sin(rotation), cycle = time % 4.8;
+  const rotation = fixed ? 0 : time * .42, cos = Math.cos(rotation), sin = Math.sin(rotation), cycle = time % 4.8;
   for (let i = 0; i < points.parts.length; i++) {
     const baseX = points.rest[i * 2], baseY = points.rest[i * 2 + 1], part = points.parts[i], edge = points.edges[i], phase = points.seeds[i];
     let x = baseX, y = baseY, tone = part === 255 ? -1 : edge ? 2 : 1;
@@ -26,10 +26,10 @@ export function animateStoryPoints(points: PreparedStoryPoints, time: number, fi
         break;
       }
       case 'funnel': {
-        tone = part === 1 ? 2 : edge ? 1 : 0;
+        tone = part === 1 ? phase < .4 ? 3 : 2 : edge ? 1 : 0;
         if (part === 1 && !fixed) {
           const oldHalf = baseY < .65 ? .4 - (baseY - .15) * .68 : .06;
-          y = .15 + fract((baseY - .15) / .78 + time * .19) * .78;
+          y = .15 + fract(phase + time * .42) * .78;
           const half = y < .65 ? .4 - (y - .15) * .68 : .06;
           x = .5 + (baseX - .5) / Math.max(.06,oldHalf) * half;
         }
@@ -37,9 +37,9 @@ export function animateStoryPoints(points: PreparedStoryPoints, time: number, fi
       }
       case 'brain': {
         // Glints follow the empty folds' fixed contour, never a moving white blob.
-        const folded = edge && Math.abs(x - .5) > .07 && Math.abs(x - .5) < .3 && y > .23 && y < .74;
+        const folded = edge && phase >= 1;
         tone = edge ? 2 : 1;
-        if (folded && !fixed) tone = Math.sin(time * 3 - phase * Math.PI * 6) > .7 ? 2 : 1;
+        if (folded && !fixed) tone = Math.sin(time * 5.5 - (phase - 1) * Math.PI * 6) > .55 ? 3 : 1;
         break;
       }
       case 'gear': {
@@ -57,9 +57,9 @@ export function animateStoryPoints(points: PreparedStoryPoints, time: number, fi
       case 'magnet': {
         if (part >= 2) tone = 3;
         if (part === 1 && !fixed) {
-          const pull = Math.min(1,fract(time * .24 + baseY * .7 + baseX) / .78);
-          const eased = pull * pull * (3 - 2 * pull), poleY = baseY < .5 ? .28 : .72;
-          x = baseX + (.205 - baseX) * eased; y = baseY + (poleY - baseY) * eased;
+          const pull = Math.min(1,fract(time * .35 + baseX * .8 + baseY) / .78);
+          const eased = pull * pull * (3 - 2 * pull), poleX = baseX < .5 ? .28 : .72;
+          x = baseX + (poleX - baseX) * eased; y = baseY + (.20 - baseY) * eased;
           tone = pull === 1 ? 3 : 1;
         }
         break;
@@ -67,8 +67,9 @@ export function animateStoryPoints(points: PreparedStoryPoints, time: number, fi
       case 'companions': {
         tone = part > 0 ? 2 : 1;
         if (part > 0 && !fixed) {
-          x = baseX + (fract(time * .16) - .5) * .1;
-          y = baseY + Math.sin(time * 5 + part * .4) * .007;
+          const sway = Math.sin(time * 4.8 + part * .6) * .045, c = Math.cos(sway), s = Math.sin(sway), center = part === 1 ? .31 : .69;
+          x = center + (baseX - center) * c - (baseY - .58) * s + (fract(time * .16) - .5) * .1;
+          y = .58 + (baseX - center) * s + (baseY - .58) * c + Math.sin(time * 4.8 + part * .6) * .022;
         } else if (part === 0 && !fixed) {
           tone = Math.sin(baseX * 10 + time * 2) > 0 ? 1 : 0;
         }
