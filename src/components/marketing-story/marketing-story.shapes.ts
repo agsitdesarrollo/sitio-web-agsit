@@ -1,8 +1,9 @@
+import { sampleCloudPoint, type StoryCloudMotion } from './marketing-story.clouds';
 /** Shared vector artwork for offscreen sampling and the static SVG fallback. Units: 0–1000. */
 export type StoryPoint = { x: number; y: number; part?: number };
-export type StoryMotion = 'magnet' | 'companions' | 'growth' | 'target' | 'funnel' | 'brain' | 'gear' | 'chat' | 'line';
+export type StoryMotion = StoryCloudMotion | 'target' | 'funnel' | 'brain' | 'gear' | 'chat' | 'line';
 export type StorySpace = { cx: number; cy: number; sx: number; sy: number };
-export type StoryVectorLayer = { d: string; part: number; weight: number; mirror?: boolean; rule?: CanvasFillRule; contour?: number; solid?: string; glintStart?: string };
+export type StoryVectorLayer = { d: string; part: number; weight: number; mirror?: boolean; rule?: CanvasFillRule; contour?: number; glintStart?: string };
 export type StoryVector = { layers: StoryVectorLayer[] };
 export type StoryShape = { motion?: StoryMotion; source?: StoryShape; space?: StorySpace; vector?: StoryVector; sample?: (index: number, count: number) => StoryPoint };
 const circle = (x: number, y: number, radius: number) => `M${x + radius} ${y}a${radius} ${radius} 0 1 1 ${-radius * 2} 0a${radius} ${radius} 0 1 1 ${radius * 2} 0Z`;
@@ -46,27 +47,12 @@ const chat: StoryShape = { motion: 'chat', vector: { layers: [
   { d: bubbles + chatDots.map(([x,y]) => circle(x,y,34)).join(''), part: 0, weight: .76, rule: 'evenodd', contour: .38 },
   ...chatDots.map(([x,y],index) => ({ d: circle(x,y,22), part: index + 1, weight: .04, contour: .4 })),
 ] } };
-const magnet: StoryShape = { motion: 'magnet', vector: { layers: [
-  { d: 'M200 340H360V550A140 140 0 0 0 640 550V340H800V550A300 300 0 0 1 200 550Z', part: 0, weight: .76, contour: .38 },
-  { d: 'M200 160H360V340H200Z', part: 2, weight: 0, solid: '#1f6f92' },
-  { d: 'M640 160H800V340H640Z', part: 3, weight: 0, solid: '#1f6f92' },
-  { d: 'M80 20H920V120H80Z', part: 1, weight: .24, contour: 0 },
-] } };
-const companions: StoryShape = { motion: 'companions', vector: { layers: [
-  { d: 'M90 790C310 730 690 850 910 790L910 820C690 880 310 760 90 820Z', part: 0, weight: .24, contour: .18 },
-  { d: circle(310,265,85) + 'M130 700V575C130 385 490 385 490 575V700Z', part: 1, weight: .38, contour: .38 },
-  { d: circle(690,265,85) + 'M510 700V575C510 385 870 385 870 575V700Z', part: 2, weight: .38, contour: .38 },
-] } };
-const growth: StoryShape = { motion: 'growth', vector: { layers: [
-  { d: 'M160 600H320V870H160Z', part: 1, weight: .24, contour: .34 },
-  { d: 'M410 430H570V870H410Z', part: 2, weight: .33, contour: .34 },
-  { d: 'M660 260H820V870H660Z', part: 3, weight: .43, contour: .34 },
-  { d: polygon([[181,543],[219,597],[814,193],[776,139]]) + polygon([[900,90],[712,124],[822,285]]), part: 4, weight: 0, solid: '#253f6c' },
-] } };
 const horizontalLine = (): StoryShape => ({ motion: 'line', sample: index => ({ x: .08 + (index % 48) / 47 * .84, y: .5, part: index < 48 ? 0 : 255 }) });
 export const storyShapes = {
   scatter: { sample: (index: number) => ({ x: .08 + (index % 16) / 15 * .84, y: .08 + (Math.floor(index / 16) % 16) / 15 * .84 }) } as StoryShape,
-  attract: magnet, path: companions, growth,
+  attract: { motion: 'attractCloud', sample: (i: number,n: number) => sampleCloudPoint('attractCloud',i,n) } as StoryShape,
+  path: { motion: 'guideCloud', sample: (i: number,n: number) => sampleCloudPoint('guideCloud',i,n) } as StoryShape,
+  growth: { motion: 'riseCloud', sample: (i: number,n: number) => sampleCloudPoint('riseCloud',i,n) } as StoryShape,
   planTransit: horizontalLine(), servicesFocus: horizontalLine(),
 };
 export const serviceShapes: readonly StoryShape[] = [target,funnel,brain,gear,chat];

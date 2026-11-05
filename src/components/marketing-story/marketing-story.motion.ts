@@ -1,10 +1,16 @@
+import { cloudParameters, isCloudMotion, writeCloudPoint } from './marketing-story.clouds';
 import type { StoryMotion } from './marketing-story.shapes';
-export type PreparedStoryPoints = { rest: Float32Array; parts: Uint8Array; edges: Uint8Array; seeds: Float32Array; output: Float32Array; motion?: StoryMotion; time: number };
+export type PreparedStoryPoints = { rest: Float32Array; parts: Uint8Array; edges: Uint8Array; seeds: Float32Array; output: Float32Array; motion?: StoryMotion; time: number; cloud?: Float32Array };
 const fract = (value: number) => value - Math.floor(value);
 /** Uniform visible radius; only rigid elements, flow particles and subtle brightness animate. */
 export function animateStoryPoints(points: PreparedStoryPoints, time: number, fixed: boolean) {
   if (points.time === time) return;
   points.time = time;
+  if (isCloudMotion(points.motion)) {
+    const params = points.cloud ||= cloudParameters(points.parts.length);
+    for (let i = 0; i < points.parts.length; i++) writeCloudPoint(points.motion,i,points.parts.length,time,fixed,params,points.output,i * 4);
+    return;
+  }
   const rotation = fixed ? 0 : time * .42, cos = Math.cos(rotation), sin = Math.sin(rotation), cycle = time % 4.8;
   for (let i = 0; i < points.parts.length; i++) {
     const baseX = points.rest[i * 2], baseY = points.rest[i * 2 + 1], part = points.parts[i], edge = points.edges[i], phase = points.seeds[i];
@@ -52,40 +58,6 @@ export function animateStoryPoints(points: PreparedStoryPoints, time: number, fi
           const bubble = part <= 3 ? 0 : 1, dot = (part - 1) % 3;
           tone = fixed || (Math.floor(time / 2.4) % 2 === bubble && Math.sin(time * 4 - dot * 1.1) > .1) ? 2 : 0;
         } else tone = edge ? 2 : 0;
-        break;
-      }
-      case 'magnet': {
-        if (part >= 2) tone = 3;
-        if (part === 1 && !fixed) {
-          const pull = Math.min(1,fract(time * .35 + baseX * .8 + baseY) / .78);
-          const eased = pull * pull * (3 - 2 * pull), poleX = baseX < .5 ? .28 : .72;
-          x = baseX + (poleX - baseX) * eased; y = baseY + (.20 - baseY) * eased;
-          tone = pull === 1 ? 3 : 1;
-        }
-        break;
-      }
-      case 'companions': {
-        tone = part > 0 ? 2 : 1;
-        if (part > 0 && !fixed) {
-          const sway = Math.sin(time * 4.8 + part * .6) * .045, c = Math.cos(sway), s = Math.sin(sway), center = part === 1 ? .31 : .69;
-          x = center + (baseX - center) * c - (baseY - .58) * s + (fract(time * .16) - .5) * .1;
-          y = .58 + (baseX - center) * s + (baseY - .58) * c + Math.sin(time * 4.8 + part * .6) * .022;
-        } else if (part === 0 && !fixed) {
-          tone = Math.sin(baseX * 10 + time * 2) > 0 ? 1 : 0;
-        }
-        break;
-      }
-      case 'growth': {
-        const beat = time % 5.6;
-        if (part >= 1 && part <= 3 && !fixed) {
-          const growing = Math.max(0,Math.min(1,(beat - (part - 1) * .55) / .65));
-          const reset = Math.max(0,Math.min(1,(beat - 4.6) / 1));
-          y = .87 + (y - .87) * (.55 + .45 * growing * (1 - reset));
-        } else if (part === 4) {
-          const traced = fixed ? 1 : Math.max(0,Math.min(1,(beat - 1.9) / .85)) * (1 - Math.max(0,Math.min(1,(beat - 4.6) / 1)));
-          const along = ((baseX - .11) * .79 + (.51 - baseY) * .41) / (.79 * .79 + .41 * .41);
-          tone = along <= traced ? 2 : 0;
-        }
         break;
       }
       case 'line': {

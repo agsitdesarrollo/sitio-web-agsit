@@ -37,10 +37,7 @@ export function initMarketingStory() {
     const planCanvas = page.querySelector<HTMLCanvasElement>('[data-plan-particles]')!;
     if (context.conditions?.reduced || connection?.saveData) {
       page.dataset.motion = 'static';
-      canvas.setAttribute('aria-label', (JSON.parse(canvas.dataset.figureLabels || '[]') as string[])[2] || '');
-      const particles = createStoryParticles(canvas, { static: true, initial: storyShapes.growth });
-      const planParticles = createStoryParticles(planCanvas, { static: true, initial: storyShapes.servicesFocus, colors: ['#8be2ff', '#41c8f6'], scene: 'services' });
-      return () => { particles.dispose(); planParticles.dispose(); delete page.dataset.motion; };
+      return () => { delete page.dataset.motion; };
     }
     const track = page.querySelector<HTMLElement>('[data-journey-track]')!;
     const stage = page.querySelector<HTMLElement>('[data-journey-stage]')!;
@@ -131,7 +128,7 @@ export function initMarketingStory() {
       planParticles.setShapeSize(side);
       const columns = matchMedia('(min-width: 800px), (max-height: 520px)').matches;
       const firstTop = documentTop(groups[0]), fieldTop = documentTop(canvas);
-      manifestoCenters = groups.map(group => columns ? Math.max(.34,Math.min(.66,((firstTop + documentTop(group) + group.offsetHeight) / 2 - fieldTop) / Math.max(1,canvas.offsetHeight))) : .5);
+      manifestoCenters = groups.map(group => columns ? Math.max(.4,Math.min(.6,((firstTop + documentTop(group) + group.offsetHeight) / 2 - fieldTop) / Math.max(1,canvas.offsetHeight))) : .5);
     };
     measurePanel(); measureTrack();
 

@@ -1,9 +1,10 @@
 ---
 import type { MarketingStoryContent } from '../../types/marketingStory.types';
-import { storyShapes } from './marketing-story.shapes';
-import StoryPointFallback from './StoryPointFallback.astro';
+import StoryCloudFallback from './StoryCloudFallback.astro';
+import type { StoryCloudMotion } from './marketing-story.clouds';
 type Props = { content: MarketingStoryContent['manifesto'] };
 const { content } = Astro.props;
+const modes: StoryCloudMotion[] = ['attractCloud','guideCloud','riseCloud'];
 ---
 <section class="ms-manifesto ms-light" id="ms-manifesto" tabindex="-1" aria-labelledby="ms-manifesto-title">
   <div class="ms-shell ms-manifesto-inner">
@@ -11,12 +12,11 @@ const { content } = Astro.props;
       <div class="ms-manifesto-message">
         <p class="ms-manifesto-eyebrow" id="ms-manifesto-title">{content.eyebrow}</p>
         <div class="ms-manifesto-words">
-          {content.words.map((word, index) => <div class="ms-manifesto-group" data-manifesto-group><h2 data-manifesto-word>{word}</h2><p>{content.lines[index]}</p></div>)}
+          {content.words.map((word, index) => <div class="ms-manifesto-group" data-manifesto-group><h2 data-manifesto-word>{word}</h2><p>{content.lines[index]}</p><StoryCloudFallback mode={modes[index]} /></div>)}
         </div>
       </div>
       <div class="ms-manifesto-figure">
         <canvas data-story-particles data-figure-labels={JSON.stringify(content.figureLabels)} role="img" aria-label={content.figureLabels[2]}></canvas>
-        <StoryPointFallback shape={storyShapes.growth} id="ms-manifesto-static" class="ms-particle-fallback" />
       </div>
     </div>
     <div class="ms-manifesto-diagram">

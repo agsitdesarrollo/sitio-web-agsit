@@ -1,0 +1,9 @@
+---
+import { staticCloudPaths, type StoryCloudMotion } from './marketing-story.clouds';
+type Props = { mode: StoryCloudMotion };
+const { mode } = Astro.props;
+const paths = staticCloudPaths(mode);
+---
+<svg class="ms-cloud-word-static" viewBox="0 0 1000 1000" aria-hidden="true">
+  {paths.map((d,index) => <path d={d} fill={index > 5 ? '#1f6f92' : '#253f6c'} opacity={(index + 1) / 8} />)}
+</svg>
