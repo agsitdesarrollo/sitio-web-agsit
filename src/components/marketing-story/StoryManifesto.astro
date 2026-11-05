@@ -1,7 +1,6 @@
 ---
 import type { MarketingStoryContent } from '../../types/marketingStory.types';
-import { storyShapes } from './marketing-story.shapes';
-import StoryPointFallback from './StoryPointFallback.astro';
+import StoryManifestoScenes from './StoryManifestoScenes.astro';
 type Props = { content: MarketingStoryContent['manifesto'] };
 const { content } = Astro.props;
 ---
@@ -14,10 +13,7 @@ const { content } = Astro.props;
           {content.words.map((word, index) => <div class="ms-manifesto-group" data-manifesto-group><h2 data-manifesto-word>{word}</h2><p>{content.lines[index]}</p></div>)}
         </div>
       </div>
-      <div class="ms-manifesto-figure">
-        <canvas data-story-particles data-figure-labels={JSON.stringify(content.figureLabels)} role="img" aria-label={content.figureLabels[2]}></canvas>
-        <StoryPointFallback shape={storyShapes.growth} id="ms-manifesto-static" class="ms-particle-fallback" />
-      </div>
+      <div class="ms-manifesto-figure"><StoryManifestoScenes copy={content.scenes} /></div>
     </div>
     <div class="ms-manifesto-diagram">
       <div class="ms-rule" data-manifesto-rule aria-hidden="true"><i data-manifesto-thread></i>{[0, 1, 2].map(index => <b style={`--ms-node: ${(index + 1) / 3}`}><span data-manifesto-node></span></b>)}</div>

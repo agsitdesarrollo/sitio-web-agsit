@@ -1,8 +1,8 @@
-import { storyShapes, serviceShapes, type StoryShape, type StoryVectorLayer } from './marketing-story.shapes';
+import { storyShapes, serviceShapes, type StoryShape } from './marketing-story.shapes';
 import { animateStoryPoints, type PreparedStoryPoints } from './marketing-story.motion';
 import { sampleStoryVector } from './marketing-story.sampling';
 
-type Options = { static?: boolean; initial?: StoryShape; colors?: readonly [string, string]; scene?: 'manifesto' | 'services' };
+type Options = { static?: boolean; initial?: StoryShape; colors?: readonly [string, string]; scene?: 'services' };
 export const SERVICE_PHONE_POINTS = 450;
 /** One canvas per scene, driven exclusively by the existing family ticker. */
 export function createStoryParticles(canvas: HTMLCanvasElement, options: Options = {}) {
@@ -17,8 +17,6 @@ export function createStoryParticles(canvas: HTMLCanvasElement, options: Options
   let count = 0, rendered = new Float32Array(0), drift = new Float32Array(0);
   let cachedRatio = 0, cachedWidth = 0, cachedHeight = 0;
   let shapeSize = 0;
-  let centerY = .5;
-  const solidPaths = new Map<StoryVectorLayer,Path2D>();
   const cache = new Map<StoryShape, PreparedStoryPoints>();
   const prepare = (shape: StoryShape) => {
     const source = shape.source || shape;
@@ -26,7 +24,6 @@ export function createStoryParticles(canvas: HTMLCanvasElement, options: Options
     if (!points) {
       const sampled = source.vector ? sampleStoryVector(source.vector,count,Math.max(1,shapeSize)) : null;
       points = { rest: sampled?.rest || new Float32Array(count * 2), parts: sampled?.parts || new Uint8Array(count), edges: sampled?.edges || new Uint8Array(count), seeds: sampled ? source.motion === 'funnel' ? new Float32Array(sampled.phases) : sampled.phases : new Float32Array(count), output: new Float32Array(count * 4), motion: source.motion, time: -1 };
-      for (const layer of source.vector?.layers || []) if (layer.solid && !solidPaths.has(layer)) solidPaths.set(layer,new Path2D(layer.d));
       for (let i = 0; i < count; i++) {
         if (!sampled) {
           const point = source.sample!(i,count);
@@ -46,23 +43,9 @@ export function createStoryParticles(canvas: HTMLCanvasElement, options: Options
     if (shapeSize) warm();
     canvas.dataset.particleCount = String(count); dirty = true;
   };
-  function warm() { for (const shape of services ? [...serviceShapes,storyShapes.planTransit,storyShapes.servicesFocus,storyShapes.scatter] : [storyShapes.scatter,storyShapes.attract,storyShapes.path,storyShapes.growth]) prepare(shape); }
+  function warm() { for (const shape of services ? [...serviceShapes,storyShapes.planTransit,storyShapes.servicesFocus,storyShapes.scatter] : [storyShapes.scatter]) prepare(shape); }
   const setShapeSize = (value: number) => { const size = Math.max(1,Math.round(value)); if (shapeSize === size) return; shapeSize = size; cache.clear(); warm(); dirty = true; };
   allocate();
-    const paintSolid = (shape: StoryShape, alpha: number, cx: number, cy: number, sx: number, sy: number, ratio: number) => {
-      if (!ctx || alpha <= 0) return;
-      for (const layer of (shape.source || shape).vector?.layers || []) {
-        if (!layer.solid) continue;
-        ctx.save(); ctx.setTransform(ratio * sx / 1000,0,0,ratio * sy / 1000,ratio * (cx - sx / 2),ratio * (cy - sy / 2));
-        ctx.globalAlpha = alpha; ctx.fillStyle = layer.solid;
-        if (shape.motion === 'growth' && !options.static) {
-          const beat = clock % 5.6, trace = Math.max(0,Math.min(1,(beat - 1.9) / .85)) * (1 - Math.max(0,Math.min(1,beat - 4.6)));
-          if (trace <= 0) { ctx.restore(); continue; }
-          ctx.beginPath(); ctx.rect(0,0,180 + 730 * trace,1000); ctx.clip();
-        }
-        ctx.fill(solidPaths.get(layer)!,layer.rule || 'nonzero'); ctx.restore();
-      }
-    };
   const tick = (now = performance.now()) => {
     // In enhanced mode the driver owns visibility, including re-entry into the pin.
     // IntersectionObserver is only authoritative for the free-flow static fallback.
@@ -82,9 +65,9 @@ export function createStoryParticles(canvas: HTMLCanvasElement, options: Options
     animateStoryPoints(a,time,!!options.static); if (b !== a) animateStoryPoints(b,time,!!options.static);
     const af = from.space, bf = to.space;
     const side = Math.min(width,height) * .96;
-    const acx = af ? af.cx * width : width / 2, acy = af ? af.cy * height : height * centerY;
+    const acx = af ? af.cx * width : width / 2, acy = af ? af.cy * height : height / 2;
     const asx = af ? af.sx * width : services ? width : side, asy = af ? af.sy * height : services ? height : side;
-    const bcx = bf ? bf.cx * width : width / 2, bcy = bf ? bf.cy * height : height * centerY;
+    const bcx = bf ? bf.cx * width : width / 2, bcy = bf ? bf.cy * height : height / 2;
     const bsx = bf ? bf.sx * width : services ? width : side, bsy = bf ? bf.sy * height : services ? height : side;
     const burst = Math.sin(progress * Math.PI) * Math.min(width,height) * .025;
     const radius = services ? compact.matches ? 1.8 : 2.15 : 2.3;
@@ -108,7 +91,6 @@ export function createStoryParticles(canvas: HTMLCanvasElement, options: Options
       }
       ctx.fill();
     }
-    paintSolid(from,1 - progress,acx,acy,asx,asy,ratio); paintSolid(to,progress,bcx,bcy,bsx,bsy,ratio);
     canvas.dataset.particlesReady ||= 'true'; dirty = false; lastDraw = now;
     const painted = (progress >= .5 ? to.motion : from.motion) || 'scatter';
     if (canvas.dataset.paintedFigure !== painted) canvas.dataset.paintedFigure = painted;
@@ -127,7 +109,6 @@ export function createStoryParticles(canvas: HTMLCanvasElement, options: Options
   document.addEventListener('visibilitychange',() => { lastTick = 0; dirty = true; if (options.static) tick(); },{ signal: lifetime.signal });
   return {
     tick, invalidate: redraw, setShapeSize,
-    setCenterY(value: number) { if (centerY !== value) { centerY = value; dirty = true; } },
     setActive(value: boolean) { if (active !== value) { active = value; lastTick = 0; dirty = true; } },
     setMorph(nextFrom: StoryShape, nextTo: StoryShape, value: number) {
       const next = Math.max(0,Math.min(1,value));
@@ -136,6 +117,6 @@ export function createStoryParticles(canvas: HTMLCanvasElement, options: Options
       const motion = (next >= .5 ? to.motion : from.motion) || 'scatter';
       if (canvas.dataset.particleFigure !== motion) canvas.dataset.particleFigure = motion;
     },
-    dispose() { active = false; lifetime.abort(); sizes.disconnect(); visibility.disconnect(); cache.clear(); solidPaths.clear(); canvas.width = canvas.height = 0; delete canvas.dataset.particlesReady; delete canvas.dataset.particleCount; delete canvas.dataset.particleFigure; delete canvas.dataset.paintedFigure; delete (canvas as HTMLCanvasElement & { storyPaintCount?: number }).storyPaintCount; delete canvas.dataset.arrowState; },
+    dispose() { active = false; lifetime.abort(); sizes.disconnect(); visibility.disconnect(); cache.clear(); canvas.width = canvas.height = 0; delete canvas.dataset.particlesReady; delete canvas.dataset.particleCount; delete canvas.dataset.particleFigure; delete canvas.dataset.paintedFigure; delete (canvas as HTMLCanvasElement & { storyPaintCount?: number }).storyPaintCount; delete canvas.dataset.arrowState; },
   };
 }

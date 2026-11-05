@@ -3,6 +3,7 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import Lenis from 'lenis';
 import { createStoryVideo } from './marketing-story.video';
 import { createStoryParticles } from './marketing-story.particles';
+import { createManifestoScenes, type SceneIndex } from './marketing-story.scenes';
 import { storyShapes, serviceShapes, mapStoryShape, type StoryShape } from './marketing-story.shapes';
 
 gsap.registerPlugin(ScrollTrigger);
@@ -33,14 +34,11 @@ export function initMarketingStory() {
   const connection = (navigator as Navigator & { connection?: Connection }).connection;
   const modes = gsap.matchMedia();
   modes.add({ motion: '(prefers-reduced-motion: no-preference)', reduced: '(prefers-reduced-motion: reduce)' }, context => {
-    const canvas = page.querySelector<HTMLCanvasElement>('[data-story-particles]')!;
     const planCanvas = page.querySelector<HTMLCanvasElement>('[data-plan-particles]')!;
     if (context.conditions?.reduced || connection?.saveData) {
       page.dataset.motion = 'static';
-      canvas.setAttribute('aria-label', (JSON.parse(canvas.dataset.figureLabels || '[]') as string[])[2] || '');
-      const particles = createStoryParticles(canvas, { static: true, initial: storyShapes.growth });
       const planParticles = createStoryParticles(planCanvas, { static: true, initial: storyShapes.servicesFocus, colors: ['#8be2ff', '#41c8f6'], scene: 'services' });
-      return () => { particles.dispose(); planParticles.dispose(); delete page.dataset.motion; };
+      return () => { planParticles.dispose(); delete page.dataset.motion; };
     }
     const track = page.querySelector<HTMLElement>('[data-journey-track]')!;
     const stage = page.querySelector<HTMLElement>('[data-journey-stage]')!;
@@ -71,20 +69,19 @@ export function initMarketingStory() {
     const groups = [...manifesto.querySelectorAll<HTMLElement>('[data-manifesto-group]')];
     const nodes = [...manifesto.querySelectorAll<HTMLElement>('[data-manifesto-node]')];
     const splitWords = [...split.querySelectorAll<HTMLElement>('.ms-split-panel span')];
-    const figureLabels = JSON.parse(canvas.dataset.figureLabels || '[]') as string[];
+    const sceneStage = manifesto.querySelector<HTMLElement>('[data-scenes]')!;
     const thread = manifesto.querySelector<HTMLElement>('[data-manifesto-thread]')!;
     const local = new AbortController();
     const { signal } = local;
     page.dataset.motion = 'enhanced';
     const media = createStoryVideo(hero, signal);
-    const particles = createStoryParticles(canvas);
+    const scenes = createManifestoScenes(sceneStage);
     const planParticles = createStoryParticles(planCanvas, { colors: ['#8be2ff', '#41c8f6'], scene: 'services' });
     const lineSpace = { cx: .5, cy: .5, sx: 1, sy: 1 };
     const entrySpace = { ...lineSpace };
     const phraseLine = mapStoryShape(storyShapes.planTransit,lineSpace);
     const entryLine = mapStoryShape(storyShapes.servicesFocus,entrySpace);
     let mappedShapes: StoryShape[] = [];
-    let manifestoCenters = [.5,.5,.5];
     let announced = -1;
     let g = { panel: 1, start: 0, heroEnd: 0, attractEnd: 0, accompanyEnd: 0, growEnd: 0, boostEnd: 0, planEnd: 0, revealEnd: 0, strategyEnd: 0, journeyEnd: 0, intelligenceEnd: 0, automationEnd: 0, channelsEnd: 0, contactEntry: 0, contact: 0, stageHeight: 1 };
     let lenis: Lenis;
@@ -129,9 +126,6 @@ export function initMarketingStory() {
       const space = { cx: (bounds.left - field.left + bounds.width / 2) / field.width, cy: (bounds.top - field.top + bounds.height / 2) / field.height, sx: side / field.width, sy: side / field.height };
       mappedShapes = serviceShapes.map(shape => mapStoryShape(shape,space));
       planParticles.setShapeSize(side);
-      const columns = matchMedia('(min-width: 800px), (max-height: 520px)').matches;
-      const firstTop = documentTop(groups[0]), fieldTop = documentTop(canvas);
-      manifestoCenters = groups.map(group => columns ? Math.max(.34,Math.min(.66,((firstTop + documentTop(group) + group.offsetHeight) / 2 - fieldTop) / Math.max(1,canvas.offsetHeight))) : .5);
     };
     measurePanel(); measureTrack();
 
@@ -210,15 +204,10 @@ export function initMarketingStory() {
       if (page.dataset.scrollStage !== mode) page.dataset.scrollStage = mode;
       const entryValue = clamp01(localProgress / .68).toFixed(4);
       if (page.dataset.entryProgress !== entryValue) page.dataset.entryProgress = entryValue;
-      const figureIndex = localProgress < 1.5 ? 0 : localProgress < 2.5 ? 1 : 2;
-      if (canvas.getAttribute('aria-label') !== figureLabels[figureIndex]) canvas.setAttribute('aria-label', figureLabels[figureIndex]);
-      const t = clamp01(localProgress < 1 ? (localProgress - .1) / .88 : localProgress < 2 ? localProgress - 1 : localProgress - 2);
-      const eased = t * t * (3 - 2 * t);
-      const centerIndex = localProgress < 2 ? 0 : 1;
-      particles.setCenterY(localProgress < 1 ? manifestoCenters[0] : manifestoCenters[centerIndex] + (manifestoCenters[centerIndex + 1] - manifestoCenters[centerIndex]) * eased);
-      particles.setMorph(localProgress < 1 ? storyShapes.scatter : localProgress < 2 ? storyShapes.attract : storyShapes.path,
-        localProgress < 1 ? storyShapes.attract : localProgress < 2 ? storyShapes.path : storyShapes.growth, eased);
-      particles.setActive(!overlayOpen() && localProgress > 0 && localProgress < 3.5);
+      // The scene is a pure function of the position: the entry slide must finish first, and the
+      // thresholds sit mid-way through each word's reveal so jumps and returns land on the right one.
+      const sceneIndex: SceneIndex = localProgress < .68 ? -1 : localProgress < 1.4 ? 0 : localProgress < 2.4 ? 1 : localProgress < 3.45 ? 2 : 3;
+      scenes.update(sceneIndex, !overlayOpen() && !document.hidden);
       const planProgress = clamp01((localProgress - 5.12) / .83);
       if (localProgress <= 6) planParticles.setMorph(phraseLine, phraseLine, planProgress * planProgress * (3 - 2 * planProgress));
       else {
@@ -337,7 +326,7 @@ export function initMarketingStory() {
       const now = performance.now(); lenis.raf(now);
       // Native scrollbar/history jumps need the same projection as Lenis input.
       if (window.scrollY !== renderedY) { ScrollTrigger.update(); render(); }
-      media.tick(now); particles.tick(now); planParticles.tick(now);
+      media.tick(now); planParticles.tick(now);
     };
     gsap.ticker.add(tick);
 
@@ -400,7 +389,6 @@ export function initMarketingStory() {
       measurePanel();
       trigger.refresh();
       measureTrack();
-      particles.invalidate();
       planParticles.invalidate();
       lenis.resize();
       const next = settled ? g[settled] : !reading ? g.start + units * g.panel : pastContact ? g.contact + y - old.contact : g.channelsEnd + readingRatio * (g.contact - g.channelsEnd);
@@ -433,14 +421,14 @@ export function initMarketingStory() {
     window.addEventListener('agsit:viewport-change', scheduleRefresh, { passive: true, signal });
     window.visualViewport?.addEventListener('resize', scheduleRefresh, { passive: true, signal });
     window.addEventListener('pageshow', scheduleRefresh, { signal });
-    document.addEventListener('visibilitychange', () => { if (!document.hidden) { renderedY = NaN; render(); particles.invalidate(); planParticles.invalidate(); } }, { signal });
+    document.addEventListener('visibilitychange', () => { renderedY = NaN; render(); if (!document.hidden) planParticles.invalidate(); }, { signal });
     void document.fonts.ready.then(() => { if (!signal.aborted) scheduleRefresh(); });
     render();
     return () => {
       disposed = true; local.abort();
       window.clearTimeout(wheelTimer); window.clearTimeout(refreshTimer);
       overlayObserver.disconnect(); navSize.disconnect();
-      gsap.ticker.remove(tick); lenis.destroy(); media.dispose(); particles.dispose(); planParticles.dispose();
+      gsap.ticker.remove(tick); lenis.destroy(); media.dispose(); scenes.dispose(); planParticles.dispose();
       hero.inert = false; claim.inert = false; controls.inert = false; manifesto.inert = false;
       plan.inert = false; split.inert = false; split.classList.remove('is-open');
       services.inert = false; cards.forEach(card => { card.inert = false; });

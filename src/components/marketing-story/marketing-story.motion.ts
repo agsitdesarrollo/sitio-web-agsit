@@ -54,40 +54,6 @@ export function animateStoryPoints(points: PreparedStoryPoints, time: number, fi
         } else tone = edge ? 2 : 0;
         break;
       }
-      case 'magnet': {
-        if (part >= 2) tone = 3;
-        if (part === 1 && !fixed) {
-          const pull = Math.min(1,fract(time * .35 + baseX * .8 + baseY) / .78);
-          const eased = pull * pull * (3 - 2 * pull), poleX = baseX < .5 ? .28 : .72;
-          x = baseX + (poleX - baseX) * eased; y = baseY + (.20 - baseY) * eased;
-          tone = pull === 1 ? 3 : 1;
-        }
-        break;
-      }
-      case 'companions': {
-        tone = part > 0 ? 2 : 1;
-        if (part > 0 && !fixed) {
-          const sway = Math.sin(time * 4.8 + part * .6) * .045, c = Math.cos(sway), s = Math.sin(sway), center = part === 1 ? .31 : .69;
-          x = center + (baseX - center) * c - (baseY - .58) * s + (fract(time * .16) - .5) * .1;
-          y = .58 + (baseX - center) * s + (baseY - .58) * c + Math.sin(time * 4.8 + part * .6) * .022;
-        } else if (part === 0 && !fixed) {
-          tone = Math.sin(baseX * 10 + time * 2) > 0 ? 1 : 0;
-        }
-        break;
-      }
-      case 'growth': {
-        const beat = time % 5.6;
-        if (part >= 1 && part <= 3 && !fixed) {
-          const growing = Math.max(0,Math.min(1,(beat - (part - 1) * .55) / .65));
-          const reset = Math.max(0,Math.min(1,(beat - 4.6) / 1));
-          y = .87 + (y - .87) * (.55 + .45 * growing * (1 - reset));
-        } else if (part === 4) {
-          const traced = fixed ? 1 : Math.max(0,Math.min(1,(beat - 1.9) / .85)) * (1 - Math.max(0,Math.min(1,(beat - 4.6) / 1)));
-          const along = ((baseX - .11) * .79 + (.51 - baseY) * .41) / (.79 * .79 + .41 * .41);
-          tone = along <= traced ? 2 : 0;
-        }
-        break;
-      }
       case 'line': {
         tone = fixed || Math.sin(time * 2 - baseX * 8) > 0 ? 2 : 1; break;
       }

@@ -9,10 +9,10 @@ El antetítulo y la cuadrícula tenue de puntos son peticiones explícitas del u
 | Tramo / gesto | Estado final | Figura |
 |---|---|---|
 | Scroll continuo del hero | Promesa original completa, con opacidad 1 y sin otra palabra encima | Video original |
-| 1 | Manifiesto entra de derecha a izquierda; cuando cubre la pantalla, suben Atraer. / Attract. y su línea | Imán con puntos atraídos continuamente |
-| 2 | Se añaden Acompañar. / Support. y su línea | Dos puntos avanzan juntos por un camino |
-| 3 | Se añaden Crecer. / Grow. y su línea | Barras que oscilan y flecha ascendente |
-| 4 | IMPULSA. / BOOST. completa sobre el manifiesto | La figura queda cubierta y pausada |
+| 1 | Manifiesto entra de derecha a izquierda; cuando cubre la pantalla, suben Atraer. / Attract. y su línea | Escena de publicación con visitantes que llegan |
+| 2 | Se añaden Acompañar. / Support. y su línea | Escena de seguimiento con línea de tiempo |
+| 3 | Se añaden Crecer. / Grow. y su línea | Escena de panel de ventas con gráfica |
+| 4 | IMPULSA. / BOOST. completa sobre el manifiesto | La escena queda cubierta y pausada |
 | 5 | IMPULSA. / BOOST. abre su cortina hacia los lados mientras las letras de CRECER CON PLAN / GROW WITH A PLAN suben una por una | Puntos todavía ocultos |
 | 6 | La mitad superior de la frase sube y la inferior baja; aparece [ASÍ LO HACEMOS] / [HOW WE DO IT] | Una columna de puntos desciende por el hueco central; no aparece ningún marco |
 | 7 | Aparece el marco de servicios casi a pantalla completa; desde la columna se arma la diana; tarjeta 1 / 5 | Anillos rellenos, flecha que llega al centro y ondas |
@@ -42,7 +42,7 @@ La entrada horizontal ocupa el primer 68% del gesto 1. El primer mensaje sube de
 
 ## Canvas reutilizable
 
-- `marketing-story.shapes.ts`: geometrías normalizadas puras scatter, attract, path, growth, planTransit (recorrido por el hueco) y servicesFocus (concentración en el marco). `StoryShape` permite agregar figuras; `sampledStoryShape()` permite usar puntos muestreados de servicios o del símbolo de AGSIT en los commits posteriores.
+- `marketing-story.shapes.ts`: geometrías normalizadas puras scatter, planTransit (recorrido por el hueco) y servicesFocus (concentración en el marco). `StoryShape` permite agregar figuras; `sampledStoryShape()` permite usar puntos muestreados de servicios o del símbolo de AGSIT en los commits posteriores.
 - `marketing-story.particles.ts`: renderer 2D sin RAF, ticker ni bucle físico propio. `setMorph(from,to,progress)` selecciona una interpolación reversible; `setActive()` pausa escenas cubiertas; `tick(now)` dibuja los ciclos mientras están visibles y la pestaña está activa; pausa por completo fuera de vista o con el drawer abierto. `invalidate()` solicita una actualización de tamaño y `dispose()` libera observadores, cachés y backing store.
 - Servicios: máximo 450 puntos en teléfono y 1,200 en escritorio; manifiesto: 240. DPR máximo 1 en teléfono y 1.5 en escritorio; ciclos a aproximadamente 30 / 60 cuadros por segundo. Las siluetas y sus destinos se precalculan una vez en arreglos tipados; el tamaño del viewport solo cambia su transformación afín.
 - ResizeObserver e IntersectionObserver actualizan geometría y visibilidad; se respeta document.hidden. La figura final tiene respaldo SVG estático si no hay canvas o JavaScript. No se añade ninguna dependencia.
@@ -141,3 +141,11 @@ La frase termina de desaparecer en el 20% del gesto 7; la diana empieza a formar
 Build y git diff --check correctos. Una prueba por tamaño recorrió todas las paradas hasta Canales conectados, contacto y el fondo del footer, y volvió parada por parada hasta Atraer: rueda en 1366×768 y swipe CDP simulado en 390×844, 844×390, 768×1024 y 1024×768. En los cinco casos coincidieron figura seleccionada, figura efectivamente dibujada, contador/tarjeta o palabras visibles; se verificó tinta no vacía y cambio del contenido de píxeles entre figuras diferentes. No hubo discrepancias ni errores de consola, y se guardó una captura por tamaño.
 
 Una pasada adicional en 1366×768 guardó únicamente seis estados finales: Atraer, Acompañar, Crecer, embudo, cerebro y engrane. Una sola medición en página nueva de 390×844 con CPU 4× observó cinco segundos de embudo animado: p95 rAF de 16.8 ms, cero tareas largas. No se repitió la medición ni se midió escritorio. Teclado, barra de scroll, regreso de pestaña y movimiento reducido se cubren en la implementación pero no se agregaron pasadas de prueba fuera del alcance solicitado.
+
+## Escenas de interfaz del manifiesto
+
+Las figuras de partículas del manifiesto se reemplazan por tres escenas de interfaz en HTML y SVG (`StoryManifestoScenes.astro`, `marketing-story.scenes.css`, `marketing-story.scenes.ts`): Atraer (publicación del negocio y visitantes que llegan, con barra de alcance), Acompañar (línea de tiempo de seguimiento con palomitas trazadas) y Crecer (panel de ventas con gráfica de línea y barra de clientes que regresan). Las partículas en canvas quedan solo en la frase partida, los servicios y el cierre; se eliminó el canvas del manifiesto y las figuras, estados y trazados sólidos que solo él usaba. Los textos ES/EN viven en `manifesto.scenes` de los datos de Marketing Story.
+
+La escena visible se deriva siempre de la posición del scroll (`render()` del controlador): ninguna antes de que termine la entrada horizontal (progreso local < 0.68), la de Atraer hasta 1.4, Acompañar hasta 2.4, Crecer hasta 3.45 y ninguna después. No depende de eventos, así que regresos desde el footer, saltos de varias paradas y la vuelta a una pestaña visible muestran la escena correcta. Al cambiar, la escena que sale se desvanece y sube 12 px, la nueva entra desde 12 px abajo en 0.6 s y reinicia su ciclo; al subir el recorrido es el inverso. Cada ciclo es una línea de tiempo GSAP (6, 7 y 6 s) que solo anima transform, opacity y trazos SVG, y se pausa fuera del tramo del manifiesto, con la pestaña oculta o con el drawer abierto. La geometría de las trayectorias se reconstruye si cambia el tamaño del escenario.
+
+En escritorio y teléfono horizontal hay dos columnas; en teléfono vertical la escena queda debajo de las palabras con un ancho máximo de 300 px, textos de 13 px y espaciados reducidos. Con movimiento reducido, ahorro de datos o sin JavaScript no hay ciclos: las tres escenas aparecen completas, en su estado final, apiladas en la columna derecha. Son decorativas (`aria-hidden`).
