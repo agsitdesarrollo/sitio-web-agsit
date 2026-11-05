@@ -2,17 +2,18 @@ import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import Lenis from 'lenis';
 import { createStoryVideo } from './marketing-story.video';
+import { createStoryParticles } from './marketing-story.particles';
+import { storyShapes } from './marketing-story.shapes';
 
 gsap.registerPlugin(ScrollTrigger);
 type Direction = -1 | 1;
-const STOPS = ['heroEnd', 'openingEnd', 'attractEnd', 'accompanyEnd', 'growEnd'] as const;
+const STOPS = ['heroEnd', 'attractEnd', 'accompanyEnd', 'growEnd', 'boostEnd', 'contactEntry'] as const;
 type Stop = typeof STOPS[number];
 type MotionTarget = Stop | 'start' | 'end' | HTMLElement;
 type Decision = { kind: 'free' } | { kind: 'clamp' | 'stop'; stop: Stop };
 type Connection = EventTarget & { saveData?: boolean };
 const VIDEO_PANELS = 5.6;
-const WORD_PANELS = 1;
-const OPENING_PANELS = 1;
+const HERO_END = VIDEO_PANELS * .96;
 const EPSILON = 3;
 const clamp01 = (value: number) => Math.max(0, Math.min(1, value));
 const easeStop = (t: number) => t < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
@@ -31,14 +32,17 @@ export function initMarketingStory() {
   const connection = (navigator as Navigator & { connection?: Connection }).connection;
   const modes = gsap.matchMedia();
   modes.add({ motion: '(prefers-reduced-motion: no-preference)', reduced: '(prefers-reduced-motion: reduce)' }, context => {
+    const canvas = page.querySelector<HTMLCanvasElement>('[data-story-particles]')!;
     if (context.conditions?.reduced || connection?.saveData) {
       page.dataset.motion = 'static';
-      return () => { delete page.dataset.motion; };
+      canvas.setAttribute('aria-label', (JSON.parse(canvas.dataset.figureLabels || '[]') as string[])[2] || '');
+      const particles = createStoryParticles(canvas, { static: true, initial: storyShapes.growth });
+      return () => { particles.dispose(); delete page.dataset.motion; };
     }
     const track = page.querySelector<HTMLElement>('[data-journey-track]')!;
     const stage = page.querySelector<HTMLElement>('[data-journey-stage]')!;
     const hero = page.querySelector<HTMLElement>('[data-hero]')!;
-    const split = page.querySelector<HTMLElement>('[data-hero-split]')!;
+    const split = page.querySelector<HTMLElement>('[data-story-split]')!;
     const manifesto = page.querySelector<HTMLElement>('#ms-manifesto')!;
     const contact = page.querySelector<HTMLElement>('.final-contact-section')!;
     const header = document.querySelector<HTMLElement>('.site-nav');
@@ -47,15 +51,17 @@ export function initMarketingStory() {
     const captions = [...hero.querySelectorAll<HTMLElement>('[data-caption]')];
     const left = split.querySelector<HTMLElement>('[data-split-left]')!;
     const right = split.querySelector<HTMLElement>('[data-split-right]')!;
-    const words = [...manifesto.querySelectorAll<HTMLElement>('[data-manifesto-word]')];
-    const copy = manifesto.querySelector<HTMLElement>('[data-manifesto-copy]')!;
-    const detail = manifesto.querySelector<HTMLElement>('[data-manifesto-detail]')!;
+    const groups = [...manifesto.querySelectorAll<HTMLElement>('[data-manifesto-group]')];
+    const nodes = [...manifesto.querySelectorAll<HTMLElement>('[data-manifesto-node]')];
+    const splitWords = [...split.querySelectorAll<HTMLElement>('.ms-split-panel span')];
+    const figureLabels = JSON.parse(canvas.dataset.figureLabels || '[]') as string[];
     const thread = manifesto.querySelector<HTMLElement>('[data-manifesto-thread]')!;
     const local = new AbortController();
     const { signal } = local;
     page.dataset.motion = 'enhanced';
     const media = createStoryVideo(hero, signal);
-    let g = { panel: 1, start: 0, heroEnd: 0, openingEnd: 0, attractEnd: 0, accompanyEnd: 0, growEnd: 0, contact: 0, stageHeight: 1 };
+    const particles = createStoryParticles(canvas);
+    let g = { panel: 1, start: 0, heroEnd: 0, attractEnd: 0, accompanyEnd: 0, growEnd: 0, boostEnd: 0, contactEntry: 0, contact: 0, stageHeight: 1 };
     let lenis: Lenis;
     let trigger: ScrollTrigger;
     let moving = false;
@@ -76,13 +82,14 @@ export function initMarketingStory() {
       page.style.setProperty('--ms-panel-h', `${panel}px`);
       page.style.setProperty('--ms-header-h', `${nav}px`);
       const start = Math.round(documentTop(track));
-      const heroEnd = Math.round(start + panel * (VIDEO_PANELS + WORD_PANELS));
-      g = { ...g, panel, start, heroEnd, openingEnd: heroEnd + panel, attractEnd: heroEnd + panel * 2, accompanyEnd: heroEnd + panel * 3, growEnd: heroEnd + panel * 4 };
+      const heroEnd = Math.round(start + panel * HERO_END);
+      g = { ...g, panel, start, heroEnd, attractEnd: heroEnd + panel, accompanyEnd: heroEnd + panel * 2, growEnd: heroEnd + panel * 3, boostEnd: heroEnd + panel * 4 };
     };
     const measureTrack = () => {
       g.stageHeight = g.panel;
-      track.style.height = `${g.stageHeight + g.growEnd - g.start}px`;
-      g.contact = documentTop(contact);
+      track.style.height = `${g.stageHeight + g.boostEnd - g.start}px`;
+      g.contact = Math.round(documentTop(contact));
+      g.contactEntry = g.contact;
       for (const name of STOPS) page.dataset[name] = String(g[name]);
     };
     measurePanel(); measureTrack();
@@ -96,8 +103,9 @@ export function initMarketingStory() {
     gsap.set(captions[0], { opacity: 1, x: 0 });
     gsap.set(split, { autoAlpha: 0 });
     gsap.set(manifesto, { autoAlpha: 0, xPercent: 100 });
-    gsap.set(words, { autoAlpha: 0, y: 36 });
-    gsap.set([copy, detail], { autoAlpha: 0, y: 20 });
+    gsap.set(groups, { autoAlpha: 0, y: 32 });
+    gsap.set(nodes, { opacity: 0 });
+    gsap.set(splitWords, { opacity: 0, y: 24 });
     gsap.set(thread, { scaleX: 0 });
     const span = VIDEO_PANELS * .82 / captions.length;
     captions.forEach((caption, index) => {
@@ -109,63 +117,70 @@ export function initMarketingStory() {
       .to(hero.querySelector('[data-closing-shade]'), { opacity: 1, duration: VIDEO_PANELS * .08 }, VIDEO_PANELS * .82)
       .to(controls, { opacity: 0, duration: VIDEO_PANELS * .04 }, VIDEO_PANELS * .84)
       .to(claim, { opacity: 1, y: 0, duration: VIDEO_PANELS * .1 }, VIDEO_PANELS * .86)
-      .to(claim, { opacity: 0, duration: .28 }, VIDEO_PANELS + .05)
-      .to(split, { autoAlpha: 1, duration: .4 }, VIDEO_PANELS + .12)
-      .set(manifesto, { autoAlpha: 1 }, VIDEO_PANELS + WORD_PANELS)
-      .to(manifesto, { xPercent: 0, duration: OPENING_PANELS }, VIDEO_PANELS + WORD_PANELS)
-      .to(left, { xPercent: -104, duration: OPENING_PANELS }, VIDEO_PANELS + WORD_PANELS)
-      .to(right, { xPercent: 104, duration: OPENING_PANELS }, VIDEO_PANELS + WORD_PANELS);
-    const arrival = VIDEO_PANELS + WORD_PANELS + OPENING_PANELS;
-    words.forEach((word, index) => {
-      master.to(word, { autoAlpha: 1, y: 0, duration: .65, ease: 'expo.out' }, arrival + index + .15)
-        .to(thread, { scaleX: (index + 1) / words.length, duration: .8 }, arrival + index + .1);
+      .to(manifesto, { xPercent: 0, duration: .68 }, HERO_END)
+      .set(manifesto, { autoAlpha: 1 }, HERO_END)
+      .to(groups[0], { autoAlpha: 1, y: 0, duration: .25, ease: 'expo.out' }, HERO_END + .72)
+      .to(thread, { scaleX: 1 / 3, duration: .85 }, HERO_END + .1)
+      .to(nodes[0], { opacity: 1, duration: .2 }, HERO_END + .74);
+    groups.slice(1).forEach((group, index) => {
+      const start = HERO_END + index + 1;
+      master.to(group, { autoAlpha: 1, y: 0, duration: .6, ease: 'expo.out' }, start + .12)
+        .to(thread, { scaleX: (index + 2) / 3, duration: .8 }, start + .1)
+        .to(nodes[index + 1], { opacity: 1, duration: .3 }, start + .4);
     });
-    master.to([copy, detail], { autoAlpha: 1, y: 0, duration: .65 }, arrival + 2.2)
-      .to({}, { duration: 3 }, arrival);
+    // BOOST is a complete word here. Its lateral opening belongs to commit 4.
+    master.to(split, { autoAlpha: 1, duration: .4 }, HERO_END + 3.05)
+      .to(splitWords, { opacity: 1, y: 0, duration: .4, ease: 'expo.out' }, HERO_END + 3.48)
+      .to({}, { duration: 4 }, HERO_END);
     const render = () => {
       const y = window.scrollY;
-      const units = (y - g.start) / g.panel;
-      const opening = clamp01((y - g.heroEnd) / (g.openingEnd - g.heroEnd));
-      const mode = y < g.heroEnd - EPSILON ? 'continuous' : y < g.openingEnd - EPSILON ? 'opening' : y <= g.growEnd + EPSILON ? 'manifesto' : 'reading';
-      const step = String(y < g.openingEnd - EPSILON ? 0 : Math.min(4, 1 + Math.floor((y - g.openingEnd + EPSILON) / g.panel)));
+      const units = y <= g.heroEnd ? clamp01((y - g.start) / (g.heroEnd - g.start)) * HERO_END : HERO_END + (y - g.heroEnd) / g.panel;
+      master.time(Math.max(0, Math.min(HERO_END + 4, units)));
+      const localProgress = units - HERO_END;
+      const mode = y < g.heroEnd - EPSILON ? 'continuous' : y < g.attractEnd - EPSILON ? 'entry' : y <= g.growEnd + EPSILON ? 'manifesto' : y <= g.boostEnd + EPSILON ? 'boost' : 'reading';
+      const step = String(y < g.attractEnd - EPSILON ? 0 : Math.min(4, 1 + Math.floor((y - g.attractEnd + EPSILON) / g.panel)));
       if (page.dataset.manifestoStep !== step) page.dataset.manifestoStep = step;
       if (page.dataset.scrollStage !== mode) page.dataset.scrollStage = mode;
-      const progressValue = opening.toFixed(4);
-      if (page.dataset.openingProgress !== progressValue) page.dataset.openingProgress = progressValue;
+      const entryValue = clamp01(localProgress / .68).toFixed(4);
+      if (page.dataset.entryProgress !== entryValue) page.dataset.entryProgress = entryValue;
+      const figureIndex = localProgress < 1.5 ? 0 : localProgress < 2.5 ? 1 : 2;
+      if (canvas.getAttribute('aria-label') !== figureLabels[figureIndex]) canvas.setAttribute('aria-label', figureLabels[figureIndex]);
+      const t = clamp01(localProgress < 1 ? (localProgress - .1) / .88 : localProgress < 2 ? localProgress - 1 : localProgress - 2);
+      const eased = t * t * (3 - 2 * t);
+      particles.setMorph(localProgress < 1 ? storyShapes.scatter : localProgress < 2 ? storyShapes.attract : storyShapes.path,
+        localProgress < 1 ? storyShapes.attract : localProgress < 2 ? storyShapes.path : storyShapes.growth, eased);
+      particles.setActive(!overlayOpen() && localProgress > 0 && localProgress < 3.5);
       const sequenceVisible = !overlayOpen() && y >= g.start - 1 && units < VIDEO_PANELS * .84;
       media.update(clamp01(units / VIDEO_PANELS), sequenceVisible);
       const setInert = (element: HTMLElement, value: boolean) => { if (element.inert !== value) element.inert = value; };
-      setInert(claim, units < VIDEO_PANELS * .88 || units > VIDEO_PANELS + .05);
+      setInert(claim, units < VIDEO_PANELS * .88 || localProgress > .01);
       setInert(controls, !sequenceVisible);
-      setInert(hero, units >= VIDEO_PANELS + .6);
-      hero.classList.toggle('is-occluded', units >= VIDEO_PANELS + .6);
-      setInert(manifesto, opening < 1);
-      // Remove the empty clipped layers from painting at the pin boundary.
-      split.classList.toggle('is-open', opening >= 1);
-      const changing = opening > 0 && opening < 1;
+      setInert(hero, localProgress > .01);
+      hero.classList.toggle('is-occluded', localProgress >= .68);
+      setInert(manifesto, y < g.attractEnd - EPSILON || localProgress >= 3.45);
+      const changing = localProgress > 0 && localProgress < .68;
       const hint = changing ? 'transform' : '';
-      if (left.style.willChange !== hint) {
-        left.style.willChange = hint; right.style.willChange = hint; manifesto.style.willChange = hint;
-      }
+      if (manifesto.style.willChange !== hint) manifesto.style.willChange = hint;
+
     };
     trigger = ScrollTrigger.create({
       id: 'marketing-story-journey', trigger: track, start: 'top top',
-      end: () => `+=${g.growEnd - g.start}`,
-      pin: stage, pinSpacing: false, scrub: true, animation: master,
+      end: () => `+=${g.boostEnd - g.start}`,
+      pin: stage, pinSpacing: false,
     });
 
     const decide = (y: number, direction: Direction, distance: number): Decision => {
       const ahead = y + direction * distance;
       if (y < g.heroEnd - EPSILON) return direction > 0 && ahead >= g.heroEnd - EPSILON ? { kind: 'clamp', stop: 'heroEnd' } : { kind: 'free' };
-      if (y > g.growEnd + EPSILON) return direction < 0 && ahead <= g.growEnd + EPSILON ? { kind: 'clamp', stop: 'growEnd' } : { kind: 'free' };
+      if (y > g.contactEntry + EPSILON) return direction < 0 && ahead <= g.contactEntry + EPSILON ? { kind: 'clamp', stop: 'contactEntry' } : { kind: 'free' };
       if (Math.abs(y - g.heroEnd) <= EPSILON && direction < 0) return { kind: 'free' };
-      if (Math.abs(y - g.growEnd) <= EPSILON && direction > 0) return { kind: 'free' };
+      if (Math.abs(y - g.contactEntry) <= EPSILON && direction > 0) return { kind: 'free' };
       const candidates = direction > 0 ? STOPS : [...STOPS].reverse();
       const stop = candidates.find(name => direction > 0 ? g[name] > y + EPSILON : g[name] < y - EPSILON);
       return stop ? { kind: 'stop', stop } : { kind: 'free' };
     };
     const resolveTarget = (target: MotionTarget) => {
-      if (target instanceof HTMLElement) return target === manifesto ? g.openingEnd : Math.max(0, documentTop(target) - (header?.offsetHeight || 0));
+      if (target instanceof HTMLElement) return target === manifesto ? g.attractEnd : Math.max(0, documentTop(target) - (header?.offsetHeight || 0));
       if (target === 'start') return 0;
       if (target === 'end') return lenis.limit;
       return g[target];
@@ -207,14 +222,15 @@ export function initMarketingStory() {
     };
     lenis = new Lenis({
       smoothWheel: true, syncTouch: true, syncTouchLerp: .085, touchInertiaExponent: 1.6,
-      lerp: .3, autoRaf: false, anchors: false, allowNestedScroll: true,
+      // Free wheel follows the input; explicit gesture durations stay animated.
+      lerp: 0, autoRaf: false, anchors: false, allowNestedScroll: true,
       prevent: node => node.classList.contains('contact-drawer') || node.closest('.site-nav nav.is-open') !== null,
       virtualScroll: gate,
     });
     // Update once per position, including free scroll after the pin has ended.
     lenis.on('scroll', () => { ScrollTrigger.update(); render(); });
     // Lenis receives wall-clock milliseconds without changing GSAP's global lag policy.
-    const tick = () => { const now = performance.now(); lenis.raf(now); media.tick(now); };
+    const tick = () => { const now = performance.now(); lenis.raf(now); media.tick(now); particles.tick(now); };
     gsap.ticker.add(tick);
 
     const onKey = (event: KeyboardEvent) => {
@@ -240,7 +256,7 @@ export function initMarketingStory() {
     window.addEventListener('touchstart', event => { consumed = event.touches.length > 1; touchTravel = 0; }, { passive: true, signal });
     hero.querySelector('[data-skip]')?.addEventListener('click', () => {
       media.pause(); moving = false; motionTarget = null;
-      lenis.scrollTo(g.openingEnd, { immediate: true, force: true });
+      lenis.scrollTo(g.attractEnd, { immediate: true, force: true });
       manifesto.focus({ preventScroll: true });
     }, { signal });
     document.addEventListener('click', event => {
@@ -253,7 +269,7 @@ export function initMarketingStory() {
       try { target = document.getElementById(decodeURIComponent(url.hash.slice(1))); } catch { return; }
       if (!target) return;
       event.preventDefault();
-      const y = target === manifesto ? g.openingEnd : Math.max(0, documentTop(target) - (header?.offsetHeight || 0));
+      const y = target === manifesto ? g.attractEnd : Math.max(0, documentTop(target) - (header?.offsetHeight || 0));
       goTo(y, 'jump', target);
       if (location.hash !== url.hash) history.pushState(null, '', url.hash);
     }, { signal });
@@ -265,18 +281,20 @@ export function initMarketingStory() {
       const old = g;
       const y = lenis.animatedScroll;
       const units = (y - old.start) / old.panel;
-      const reading = y > old.growEnd;
+      const reading = y > old.boostEnd;
       const pastContact = y >= old.contact;
-      const readingRatio = (y - old.growEnd) / Math.max(1, old.contact - old.growEnd);
+      const readingRatio = (y - old.boostEnd) / Math.max(1, old.contact - old.boostEnd);
       const resume = motionTarget;
       const resumeKind = motionKind;
+      const settled = !moving ? STOPS.find(name => Math.abs(y - old[name]) <= EPSILON) : undefined;
       moving = false; motionTarget = null;
       lenis.scrollTo(y, { immediate: true, force: true });
       measurePanel();
       trigger.refresh();
       measureTrack();
+      particles.invalidate();
       lenis.resize();
-      const next = !reading ? g.start + units * g.panel : pastContact ? g.contact + y - old.contact : g.growEnd + readingRatio * (g.contact - g.growEnd);
+      const next = settled ? g[settled] : !reading ? g.start + units * g.panel : pastContact ? g.contact + y - old.contact : g.boostEnd + readingRatio * (g.contact - g.boostEnd);
       lenis.scrollTo(Math.max(0, next), { immediate: true, force: true });
       ScrollTrigger.update(); render();
       if (resume) goTo(resolveTarget(resume), resumeKind, resume);
@@ -312,14 +330,13 @@ export function initMarketingStory() {
       disposed = true; local.abort();
       window.clearTimeout(wheelTimer); window.clearTimeout(refreshTimer);
       overlayObserver.disconnect(); navSize.disconnect();
-      gsap.ticker.remove(tick); lenis.destroy(); media.dispose();
+      gsap.ticker.remove(tick); lenis.destroy(); media.dispose(); particles.dispose();
       hero.inert = false; claim.inert = false; controls.inert = false; manifesto.inert = false;
       for (const element of [left, right, manifesto]) element.style.removeProperty('will-change');
-      split.classList.remove('is-open');
       hero.classList.remove('is-occluded');
       track.style.removeProperty('height');
       page.style.removeProperty('--ms-panel-h'); page.style.removeProperty('--ms-header-h');
-      for (const name of ['motion', ...STOPS, 'scrollStage', 'openingProgress', 'manifestoStep']) delete page.dataset[name];
+      for (const name of ['motion', ...STOPS, 'scrollStage', 'entryProgress', 'manifestoStep']) delete page.dataset[name];
     };
   }, page);
   connection?.addEventListener('change', () => gsap.matchMediaRefresh(), { signal: lifetime.signal });

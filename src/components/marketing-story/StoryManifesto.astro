@@ -1,20 +1,26 @@
 ---
 import type { MarketingStoryContent } from '../../types/marketingStory.types';
+import { storyShapes } from './marketing-story.shapes';
 type Props = { content: MarketingStoryContent['manifesto'] };
 const { content } = Astro.props;
 ---
 <section class="ms-manifesto ms-light" id="ms-manifesto" tabindex="-1" aria-labelledby="ms-manifesto-title">
   <div class="ms-shell ms-manifesto-inner">
     <div class="ms-manifesto-body">
-      <h2 id="ms-manifesto-title">{content.words.map(word => <span data-manifesto-word>{word}</span>)}</h2>
-      <p class="ms-manifesto-copy" data-manifesto-copy>{content.copy}</p>
+      <div class="ms-manifesto-message">
+        <p class="ms-manifesto-eyebrow" id="ms-manifesto-title">{content.eyebrow}</p>
+        <div class="ms-manifesto-words">
+          {content.words.map((word, index) => <div class="ms-manifesto-group" data-manifesto-group><h2 data-manifesto-word>{word}</h2><p>{content.lines[index]}</p></div>)}
+        </div>
+      </div>
+      <div class="ms-manifesto-figure">
+        <canvas data-story-particles data-figure-labels={JSON.stringify(content.figureLabels)} role="img" aria-label={content.figureLabels[2]}></canvas>
+        <svg class="ms-particle-fallback" viewBox="0 0 400 240" aria-hidden="true">{Array.from({ length: 100 }, (_, index) => { const point = storyShapes.growth(index, 100); return <circle cx={point.x * 400} cy={point.y * 240} r="1.8" />; })}</svg>
+      </div>
     </div>
     <div class="ms-manifesto-diagram">
-      <div class="ms-rule" data-manifesto-rule aria-hidden="true"><i data-manifesto-thread></i>{[0, 1, 2, 3].map(() => <b></b>)}</div>
-      <div data-manifesto-detail>
-        <div class="ms-manifesto-labels"><span>{content.from}</span><span>{content.to}</span></div>
-        <p class="ms-manifesto-conclusion">{content.conclusion}</p>
-      </div>
+      <div class="ms-rule" data-manifesto-rule aria-hidden="true"><i data-manifesto-thread></i>{[0, 1, 2].map(index => <b style={`--ms-node: ${(index + 1) / 3}`}><span data-manifesto-node></span></b>)}</div>
+      <div class="ms-manifesto-labels"><span>{content.from}</span><span>{content.to}</span></div>
     </div>
   </div>
 </section>
