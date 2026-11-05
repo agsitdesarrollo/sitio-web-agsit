@@ -27,7 +27,10 @@
 .ms-sc-reach span, .ms-sc-return span { color: var(--sc-teal); font-weight: 600; white-space: nowrap; }
 
 /* 2. Follow up */
-.ms-sc-live { width: 9px; height: 9px; border-radius: 50%; background: var(--sc-teal); box-shadow: 0 0 0 4px rgba(31,111,146,.14); }
+.ms-sc-chip.ms-sc-status { display: inline-grid; justify-items: center; flex: none; }
+.ms-sc-status > span { grid-area: 1 / 1; }
+.ms-sc-status > span:not(:last-child) { opacity: 0; }
+.ms-sc-head b { white-space: nowrap; }
 .ms-sc-steps { list-style: none; margin: 0; padding: 0; }
 .ms-sc-step { position: relative; display: grid; grid-template-columns: 28px 1fr; align-items: center; gap: 14px; min-height: 28px; }
 .ms-sc-step + .ms-sc-step { margin-top: 24px; }
@@ -47,9 +50,9 @@
 .ms-sc-chip { display: inline-flex; align-items: center; gap: 5px; padding: 3px 10px; border-radius: 99px; background: rgba(31,111,146,.1); color: var(--sc-teal); font-weight: 600; white-space: nowrap; }
 .ms-sc-chip svg { width: 12px; height: 12px; }
 .ms-sc-chart { position: relative; margin-bottom: 14px; }
-.ms-sc-chart svg { display: block; width: 100%; height: auto; aspect-ratio: 300 / 120; overflow: visible; }
-.ms-sc-guide { stroke: rgba(8,21,43,.07); stroke-width: 1; vector-effect: non-scaling-stroke; }
-.ms-sc-line { fill: none; stroke: var(--sc-teal); stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; stroke-dasharray: 1; stroke-dashoffset: 0; vector-effect: non-scaling-stroke; }
+.ms-sc-chart svg { display: block; width: 100%; height: auto; overflow: visible; }
+.ms-sc-guide { stroke: rgba(8,21,43,.07); stroke-width: .7; }
+.ms-sc-line { fill: none; stroke: var(--sc-teal); stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; stroke-dasharray: 1; stroke-dashoffset: 0; }
 .ms-sc-end { position: absolute; width: 0; height: 0; }
 .ms-sc-end i { position: absolute; left: -6px; top: -6px; width: 12px; height: 12px; border-radius: 50%; }
 .ms-sc-end [data-g-dot] { background: var(--sc-teal); border: 2px solid #fff; box-shadow: 0 1px 4px rgba(8,21,43,.25); }
@@ -74,7 +77,6 @@
   .ms-sc-step + .ms-sc-step { margin-top: 12px; }
   .ms-sc-conn { height: calc(100% - 28px + 12px); }
   .ms-sc-chart { margin-bottom: 8px; }
-  .ms-sc-chart svg { aspect-ratio: 300 / 62; }
 }
 @media (max-height: 520px) and (orientation: landscape) {
   .ms-scenes { --sc-pad: 12px; --sc-gap: 8px; --sc-text: .8125rem; }
@@ -90,5 +92,4 @@
   .ms-sc-step + .ms-sc-step { margin-top: 10px; }
   .ms-sc-conn { height: calc(100% - 28px + 10px); }
   .ms-sc-chart { margin-bottom: 8px; }
-  .ms-sc-chart svg { aspect-ratio: 300 / 60; }
 }

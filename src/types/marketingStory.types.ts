@@ -3,7 +3,7 @@ import type { SupportedLang } from '../i18n/ui';
 export type StoryImage = { src: string; alt: string; width: number; height: number };
 export type ManifestoScenesCopy = {
   attract: { business: string; action: string; reach: string };
-  follow: { title: string; steps: [string, string, string] };
+  follow: { title: string; status: [string, string, string]; steps: [string, string, string] };
   grow: { title: string; chip: string; returning: string };
 };
 export type MarketingStoryContent = {

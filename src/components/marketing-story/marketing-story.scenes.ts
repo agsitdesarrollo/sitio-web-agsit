@@ -43,26 +43,26 @@ export function createManifestoScenes(stage: HTMLElement) {
 
   const buildFollow = (el: HTMLElement): Rig => {
     const fills = all(el, '[data-f-fill]'), checks = all(el, '[data-f-check]'), on = all(el, '[data-f-on]'), conns = all(el, '[data-f-conn]');
-    const typing = one(el, '[data-f-typing]'), dots = all(typing, 'i'), steps = one(el, '[data-f-steps]');
+    const status = all(el, '[data-f-status]'), typing = one(el, '[data-f-typing]'), dots = all(typing, 'i'), steps = one(el, '[data-f-steps]');
     const reset = (position: number, tl: gsap.core.Timeline) => tl.set(fills, { scale: 0 }, position).set(checks, { strokeDashoffset: 1 }, position)
-      .set(on, { opacity: 0 }, position).set(conns, { scaleY: 0 }, position).set(typing, { opacity: 0 }, position).set(dots, { y: 0 }, position);
+      .set(on, { opacity: 0 }, position).set(status, { opacity: 0 }, position).set(conns, { scaleY: 0 }, position).set(typing, { opacity: 0 }, position).set(dots, { y: 0 }, position);
     const tl = gsap.timeline({ paused: true, repeat: -1 });
     reset(0, tl).set(steps, { opacity: 1 }, 0);
     const done = (index: number, at: number) => tl.to(fills[index], { scale: 1, duration: .3, ease: 'power2.out' }, at)
       .to(checks[index], { strokeDashoffset: 0, duration: .35, ease: 'power2.out' }, at + .12)
       .to(on[index], { opacity: 1, duration: .3, ease: 'power1.out' }, at + .1);
-    done(0, .5);
+    const label = (index: number, at: number) => { if (index) tl.to(status[index - 1], { opacity: 0, duration: .3, ease: 'power1.in' }, at); tl.to(status[index], { opacity: 1, duration: .3, ease: 'power1.out' }, at + (index ? .15 : 0)); };
+    done(0, .5); label(0, .5);
     tl.to(conns[0], { scaleY: 1, duration: .6, ease: 'power2.inOut' }, .95)
       .to(typing, { opacity: 1, duration: .2 }, 1.65)
       .to(dots, { y: -3, duration: .28, ease: 'sine.inOut', yoyo: true, repeat: 3, stagger: .12 }, 1.7)
       .to(typing, { opacity: 0, duration: .2 }, 2.95);
-    done(1, 3.1);
+    done(1, 3.1); label(1, 3.1);
     tl.to(conns[1], { scaleY: 1, duration: .6, ease: 'power2.inOut' }, 3.6);
-    done(2, 4.3);
+    done(2, 4.3); label(2, 4.3);
     tl.to(steps, { opacity: 0, duration: .5, ease: 'power1.in' }, 6.1);
     reset(6.6, tl).to(steps, { opacity: 1, duration: .4, ease: 'power1.out' }, 6.6);
-    const live = gsap.to(one(el, '[data-f-live]'), { opacity: .35, scale: .8, duration: 1, ease: 'sine.inOut', yoyo: true, repeat: -1, paused: true });
-    return { anims: [tl, live] };
+    return { anims: [tl] };
   };
 
   const buildGrow = (el: HTMLElement): Rig => {
