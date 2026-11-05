@@ -81,7 +81,6 @@ export function initMarketingStory() {
     const planParticles = createStoryParticles(planCanvas, { colors: ['#8be2ff', '#41c8f6'], scene: 'services' });
     let mappedShapes: StoryShape[] = [];
     let announced = -1;
-    let frameStart = { x: 1, y: 1, offset: 0 };
     let g = { panel: 1, start: 0, heroEnd: 0, attractEnd: 0, accompanyEnd: 0, growEnd: 0, boostEnd: 0, planEnd: 0, revealEnd: 0, strategyEnd: 0, journeyEnd: 0, intelligenceEnd: 0, automationEnd: 0, channelsEnd: 0, contactEntry: 0, contact: 0, stageHeight: 1 };
     let lenis: Lenis;
     let trigger: ScrollTrigger;
@@ -118,8 +117,7 @@ export function initMarketingStory() {
       const side = Math.min(bounds.width, bounds.height) * 1.02;
       const space = { cx: (bounds.left - field.left + bounds.width / 2) / field.width, cy: (bounds.top - field.top + bounds.height / 2) / field.height, sx: side / field.width, sy: side / field.height };
       mappedShapes = serviceShapes.map(shape => mapStoryShape(shape,space));
-      const height = frame.offsetHeight;
-      frameStart = { x: Math.min(1000, window.innerWidth * .86) / frame.offsetWidth, y: g.panel * .36 / height, offset: g.panel * .75 - (frame.offsetTop + height / 2) };
+      planParticles.setShapeSize(side);
     };
     measurePanel(); measureTrack();
 
@@ -176,7 +174,7 @@ export function initMarketingStory() {
       .to(lower, { yPercent: 110, duration: .8, ease: 'power2.inOut' }, HERO_END + 5.05)
       .to(cue, { autoAlpha: 1, duration: .4 }, HERO_END + 5.25)
       .to(planCanvas, { autoAlpha: 1, duration: .15 }, HERO_END + 5.05)
-      .to(frame, { autoAlpha: 1, duration: .5 }, HERO_END + 5.38)
+      .to(frame, { autoAlpha: 1, duration: .4 }, HERO_END + 6.08)
       .to([upper, lower, cue], { autoAlpha: 0, duration: .3 }, HERO_END + 6.02)
       .to(services, { autoAlpha: 1, duration: .3 }, HERO_END + 6.3)
       .to({}, { duration: 11 }, HERO_END);
@@ -213,7 +211,7 @@ export function initMarketingStory() {
       planParticles.setActive(!overlayOpen() && localProgress > 5.05 && localProgress < 12.01);
       const expansion = clamp01(localProgress - 6);
       const expand = expansion * expansion * (3 - 2 * expansion);
-      frame.style.transform = `translateY(${frameStart.offset * (1 - expand)}px) scale(${frameStart.x + (1 - frameStart.x) * expand},${frameStart.y + (1 - frameStart.y) * expand})`;
+      frame.style.transform = `scale(${.96 + .04 * expand})`;
       const serviceIndex = Math.max(0, Math.min(4, Math.round(localProgress - 7)));
       if (services.dataset.serviceIndex !== String(serviceIndex)) {
         services.dataset.serviceIndex = String(serviceIndex);

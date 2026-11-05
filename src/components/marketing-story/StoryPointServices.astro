@@ -1,6 +1,7 @@
 ---
 import type { MarketingStoryContent } from '../../types/marketingStory.types';
 import { serviceShapes } from './marketing-story.shapes';
+import StoryPointFallback from './StoryPointFallback.astro';
 import './marketing-story.services.css';
 type Props = { content: MarketingStoryContent['services'] };
 const { content } = Astro.props;
@@ -11,7 +12,7 @@ const icons = ['M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18M12 7a5 5 0 1 0 0 10 5 5 0 0 
   <div class="ms-services-bottom" data-services-bottom>
     <div class="ms-service-stack">
       {content.items.map((item, index) => <article class="ms-service-card" data-service-card data-service-name={item.name} aria-labelledby={`ms-service-${index}`}>
-        <svg class="ms-service-static-figure" viewBox="0 0 400 400" aria-hidden="true">{Array.from({ length: 450 }, (_, i) => { const point = serviceShapes[index](i, 450); return <circle cx={point.x * 400} cy={point.y * 400} r="1.7" />; })}</svg>
+        <StoryPointFallback shape={serviceShapes[index]} id={`ms-service-static-${index}`} class="ms-service-static-figure" />
         <div class="ms-service-heading"><svg class="ms-service-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d={icons[index]} /></svg><h2 id={`ms-service-${index}`}>{item.name}</h2></div>
         <div class="ms-service-copy"><p class="ms-service-line">{item.title}</p><p class="ms-service-description">{item.copy}</p></div>
       </article>)}

@@ -1,0 +1,10 @@
+---
+import type { StoryShape } from './marketing-story.shapes';
+type Props = { shape: StoryShape; id: string; class: string };
+const { shape, id, class: className } = Astro.props;
+const layers = shape.vector?.layers || [];
+---
+<svg class={className} viewBox="0 0 1000 1000" aria-hidden="true">
+  <defs>{layers.map((layer,index) => <pattern id={`${id}-${index}`} width="42" height="36.373" patternUnits="userSpaceOnUse"><circle cx="10.5" cy="9.093" r="5" fill={shape.motion === 'target' && layer.part === 1 ? '#fff' : 'currentColor'} /><circle cx="31.5" cy="27.28" r="5" fill={shape.motion === 'target' && layer.part === 1 ? '#fff' : 'currentColor'} /></pattern>)}</defs>
+  {layers.map((layer,index) => <path d={layer.d} transform={layer.mirror ? 'translate(1000 0) scale(-1 1)' : undefined} fill={`url(#${id}-${index})`} fill-rule={layer.rule || 'nonzero'} stroke={shape.motion === 'target' && layer.part === 1 ? '#fff' : 'currentColor'} stroke-width="10" stroke-dasharray="0 30" stroke-linecap="round" />)}
+</svg>

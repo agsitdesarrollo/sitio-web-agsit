@@ -6,7 +6,7 @@
 .ms-service-line { font-size: 1rem; line-height: 1.4; font-weight: 600; }
 .ms-service-description { font-size: .875rem; line-height: 1.5; color: #b4c5db; }
 .ms-service-copy { display: grid; gap: 8px; }
-.ms-service-static-figure { width: 100%; max-height: 380px; fill: var(--ms-soft); }
+.ms-service-static-figure { width: 100%; max-height: 380px; fill: var(--ms-soft); color: var(--ms-soft); }
 .ms-service-controls { display: none; }
 .ms-page[data-motion='enhanced'] .ms-services { position: absolute; inset: calc(var(--ms-header-h) + 24px) calc(var(--ms-gutter) + 16px) 24px; padding: 0; z-index: 3; display: grid; grid-template-rows: minmax(0,1fr) auto; gap: 16px; }
 .ms-page[data-motion='enhanced'] .ms-service-figure { min-height: 0; }

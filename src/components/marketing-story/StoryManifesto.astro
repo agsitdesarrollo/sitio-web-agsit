@@ -1,6 +1,7 @@
 ---
 import type { MarketingStoryContent } from '../../types/marketingStory.types';
 import { storyShapes } from './marketing-story.shapes';
+import StoryPointFallback from './StoryPointFallback.astro';
 type Props = { content: MarketingStoryContent['manifesto'] };
 const { content } = Astro.props;
 ---
@@ -15,7 +16,7 @@ const { content } = Astro.props;
       </div>
       <div class="ms-manifesto-figure">
         <canvas data-story-particles data-figure-labels={JSON.stringify(content.figureLabels)} role="img" aria-label={content.figureLabels[2]}></canvas>
-        <svg class="ms-particle-fallback" viewBox="0 0 400 400" aria-hidden="true">{Array.from({ length: 240 }, (_, index) => { const point = storyShapes.growth(index, 240); return <circle cx={point.x * 400} cy={point.y * 400} r="2" />; })}</svg>
+        <StoryPointFallback shape={storyShapes.growth} id="ms-manifesto-static" class="ms-particle-fallback" />
       </div>
     </div>
     <div class="ms-manifesto-diagram">

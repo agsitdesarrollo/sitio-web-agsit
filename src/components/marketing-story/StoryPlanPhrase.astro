@@ -1,6 +1,5 @@
 ---
 import type { MarketingStoryContent } from '../../types/marketingStory.types';
-import { storyShapes } from './marketing-story.shapes';
 import './marketing-story.plan.css';
 import StoryPointServices from './StoryPointServices.astro';
 type Props = { content: MarketingStoryContent['plan']; services: MarketingStoryContent['services'] };
@@ -16,7 +15,6 @@ const letters = Array.from(content.phrase);
   </div>
   <p class="ms-plan-cue" data-plan-cue>{content.cue}</p>
   <canvas class="ms-plan-particles" data-story-particles data-plan-particles aria-hidden="true"></canvas>
-  <svg class="ms-plan-fallback" viewBox="0 0 400 1000" preserveAspectRatio="none" aria-hidden="true">{Array.from({ length: 100 }, (_, index) => { const point = storyShapes.servicesFocus(index, 100); return <circle cx={point.x * 400} cy={point.y * 1000} r="1.8" />; })}</svg>
   <div class="ms-plan-service-frame" data-plan-frame aria-hidden="true"></div>
   <StoryPointServices content={services} />
 </section>

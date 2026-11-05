@@ -14,12 +14,12 @@ El antetítulo y la cuadrícula tenue de puntos son peticiones explícitas del u
 | 3 | Se añaden Crecer. / Grow. y su línea | Barras que oscilan y flecha ascendente |
 | 4 | IMPULSA. / BOOST. completa sobre el manifiesto | La figura queda cubierta y pausada |
 | 5 | IMPULSA. / BOOST. abre su cortina hacia los lados mientras las letras de CRECER CON PLAN / GROW WITH A PLAN suben una por una | Puntos todavía ocultos |
-| 6 | La mitad superior de la frase sube y la inferior baja; aparece [ASÍ LO HACEMOS] / [HOW WE DO IT] | Una línea horizontal de puntos atraviesa el hueco y entra al marco |
-| 7 | El marco se agranda casi a pantalla completa; tarjeta 1 / 5, Estrategia digital | Anillos rellenos, flecha que llega al centro y ondas |
+| 6 | La mitad superior de la frase sube y la inferior baja; aparece [ASÍ LO HACEMOS] / [HOW WE DO IT] | Una columna de puntos desciende por el hueco central; no aparece ningún marco |
+| 7 | Aparece el marco de servicios casi a pantalla completa; desde la columna se arma la diana; tarjeta 1 / 5 | Anillos rellenos, flecha que llega al centro y ondas |
 | 8 | Tarjeta 2 / 5, Recorrido del cliente | Embudo con puntos que fluyen hacia la salida |
-| 9 | Tarjeta 3 / 5, Inteligencia artificial | Cerebro con destellos que viajan entre puntos |
-| 10 | Tarjeta 4 / 5, Automatización | Engrane que gira lentamente |
-| 11 | Tarjeta 5 / 5, Canales conectados | Globo de conversación, tres puntos y cuatro grupos en órbita |
+| 9 | Tarjeta 3 / 5, Inteligencia artificial | Cerebro de dos hemisferios, surcos vacíos y destellos en sus bordes |
+| 10 | Tarjeta 4 / 5, Automatización | Engrane de ocho dientes cuadrados que gira lentamente |
+| 11 | Tarjeta 5 / 5, Canales conectados | Dos globos con sus colas; tres puntos alternan entre la pregunta y la respuesta |
 | 12 provisional | Un gesto lleva al contacto; después contacto y footer tienen scroll libre | La animación continúa hasta salir de vista |
 
 Al subir se recorre el mapa inverso: las figuras y tarjetas regresan por los cinco servicios, el marco se contrae, los puntos vuelven al hueco, desaparece el texto central, las mitades se reúnen, las letras bajan y la cortina vuelve a cerrarse. Después se deshacen IMPULSA. y el manifiesto hasta la promesa del hero. El destino provisional después del gesto 11 se sustituirá por el cierre en el commit 6.
@@ -94,3 +94,18 @@ La verificación de esta corrección se limita a una pasada ES 390×844 y 1366×
 Una sesión por viewport, en páginas nuevas del servidor local de desarrollo, sin lecturas de píxeles previas en el canvas medido. El ciclo observado fue el engrane y el cambio fue de engrane a conversación. Se mide el intervalo entre callbacks de requestAnimationFrame; el renderer de teléfono limita por separado el dibujo a unos 30 cuadros/s. El teléfono no superó 33 ms y no se redujo la cantidad de puntos. Escritorio conserva el resultado de 50 ms pendiente de auditoría: no se repitió la medición ni se investigó su causa.
 
 La única pasada funcional ES 390×844 y 1366×768 completó los ocho estados de figura en ambos sentidos, con 32 capturas finales, sin errores de consola ni desbordamiento horizontal. Se comprobó cambio continuo de píxeles en cada figura y separación entre figura y tarjeta. No se repitieron las pruebas de otros tamaños, inglés, teclado, swipe, drawer ni movimiento reducido.
+
+## Corrección de nitidez y transición sin marco
+
+Esta corrección sustituye las siluetas dispersas y el marco preliminar de las iteraciones anteriores. Los vectores viven en marketing-story.shapes.ts. marketing-story.sampling.ts los rasteriza con Path2D en un canvas fuera de pantalla de 512×512 y conserva una cuadrícula hexagonal regular dentro de cada máscara. Añade puntos equidistantes sobre el trazado SVG de cada contorno, incluidos los bordes de los huecos. Los destinos, partes y fases se guardan en arreglos tipados y se cachean por vector, tamaño visible y presupuesto; se conservan hasta cuatro tamaños por vector. El muestreo se realiza al medir el tamaño, nunca durante el dibujo de un cuadro.
+
+Los puntos visibles tienen radio uniforme. Los anillos de la diana, el cuerpo del embudo y los hemisferios permanecen fijos: las ondas y los destellos cambian solo su brillo. La flecha blanca tiene punta triangular, astil y dos plumas; llega en diagonal, permanece clavada y se desvanece por lotes de opacidad. El embudo combina relleno tenue fijo con una capa de puntos de flujo. El cerebro mantiene surcos sin puntos y destellos pequeños sobre sus bordes, sin el grupo blanco itinerante. El engrane tiene ocho dientes cuadrados y un hueco central limpio; gira como una pieza rígida. Dos globos de conversación con colas alternan sus tres puntos, sin satélites. El manifiesto usa el mismo muestreador para imán, camino con dos puntos y gráfica con flecha.
+
+Durante el gesto 6 solo desciende una columna de puntos por el espacio central de la frase. El marco permanece invisible en toda esa parada. Durante el gesto 7, los puntos de esa columna forman la diana y aparece por primera vez el marco de servicios, en tamaño casi completo. La reversión vuelve a ocultarlo al llegar a la frase. StoryPointFallback.astro reutiliza exactamente los trazados vectoriales con patrón regular y contornos de puntos en el contenido estático o sin JavaScript.
+
+Se conservan los máximos de 450 puntos en teléfono, 1,200 en escritorio y 240 en el manifiesto; DPR 1 / 1.5, dibujo aproximado 30 / 60 fps y pausa fuera de vista, pestaña oculta y drawer abierto. No se agregan librerías, un ticker ni un motor de scroll.
+### Verificación única de nitidez
+
+Build y git diff --check correctos. Una pasada ES en 390×844 y 1366×768 completó frase y cinco servicios bajando y subiendo, con 24 capturas finales y una captura adicional de la diana con la flecha clavada. La compuerta dejó el marco oculto en la frase y visible en el primer servicio. No hubo errores de consola, desbordamiento horizontal ni superposición de la tarjeta con la figura. No se repitieron tamaños, inglés ni pruebas del manifiesto o de movimiento reducido.
+
+Una sola medición en una página nueva de 390×844, CPU 4×: cinco segundos de engrane animado y un cambio de engrane a conversación. P95 entre requestAnimationFrame: 16.7 ms en el ciclo y 16.7 ms en el cambio. Tareas largas: 0 / 0. Se conservaron 450 puntos y DPR 1. No se repitió la medición ni se midió escritorio; el resultado anterior de escritorio sigue pendiente de auditoría.

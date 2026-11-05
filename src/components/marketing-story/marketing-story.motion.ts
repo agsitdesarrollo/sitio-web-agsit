@@ -1,89 +1,95 @@
 import type { StoryMotion } from './marketing-story.shapes';
-export type PreparedStoryPoints = { rest: Float32Array; parts: Uint8Array; seeds: Float32Array; output: Float32Array; motion?: StoryMotion; time: number };
+export type PreparedStoryPoints = { rest: Float32Array; parts: Uint8Array; edges: Uint8Array; seeds: Float32Array; output: Float32Array; motion?: StoryMotion; time: number; lineTop: number; lineHeight: number };
 const fract = (value: number) => value - Math.floor(value);
-/** Writes x, y, radius factor and brightness in place. No objects or point allocation per frame. */
+const PATH_X = [[.07,.22,.35,.5],[.5,.65,.78,.93]];
+const PATH_Y = [[.5,.18,.18,.5],[.5,.82,.82,.5]];
+/** Uniform visible radius; only rigid elements, flow particles and subtle brightness animate. */
 export function animateStoryPoints(points: PreparedStoryPoints, time: number, fixed: boolean) {
   if (points.time === time) return;
   points.time = time;
-  const rotation = time * .15, cos = Math.cos(rotation), sin = Math.sin(rotation);
-  const cycle = time % 4.8;
-  const wave = time * 4.5;
+  const rotation = fixed ? 0 : time * .15, cos = Math.cos(rotation), sin = Math.sin(rotation), cycle = time % 4.8;
+  const travel = fract(time * .13), u = travel < .5 ? travel * 2 : (travel - .5) * 2, v = 1 - u;
+  const px = PATH_X[travel < .5 ? 0 : 1], py = PATH_Y[travel < .5 ? 0 : 1];
+  const cx = v ** 3 * px[0] + 3 * v * v * u * px[1] + 3 * v * u * u * px[2] + u ** 3 * px[3];
+  const cy = v ** 3 * py[0] + 3 * v * v * u * py[1] + 3 * v * u * u * py[2] + u ** 3 * py[3];
+  const dx = 3 * v * v * (px[1] - px[0]) + 6 * v * u * (px[2] - px[1]) + 3 * u * u * (px[3] - px[2]);
+  const dy = 3 * v * v * (py[1] - py[0]) + 6 * v * u * (py[2] - py[1]) + 3 * u * u * (py[3] - py[2]);
+  const norm = Math.max(.001,Math.hypot(dx,dy));
   for (let i = 0; i < points.parts.length; i++) {
-    const baseX = points.rest[i * 2], baseY = points.rest[i * 2 + 1], part = points.parts[i], seed = points.seeds[i];
-    let x = baseX, y = baseY, size = .83 + seed * .38, light = .35 + seed * .35;
-    if (!fixed) switch (points.motion) {
+    const baseX = points.rest[i * 2], baseY = points.rest[i * 2 + 1], part = points.parts[i], edge = points.edges[i], phase = points.seeds[i];
+    let x = baseX, y = baseY, tone = part === 255 ? -1 : edge ? 2 : 1;
+    if (part !== 255) switch (points.motion) {
       case 'target': {
         if (part === 1) {
-          const flight = Math.max(0, 1 - cycle / .85);
-          x += flight * .68; y -= flight * .68;
-          light = cycle < 2.7 ? .98 : Math.max(0, 1 - (cycle - 2.7) / .55);
-          size *= cycle > 3.25 ? 0 : 1;
+          tone = 3;
+          if (!fixed) {
+            const flight = Math.max(0,1 - cycle / .85);
+            x += flight * .64; y -= flight * .64;
+            if (cycle > 2.7) tone = cycle >= 3.5 ? -1 : 4 + Math.min(3,Math.floor((cycle - 2.7) / .2));
+          }
         } else {
-          const radius = Math.hypot(x - .5,y - .5), pulse = Math.sin(wave - radius * 22);
-          const scale = 1 + pulse * .018;
-          x = .5 + (x - .5) * scale; y = .5 + (y - .5) * scale;
-          light += Math.max(0,pulse) * .28; size *= 1 + pulse * .10;
+          const radius = Math.hypot(x - .5,y - .5);
+          tone = radius < .091 ? 2 : edge ? 2 : 1;
+          if (!fixed && cycle > .85 && Math.abs(radius - (cycle - .85) * .32) < .035) tone = 3;
         }
         break;
       }
       case 'funnel': {
-        const oldHalf = baseY < .68 ? .43 - (baseY - .13) * .68 : .056;
-        y = .13 + fract((baseY - .13) / .75 + time * .19) * .75;
-        const half = y < .68 ? .43 - (y - .13) * .68 : .056;
-        x = .5 + (baseX - .5) / oldHalf * half;
-        light += .2 * Math.sin(y * 16 - time * 4); break;
+        tone = part === 1 ? 2 : edge ? 1 : 0;
+        if (part === 1 && !fixed) {
+          const oldHalf = baseY < .65 ? .4 - (baseY - .15) * .68 : .06;
+          y = .15 + fract((baseY - .15) / .78 + time * .19) * .78;
+          const half = y < .65 ? .4 - (y - .15) * .68 : .06;
+          x = .5 + (baseX - .5) / Math.max(.06,oldHalf) * half;
+        }
+        break;
       }
       case 'brain': {
-        const phase = fract(time * .22), hotX = .20 + phase * .60, hotY = .48 + Math.sin(phase * Math.PI * 4) * .22;
-        const distance = Math.hypot(x - hotX,y - hotY);
-        const flash = Math.max(0,1 - distance / .15);
-        light += flash * .85; size *= 1 + flash * .55;
+        // Glints follow the empty folds' fixed contour, never a moving white blob.
+        const folded = edge && Math.abs(x - .5) > .07 && Math.abs(x - .5) < .3 && y > .23 && y < .74;
+        tone = edge ? 2 : 1;
+        if (folded && !fixed) tone = Math.sin(time * 3 - phase * Math.PI * 6) > .7 ? 2 : 1;
         break;
       }
       case 'gear': {
-        const dx = x - .5, dy = y - .5;
-        x = .5 + dx * cos - dy * sin; y = .5 + dx * sin + dy * cos;
-        light += .10 * Math.sin(time * 1.5 + seed * 6.28); break;
+        const gx = x - .5, gy = y - .5;
+        x = .5 + gx * cos - gy * sin; y = .5 + gx * sin + gy * cos;
+        break;
       }
       case 'chat': {
-        if (part >= 4) {
-          const angle = (part - 4) * Math.PI / 2, orbit = angle + time * .28;
-          x += (Math.cos(orbit) - Math.cos(angle)) * .435;
-          y += (Math.sin(orbit) - Math.sin(angle)) * .435;
-          light = .65 + seed * .3;
-        } else if (part > 0) {
-          const beat = Math.max(0,Math.sin(time * 4 - (part - 1) * 1.2));
-          light = .25 + beat * .75; size *= .8 + beat * .65;
-        } else light *= .78;
+        if (part > 0) {
+          const bubble = part <= 3 ? 0 : 1, dot = (part - 1) % 3;
+          tone = fixed || (Math.floor(time / 2.4) % 2 === bubble && Math.sin(time * 4 - dot * 1.1) > .1) ? 2 : 0;
+        } else tone = edge ? 2 : 0;
         break;
       }
       case 'magnet': {
-        if (part === 1) {
-          const travel = fract(time * .24 + seed), pull = travel * travel;
-          const pole = seed > .5 ? .74 : .26;
-          x = baseX + (pole - baseX) * pull;
-          y = -.05 + .25 * travel;
-          size *= .8 + travel * .35; light = .3 + travel * .6;
-        } else light += .1 * Math.sin(wave + baseY * 6);
+        if (part === 1 && !fixed) {
+          const pull = fract(time * .24 + baseX * .7), pole = baseX > .5 ? .74 : .26;
+          x = baseX + (pole - baseX) * pull * pull; y = .025 + .15 * pull;
+          tone = 1;
+        }
         break;
       }
       case 'companions': {
-        if (part > 0) {
-          const t = fract(time * .13), cx = .10 + t * .8, cy = .5 + Math.sin(t * Math.PI * 2) * .22;
-          x += cx - .5; y += cy - .5;
-          light = .8 + seed * .2; size *= 1.15;
-        } else light *= .6;
+        tone = part > 0 ? 2 : 0;
+        if (part > 0 && !fixed) {
+          const side = part === 1 ? -1 : 1;
+          x = baseX - (part === 1 ? .445 : .555) + cx - dy / norm * side * .055;
+          y = baseY - .5 + cy + dx / norm * side * .055;
+        }
         break;
       }
       case 'growth': {
-        if (part > 0) y = .87 + (y - .87) * (1 + Math.sin(time * 2 + part) * .055);
-        light += .12 * Math.sin(time * 2 + baseX * 7); break;
+        if (part > 0 && !fixed) y = .87 + (y - .87) * (1 + Math.sin(time * 2 + part) * .012);
+        break;
       }
-      case 'line': x += Math.sin(time * 1.2 + seed * 6.28) * .008; light += .18 * Math.sin(time * 2 + baseX * 8); break;
+      case 'line': {
+        if (!fixed) y = points.lineTop + fract((baseY - points.lineTop) / Math.max(.001,points.lineHeight) + time * .23) * points.lineHeight;
+        tone = 2; break;
+      }
     }
-    const offset = i * 4;
-    points.output[offset] = x; points.output[offset + 1] = y;
-    points.output[offset + 2] = size;
-    points.output[offset + 3] = Math.max(0,Math.min(.999,light));
+    const k = i * 4; points.output[k] = x; points.output[k + 1] = y;
+    points.output[k + 2] = 1; points.output[k + 3] = tone;
   }
 }
