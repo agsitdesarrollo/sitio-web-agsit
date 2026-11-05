@@ -1,0 +1,20 @@
+---
+import type { MarketingStoryContent } from '../../types/marketingStory.types';
+import { storyShapes } from './marketing-story.shapes';
+import './marketing-story.plan.css';
+type Props = { content: MarketingStoryContent['plan'] };
+const { content } = Astro.props;
+const letters = Array.from(content.phrase);
+---
+<section class="ms-plan" id="ms-plan" aria-labelledby="ms-plan-title" data-plan>
+  <div class="ms-plan-title">
+    <h2 id="ms-plan-title" class="ms-plan-semantic">{content.phrase}</h2>
+    {[0, 1].map(half => <div class:list={['ms-plan-copy', half === 0 ? 'ms-plan-upper' : 'ms-plan-lower']} data-plan-half={half} aria-hidden="true">
+      {letters.map((letter, index) => <span class="ms-plan-letter-mask"><span data-plan-letter={index}>{letter === ' ' ? '\u00a0' : letter}</span></span>)}
+    </div>)}
+  </div>
+  <p class="ms-plan-cue" data-plan-cue>{content.cue}</p>
+  <canvas class="ms-plan-particles" data-story-particles data-plan-particles role="img" aria-label={content.particlesLabel}></canvas>
+  <svg class="ms-plan-fallback" viewBox="0 0 400 1000" preserveAspectRatio="none" aria-hidden="true">{Array.from({ length: 100 }, (_, index) => { const point = storyShapes.servicesFocus(index, 100); return <circle cx={point.x * 400} cy={point.y * 1000} r="1.8" />; })}</svg>
+  <div class="ms-plan-service-frame" data-plan-frame aria-hidden="true"></div>
+</section>

@@ -6,7 +6,7 @@ const noise = (index: number, salt: number) => {
   return value - Math.floor(value);
 };
 
-export const storyShapes: Record<'scatter' | 'attract' | 'path' | 'growth', StoryShape> = {
+export const storyShapes: Record<'scatter' | 'attract' | 'path' | 'growth' | 'planTransit' | 'servicesFocus', StoryShape> = {
   scatter: index => ({ x: .06 + noise(index, 1) * .88, y: .07 + noise(index, 2) * .86 }),
   attract: index => {
     const angle = noise(index, 3) * Math.PI * 2;
@@ -31,6 +31,15 @@ export const storyShapes: Record<'scatter' | 'attract' | 'path' | 'growth', Stor
     }
     const t = (index - perBar * 4) / Math.max(1, count - perBar * 4 - 1);
     return { x: .12 + t * .76, y: .77 - Math.pow(t, .85) * .67 };
+  },
+  planTransit: (index, count) => {
+    const t = index / Math.max(1, count - 1);
+    return { x: .08 + t * .84, y: .455 + Math.sin(t * Math.PI * 4) * .015 };
+  },
+  servicesFocus: index => {
+    const angle = noise(index, 6) * Math.PI * 2;
+    const radius = Math.sqrt(noise(index, 7)) * .14;
+    return { x: .5 + Math.cos(angle) * radius, y: .86 + Math.sin(angle) * radius * .25 };
   },
 };
 

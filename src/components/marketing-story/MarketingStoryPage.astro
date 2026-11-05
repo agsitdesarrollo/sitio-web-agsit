@@ -3,6 +3,7 @@ import FinalContactSection from '../final-contact/FinalContactSection.astro';
 import ScrollVideoHero from './ScrollVideoHero.astro';
 import StoryManifesto from './StoryManifesto.astro';
 import StorySplitTransition from './StorySplitTransition.astro';
+import StoryPlanPhrase from './StoryPlanPhrase.astro';
 import type { MarketingStoryContent } from '../../types/marketingStory.types';
 import type { ContactCopy } from '../../data/contact';
 import './marketing-story.css'; // Page-local styles; shared service styles stay untouched.
@@ -15,6 +16,7 @@ const { content, contactCopy } = Astro.props;
       <div class="ms-journey-stage" data-journey-stage>
         <ScrollVideoHero content={content.hero} />
         <StoryManifesto content={content.manifesto} />
+        <StoryPlanPhrase content={content.plan} />
         <StorySplitTransition word={content.transition.word} />
       </div>
     </div>

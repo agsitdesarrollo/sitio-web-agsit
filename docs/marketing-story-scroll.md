@@ -13,11 +13,13 @@ El antetítulo y la cuadrícula tenue de puntos son peticiones explícitas del u
 | 2 | Se añaden Acompañar. / Support. y su línea | Camino |
 | 3 | Se añaden Crecer. / Grow. y su línea | Gráfica ascendente |
 | 4 | IMPULSA. / BOOST. completa sobre el manifiesto | La figura queda cubierta y pausada |
-| 5 provisional | Un gesto lleva al contacto; después contacto y footer tienen scroll libre | Sin redibujado |
+| 5 | IMPULSA. / BOOST. abre su cortina hacia los lados mientras las letras de CRECER CON PLAN / GROW WITH A PLAN suben una por una | Puntos todavía ocultos |
+| 6 | La mitad superior de la frase sube y la inferior baja; aparece [ASÍ LO HACEMOS] / [HOW WE DO IT] | Los puntos cruzan el hueco y se concentran en el futuro marco de servicios |
+| 7 provisional | Un gesto lleva al contacto; después contacto y footer tienen scroll libre | Figura asentada, sin redibujado |
 
-Al subir se recorre el mapa inverso, incluida la salida del manifiesto hacia la derecha desde Atraer. hasta la promesa del hero. El gesto 5 provisional se sustituirá por la cortina y la frase partida en el commit 4; no se construye esa frase en esta corrección.
+Al subir se recorre el mapa inverso: los puntos vuelven al hueco, desaparece el texto central, las mitades se reúnen, las letras bajan y la cortina vuelve a cerrarse. Después se deshacen IMPULSA. y el manifiesto hasta la promesa del hero. El destino provisional después del gesto 6 se sustituirá por los servicios en el commit 5.
 
-`STOPS`: heroEnd, attractEnd, accompanyEnd, growEnd, boostEnd y contactEntry. Las cuatro transiciones principales ocupan un panel físico cada una. contactEntry es el destino provisional después de IMPULSA.; no añade un capítulo creativo.
+`STOPS`: heroEnd, attractEnd, accompanyEnd, growEnd, boostEnd, planEnd, revealEnd y contactEntry. Cada transición ocupa un panel físico. contactEntry es el destino provisional después de la frase partida; no añade un capítulo creativo.
 
 ## Fin exacto del hero y motor único
 
@@ -31,11 +33,11 @@ Un ScrollTrigger fija el stage. Una timeline GSAP pausada recibe su tiempo de la
 
 La entrada horizontal ocupa el primer 68% del gesto 1. El primer mensaje sube después, del 72% al 97%; no existe una parada vacía entre ambos. Los tres puntos de recorrido y su línea avanzan un tercio por palabra. En el gesto 4 se hace opaca primero la superficie y después aparece la palabra completa; la cortina permanece cerrada.
 
-`StorySplitTransition.astro` conserva una palabra semántica y dos medias palabras visuales con aria-hidden. Las máscaras verticales exteriores son inmóviles; sus paneles interiores quedan preparados para trasladarse hacia los lados en el commit 4.
+`StorySplitTransition.astro` conserva una palabra semántica y dos medias palabras visuales con aria-hidden. Las máscaras verticales exteriores son inmóviles; sus paneles interiores se trasladan hacia los lados en el gesto 5.
 
 ## Canvas reutilizable
 
-- `marketing-story.shapes.ts`: geometrías normalizadas puras scatter, attract, path y growth. `StoryShape` permite agregar figuras; `sampledStoryShape()` permite usar puntos muestreados de servicios o del símbolo de AGSIT en los commits posteriores.
+- `marketing-story.shapes.ts`: geometrías normalizadas puras scatter, attract, path, growth, planTransit (recorrido por el hueco) y servicesFocus (concentración en el marco). `StoryShape` permite agregar figuras; `sampledStoryShape()` permite usar puntos muestreados de servicios o del símbolo de AGSIT en los commits posteriores.
 - `marketing-story.particles.ts`: renderer 2D sin RAF, ticker ni bucle físico propio. `setMorph(from,to,progress)` selecciona una interpolación reversible; `setActive()` pausa escenas cubiertas; `tick(now)` solo dibuja si hay cambios pendientes, está visible y la pestaña está activa. `invalidate()` solicita una actualización de tamaño y `dispose()` libera observadores, cachés y backing store.
 - 160 puntos en teléfono, paisaje bajo o tablet estrecha; 360 en escritorio. DPR máximo 1.25 / 1.5 respectivamente y como máximo 30 / 60 dibujos por segundo durante cambios. Las figuras se cachean; no se generan puntos ni se redibuja cuando están asentadas.
 - ResizeObserver e IntersectionObserver actualizan geometría y visibilidad; se respeta document.hidden. La figura final tiene respaldo SVG estático si no hay canvas o JavaScript. No se añade ninguna dependencia.
@@ -48,9 +50,11 @@ En escritorio hay dos columnas; en teléfono vertical, mensajes y figura se apil
 
 Con movimiento reducido o ahorro de datos no se crean Lenis ni el pin: las tres palabras y sus líneas quedan visibles y la figura de crecimiento se dibuja fija. No hay recorrido animado. El cambio de preferencia desmonta y reconstruye solo esta familia.
 
-## Encadenamiento propuesto para el commit 4
+## Frase partida del commit 4
 
-En el gesto 5, abrir primero la cortina lateral de IMPULSA. y revelar CRECER CON PLAN ya compuesto en el centro. La frase permanece entera durante una pausa breve: no repetir su llegada desde abajo ni el armado letra por letra mientras la cortina está moviéndose. En el gesto siguiente, separar únicamente sus mitades superior e inferior y hacer aparecer [ASÍ LO HACEMOS] en el espacio central. Un cambio claro de eje, escala y ritmo distingue ambos momentos y mantiene el recorrido inverso exacto. La decisión final corresponde a la aprobación del commit 4.
+El encadenamiento aprobado sustituye la propuesta anterior: durante el gesto 5 las letras suben escalonadas mientras se abre la cortina, sin una frase ya compuesta detrás. Cada letra tiene una máscara fija y ambas copias reciben el mismo tiempo. En el gesto 6 dos máscaras horizontales fijas recortan exactamente la mitad de la frase; se trasladan las copias hacia arriba y abajo, aparece el texto central y los puntos atraviesan ese espacio hasta el marco. Todo pertenece a la misma timeline reversible, sin controladores ni tickers adicionales.
+
+`StoryPlanPhrase.astro` y `marketing-story.plan.css` contienen esta sección. Hay un solo h2 semántico; las dos copias visuales llevan aria-hidden. Cormorant Garamond y una línea adaptable conservan el corte también en teléfono y paisaje. La frase y el texto central proceden de los datos ES/EN. Con movimiento reducido o ahorro de datos se muestran frase y texto sin recorrido y la concentración final fija. El renderer existente limita puntos y DPR, pausa escenas cubiertas y pestañas ocultas y deja de dibujar al asentarse.
 
 ## Rendimiento pendiente para la auditoría final
 

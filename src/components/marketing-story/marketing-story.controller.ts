@@ -7,7 +7,7 @@ import { storyShapes } from './marketing-story.shapes';
 
 gsap.registerPlugin(ScrollTrigger);
 type Direction = -1 | 1;
-const STOPS = ['heroEnd', 'attractEnd', 'accompanyEnd', 'growEnd', 'boostEnd', 'contactEntry'] as const;
+const STOPS = ['heroEnd', 'attractEnd', 'accompanyEnd', 'growEnd', 'boostEnd', 'planEnd', 'revealEnd', 'contactEntry'] as const;
 type Stop = typeof STOPS[number];
 type MotionTarget = Stop | 'start' | 'end' | HTMLElement;
 type Decision = { kind: 'free' } | { kind: 'clamp' | 'stop'; stop: Stop };
@@ -33,17 +33,26 @@ export function initMarketingStory() {
   const modes = gsap.matchMedia();
   modes.add({ motion: '(prefers-reduced-motion: no-preference)', reduced: '(prefers-reduced-motion: reduce)' }, context => {
     const canvas = page.querySelector<HTMLCanvasElement>('[data-story-particles]')!;
+    const planCanvas = page.querySelector<HTMLCanvasElement>('[data-plan-particles]')!;
     if (context.conditions?.reduced || connection?.saveData) {
       page.dataset.motion = 'static';
       canvas.setAttribute('aria-label', (JSON.parse(canvas.dataset.figureLabels || '[]') as string[])[2] || '');
       const particles = createStoryParticles(canvas, { static: true, initial: storyShapes.growth });
-      return () => { particles.dispose(); delete page.dataset.motion; };
+      const planParticles = createStoryParticles(planCanvas, { static: true, initial: storyShapes.servicesFocus });
+      return () => { particles.dispose(); planParticles.dispose(); delete page.dataset.motion; };
     }
     const track = page.querySelector<HTMLElement>('[data-journey-track]')!;
     const stage = page.querySelector<HTMLElement>('[data-journey-stage]')!;
     const hero = page.querySelector<HTMLElement>('[data-hero]')!;
     const split = page.querySelector<HTMLElement>('[data-story-split]')!;
     const manifesto = page.querySelector<HTMLElement>('#ms-manifesto')!;
+    const plan = page.querySelector<HTMLElement>('[data-plan]')!;
+    const upper = plan.querySelector<HTMLElement>('[data-plan-half="0"]')!;
+    const lower = plan.querySelector<HTMLElement>('[data-plan-half="1"]')!;
+    const letters = [...upper.querySelectorAll<HTMLElement>('[data-plan-letter]')];
+    const lowerLetters = [...lower.querySelectorAll<HTMLElement>('[data-plan-letter]')];
+    const cue = plan.querySelector<HTMLElement>('[data-plan-cue]')!;
+    const frame = plan.querySelector<HTMLElement>('[data-plan-frame]')!;
     const contact = page.querySelector<HTMLElement>('.final-contact-section')!;
     const header = document.querySelector<HTMLElement>('.site-nav');
     const claim = hero.querySelector<HTMLElement>('[data-claim]')!;
@@ -61,7 +70,8 @@ export function initMarketingStory() {
     page.dataset.motion = 'enhanced';
     const media = createStoryVideo(hero, signal);
     const particles = createStoryParticles(canvas);
-    let g = { panel: 1, start: 0, heroEnd: 0, attractEnd: 0, accompanyEnd: 0, growEnd: 0, boostEnd: 0, contactEntry: 0, contact: 0, stageHeight: 1 };
+    const planParticles = createStoryParticles(planCanvas);
+    let g = { panel: 1, start: 0, heroEnd: 0, attractEnd: 0, accompanyEnd: 0, growEnd: 0, boostEnd: 0, planEnd: 0, revealEnd: 0, contactEntry: 0, contact: 0, stageHeight: 1 };
     let lenis: Lenis;
     let trigger: ScrollTrigger;
     let moving = false;
@@ -83,11 +93,11 @@ export function initMarketingStory() {
       page.style.setProperty('--ms-header-h', `${nav}px`);
       const start = Math.round(documentTop(track));
       const heroEnd = Math.round(start + panel * HERO_END);
-      g = { ...g, panel, start, heroEnd, attractEnd: heroEnd + panel, accompanyEnd: heroEnd + panel * 2, growEnd: heroEnd + panel * 3, boostEnd: heroEnd + panel * 4 };
+      g = { ...g, panel, start, heroEnd, attractEnd: heroEnd + panel, accompanyEnd: heroEnd + panel * 2, growEnd: heroEnd + panel * 3, boostEnd: heroEnd + panel * 4, planEnd: heroEnd + panel * 5, revealEnd: heroEnd + panel * 6 };
     };
     const measureTrack = () => {
       g.stageHeight = g.panel;
-      track.style.height = `${g.stageHeight + g.boostEnd - g.start}px`;
+      track.style.height = `${g.stageHeight + g.revealEnd - g.start}px`;
       g.contact = Math.round(documentTop(contact));
       g.contactEntry = g.contact;
       for (const name of STOPS) page.dataset[name] = String(g[name]);
@@ -107,6 +117,10 @@ export function initMarketingStory() {
     gsap.set(nodes, { opacity: 0 });
     gsap.set(splitWords, { opacity: 0, y: 24 });
     gsap.set(thread, { scaleX: 0 });
+    gsap.set(plan, { autoAlpha: 0 });
+    gsap.set([...letters, ...lowerLetters], { opacity: 0, yPercent: 115 });
+    gsap.set([cue, planCanvas, frame], { autoAlpha: 0 });
+    gsap.set(frame, { y: 16 });
     const span = VIDEO_PANELS * .82 / captions.length;
     captions.forEach((caption, index) => {
       const start = index * span;
@@ -128,16 +142,28 @@ export function initMarketingStory() {
         .to(thread, { scaleX: (index + 2) / 3, duration: .8 }, start + .1)
         .to(nodes[index + 1], { opacity: 1, duration: .3 }, start + .4);
     });
-    // BOOST is a complete word here. Its lateral opening belongs to commit 4.
+    // Both openings share this reversible timeline and the existing gesture gate.
     master.to(split, { autoAlpha: 1, duration: .4 }, HERO_END + 3.05)
       .to(splitWords, { opacity: 1, y: 0, duration: .4, ease: 'expo.out' }, HERO_END + 3.48)
-      .to({}, { duration: 4 }, HERO_END);
+      .set(plan, { autoAlpha: 1 }, HERO_END + 4)
+      .set(manifesto, { autoAlpha: 0 }, HERO_END + 4.01)
+      .to(left, { xPercent: -104, duration: 1, ease: 'power2.inOut' }, HERO_END + 4)
+      .to(right, { xPercent: 104, duration: 1, ease: 'power2.inOut' }, HERO_END + 4);
+    letters.forEach((letter, index) => {
+      master.to([letter, lowerLetters[index]], { opacity: 1, yPercent: 0, duration: .32, ease: 'power3.out' }, HERO_END + 4.08 + index * .035);
+    });
+    master.to(upper, { yPercent: -110, duration: .8, ease: 'power2.inOut' }, HERO_END + 5.05)
+      .to(lower, { yPercent: 110, duration: .8, ease: 'power2.inOut' }, HERO_END + 5.05)
+      .to(cue, { autoAlpha: 1, duration: .4 }, HERO_END + 5.25)
+      .to(planCanvas, { autoAlpha: 1, duration: .15 }, HERO_END + 5.05)
+      .to(frame, { autoAlpha: 1, y: 0, duration: .5 }, HERO_END + 5.38)
+      .to({}, { duration: 6 }, HERO_END);
     const render = () => {
       const y = window.scrollY;
       const units = y <= g.heroEnd ? clamp01((y - g.start) / (g.heroEnd - g.start)) * HERO_END : HERO_END + (y - g.heroEnd) / g.panel;
-      master.time(Math.max(0, Math.min(HERO_END + 4, units)));
+      master.time(Math.max(0, Math.min(HERO_END + 6, units)));
       const localProgress = units - HERO_END;
-      const mode = y < g.heroEnd - EPSILON ? 'continuous' : y < g.attractEnd - EPSILON ? 'entry' : y <= g.growEnd + EPSILON ? 'manifesto' : y <= g.boostEnd + EPSILON ? 'boost' : 'reading';
+      const mode = y < g.heroEnd - EPSILON ? 'continuous' : y < g.attractEnd - EPSILON ? 'entry' : y <= g.growEnd + EPSILON ? 'manifesto' : y <= g.boostEnd + EPSILON ? 'boost' : y <= g.planEnd + EPSILON ? 'plan-entry' : y <= g.revealEnd + EPSILON ? 'plan-split' : 'reading';
       const step = String(y < g.attractEnd - EPSILON ? 0 : Math.min(4, 1 + Math.floor((y - g.attractEnd + EPSILON) / g.panel)));
       if (page.dataset.manifestoStep !== step) page.dataset.manifestoStep = step;
       if (page.dataset.scrollStage !== mode) page.dataset.scrollStage = mode;
@@ -150,6 +176,10 @@ export function initMarketingStory() {
       particles.setMorph(localProgress < 1 ? storyShapes.scatter : localProgress < 2 ? storyShapes.attract : storyShapes.path,
         localProgress < 1 ? storyShapes.attract : localProgress < 2 ? storyShapes.path : storyShapes.growth, eased);
       particles.setActive(!overlayOpen() && localProgress > 0 && localProgress < 3.5);
+      const planProgress = clamp01((localProgress - 5.12) / .83);
+      planParticles.setMorph(storyShapes.planTransit, storyShapes.servicesFocus, planProgress * planProgress * (3 - 2 * planProgress));
+      planParticles.setActive(!overlayOpen() && localProgress > 5.05 && localProgress <= 6.01);
+      split.classList.toggle('is-open', localProgress >= 5);
       const sequenceVisible = !overlayOpen() && y >= g.start - 1 && units < VIDEO_PANELS * .84;
       media.update(clamp01(units / VIDEO_PANELS), sequenceVisible);
       const setInert = (element: HTMLElement, value: boolean) => { if (element.inert !== value) element.inert = value; };
@@ -158,6 +188,8 @@ export function initMarketingStory() {
       setInert(hero, localProgress > .01);
       hero.classList.toggle('is-occluded', localProgress >= .68);
       setInert(manifesto, y < g.attractEnd - EPSILON || localProgress >= 3.45);
+      setInert(plan, y < g.planEnd - EPSILON);
+      setInert(split, localProgress >= 5);
       const changing = localProgress > 0 && localProgress < .68;
       const hint = changing ? 'transform' : '';
       if (manifesto.style.willChange !== hint) manifesto.style.willChange = hint;
@@ -165,7 +197,7 @@ export function initMarketingStory() {
     };
     trigger = ScrollTrigger.create({
       id: 'marketing-story-journey', trigger: track, start: 'top top',
-      end: () => `+=${g.boostEnd - g.start}`,
+      end: () => `+=${g.revealEnd - g.start}`,
       pin: stage, pinSpacing: false,
     });
 
@@ -230,7 +262,7 @@ export function initMarketingStory() {
     // Update once per position, including free scroll after the pin has ended.
     lenis.on('scroll', () => { ScrollTrigger.update(); render(); });
     // Lenis receives wall-clock milliseconds without changing GSAP's global lag policy.
-    const tick = () => { const now = performance.now(); lenis.raf(now); media.tick(now); particles.tick(now); };
+    const tick = () => { const now = performance.now(); lenis.raf(now); media.tick(now); particles.tick(now); planParticles.tick(now); };
     gsap.ticker.add(tick);
 
     const onKey = (event: KeyboardEvent) => {
@@ -281,9 +313,9 @@ export function initMarketingStory() {
       const old = g;
       const y = lenis.animatedScroll;
       const units = (y - old.start) / old.panel;
-      const reading = y > old.boostEnd;
+      const reading = y > old.revealEnd;
       const pastContact = y >= old.contact;
-      const readingRatio = (y - old.boostEnd) / Math.max(1, old.contact - old.boostEnd);
+      const readingRatio = (y - old.revealEnd) / Math.max(1, old.contact - old.revealEnd);
       const resume = motionTarget;
       const resumeKind = motionKind;
       const settled = !moving ? STOPS.find(name => Math.abs(y - old[name]) <= EPSILON) : undefined;
@@ -293,8 +325,9 @@ export function initMarketingStory() {
       trigger.refresh();
       measureTrack();
       particles.invalidate();
+      planParticles.invalidate();
       lenis.resize();
-      const next = settled ? g[settled] : !reading ? g.start + units * g.panel : pastContact ? g.contact + y - old.contact : g.boostEnd + readingRatio * (g.contact - g.boostEnd);
+      const next = settled ? g[settled] : !reading ? g.start + units * g.panel : pastContact ? g.contact + y - old.contact : g.revealEnd + readingRatio * (g.contact - g.revealEnd);
       lenis.scrollTo(Math.max(0, next), { immediate: true, force: true });
       ScrollTrigger.update(); render();
       if (resume) goTo(resolveTarget(resume), resumeKind, resume);
@@ -330,8 +363,9 @@ export function initMarketingStory() {
       disposed = true; local.abort();
       window.clearTimeout(wheelTimer); window.clearTimeout(refreshTimer);
       overlayObserver.disconnect(); navSize.disconnect();
-      gsap.ticker.remove(tick); lenis.destroy(); media.dispose(); particles.dispose();
+      gsap.ticker.remove(tick); lenis.destroy(); media.dispose(); particles.dispose(); planParticles.dispose();
       hero.inert = false; claim.inert = false; controls.inert = false; manifesto.inert = false;
+      plan.inert = false; split.inert = false; split.classList.remove('is-open');
       for (const element of [left, right, manifesto]) element.style.removeProperty('will-change');
       hero.classList.remove('is-occluded');
       track.style.removeProperty('height');
