@@ -109,3 +109,15 @@ Se conservan los máximos de 450 puntos en teléfono, 1,200 en escritorio y 240 
 Build y git diff --check correctos. Una pasada ES en 390×844 y 1366×768 completó frase y cinco servicios bajando y subiendo, con 24 capturas finales y una captura adicional de la diana con la flecha clavada. La compuerta dejó el marco oculto en la frase y visible en el primer servicio. No hubo errores de consola, desbordamiento horizontal ni superposición de la tarjeta con la figura. No se repitieron tamaños, inglés ni pruebas del manifiesto o de movimiento reducido.
 
 Una sola medición en una página nueva de 390×844, CPU 4×: cinco segundos de engrane animado y un cambio de engrane a conversación. P95 entre requestAnimationFrame: 16.7 ms en el ciclo y 16.7 ms en el cambio. Tareas largas: 0 / 0. Se conservaron 450 puntos y DPR 1. No se repitió la medición ni se midió escritorio; el resultado anterior de escritorio sigue pendiente de auditoría.
+
+## Línea horizontal y figuras del manifiesto
+
+La línea de la frase es horizontal, tiene el ancho real de sus letras y queda 14 px debajo de [ASÍ LO HACEMOS]. Permanece en el hueco durante la parada 6, sin marco. En el gesto 7 baja durante el primer cuarto del gesto y luego se transforma en la diana; al subir se deshace exactamente en orden inverso. Su anchura y posición se recalculan al cambiar fuentes o viewport.
+
+El manifiesto reutiliza el muestreador vectorial nítido, con un área mayor y centrada verticalmente en la columna derecha. El ajuste interno ocupa el 96% del lado disponible; conserva 240 puntos, radio uniforme, DPR 1 / 1.5 y pausas. En teléfono vertical la figura apilada crece hasta min(34svh,300px), con una variante compacta de min(27svh,190px).
+
+Atraer usa una herradura acostada con abertura izquierda, polos más intensos y puntos que llegan desde la izquierda y se adhieren brevemente. Acompañar usa dos bustos de cabeza y hombros, que avanzan juntos con leve balanceo sobre un camino. Crecer usa tres barras que crecen una tras otra y luego una flecha diagonal de astil y punta cuyo brillo se traza hacia arriba; el ciclo mantiene una base tenue reconocible. El cambio entre figuras sigue interpolando destinos sin pausar sus ciclos. Con movimiento reducido se conserva la composición completa y estática.
+
+Verificación de esta corrección: build y git diff --check correctos; una pasada ES en 390×844 y 1366×768, bajando y subiendo, con 16 capturas finales (tres estados del manifiesto y la frase por sentido y tamaño). Se comprobaron la línea horizontal debajo del texto central, su ancho respecto a la frase, la ausencia de marco en esa parada, el centrado de la columna en escritorio, el tamaño de las figuras, textos dentro de pantalla y consola sin errores.
+
+Una sola medición en una página nueva de 390×844 con CPU 4×: cinco segundos de la figura de Crecer animándose, 240 puntos, p95 entre requestAnimationFrame de 16.7 ms y cero tareas largas. No se repitió la medición ni se midieron los servicios, el escritorio, inglés o movimiento reducido.

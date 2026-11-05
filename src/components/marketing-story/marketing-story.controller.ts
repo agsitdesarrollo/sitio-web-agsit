@@ -79,6 +79,10 @@ export function initMarketingStory() {
     const media = createStoryVideo(hero, signal);
     const particles = createStoryParticles(canvas);
     const planParticles = createStoryParticles(planCanvas, { colors: ['#8be2ff', '#41c8f6'], scene: 'services' });
+    const lineSpace = { cx: .5, cy: .5, sx: 1, sy: 1 };
+    const entrySpace = { ...lineSpace };
+    const phraseLine = mapStoryShape(storyShapes.planTransit,lineSpace);
+    const entryLine = mapStoryShape(storyShapes.servicesFocus,entrySpace);
     let mappedShapes: StoryShape[] = [];
     let announced = -1;
     let g = { panel: 1, start: 0, heroEnd: 0, attractEnd: 0, accompanyEnd: 0, growEnd: 0, boostEnd: 0, planEnd: 0, revealEnd: 0, strategyEnd: 0, journeyEnd: 0, intelligenceEnd: 0, automationEnd: 0, channelsEnd: 0, contactEntry: 0, contact: 0, stageHeight: 1 };
@@ -114,6 +118,12 @@ export function initMarketingStory() {
       for (const name of STOPS) page.dataset[name] = String(g[name]);
       const bounds = serviceFigure.getBoundingClientRect();
       const field = planCanvas.getBoundingClientRect();
+      const firstLetter = letters[0].getBoundingClientRect(), lastLetter = letters[letters.length - 1].getBoundingClientRect();
+      const cueBounds = cue.getBoundingClientRect();
+      lineSpace.cx = ((firstLetter.left + lastLetter.right) / 2 - field.left) / field.width;
+      lineSpace.cy = (cueBounds.bottom - field.top + 14) / field.height;
+      lineSpace.sx = (lastLetter.right - firstLetter.left) / field.width / .84;
+      Object.assign(entrySpace,lineSpace);
       const side = Math.min(bounds.width, bounds.height) * 1.02;
       const space = { cx: (bounds.left - field.left + bounds.width / 2) / field.width, cy: (bounds.top - field.top + bounds.height / 2) / field.height, sx: side / field.width, sy: side / field.height };
       mappedShapes = serviceShapes.map(shape => mapStoryShape(shape,space));
@@ -202,11 +212,13 @@ export function initMarketingStory() {
         localProgress < 1 ? storyShapes.attract : localProgress < 2 ? storyShapes.path : storyShapes.growth, eased);
       particles.setActive(!overlayOpen() && localProgress > 0 && localProgress < 3.5);
       const planProgress = clamp01((localProgress - 5.12) / .83);
-      if (localProgress <= 6) planParticles.setMorph(storyShapes.planTransit, storyShapes.servicesFocus, planProgress * planProgress * (3 - 2 * planProgress));
+      if (localProgress <= 6) planParticles.setMorph(phraseLine, phraseLine, planProgress * planProgress * (3 - 2 * planProgress));
       else {
         const segment = Math.min(4, Math.floor(localProgress - 6));
-        const progress = clamp01((localProgress - 6 - segment - .08) / .82);
-        planParticles.setMorph(segment === 0 ? storyShapes.servicesFocus : mappedShapes[segment - 1], mappedShapes[segment], progress * progress * (3 - 2 * progress));
+        const dropping = clamp01((localProgress - 6 - .02) / .23);
+        entrySpace.cy = lineSpace.cy + .1 * dropping * dropping * (3 - 2 * dropping);
+        const progress = clamp01((localProgress - 6 - segment - (segment === 0 ? .25 : .08)) / (segment === 0 ? .70 : .82));
+        planParticles.setMorph(segment === 0 ? entryLine : mappedShapes[segment - 1], mappedShapes[segment], progress * progress * (3 - 2 * progress));
       }
       planParticles.setActive(!overlayOpen() && localProgress > 5.05 && localProgress < 12.01);
       const expansion = clamp01(localProgress - 6);

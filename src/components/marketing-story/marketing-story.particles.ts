@@ -10,7 +10,7 @@ export function createStoryParticles(canvas: HTMLCanvasElement, options: Options
   const lifetime = new AbortController();
   const compact = matchMedia('(max-width: 799px), (max-height: 520px)');
   const services = options.scene === 'services';
-  const palette = options.colors ? ['#538ba0','#69a8bd',options.colors[0],'#fff','rgba(255,255,255,.75)','rgba(255,255,255,.5)','rgba(255,255,255,.25)','rgba(255,255,255,.1)'] : ['#7f9aad','#4e7396','#253f6c','#1f6f92','#1f6f92','#1f6f92','#1f6f92','#1f6f92'];
+  const palette = options.colors ? ['#538ba0','#69a8bd',options.colors[0],'#fff','rgba(255,255,255,.75)','rgba(255,255,255,.5)','rgba(255,255,255,.25)','rgba(255,255,255,.1)'] : ['#53789b','#315679','#253f6c','#1f6f92','#1f6f92','#1f6f92','#1f6f92','#1f6f92'];
   let from = options.initial || storyShapes.scatter, to = from, progress = 1;
   let active = !!options.static, intersecting = false, dirty = true;
   let width = 0, height = 0, lastDraw = -Infinity, lastTick = 0, clock = 0;
@@ -23,17 +23,14 @@ export function createStoryParticles(canvas: HTMLCanvasElement, options: Options
     let points = cache.get(source);
     if (!points) {
       const sampled = source.vector ? sampleStoryVector(source.vector,count,Math.max(1,shapeSize)) : null;
-      points = { rest: sampled?.rest || new Float32Array(count * 2), parts: sampled?.parts || new Uint8Array(count), edges: sampled?.edges || new Uint8Array(count), seeds: sampled?.phases || new Float32Array(count), output: new Float32Array(count * 4), motion: source.motion, time: -1, lineTop: 1, lineHeight: 0 };
-      let bottom = 0;
+      points = { rest: sampled?.rest || new Float32Array(count * 2), parts: sampled?.parts || new Uint8Array(count), edges: sampled?.edges || new Uint8Array(count), seeds: sampled?.phases || new Float32Array(count), output: new Float32Array(count * 4), motion: source.motion, time: -1 };
       for (let i = 0; i < count; i++) {
         if (!sampled) {
           const point = source.sample!(i,count);
           points.rest[i * 2] = point.x; points.rest[i * 2 + 1] = point.y;
           points.parts[i] = point.part || 0; points.seeds[i] = point.y;
         }
-        if (points.parts[i] !== 255) { points.lineTop = Math.min(points.lineTop,points.rest[i * 2 + 1]); bottom = Math.max(bottom,points.rest[i * 2 + 1]); }
       }
-      points.lineHeight = bottom - points.lineTop;
       cache.set(source,points);
     }
     return points;
@@ -64,13 +61,13 @@ export function createStoryParticles(canvas: HTMLCanvasElement, options: Options
     const time = options.static ? 0 : clock;
     animateStoryPoints(a,time,!!options.static); if (b !== a) animateStoryPoints(b,time,!!options.static);
     const af = from.space, bf = to.space;
-    const side = Math.min(width,height) * .78;
+    const side = Math.min(width,height) * .96;
     const acx = af ? af.cx * width : width / 2, acy = af ? af.cy * height : height / 2;
     const asx = af ? af.sx * width : services ? width : side, asy = af ? af.sy * height : services ? height : side;
     const bcx = bf ? bf.cx * width : width / 2, bcy = bf ? bf.cy * height : height / 2;
     const bsx = bf ? bf.sx * width : services ? width : side, bsy = bf ? bf.sy * height : services ? height : side;
     const burst = Math.sin(progress * Math.PI) * Math.min(width,height) * .025;
-    const radius = services ? compact.matches ? 1.8 : 2.15 : 2;
+    const radius = services ? compact.matches ? 1.8 : 2.15 : 2.3;
     for (let i = 0; i < count; i++) {
       const k = i * 4;
       const ax = acx + (a.output[k] - .5) * asx, ay = acy + (a.output[k + 1] - .5) * asy;
@@ -97,7 +94,7 @@ export function createStoryParticles(canvas: HTMLCanvasElement, options: Options
       if (canvas.dataset.arrowState !== state) canvas.dataset.arrowState = state;
     } else if (canvas.dataset.arrowState) delete canvas.dataset.arrowState;
   };
-  const sizes = new ResizeObserver(entries => { width = entries[0].contentRect.width; height = entries[0].contentRect.height; if (!services) setShapeSize(Math.min(width,height) * .78); dirty = true; if (options.static) tick(); });
+  const sizes = new ResizeObserver(entries => { width = entries[0].contentRect.width; height = entries[0].contentRect.height; if (!services) setShapeSize(Math.min(width,height) * .96); dirty = true; if (options.static) tick(); });
   const visibility = new IntersectionObserver(entries => { intersecting = entries[0].isIntersecting && entries[0].intersectionRect.width > 1 && entries[0].intersectionRect.height > 1; lastTick = 0; if (options.static) tick(); });
   sizes.observe(canvas); visibility.observe(canvas);
   const redraw = () => { dirty = true; if (options.static) tick(); };

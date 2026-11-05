@@ -47,25 +47,27 @@ const chat: StoryShape = { motion: 'chat', vector: { layers: [
   ...chatDots.map(([x,y],index) => ({ d: circle(x,y,22), part: index + 1, weight: .04, contour: .4 })),
 ] } };
 const magnet: StoryShape = { motion: 'magnet', vector: { layers: [
-  { d: 'M190 180H330V500A170 170 0 0 0 670 500V180H810V500A310 310 0 0 1 190 500Z', part: 0, weight: .85, contour: .36 },
-  { d: 'M90 20H910V110H90Z', part: 1, weight: .15, contour: 0 },
+  { d: 'M310 200H540A300 300 0 0 1 540 800H310V640H540A140 140 0 0 0 540 360H310Z', part: 0, weight: .65, contour: .38 },
+  { d: 'M180 200H310V360H180Z', part: 2, weight: .12, contour: .35 },
+  { d: 'M180 640H310V800H180Z', part: 3, weight: .12, contour: .35 },
+  { d: 'M20 190H145V810H20Z', part: 1, weight: .11, contour: 0 },
 ] } };
 const companions: StoryShape = { motion: 'companions', vector: { layers: [
-  { d: 'M70 480C220 160 350 160 500 480S780 800 930 480L930 520C780 840 650 840 500 520S220 200 70 520Z', part: 0, weight: .6, contour: .2 },
-  { d: circle(445,500,48), part: 1, weight: .2, contour: .35 },
-  { d: circle(555,500,48), part: 2, weight: .2, contour: .35 },
+  { d: 'M90 790C310 730 690 850 910 790L910 820C690 880 310 760 90 820Z', part: 0, weight: .24, contour: .18 },
+  { d: circle(320,300,90) + 'M170 720V545C170 390 470 390 470 545V720Z', part: 1, weight: .38, contour: .4 },
+  { d: circle(680,300,90) + 'M530 720V545C530 390 830 390 830 545V720Z', part: 2, weight: .38, contour: .4 },
 ] } };
 const growth: StoryShape = { motion: 'growth', vector: { layers: [
-  { d: 'M170 600H310V870H170Z', part: 1, weight: .19, contour: .3 },
-  { d: 'M390 440H530V870H390Z', part: 2, weight: .25, contour: .3 },
-  { d: 'M610 280H750V870H610Z', part: 3, weight: .34, contour: .3 },
-  { d: 'M110 500L795 145L730 135L735 90L900 110L865 270L820 260L840 195L135 545Z', part: 0, weight: .22, contour: .45 },
+  { d: 'M160 600H320V870H160Z', part: 1, weight: .19, contour: .34 },
+  { d: 'M410 430H570V870H410Z', part: 2, weight: .25, contour: .34 },
+  { d: 'M660 260H820V870H660Z', part: 3, weight: .31, contour: .34 },
+  { d: polygon([[104,497],[789,140],[801,166],[116,523]]) + polygon([[900,100],[719,100],[800,260]]), part: 4, weight: .25, contour: .5 },
 ] } };
-const verticalLine = (top: number, bottom: number): StoryShape => ({ motion: 'line', sample: index => ({ x: .5, y: top + (index % 24) / 23 * (bottom - top), part: index < 24 ? 0 : 255 }) });
+const horizontalLine = (): StoryShape => ({ motion: 'line', sample: index => ({ x: .08 + (index % 48) / 47 * .84, y: .5, part: index < 48 ? 0 : 255 }) });
 export const storyShapes = {
   scatter: { sample: (index: number) => ({ x: .08 + (index % 16) / 15 * .84, y: .08 + (Math.floor(index / 16) % 16) / 15 * .84 }) } as StoryShape,
   attract: magnet, path: companions, growth,
-  planTransit: verticalLine(.32,.53), servicesFocus: verticalLine(.52,.78),
+  planTransit: horizontalLine(), servicesFocus: horizontalLine(),
 };
 export const serviceShapes: readonly StoryShape[] = [target,funnel,brain,gear,chat];
 export const mapStoryShape = (shape: StoryShape, space: StorySpace): StoryShape => ({ source: shape, motion: shape.motion, space });

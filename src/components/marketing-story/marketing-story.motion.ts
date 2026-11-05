@@ -1,20 +1,11 @@
 import type { StoryMotion } from './marketing-story.shapes';
-export type PreparedStoryPoints = { rest: Float32Array; parts: Uint8Array; edges: Uint8Array; seeds: Float32Array; output: Float32Array; motion?: StoryMotion; time: number; lineTop: number; lineHeight: number };
+export type PreparedStoryPoints = { rest: Float32Array; parts: Uint8Array; edges: Uint8Array; seeds: Float32Array; output: Float32Array; motion?: StoryMotion; time: number };
 const fract = (value: number) => value - Math.floor(value);
-const PATH_X = [[.07,.22,.35,.5],[.5,.65,.78,.93]];
-const PATH_Y = [[.5,.18,.18,.5],[.5,.82,.82,.5]];
 /** Uniform visible radius; only rigid elements, flow particles and subtle brightness animate. */
 export function animateStoryPoints(points: PreparedStoryPoints, time: number, fixed: boolean) {
   if (points.time === time) return;
   points.time = time;
   const rotation = fixed ? 0 : time * .15, cos = Math.cos(rotation), sin = Math.sin(rotation), cycle = time % 4.8;
-  const travel = fract(time * .13), u = travel < .5 ? travel * 2 : (travel - .5) * 2, v = 1 - u;
-  const px = PATH_X[travel < .5 ? 0 : 1], py = PATH_Y[travel < .5 ? 0 : 1];
-  const cx = v ** 3 * px[0] + 3 * v * v * u * px[1] + 3 * v * u * u * px[2] + u ** 3 * px[3];
-  const cy = v ** 3 * py[0] + 3 * v * v * u * py[1] + 3 * v * u * u * py[2] + u ** 3 * py[3];
-  const dx = 3 * v * v * (px[1] - px[0]) + 6 * v * u * (px[2] - px[1]) + 3 * u * u * (px[3] - px[2]);
-  const dy = 3 * v * v * (py[1] - py[0]) + 6 * v * u * (py[2] - py[1]) + 3 * u * u * (py[3] - py[2]);
-  const norm = Math.max(.001,Math.hypot(dx,dy));
   for (let i = 0; i < points.parts.length; i++) {
     const baseX = points.rest[i * 2], baseY = points.rest[i * 2 + 1], part = points.parts[i], edge = points.edges[i], phase = points.seeds[i];
     let x = baseX, y = baseY, tone = part === 255 ? -1 : edge ? 2 : 1;
@@ -64,29 +55,40 @@ export function animateStoryPoints(points: PreparedStoryPoints, time: number, fi
         break;
       }
       case 'magnet': {
+        if (part >= 2) tone = 3;
         if (part === 1 && !fixed) {
-          const pull = fract(time * .24 + baseX * .7), pole = baseX > .5 ? .74 : .26;
-          x = baseX + (pole - baseX) * pull * pull; y = .025 + .15 * pull;
-          tone = 1;
+          const pull = Math.min(1,fract(time * .24 + baseY * .7 + baseX) / .78);
+          const eased = pull * pull * (3 - 2 * pull), poleY = baseY < .5 ? .28 : .72;
+          x = baseX + (.205 - baseX) * eased; y = baseY + (poleY - baseY) * eased;
+          tone = pull === 1 ? 3 : 1;
         }
         break;
       }
       case 'companions': {
-        tone = part > 0 ? 2 : 0;
+        tone = part > 0 ? 2 : 1;
         if (part > 0 && !fixed) {
-          const side = part === 1 ? -1 : 1;
-          x = baseX - (part === 1 ? .445 : .555) + cx - dy / norm * side * .055;
-          y = baseY - .5 + cy + dx / norm * side * .055;
+          x = baseX + (fract(time * .16) - .5) * .1;
+          y = baseY + Math.sin(time * 5 + part * .4) * .007;
+        } else if (part === 0 && !fixed) {
+          tone = Math.sin(baseX * 10 + time * 2) > 0 ? 1 : 0;
         }
         break;
       }
       case 'growth': {
-        if (part > 0 && !fixed) y = .87 + (y - .87) * (1 + Math.sin(time * 2 + part) * .012);
+        const beat = time % 5.6;
+        if (part >= 1 && part <= 3 && !fixed) {
+          const growing = Math.max(0,Math.min(1,(beat - (part - 1) * .55) / .65));
+          const reset = Math.max(0,Math.min(1,(beat - 4.6) / 1));
+          y = .87 + (y - .87) * (.55 + .45 * growing * (1 - reset));
+        } else if (part === 4) {
+          const traced = fixed ? 1 : Math.max(0,Math.min(1,(beat - 1.9) / .85)) * (1 - Math.max(0,Math.min(1,(beat - 4.6) / 1)));
+          const along = ((baseX - .11) * .79 + (.51 - baseY) * .41) / (.79 * .79 + .41 * .41);
+          tone = along <= traced ? 2 : 0;
+        }
         break;
       }
       case 'line': {
-        if (!fixed) y = points.lineTop + fract((baseY - points.lineTop) / Math.max(.001,points.lineHeight) + time * .23) * points.lineHeight;
-        tone = 2; break;
+        tone = fixed || Math.sin(time * 2 - baseX * 8) > 0 ? 2 : 1; break;
       }
     }
     const k = i * 4; points.output[k] = x; points.output[k + 1] = y;
