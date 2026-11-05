@@ -1,5 +1,5 @@
 /* Interface scenes for the manifesto. Default markup is each scene's finished state (no JS / reduced motion). */
-.ms-scenes { --sc-ink: #08152b; --sc-blue: #253f6c; --sc-teal: #1f6f92; --sc-cyan: #41c8f6; --sc-line: rgba(8,21,43,.09); --sc-fill: #e4eaf3; --sc-pad: 18px; --sc-gap: 12px; --sc-text: .875rem; display: grid; justify-items: center; align-content: center; gap: 24px; width: 100%; font: 500 var(--sc-text)/1.4 'Inter','Segoe UI',sans-serif; color: var(--sc-ink); }
+.ms-scenes { --sc-ink: #08152b; --sc-blue: #253f6c; --sc-teal: #1f6f92; --sc-cyan: #41c8f6; --sc-line: rgba(8,21,43,.09); --sc-fill: #e4eaf3; --sc-pad: 18px; --sc-gap: 12px; --sc-text: .875rem; --sc-node: 36px; display: grid; justify-items: center; align-content: center; gap: 24px; width: 100%; font: 500 var(--sc-text)/1.4 'Inter','Segoe UI',sans-serif; color: var(--sc-ink); }
 .ms-scene { width: min(100%,440px); }
 .ms-sc-card { background: #fff; border: 1px solid var(--sc-line); border-radius: 16px; box-shadow: 0 22px 48px -14px rgba(8,21,43,.18), 0 2px 8px rgba(8,21,43,.05); padding: var(--sc-pad); }
 .ms-sc-card b { font-weight: 600; font-size: calc(var(--sc-text) + .0625rem); color: var(--sc-ink); }
@@ -31,16 +31,17 @@
 .ms-sc-status > span { grid-area: 1 / 1; }
 .ms-sc-status > span:not(:last-child) { opacity: 0; }
 .ms-sc-head b { white-space: nowrap; }
-.ms-sc-steps { list-style: none; margin: 0; padding: 0; }
-.ms-sc-step { position: relative; display: grid; grid-template-columns: 28px 1fr; align-items: center; gap: 14px; min-height: 28px; }
-.ms-sc-step + .ms-sc-step { margin-top: 24px; }
-.ms-sc-conn { position: absolute; left: 13px; top: 28px; width: 2px; height: calc(100% - 28px + 24px); background: #dbe3ee; border-radius: 2px; overflow: hidden; }
+.ms-sc-follow { display: flex; flex-direction: column; }
+.ms-sc-steps { flex: 1; display: flex; flex-direction: column; list-style: none; margin: 0; padding: 0; }
+.ms-sc-step { position: relative; display: grid; grid-template-columns: var(--sc-node) 1fr; align-items: start; gap: 14px; }
+.ms-sc-step:not(:last-child) { flex: 1; min-height: calc(var(--sc-node) + 16px); }
+.ms-sc-conn { position: absolute; left: calc(var(--sc-node) / 2 - 1px); top: var(--sc-node); bottom: 0; width: 2px; background: #dbe3ee; border-radius: 2px; overflow: hidden; }
 .ms-sc-conn i { display: block; width: 100%; height: 100%; background: var(--sc-teal); transform-origin: top; }
-.ms-sc-node { position: relative; display: grid; place-items: center; width: 28px; height: 28px; border-radius: 50%; border: 2px solid #c6d1df; background: #fff; }
+.ms-sc-node { position: relative; display: grid; place-items: center; width: var(--sc-node); height: var(--sc-node); border-radius: 50%; border: 2px solid #c6d1df; background: #fff; }
 .ms-sc-node i { position: absolute; inset: -2px; border-radius: 50%; background: var(--sc-teal); }
-.ms-sc-node svg { position: relative; width: 14px; height: 14px; }
+.ms-sc-node svg { position: relative; width: 45%; height: 45%; }
 .ms-sc-node path { stroke-dasharray: 1; stroke-dashoffset: 0; }
-.ms-sc-text { position: relative; display: grid; justify-self: start; font-weight: 600; }
+.ms-sc-text { position: relative; display: grid; justify-self: start; align-content: center; min-height: var(--sc-node); font-weight: 600; }
 .ms-sc-text > span { grid-area: 1 / 1; color: #8795a8; }
 .ms-sc-text > .ms-sc-text-on { color: var(--sc-ink); }
 .ms-sc-typing { position: absolute !important; left: 100%; top: 50%; display: inline-flex; gap: 4px; margin: -3px 0 0 10px; opacity: 0; }
@@ -49,22 +50,24 @@
 /* 3. Grow */
 .ms-sc-chip { display: inline-flex; align-items: center; gap: 5px; padding: 3px 10px; border-radius: 99px; background: rgba(31,111,146,.1); color: var(--sc-teal); font-weight: 600; white-space: nowrap; }
 .ms-sc-chip svg { width: 12px; height: 12px; }
-.ms-sc-chart { position: relative; margin-bottom: 14px; }
+.ms-sc-grow { display: flex; flex-direction: column; }
+.ms-sc-grow-body { flex: 1; display: flex; flex-direction: column; min-height: 0; }
+.ms-sc-chart { position: relative; flex: 1; min-height: 0; margin-bottom: 14px; }
 .ms-sc-chart svg { display: block; width: 100%; height: auto; overflow: visible; }
-.ms-sc-guide { stroke: rgba(8,21,43,.07); stroke-width: .7; }
-.ms-sc-line { fill: none; stroke: var(--sc-teal); stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; stroke-dasharray: 1; stroke-dashoffset: 0; }
-.ms-sc-end { position: absolute; width: 0; height: 0; }
-.ms-sc-end i { position: absolute; left: -6px; top: -6px; width: 12px; height: 12px; border-radius: 50%; }
-.ms-sc-end [data-g-dot] { background: var(--sc-teal); border: 2px solid #fff; box-shadow: 0 1px 4px rgba(8,21,43,.25); }
-.ms-sc-end [data-g-halo] { background: var(--sc-cyan); opacity: 0; }
+.ms-page[data-motion='enhanced'] .ms-sc-chart svg { position: absolute; inset: 0; height: 100%; }
+.ms-sc-guide { stroke: rgba(8,21,43,.08); stroke-width: 1; }
+.ms-sc-line { fill: none; stroke: var(--sc-teal); stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+.ms-sc-dot { fill: var(--sc-teal); stroke: #fff; stroke-width: 2; }
+.ms-sc-halo { fill: var(--sc-cyan); opacity: 0; }
 .ms-sc-return { display: flex; align-items: center; gap: 12px; }
 
 /* Stage: one scene at a time while the journey is pinned. */
 .ms-page[data-motion='enhanced'] .ms-scenes { gap: 0; height: min(100%,520px); }
-.ms-page[data-motion='enhanced'] .ms-scene { grid-area: 1 / 1; align-self: center; opacity: 0; visibility: hidden; }
+.ms-page[data-motion='enhanced'] .ms-scene { grid-area: 1 / 1; align-self: stretch; opacity: 0; visibility: hidden; }
+.ms-page[data-motion='enhanced'] .ms-scene > .ms-sc-card { height: 100%; }
 
 @media (max-width: 799px) and (min-height: 521px) {
-  .ms-scenes { --sc-pad: 12px; --sc-gap: 8px; --sc-text: .8125rem; }
+  .ms-scenes { --sc-pad: 12px; --sc-gap: 8px; --sc-text: .8125rem; --sc-node: 30px; }
   .ms-scene { width: min(100%,300px); }
   .ms-sc-head { margin-bottom: 8px; }
   .ms-sc-avatar { width: 28px; height: 28px; }
@@ -74,12 +77,10 @@
   .ms-sc-image { height: 44px; margin-top: 8px; }
   .ms-sc-button { min-height: 28px; margin-top: 8px; padding-inline: 12px; }
   .ms-sc-person { left: -11px; top: -11px; width: 22px; height: 22px; }
-  .ms-sc-step + .ms-sc-step { margin-top: 12px; }
-  .ms-sc-conn { height: calc(100% - 28px + 12px); }
   .ms-sc-chart { margin-bottom: 8px; }
 }
 @media (max-height: 520px) and (orientation: landscape) {
-  .ms-scenes { --sc-pad: 12px; --sc-gap: 8px; --sc-text: .8125rem; }
+  .ms-scenes { --sc-pad: 12px; --sc-gap: 8px; --sc-text: .8125rem; --sc-node: 30px; }
   .ms-scene { width: min(100%,340px); }
   .ms-sc-head { margin-bottom: 8px; }
   .ms-sc-avatar { width: 28px; height: 28px; }
@@ -89,7 +90,5 @@
   .ms-sc-image { height: 40px; margin-top: 8px; }
   .ms-sc-button { min-height: 28px; margin-top: 8px; padding-inline: 12px; }
   .ms-sc-person { left: -11px; top: -11px; width: 22px; height: 22px; }
-  .ms-sc-step + .ms-sc-step { margin-top: 10px; }
-  .ms-sc-conn { height: calc(100% - 28px + 10px); }
   .ms-sc-chart { margin-bottom: 8px; }
 }

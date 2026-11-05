@@ -1,4 +1,5 @@
 import gsap from 'gsap';
+import { growthCurve } from './marketing-story.chart';
 
 /** Index along the manifesto: -1 before the scenes, 0–2 the scenes, 3 after them. */
 export type SceneIndex = -1 | 0 | 1 | 2 | 3;
@@ -66,17 +67,31 @@ export function createManifestoScenes(stage: HTMLElement) {
   };
 
   const buildGrow = (el: HTMLElement): Rig => {
-    const line = one(el, '[data-g-line]'), area = one(el, '[data-g-area]'), dot = one(el, '[data-g-dot]'), halo = one(el, '[data-g-halo]');
-    const bar = one(el, '[data-g-bar]'), body = one(el, '[data-g-body]');
+    const chart = one<HTMLElement>(el, '[data-g-chart]'), svg = one(el, '[data-g-svg]'), line = one<SVGPathElement>(el, '[data-g-line]'), area = one(el, '[data-g-area]');
+    const dot = one(el, '[data-g-dot]'), halo = one(el, '[data-g-halo]'), bar = one(el, '[data-g-bar]'), clip = one(el, '[data-g-clip]');
+    // Lay the chart out in a 1:1 viewBox so the stroke keeps its width and the dot sits exactly on the line's end.
+    const geometry = growthCurve(chart.clientWidth || 300, chart.clientHeight || 120);
+    svg.setAttribute('viewBox', `0 0 ${geometry.width} ${geometry.height}`);
+    line.setAttribute('d', geometry.line); area.setAttribute('d', geometry.area);
+    all(el, '[data-g-guide]').forEach((guide, i) => { guide.setAttribute('x2', String(geometry.width)); guide.setAttribute('y1', String(geometry.guides[i])); guide.setAttribute('y2', String(geometry.guides[i])); });
+    for (const mark of [dot, halo]) { mark.setAttribute('cx', String(geometry.end[0])); mark.setAttribute('cy', String(geometry.end[1])); }
+    clip.setAttribute('width', String(geometry.width + 20)); clip.setAttribute('height', String(geometry.height + 20));
+    area.setAttribute('clip-path', 'url(#ms-sc-reveal)');
+    const length = line.getTotalLength(), origin = `${geometry.end[0]} ${geometry.end[1]}`;
+    const fading = [line, area, dot, halo, bar];
     const tl = gsap.timeline({ paused: true, repeat: -1 });
-    tl.set(line, { strokeDashoffset: 1 }, 0).set(area, { opacity: 0 }, 0).set(dot, { scale: 0, opacity: 0 }, 0)
-      .set(halo, { scale: 1, opacity: 0 }, 0).set(bar, { scaleX: 0 }, 0).set(body, { opacity: 1 }, 0)
+    // Everything starts invisible; nothing is left over between cycles.
+    tl.set(line, { strokeDasharray: `${length} ${length * 2}`, strokeDashoffset: length, opacity: 0 }, 0)
+      .set(clip, { scaleX: 0, svgOrigin: '0 0' }, 0).set(area, { opacity: 1 }, 0)
+      .set(dot, { scale: 0, opacity: 0, svgOrigin: origin }, 0).set(halo, { scale: 1, opacity: 0, svgOrigin: origin }, 0)
+      .set(bar, { scaleX: 0, opacity: 1 }, 0)
+      .set(line, { opacity: 1 }, .3)
       .to(line, { strokeDashoffset: 0, duration: 2.2, ease: 'power2.inOut' }, .3)
-      .to(bar, { scaleX: .72, duration: 2.2, ease: 'power2.inOut' }, .6)
-      .to(area, { opacity: 1, duration: 1.2, ease: 'power1.out' }, 2.1)
-      .to(dot, { scale: 1, opacity: 1, duration: .35, ease: 'power2.out' }, 2.4)
+      .to(clip, { scaleX: 1, duration: 2.2, ease: 'power2.inOut' }, .3)
+      .to(bar, { scaleX: .72, duration: 2.4, ease: 'power2.inOut' }, .6)
+      .to(dot, { scale: 1, opacity: 1, duration: .35, ease: 'power2.out' }, 2.45)
       .fromTo(halo, { scale: 1, opacity: .45 }, { scale: 2.6, opacity: 0, duration: 1.1, ease: 'power2.out', repeat: 2, immediateRender: false }, 2.6)
-      .to(body, { opacity: 0, duration: .5, ease: 'power1.in' }, 5.45)
+      .to(fading, { opacity: 0, duration: .6, ease: 'power1.inOut' }, 5.3)
       .to({}, { duration: .001 }, 5.999);
     return { anims: [tl] };
   };
