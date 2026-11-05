@@ -7,5 +7,6 @@ export type MarketingStoryContent = {
   hero: { label: string; title: string; copy: string; chapters: string[]; skip: string; contact: string; explore: string; sequence: string; progress: string; play: string; media: { src: string; pending: boolean; duration: number; frameRate: number; clips: string[] }; poster: StoryImage };
   transition: { word: string };
   plan: { phrase: string; cue: string; particlesLabel: string };
+  services: { label: string; previous: string; next: string; announcement: string; items: { name: string; title: string; copy: string }[] };
   manifesto: { eyebrow: string; words: string[]; lines: string[]; figureLabels: string[]; from: string; to: string };
 };

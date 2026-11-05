@@ -1,6 +1,6 @@
 import { storyShapes, type StoryShape } from './marketing-story.shapes';
 
-type Options = { static?: boolean; initial?: StoryShape };
+type Options = { static?: boolean; initial?: StoryShape; colors?: readonly [string, string] };
 
 /** No RAF, ticker or physics loop: the family driver supplies time and progress. */
 export function createStoryParticles(canvas: HTMLCanvasElement, options: Options = {}) {
@@ -49,7 +49,7 @@ export function createStoryParticles(canvas: HTMLCanvasElement, options: Options
     const a = points(from), b = points(to);
     const radius = compact.matches ? 1.55 : 2.1;
     for (let color = 0; color < 2; color++) {
-      ctx.fillStyle = color ? '#1f6f92' : '#253f6c';
+      ctx.fillStyle = (options.colors || ['#253f6c', '#1f6f92'])[color];
       ctx.beginPath();
       for (let i = 0; i < count; i++) {
         if ((i % 5 === 0 ? 1 : 0) !== color) continue;
@@ -72,7 +72,7 @@ export function createStoryParticles(canvas: HTMLCanvasElement, options: Options
     if (options.static) tick();
   });
   sizes.observe(canvas); visibility.observe(canvas);
-  const redraw = () => { dirty = true; if (options.static) tick(); };
+  const redraw = () => { cache.clear(); dirty = true; if (options.static) tick(); };
   compact.addEventListener('change', redraw, { signal: lifetime.signal });
   document.addEventListener('visibilitychange', () => { if (options.static) tick(); }, { signal: lifetime.signal });
   return {

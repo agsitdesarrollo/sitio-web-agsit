@@ -16,7 +16,7 @@ const { content, contactCopy } = Astro.props;
       <div class="ms-journey-stage" data-journey-stage>
         <ScrollVideoHero content={content.hero} />
         <StoryManifesto content={content.manifesto} />
-        <StoryPlanPhrase content={content.plan} />
+        <StoryPlanPhrase content={content.plan} services={content.services} />
         <StorySplitTransition word={content.transition.word} />
       </div>
     </div>

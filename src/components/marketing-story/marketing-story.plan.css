@@ -2,8 +2,8 @@
   --ms-plan-center: calc(var(--ms-header-h,var(--nav-h)) + (var(--ms-panel-h,100svh) - var(--ms-header-h,var(--nav-h))) * .4);
   position: relative;
   min-height: var(--ms-panel-h,100svh);
-  color: var(--ms-blue);
-  background: var(--ms-paper);
+  color: var(--ms-paper);
+  background: var(--ms-ink);
 }
 .ms-plan-title { position: absolute; left: var(--ms-gutter); right: var(--ms-gutter); top: var(--ms-plan-center); height: 1.08em; transform: translateY(-50%); z-index: 2; font: 300 clamp(1.6rem,9vw,8.5rem)/1.08 'Cormorant Garamond',Georgia,serif; white-space: nowrap; text-align: center; }
 .ms-plan-title .ms-plan-semantic { font: inherit; color: inherit; white-space: nowrap; }
@@ -12,11 +12,12 @@
 .ms-plan-letter-mask > span { display: inline-block; }
 .ms-plan-upper { clip-path: inset(0 0 50% 0); }
 .ms-plan-lower { clip-path: inset(50% 0 0 0); }
-.ms-plan-cue { position: absolute; left: 50%; top: calc(var(--ms-plan-center) + 3.5rem); transform: translate(-50%,-50%); z-index: 3; padding: 6px 10px; background: var(--ms-paper); color: var(--ms-teal); white-space: nowrap; font: 700 clamp(.75rem,1.1vw,.875rem)/1.4 'Inter',sans-serif; letter-spacing: .08em; }
+.ms-plan-cue { position: absolute; left: 50%; top: calc(var(--ms-plan-center) + 3.5rem); transform: translate(-50%,-50%); z-index: 3; padding: 6px 10px; background: var(--ms-ink); color: var(--ms-soft); white-space: nowrap; font: 700 clamp(.75rem,1.1vw,.875rem)/1.4 'Inter',sans-serif; letter-spacing: .08em; }
 .ms-plan-particles, .ms-plan-fallback { position: absolute; top: 0; bottom: 0; left: 50%; width: min(1240px,calc(100% - var(--ms-gutter) * 2)); height: 100%; transform: translateX(-50%); z-index: 1; pointer-events: none; }
-.ms-plan-fallback { fill: var(--ms-blue); }
+.ms-plan-fallback { fill: var(--ms-soft); }
 .ms-plan-particles[data-particles-ready='true'] + .ms-plan-fallback { visibility: hidden; }
-.ms-plan-service-frame { position: absolute; top: 78%; left: 50%; width: min(880px,78%); height: 16%; transform: translateX(-50%); border: 1px solid rgba(31,111,146,.22); border-radius: 14px; }
+.ms-plan-service-frame { display: none; position: absolute; inset: calc(var(--ms-header-h) + 12px) var(--ms-gutter) 12px; border: 1px solid rgba(139,226,255,.3); border-radius: 14px; transform-origin: center; }
+.ms-page[data-motion='enhanced'] .ms-plan-service-frame { display: block; }
 .ms-page[data-motion='enhanced'] .ms-plan { position: absolute; inset: 0 0 auto; min-height: 0; height: var(--ms-panel-h); z-index: 3; }
 .ms-page[data-motion='enhanced'] .ms-plan-semantic { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
 .ms-page[data-motion='enhanced'] .ms-plan-copy { display: flex; }
@@ -24,6 +25,9 @@
 .ms-page[data-motion='enhanced'] .ms-plan-fallback { visibility: hidden; }
 .ms-page[data-motion='enhanced'] .ms-split { z-index: 4; }
 .ms-page[data-motion='enhanced'] .ms-split.is-open { visibility: hidden !important; }
+.ms-page:not([data-motion='enhanced']) .ms-plan-title { position: relative; inset: auto; height: auto; transform: none; padding: 40px var(--ms-gutter) 20px; }
+.ms-page:not([data-motion='enhanced']) .ms-plan-cue { position: relative; inset: auto; transform: none; text-align: center; }
+.ms-page:not([data-motion='enhanced']) :is(.ms-plan-particles,.ms-plan-fallback) { display: none; }
 @media (max-height: 520px) and (orientation: landscape) {
   .ms-plan-title { font-size: min(9vw,16svh); }
 }

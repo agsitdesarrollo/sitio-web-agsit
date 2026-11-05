@@ -15,11 +15,16 @@ El antetítulo y la cuadrícula tenue de puntos son peticiones explícitas del u
 | 4 | IMPULSA. / BOOST. completa sobre el manifiesto | La figura queda cubierta y pausada |
 | 5 | IMPULSA. / BOOST. abre su cortina hacia los lados mientras las letras de CRECER CON PLAN / GROW WITH A PLAN suben una por una | Puntos todavía ocultos |
 | 6 | La mitad superior de la frase sube y la inferior baja; aparece [ASÍ LO HACEMOS] / [HOW WE DO IT] | Los puntos cruzan el hueco y se concentran en el futuro marco de servicios |
-| 7 provisional | Un gesto lleva al contacto; después contacto y footer tienen scroll libre | Figura asentada, sin redibujado |
+| 7 | El marco se agranda casi a pantalla completa; tarjeta 1 / 5, Estrategia digital | Diana |
+| 8 | Tarjeta 2 / 5, Recorrido del cliente | Camino con estaciones |
+| 9 | Tarjeta 3 / 5, Inteligencia artificial | Red de nodos |
+| 10 | Tarjeta 4 / 5, Automatización | Ciclo |
+| 11 | Tarjeta 5 / 5, Canales conectados | Grupos unidos por un núcleo |
+| 12 provisional | Un gesto lleva al contacto; después contacto y footer tienen scroll libre | Figura asentada, sin redibujado |
 
-Al subir se recorre el mapa inverso: los puntos vuelven al hueco, desaparece el texto central, las mitades se reúnen, las letras bajan y la cortina vuelve a cerrarse. Después se deshacen IMPULSA. y el manifiesto hasta la promesa del hero. El destino provisional después del gesto 6 se sustituirá por los servicios en el commit 5.
+Al subir se recorre el mapa inverso: las figuras y tarjetas regresan por los cinco servicios, el marco se contrae, los puntos vuelven al hueco, desaparece el texto central, las mitades se reúnen, las letras bajan y la cortina vuelve a cerrarse. Después se deshacen IMPULSA. y el manifiesto hasta la promesa del hero. El destino provisional después del gesto 11 se sustituirá por el cierre en el commit 6.
 
-`STOPS`: heroEnd, attractEnd, accompanyEnd, growEnd, boostEnd, planEnd, revealEnd y contactEntry. Cada transición ocupa un panel físico. contactEntry es el destino provisional después de la frase partida; no añade un capítulo creativo.
+`STOPS`: heroEnd, attractEnd, accompanyEnd, growEnd, boostEnd, planEnd, revealEnd, strategyEnd, journeyEnd, intelligenceEnd, automationEnd, channelsEnd y contactEntry. Cada transición ocupa un panel físico. contactEntry es el destino provisional después de los servicios; no añade un capítulo creativo.
 
 ## Fin exacto del hero y motor único
 
@@ -55,6 +60,14 @@ Con movimiento reducido o ahorro de datos no se crean Lenis ni el pin: las tres 
 El encadenamiento aprobado sustituye la propuesta anterior: durante el gesto 5 las letras suben escalonadas mientras se abre la cortina, sin una frase ya compuesta detrás. Cada letra tiene una máscara fija y ambas copias reciben el mismo tiempo. En el gesto 6 dos máscaras horizontales fijas recortan exactamente la mitad de la frase; se trasladan las copias hacia arriba y abajo, aparece el texto central y los puntos atraviesan ese espacio hasta el marco. Todo pertenece a la misma timeline reversible, sin controladores ni tickers adicionales.
 
 `StoryPlanPhrase.astro` y `marketing-story.plan.css` contienen esta sección. Hay un solo h2 semántico; las dos copias visuales llevan aria-hidden. Cormorant Garamond y una línea adaptable conservan el corte también en teléfono y paisaje. La frase y el texto central proceden de los datos ES/EN. Con movimiento reducido o ahorro de datos se muestran frase y texto sin recorrido y la concentración final fija. El renderer existente limita puntos y DPR, pausa escenas cubiertas y pestañas ocultas y deja de dibujar al asentarse.
+
+## Servicios con puntos del commit 5
+
+La frase partida y los servicios comparten fondo tinta, con texto claro y puntos cian. El marco se transforma desde su concentración pequeña hasta el área casi completa bajo el menú durante el gesto 7; solo se anima su transform. El mismo canvas pasa de la concentración a la diana y después interpola las cinco geometrías de `serviceShapes`. Cada figura se adapta con proporciones uniformes al espacio reservado encima de la tarjeta; no ocupa el área de texto ni controles. La figura del manifiesto conserva su escala de apoyo.
+
+`StoryPointServices.astro` y `marketing-story.services.css` contienen la tarjeta anclada abajo, los iconos SVG, los datos HTML y las flechas. Las flechas usan el mismo driver y los mismos destinos que rueda, teclado y swipe. Los extremos se indican con aria-disabled; el siguiente gesto tras Canales conectados lleva provisionalmente al contacto. Solo la tarjeta actual está disponible para interacción; el anuncio polite se actualiza al asentarse cada destino: «Servicio 1 de 5: Estrategia digital». El canvas es decorativo.
+
+Los textos ES/EN viven en los datos de Marketing Story, sin dependencias de la cuadrícula del blog. En paisaje bajo la tarjeta distribuye nombre y descripción en dos columnas; el alto de la figura se obtiene del espacio restante. Con movimiento reducido o sin JavaScript aparecen los cinco servicios en flujo libre, con figuras SVG estáticas y toda la información visible. Se reutilizan los límites de puntos, DPR y pausa del renderer; no se agrega un bucle ni una biblioteca.
 
 ## Rendimiento pendiente para la auditoría final
 

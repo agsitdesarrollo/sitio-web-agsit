@@ -3,11 +3,12 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import Lenis from 'lenis';
 import { createStoryVideo } from './marketing-story.video';
 import { createStoryParticles } from './marketing-story.particles';
-import { storyShapes } from './marketing-story.shapes';
+import { storyShapes, serviceShapes, type StoryShape } from './marketing-story.shapes';
 
 gsap.registerPlugin(ScrollTrigger);
 type Direction = -1 | 1;
-const STOPS = ['heroEnd', 'attractEnd', 'accompanyEnd', 'growEnd', 'boostEnd', 'planEnd', 'revealEnd', 'contactEntry'] as const;
+const SERVICE_STOPS = ['strategyEnd', 'journeyEnd', 'intelligenceEnd', 'automationEnd', 'channelsEnd'] as const;
+const STOPS = ['heroEnd', 'attractEnd', 'accompanyEnd', 'growEnd', 'boostEnd', 'planEnd', 'revealEnd', ...SERVICE_STOPS, 'contactEntry'] as const;
 type Stop = typeof STOPS[number];
 type MotionTarget = Stop | 'start' | 'end' | HTMLElement;
 type Decision = { kind: 'free' } | { kind: 'clamp' | 'stop'; stop: Stop };
@@ -38,7 +39,7 @@ export function initMarketingStory() {
       page.dataset.motion = 'static';
       canvas.setAttribute('aria-label', (JSON.parse(canvas.dataset.figureLabels || '[]') as string[])[2] || '');
       const particles = createStoryParticles(canvas, { static: true, initial: storyShapes.growth });
-      const planParticles = createStoryParticles(planCanvas, { static: true, initial: storyShapes.servicesFocus });
+      const planParticles = createStoryParticles(planCanvas, { static: true, initial: storyShapes.servicesFocus, colors: ['#8be2ff', '#41c8f6'] });
       return () => { particles.dispose(); planParticles.dispose(); delete page.dataset.motion; };
     }
     const track = page.querySelector<HTMLElement>('[data-journey-track]')!;
@@ -53,6 +54,13 @@ export function initMarketingStory() {
     const lowerLetters = [...lower.querySelectorAll<HTMLElement>('[data-plan-letter]')];
     const cue = plan.querySelector<HTMLElement>('[data-plan-cue]')!;
     const frame = plan.querySelector<HTMLElement>('[data-plan-frame]')!;
+    const services = plan.querySelector<HTMLElement>('[data-services]')!;
+    const cards = [...services.querySelectorAll<HTMLElement>('[data-service-card]')];
+    const serviceFigure = services.querySelector<HTMLElement>('[data-service-figure]')!;
+    const serviceCounter = services.querySelector<HTMLElement>('[data-service-counter]')!;
+    const announcement = services.querySelector<HTMLElement>('[data-service-announcement]')!;
+    const previous = services.querySelector<HTMLButtonElement>('[data-service-prev]')!;
+    const next = services.querySelector<HTMLButtonElement>('[data-service-next]')!;
     const contact = page.querySelector<HTMLElement>('.final-contact-section')!;
     const header = document.querySelector<HTMLElement>('.site-nav');
     const claim = hero.querySelector<HTMLElement>('[data-claim]')!;
@@ -70,8 +78,11 @@ export function initMarketingStory() {
     page.dataset.motion = 'enhanced';
     const media = createStoryVideo(hero, signal);
     const particles = createStoryParticles(canvas);
-    const planParticles = createStoryParticles(planCanvas);
-    let g = { panel: 1, start: 0, heroEnd: 0, attractEnd: 0, accompanyEnd: 0, growEnd: 0, boostEnd: 0, planEnd: 0, revealEnd: 0, contactEntry: 0, contact: 0, stageHeight: 1 };
+    const planParticles = createStoryParticles(planCanvas, { colors: ['#8be2ff', '#41c8f6'] });
+    let mappedShapes: StoryShape[] = [];
+    let announced = -1;
+    let frameStart = { x: 1, y: 1, offset: 0 };
+    let g = { panel: 1, start: 0, heroEnd: 0, attractEnd: 0, accompanyEnd: 0, growEnd: 0, boostEnd: 0, planEnd: 0, revealEnd: 0, strategyEnd: 0, journeyEnd: 0, intelligenceEnd: 0, automationEnd: 0, channelsEnd: 0, contactEntry: 0, contact: 0, stageHeight: 1 };
     let lenis: Lenis;
     let trigger: ScrollTrigger;
     let moving = false;
@@ -94,13 +105,23 @@ export function initMarketingStory() {
       const start = Math.round(documentTop(track));
       const heroEnd = Math.round(start + panel * HERO_END);
       g = { ...g, panel, start, heroEnd, attractEnd: heroEnd + panel, accompanyEnd: heroEnd + panel * 2, growEnd: heroEnd + panel * 3, boostEnd: heroEnd + panel * 4, planEnd: heroEnd + panel * 5, revealEnd: heroEnd + panel * 6 };
+      SERVICE_STOPS.forEach((name, index) => { g[name] = heroEnd + panel * (index + 7); });
     };
     const measureTrack = () => {
       g.stageHeight = g.panel;
-      track.style.height = `${g.stageHeight + g.revealEnd - g.start}px`;
+      track.style.height = `${g.stageHeight + g.channelsEnd - g.start}px`;
       g.contact = Math.round(documentTop(contact));
       g.contactEntry = g.contact;
       for (const name of STOPS) page.dataset[name] = String(g[name]);
+      const bounds = serviceFigure.getBoundingClientRect();
+      const field = planCanvas.getBoundingClientRect();
+      const side = Math.min(bounds.width, bounds.height);
+      mappedShapes = serviceShapes.map(shape => (index, count) => {
+        const point = shape(index, count);
+        return { x: (bounds.left - field.left + bounds.width / 2 + (point.x - .5) * side) / field.width, y: (bounds.top - field.top + bounds.height / 2 + (point.y - .5) * side) / field.height };
+      });
+      const height = frame.offsetHeight;
+      frameStart = { x: Math.min(880, window.innerWidth * .78) / frame.offsetWidth, y: g.panel * .16 / height, offset: g.panel * .86 - (frame.offsetTop + height / 2) };
     };
     measurePanel(); measureTrack();
 
@@ -120,7 +141,8 @@ export function initMarketingStory() {
     gsap.set(plan, { autoAlpha: 0 });
     gsap.set([...letters, ...lowerLetters], { opacity: 0, yPercent: 115 });
     gsap.set([cue, planCanvas, frame], { autoAlpha: 0 });
-    gsap.set(frame, { y: 16 });
+    gsap.set(services, { autoAlpha: 0 });
+    gsap.set(cards, { autoAlpha: 0, y: 16 });
     const span = VIDEO_PANELS * .82 / captions.length;
     captions.forEach((caption, index) => {
       const start = index * span;
@@ -156,14 +178,21 @@ export function initMarketingStory() {
       .to(lower, { yPercent: 110, duration: .8, ease: 'power2.inOut' }, HERO_END + 5.05)
       .to(cue, { autoAlpha: 1, duration: .4 }, HERO_END + 5.25)
       .to(planCanvas, { autoAlpha: 1, duration: .15 }, HERO_END + 5.05)
-      .to(frame, { autoAlpha: 1, y: 0, duration: .5 }, HERO_END + 5.38)
-      .to({}, { duration: 6 }, HERO_END);
+      .to(frame, { autoAlpha: 1, duration: .5 }, HERO_END + 5.38)
+      .to([upper, lower, cue], { autoAlpha: 0, duration: .3 }, HERO_END + 6.02)
+      .to(services, { autoAlpha: 1, duration: .3 }, HERO_END + 6.3)
+      .to({}, { duration: 11 }, HERO_END);
+    cards.forEach((card, index) => {
+      const start = HERO_END + 6 + index;
+      if (index) master.to(cards[index - 1], { autoAlpha: 0, y: -12, duration: .25 }, start + .05);
+      master.to(card, { autoAlpha: 1, y: 0, duration: .45, ease: 'expo.out' }, start + .45);
+    });
     const render = () => {
       const y = window.scrollY;
       const units = y <= g.heroEnd ? clamp01((y - g.start) / (g.heroEnd - g.start)) * HERO_END : HERO_END + (y - g.heroEnd) / g.panel;
-      master.time(Math.max(0, Math.min(HERO_END + 6, units)));
+      master.time(Math.max(0, Math.min(HERO_END + 11, units)));
       const localProgress = units - HERO_END;
-      const mode = y < g.heroEnd - EPSILON ? 'continuous' : y < g.attractEnd - EPSILON ? 'entry' : y <= g.growEnd + EPSILON ? 'manifesto' : y <= g.boostEnd + EPSILON ? 'boost' : y <= g.planEnd + EPSILON ? 'plan-entry' : y <= g.revealEnd + EPSILON ? 'plan-split' : 'reading';
+      const mode = y < g.heroEnd - EPSILON ? 'continuous' : y < g.attractEnd - EPSILON ? 'entry' : y <= g.growEnd + EPSILON ? 'manifesto' : y <= g.boostEnd + EPSILON ? 'boost' : y <= g.planEnd + EPSILON ? 'plan-entry' : y <= g.revealEnd + EPSILON ? 'plan-split' : y <= g.channelsEnd + EPSILON ? 'services' : 'reading';
       const step = String(y < g.attractEnd - EPSILON ? 0 : Math.min(4, 1 + Math.floor((y - g.attractEnd + EPSILON) / g.panel)));
       if (page.dataset.manifestoStep !== step) page.dataset.manifestoStep = step;
       if (page.dataset.scrollStage !== mode) page.dataset.scrollStage = mode;
@@ -177,8 +206,27 @@ export function initMarketingStory() {
         localProgress < 1 ? storyShapes.attract : localProgress < 2 ? storyShapes.path : storyShapes.growth, eased);
       particles.setActive(!overlayOpen() && localProgress > 0 && localProgress < 3.5);
       const planProgress = clamp01((localProgress - 5.12) / .83);
-      planParticles.setMorph(storyShapes.planTransit, storyShapes.servicesFocus, planProgress * planProgress * (3 - 2 * planProgress));
-      planParticles.setActive(!overlayOpen() && localProgress > 5.05 && localProgress <= 6.01);
+      if (localProgress <= 6) planParticles.setMorph(storyShapes.planTransit, storyShapes.servicesFocus, planProgress * planProgress * (3 - 2 * planProgress));
+      else {
+        const segment = Math.min(4, Math.floor(localProgress - 6));
+        const progress = clamp01((localProgress - 6 - segment - .08) / .82);
+        planParticles.setMorph(segment === 0 ? storyShapes.servicesFocus : mappedShapes[segment - 1], mappedShapes[segment], progress * progress * (3 - 2 * progress));
+      }
+      planParticles.setActive(!overlayOpen() && localProgress > 5.05 && localProgress <= 11.01);
+      const expansion = clamp01(localProgress - 6);
+      const expand = expansion * expansion * (3 - 2 * expansion);
+      frame.style.transform = `translateY(${frameStart.offset * (1 - expand)}px) scale(${frameStart.x + (1 - frameStart.x) * expand},${frameStart.y + (1 - frameStart.y) * expand})`;
+      const serviceIndex = Math.max(0, Math.min(4, Math.round(localProgress - 7)));
+      if (services.dataset.serviceIndex !== String(serviceIndex)) {
+        services.dataset.serviceIndex = String(serviceIndex);
+        serviceCounter.textContent = `${serviceIndex + 1} / 5`;
+        previous.setAttribute('aria-disabled', String(serviceIndex === 0));
+        next.setAttribute('aria-disabled', String(serviceIndex === 4));
+      }
+      if (y >= g.strategyEnd - EPSILON && Math.abs(y - g[SERVICE_STOPS[serviceIndex]]) <= EPSILON && announced !== serviceIndex) {
+        announced = serviceIndex;
+        announcement.textContent = (services.dataset.announcement || '').replace('{n}', String(serviceIndex + 1)).replace('{name}', cards[serviceIndex].dataset.serviceName || '');
+      } else if (y < g.strategyEnd - EPSILON && announced !== -1) { announced = -1; announcement.textContent = ''; }
       split.classList.toggle('is-open', localProgress >= 5);
       const sequenceVisible = !overlayOpen() && y >= g.start - 1 && units < VIDEO_PANELS * .84;
       media.update(clamp01(units / VIDEO_PANELS), sequenceVisible);
@@ -190,6 +238,8 @@ export function initMarketingStory() {
       setInert(manifesto, y < g.attractEnd - EPSILON || localProgress >= 3.45);
       setInert(plan, y < g.planEnd - EPSILON);
       setInert(split, localProgress >= 5);
+      setInert(services, y < g.strategyEnd - EPSILON || y > g.channelsEnd + EPSILON);
+      cards.forEach((card, index) => setInert(card, index !== serviceIndex));
       const changing = localProgress > 0 && localProgress < .68;
       const hint = changing ? 'transform' : '';
       if (manifesto.style.willChange !== hint) manifesto.style.willChange = hint;
@@ -197,7 +247,7 @@ export function initMarketingStory() {
     };
     trigger = ScrollTrigger.create({
       id: 'marketing-story-journey', trigger: track, start: 'top top',
-      end: () => `+=${g.revealEnd - g.start}`,
+      end: () => `+=${g.channelsEnd - g.start}`,
       pin: stage, pinSpacing: false,
     });
 
@@ -225,6 +275,11 @@ export function initMarketingStory() {
         onComplete: () => { moving = false; motionTarget = null; if (pendingRefresh) scheduleRefresh(); },
       });
     };
+    for (const [button, direction] of [[previous, -1], [next, 1]] as const) button.addEventListener('click', () => {
+      if (moving || overlayOpen() || button.getAttribute('aria-disabled') === 'true') return;
+      const index = Math.max(0, Math.min(4, Number(services.dataset.serviceIndex) + direction));
+      goTo(g[SERVICE_STOPS[index]], 'stop', SERVICE_STOPS[index]);
+    }, { signal });
     const gate = ({ deltaY, event }: { deltaY: number; event: WheelEvent | TouchEvent }) => {
       if ('touches' in event && event.touches.length > 1) return false; // Leave pinch zoom native.
       if (!deltaY || ('ctrlKey' in event && event.ctrlKey)) return true;
@@ -313,9 +368,9 @@ export function initMarketingStory() {
       const old = g;
       const y = lenis.animatedScroll;
       const units = (y - old.start) / old.panel;
-      const reading = y > old.revealEnd;
+      const reading = y > old.channelsEnd;
       const pastContact = y >= old.contact;
-      const readingRatio = (y - old.revealEnd) / Math.max(1, old.contact - old.revealEnd);
+      const readingRatio = (y - old.channelsEnd) / Math.max(1, old.contact - old.channelsEnd);
       const resume = motionTarget;
       const resumeKind = motionKind;
       const settled = !moving ? STOPS.find(name => Math.abs(y - old[name]) <= EPSILON) : undefined;
@@ -327,7 +382,7 @@ export function initMarketingStory() {
       particles.invalidate();
       planParticles.invalidate();
       lenis.resize();
-      const next = settled ? g[settled] : !reading ? g.start + units * g.panel : pastContact ? g.contact + y - old.contact : g.revealEnd + readingRatio * (g.contact - g.revealEnd);
+      const next = settled ? g[settled] : !reading ? g.start + units * g.panel : pastContact ? g.contact + y - old.contact : g.channelsEnd + readingRatio * (g.contact - g.channelsEnd);
       lenis.scrollTo(Math.max(0, next), { immediate: true, force: true });
       ScrollTrigger.update(); render();
       if (resume) goTo(resolveTarget(resume), resumeKind, resume);
@@ -366,6 +421,8 @@ export function initMarketingStory() {
       gsap.ticker.remove(tick); lenis.destroy(); media.dispose(); particles.dispose(); planParticles.dispose();
       hero.inert = false; claim.inert = false; controls.inert = false; manifesto.inert = false;
       plan.inert = false; split.inert = false; split.classList.remove('is-open');
+      services.inert = false; cards.forEach(card => { card.inert = false; });
+      frame.style.removeProperty('transform'); delete services.dataset.serviceIndex; announcement.textContent = '';
       for (const element of [left, right, manifesto]) element.style.removeProperty('will-change');
       hero.classList.remove('is-occluded');
       track.style.removeProperty('height');

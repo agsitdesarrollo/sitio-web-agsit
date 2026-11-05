@@ -43,6 +43,29 @@ export const storyShapes: Record<'scatter' | 'attract' | 'path' | 'growth' | 'pl
   },
 };
 
-/** Future service/logo shapes can reuse the renderer with sampled point arrays. */
+const circle = (x: number, y: number, radius: number, t: number): StoryPoint => ({ x: x + Math.cos(t * Math.PI * 2) * radius, y: y + Math.sin(t * Math.PI * 2) * radius });
+const nodes = [[.18,.25], [.75,.16], [.85,.68], [.45,.83], [.12,.65], [.5,.45]] as const;
+const links = [[0,1], [1,2], [2,3], [3,4], [4,0], [0,5], [1,5], [2,5], [3,5], [4,5]] as const;
+export const serviceShapes: readonly StoryShape[] = [
+  (index, count) => { const ring = index % 3; return circle(.5, .5, [.13,.28,.43][ring], Math.floor(index / 3) / Math.ceil(count / 3)); },
+  (index, count) => {
+    if (index % 3 === 0) { const station = Math.floor(index / 3) % 4; const t = station / 3; return circle(.1 + t * .8, .5 + Math.sin(t * Math.PI * 2) * .22, .055, noise(index, 8)); }
+    const t = index / Math.max(1, count - 1); return { x: .1 + t * .8, y: .5 + Math.sin(t * Math.PI * 2) * .22 };
+  },
+  index => {
+    if (index % 3 === 0) { const node = nodes[Math.floor(index / 3) % nodes.length]; return circle(node[0], node[1], .045, noise(index, 9)); }
+    const [a,b] = links[index % links.length]; const t = noise(index, 10); return { x: nodes[a][0] + (nodes[b][0] - nodes[a][0]) * t, y: nodes[a][1] + (nodes[b][1] - nodes[a][1]) * t };
+  },
+  (index, count) => {
+    if (index < count * .8) return circle(.5, .5, .37 + (index % 2) * .025, index / (count * .8) * .91 + .06);
+    const t = (index - count * .8) / (count * .2); return { x: .84 - t * .15, y: .26 + Math.abs(t - .5) * .16 };
+  },
+  index => {
+    if (index % 4 === 0) { const angle = (index % 3) * Math.PI * 2 / 3 - Math.PI / 2; const t = noise(index, 12); return { x: .5 + Math.cos(angle) * t * .32, y: .5 + Math.sin(angle) * t * .32 }; }
+    const group = Math.floor(index / 4) % 4; const angle = (group - 1) * Math.PI * 2 / 3 - Math.PI / 2; const center = group === 0 ? { x: .5, y: .5 } : { x: .5 + Math.cos(angle) * .32, y: .5 + Math.sin(angle) * .32 }; return circle(center.x, center.y, Math.sqrt(noise(index, 13)) * .105, noise(index, 14));
+  },
+];
+
+/** Service/logo shapes can reuse the renderer with sampled point arrays. */
 export const sampledStoryShape = (points: readonly StoryPoint[]): StoryShape => (index, count) =>
   points[Math.min(points.length - 1, Math.floor(index / Math.max(1, count) * points.length))] || { x: .5, y: .5 };
