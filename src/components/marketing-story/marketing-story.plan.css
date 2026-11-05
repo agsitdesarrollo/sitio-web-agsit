@@ -16,7 +16,7 @@
 .ms-plan-particles, .ms-plan-fallback { position: absolute; top: 0; bottom: 0; left: 50%; width: min(1240px,calc(100% - var(--ms-gutter) * 2)); height: 100%; transform: translateX(-50%); z-index: 1; pointer-events: none; }
 .ms-plan-fallback { fill: var(--ms-soft); }
 .ms-plan-particles[data-particles-ready='true'] + .ms-plan-fallback { visibility: hidden; }
-.ms-plan-service-frame { display: none; position: absolute; inset: calc(var(--ms-header-h) + 12px) var(--ms-gutter) 12px; border: 1px solid rgba(139,226,255,.3); border-radius: 14px; transform-origin: center; }
+.ms-plan-service-frame { display: none; position: absolute; inset: calc(var(--ms-header-h) + 12px) var(--ms-gutter) 12px; border: 1px solid rgba(139,226,255,.3); border-radius: 14px; transform-origin: center; background-image: radial-gradient(rgba(139,226,255,.09) .8px,transparent .8px); background-size: 18px 18px; }
 .ms-page[data-motion='enhanced'] .ms-plan-service-frame { display: block; }
 .ms-page[data-motion='enhanced'] .ms-plan { position: absolute; inset: 0 0 auto; min-height: 0; height: var(--ms-panel-h); z-index: 3; }
 .ms-page[data-motion='enhanced'] .ms-plan-semantic { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }

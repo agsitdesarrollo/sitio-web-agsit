@@ -3,7 +3,7 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import Lenis from 'lenis';
 import { createStoryVideo } from './marketing-story.video';
 import { createStoryParticles } from './marketing-story.particles';
-import { storyShapes, serviceShapes, type StoryShape } from './marketing-story.shapes';
+import { storyShapes, serviceShapes, mapStoryShape, type StoryShape } from './marketing-story.shapes';
 
 gsap.registerPlugin(ScrollTrigger);
 type Direction = -1 | 1;
@@ -39,7 +39,7 @@ export function initMarketingStory() {
       page.dataset.motion = 'static';
       canvas.setAttribute('aria-label', (JSON.parse(canvas.dataset.figureLabels || '[]') as string[])[2] || '');
       const particles = createStoryParticles(canvas, { static: true, initial: storyShapes.growth });
-      const planParticles = createStoryParticles(planCanvas, { static: true, initial: storyShapes.servicesFocus, colors: ['#8be2ff', '#41c8f6'] });
+      const planParticles = createStoryParticles(planCanvas, { static: true, initial: storyShapes.servicesFocus, colors: ['#8be2ff', '#41c8f6'], scene: 'services' });
       return () => { particles.dispose(); planParticles.dispose(); delete page.dataset.motion; };
     }
     const track = page.querySelector<HTMLElement>('[data-journey-track]')!;
@@ -78,7 +78,7 @@ export function initMarketingStory() {
     page.dataset.motion = 'enhanced';
     const media = createStoryVideo(hero, signal);
     const particles = createStoryParticles(canvas);
-    const planParticles = createStoryParticles(planCanvas, { colors: ['#8be2ff', '#41c8f6'] });
+    const planParticles = createStoryParticles(planCanvas, { colors: ['#8be2ff', '#41c8f6'], scene: 'services' });
     let mappedShapes: StoryShape[] = [];
     let announced = -1;
     let frameStart = { x: 1, y: 1, offset: 0 };
@@ -115,13 +115,11 @@ export function initMarketingStory() {
       for (const name of STOPS) page.dataset[name] = String(g[name]);
       const bounds = serviceFigure.getBoundingClientRect();
       const field = planCanvas.getBoundingClientRect();
-      const side = Math.min(bounds.width, bounds.height);
-      mappedShapes = serviceShapes.map(shape => (index, count) => {
-        const point = shape(index, count);
-        return { x: (bounds.left - field.left + bounds.width / 2 + (point.x - .5) * side) / field.width, y: (bounds.top - field.top + bounds.height / 2 + (point.y - .5) * side) / field.height };
-      });
+      const side = Math.min(bounds.width, bounds.height) * 1.02;
+      const space = { cx: (bounds.left - field.left + bounds.width / 2) / field.width, cy: (bounds.top - field.top + bounds.height / 2) / field.height, sx: side / field.width, sy: side / field.height };
+      mappedShapes = serviceShapes.map(shape => mapStoryShape(shape,space));
       const height = frame.offsetHeight;
-      frameStart = { x: Math.min(880, window.innerWidth * .78) / frame.offsetWidth, y: g.panel * .16 / height, offset: g.panel * .86 - (frame.offsetTop + height / 2) };
+      frameStart = { x: Math.min(1000, window.innerWidth * .86) / frame.offsetWidth, y: g.panel * .36 / height, offset: g.panel * .75 - (frame.offsetTop + height / 2) };
     };
     measurePanel(); measureTrack();
 
@@ -212,7 +210,7 @@ export function initMarketingStory() {
         const progress = clamp01((localProgress - 6 - segment - .08) / .82);
         planParticles.setMorph(segment === 0 ? storyShapes.servicesFocus : mappedShapes[segment - 1], mappedShapes[segment], progress * progress * (3 - 2 * progress));
       }
-      planParticles.setActive(!overlayOpen() && localProgress > 5.05 && localProgress <= 11.01);
+      planParticles.setActive(!overlayOpen() && localProgress > 5.05 && localProgress < 12.01);
       const expansion = clamp01(localProgress - 6);
       const expand = expansion * expansion * (3 - 2 * expansion);
       frame.style.transform = `translateY(${frameStart.offset * (1 - expand)}px) scale(${frameStart.x + (1 - frameStart.x) * expand},${frameStart.y + (1 - frameStart.y) * expand})`;

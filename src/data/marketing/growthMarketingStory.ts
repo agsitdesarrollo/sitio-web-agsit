@@ -17,7 +17,7 @@ const es: MarketingStoryContent = {
     { name: 'Canales conectados', title: 'Continúa la conversación aunque cambie de canal.', copy: 'Coordinamos redes sociales, sitio web, correo y WhatsApp para que tus clientes encuentren información coherente y atención con continuidad.' },
   ] },
   plan: { phrase: 'CRECER CON PLAN', cue: '[ASÍ LO HACEMOS]', particlesLabel: 'Puntos que se reúnen para presentar nuestros servicios.' },
-  manifesto: { eyebrow: 'CÓMO HACEMOS CRECER TU NEGOCIO', words: ['Atraer.', 'Acompañar.', 'Crecer.'], lines: ['Llegamos a las personas que buscan lo que ofreces.', 'Respondemos sus dudas y damos seguimiento.', 'Convertimos el interés en ventas que se repiten.'], figureLabels: ['Puntos que se acercan al centro.', 'Puntos que forman un camino.', 'Puntos que forman una gráfica de crecimiento.'], from: 'Primer contacto', to: 'Cliente que regresa' },
+  manifesto: { eyebrow: 'CÓMO HACEMOS CRECER TU NEGOCIO', words: ['Atraer.', 'Acompañar.', 'Crecer.'], lines: ['Llegamos a las personas que buscan lo que ofreces.', 'Respondemos sus dudas y damos seguimiento.', 'Convertimos el interés en ventas que se repiten.'], figureLabels: ['Un imán atrae puntos hacia él.', 'Dos puntos avanzan juntos por un camino.', 'Una gráfica de barras con una flecha hacia arriba.'], from: 'Primer contacto', to: 'Cliente que regresa' },
 };
 const en: MarketingStoryContent = {
   lang: 'en',
@@ -32,6 +32,6 @@ const en: MarketingStoryContent = {
     { name: 'Connected channels', title: 'Keep the conversation going across channels.', copy: 'We coordinate social media, your website, email and WhatsApp so customers find consistent information and continuous support.' },
   ] },
   plan: { phrase: 'GROW WITH A PLAN', cue: '[HOW WE DO IT]', particlesLabel: 'Points gathering to introduce our services.' },
-  manifesto: { eyebrow: 'HOW WE GROW YOUR BUSINESS', words: ['Attract.', 'Support.', 'Grow.'], lines: ['We reach people looking for what you offer.', 'We answer their questions and follow up.', 'We turn interest into sales that keep coming.'], figureLabels: ['Points moving toward the center.', 'Points forming a path.', 'Points forming a rising chart.'], from: 'First contact', to: 'Returning customer' },
+  manifesto: { eyebrow: 'HOW WE GROW YOUR BUSINESS', words: ['Attract.', 'Support.', 'Grow.'], lines: ['We reach people looking for what you offer.', 'We answer their questions and follow up.', 'We turn interest into sales that keep coming.'], figureLabels: ['A magnet drawing points toward it.', 'Two points moving along a path together.', 'A bar chart with an upward arrow.'], from: 'First contact', to: 'Returning customer' },
 };
 export const getGrowthMarketingStory = (lang: SupportedLang): MarketingStoryContent => lang === 'en' ? en : es;

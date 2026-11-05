@@ -4,14 +4,14 @@ import { serviceShapes } from './marketing-story.shapes';
 import './marketing-story.services.css';
 type Props = { content: MarketingStoryContent['services'] };
 const { content } = Astro.props;
-const icons = ['M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18M12 7a5 5 0 1 0 0 10 5 5 0 0 0 0-10M12 11v2', 'M4 18C4 4 20 20 20 6M4 18h.01M12 12h.01M20 6h.01', 'M5 5 19 6 12 19 5 5 19 15 19 6M5 5v11l7 3 7-4', 'M19 8a8 8 0 1 0 1 7M19 3v5h-5', 'M12 12 4 5M12 12 20 5M12 12 5 20M12 12 20 20M9 12a3 3 0 1 0 6 0 3 3 0 0 0-6 0'];
+const icons = ['M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18M12 7a5 5 0 1 0 0 10 5 5 0 0 0 0-10M12 11v2', 'M3 4h18l-7 9v6l-4 2v-8Z', 'M12 4C8 1 5 4 5 7c-4 1-3 7 0 8-1 5 5 8 7 4m0-15c4-3 7 0 7 3 4 1 3 7 0 8 1 5-5 8-7 4V4M8 8l2 3-2 3m8-6-2 3 2 3', 'M9 3h6l1 3 3 1 2 5-2 5-3 1-1 3H9l-1-3-3-1-2-5 2-5 3-1ZM8 12a4 4 0 1 0 8 0 4 4 0 0 0-8 0', 'M5 4h14a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H9l-5 3v-3a2 2 0 0 1-2-2V6a2 2 0 0 1 3-2M7 11h.01M12 11h.01M17 11h.01'];
 ---
 <section class="ms-services" data-services aria-label={content.label} data-announcement={content.announcement}>
   <div class="ms-service-figure" data-service-figure aria-hidden="true"></div>
   <div class="ms-services-bottom" data-services-bottom>
     <div class="ms-service-stack">
       {content.items.map((item, index) => <article class="ms-service-card" data-service-card data-service-name={item.name} aria-labelledby={`ms-service-${index}`}>
-        <svg class="ms-service-static-figure" viewBox="0 0 400 300" aria-hidden="true">{Array.from({ length: 160 }, (_, i) => { const point = serviceShapes[index](i, 160); return <circle cx={point.x * 400} cy={point.y * 300} r="1.7" />; })}</svg>
+        <svg class="ms-service-static-figure" viewBox="0 0 400 400" aria-hidden="true">{Array.from({ length: 450 }, (_, i) => { const point = serviceShapes[index](i, 450); return <circle cx={point.x * 400} cy={point.y * 400} r="1.7" />; })}</svg>
         <div class="ms-service-heading"><svg class="ms-service-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d={icons[index]} /></svg><h2 id={`ms-service-${index}`}>{item.name}</h2></div>
         <div class="ms-service-copy"><p class="ms-service-line">{item.title}</p><p class="ms-service-description">{item.copy}</p></div>
       </article>)}

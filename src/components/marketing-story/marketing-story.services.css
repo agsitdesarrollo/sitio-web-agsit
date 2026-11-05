@@ -2,7 +2,7 @@
 .ms-service-card { padding-block: 24px; }
 .ms-service-heading { display: flex; align-items: center; gap: 12px; }
 .ms-service-icon { color: var(--ms-cyan); width: 28px; height: 28px; flex: none; }
-.ms-service-heading h2 { font-size: clamp(1.6rem,2.7vw,2.5rem); }
+.ms-services .ms-service-heading h2 { font-size: clamp(1.6rem,2.7vw,2.5rem); }
 .ms-service-line { font-size: 1rem; line-height: 1.4; font-weight: 600; }
 .ms-service-description { font-size: .875rem; line-height: 1.5; color: #b4c5db; }
 .ms-service-copy { display: grid; gap: 8px; }
@@ -26,7 +26,7 @@
   .ms-page[data-motion='enhanced'] .ms-services { inset-inline: calc(var(--ms-gutter) + 10px); gap: 12px; }
   .ms-page[data-motion='enhanced'] .ms-services-bottom { grid-template-columns: minmax(0,1fr); gap: 12px; padding: 12px; }
   .ms-page[data-motion='enhanced'] .ms-service-controls { display: flex; justify-content: space-between; align-items: center; }
-  .ms-service-heading h2 { font-size: 1.65rem; }
+  .ms-services .ms-service-heading h2 { font-size: 1.65rem; }
   .ms-service-line { font-size: .875rem; }
   .ms-service-description { font-size: .8125rem; }
 }
@@ -35,7 +35,7 @@
   .ms-page[data-motion='enhanced'] .ms-services-bottom { padding: 12px; gap: 16px; }
   .ms-page[data-motion='enhanced'] .ms-service-card { grid-template-columns: .85fr 1.15fr; align-items: start; gap: 16px; }
   .ms-service-heading { gap: 8px; }
-  .ms-service-heading h2 { font-size: 1.45rem; }
+  .ms-services .ms-service-heading h2 { font-size: 1.45rem; }
   .ms-service-icon { width: 24px; height: 24px; }
   .ms-service-line { font-size: .8125rem; }
   .ms-service-description { font-size: .75rem; line-height: 1.4; }
