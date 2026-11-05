@@ -7,7 +7,7 @@ const { content } = Astro.props;
 const available = (!content.media.pending || import.meta.env.DEV) && existsSync(`${process.cwd()}/public${content.media.src}`);
 const posterAvailable = available && existsSync(`${process.cwd()}/public${content.poster.src}`);
 ---
-<section class="ms-hero" aria-labelledby="ms-title" data-hero data-duration={content.media.duration} data-clips={JSON.stringify(content.media.clips)}>
+<section class="ms-hero" aria-labelledby="ms-title" data-hero data-duration={content.media.duration} data-frame-rate={content.media.frameRate} data-clips={JSON.stringify(content.media.clips)}>
   <div class="ms-hero-stage" data-hero-stage>
     <div class="ms-media-space" aria-hidden="true">
       <div class="ms-film" data-film>
@@ -25,7 +25,7 @@ const posterAvailable = available && existsSync(`${process.cwd()}/public${conten
         <p class="ms-label">{content.label}</p>
         <h1 id="ms-title">{content.title}</h1>
         <p class="ms-lead">{content.copy}</p>
-        <div class="ms-buttons"><button class="ms-button" data-contact-trigger>{content.contact}</button><a class="ms-button ms-button-outline" href="#ms-services">{content.explore}</a></div>
+        <div class="ms-buttons"><button class="ms-button" data-contact-trigger>{content.contact}</button><a class="ms-button ms-button-outline" href="#ms-manifesto">{content.explore}</a></div>
       </div>
     </div>
     <div class="ms-hero-controls ms-shell" data-hero-controls>

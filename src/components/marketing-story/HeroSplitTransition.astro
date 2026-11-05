@@ -1,0 +1,9 @@
+---
+type Props = { word: string };
+const { word } = Astro.props;
+---
+<div class="ms-split" data-hero-split>
+  <p class="ms-split-static">{word}</p>
+  <div class="ms-split-half ms-split-upper" data-split-upper aria-hidden="true"><span>{word}</span></div>
+  <div class="ms-split-half ms-split-lower" data-split-lower aria-hidden="true"><span>{word}</span></div>
+</div>

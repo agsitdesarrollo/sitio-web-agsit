@@ -2,59 +2,20 @@ import type { MarketingStoryContent } from '../../types/marketingStory.types';
 import type { SupportedLang } from '../../i18n/ui';
 
 // Demo media stays local. Production renders the branded fallback until an owned asset is supplied.
-const media = { src: '/_demo-local/hero-1080.mp4', pending: true, duration: 145 / 24 * 8, clips: [] as string[] };
+const media = { src: '/_demo-local/hero-1080.mp4', pending: true, duration: 145 / 24 * 8, frameRate: 24, clips: [] as string[] };
 const socialImage = '/assets/social/growth-marketing-y-estrategia-digital.jpg';
 const es: MarketingStoryContent = {
   lang: 'es',
   metadata: { title: 'Growth Marketing y Estrategia Digital | AGSIT', description: 'Consigue más clientes con una estrategia que conecta tus mensajes, tus canales y el seguimiento. Conoce los servicios de Growth Marketing de AGSIT.', canonicalUrl: 'https://agsit.com.mx/marketing-digital/growth-marketing-y-estrategia-digital/', image: socialImage, imageAlt: 'Rutas luminosas que representan el crecimiento de un negocio con un plan.', htmlLang: 'es-MX', locale: 'es_MX' },
   hero: { label: 'Growth Marketing y Estrategia Digital', title: 'Haz que tu esfuerzo se convierta en clientes.', copy: 'Organizamos tus acciones para llegar a las personas adecuadas, acompañar su interés y facilitar la compra.', chapters: ['Tu negocio se anuncia.', 'Pero no sabe a quién llega.', 'El interés se pierde por el camino.', 'Primero, entendemos a tu cliente.', 'Le damos una razón para elegirte.', 'Cada contacto tiene un siguiente paso.', 'Aprendemos de lo que funciona.', 'Tu negocio avanza con un plan.'], skip: 'Saltar la secuencia', contact: 'Hablemos de tu negocio', explore: 'Explora los servicios', sequence: 'La historia, en ocho momentos', progress: 'Progreso de la secuencia', play: 'Reproducir este capítulo', media, poster: { src: '/_demo-local/hero-poster.webp', alt: 'Primer cuadro del video de Growth Marketing.', width: 1920, height: 1080 } },
+  transition: { word: 'AVANZA.' },
   manifesto: { words: ['Atraer.', 'Acompañar.', 'Crecer.'], copy: 'Publicar es solo el comienzo. Tu cliente necesita entender qué le ofreces, resolver sus dudas y encontrar una forma sencilla de comprar.', from: 'Primer contacto', to: 'Compra', conclusion: 'Lo que ocurre entre ambos también necesita atención.' },
-  comparison: { title: 'Así cambia el camino hasta la compra.', copy: 'Sigue el recorrido de una persona que descubre tu negocio. Cambia de escenario para ver qué ocurre en cada etapa.', without: 'Sin plan', with: 'Con plan', play: 'Reproducir', pause: 'Pausar', reset: 'Reiniciar', timeline: 'Etapa del recorrido', entries: 'Los puntos de contacto', entriesCopy: 'La misma persona. Los mismos canales. Una forma distinta de acompañarla.', route: 'El recorrido de tu cliente', actions: 'Lo que ocurre en cada etapa', result: 'Al final del recorrido', channels: ['Anuncio', 'Sitio web', 'Consulta', 'Atención', 'Seguimiento'], stages: [
-    { title: 'Te descubre', without: 'El anuncio se muestra sin tener claro a quién puede ayudar.', with: 'El mensaje llega a personas que pueden necesitar lo que ofreces.' },
-    { title: 'Se interesa', without: 'La publicación llama la atención, pero no explica qué hacer después.', with: 'La persona entiende la oferta y encuentra un siguiente paso.' },
-    { title: 'Pregunta', without: 'La conversación queda pendiente o empieza de nuevo en otro canal.', with: 'Recibe respuesta y puede continuar donde dejó la conversación.' },
-    { title: 'Decide', without: 'Las dudas y los pasos confusos dificultan la compra.', with: 'Encuentra la información y el acompañamiento que necesita para decidir.' },
-    { title: 'Puede volver', without: 'Después de comprar, nadie retoma el contacto.', with: 'El negocio mantiene una relación útil y da motivos para regresar.' },
-  ], results: ['El interés queda sin seguimiento.', 'La conversación puede convertirse en una compra y una relación duradera.'], note: 'Ejemplo ilustrativo del recorrido de un cliente. No representa resultados garantizados.' },
-  integration: { title: 'Tus canales ya existen. Hagamos que trabajen juntos.', copy: 'Partimos de las herramientas que ya usas. AGSIT coordina los mensajes y el seguimiento para que cada contacto tenga continuidad.', channels: ['Redes sociales', 'Sitio web', 'Correo', 'WhatsApp'], center: 'Estrategia y seguimiento', outcome: 'Más clientes', note: 'El punto de partida es revisar qué conviene conectar y cómo hacerlo en tu negocio.', diagram: 'Redes sociales, sitio web, correo y WhatsApp se conectan con AGSIT para ayudarte a conseguir más clientes.' },
-  audience: { title: 'Un siguiente paso para cada negocio.', items: [
-    { title: 'Tienes un negocio pequeño', copy: 'Quieres atraer clientes y saber por dónde empezar. Te ayudamos a elegir las primeras acciones y a decidir dónde concentrar tu inversión.' },
-    { title: 'Tu empresa ya vende', copy: 'Buscas nuevas oportunidades sin perder las que ya llegan. Organizamos el seguimiento desde la primera consulta hasta después de la compra.' },
-    { title: 'Llevas el marketing', copy: 'Necesitas que las campañas, el contenido y las ventas trabajen juntos. Acordamos prioridades para que tu equipo sepa qué hacer y qué revisar.' },
-  ] },
 };
 const en: MarketingStoryContent = {
   lang: 'en',
   metadata: { title: 'Growth Marketing and Digital Strategy | AGSIT', description: 'Win more customers with a strategy that connects your messages, channels and follow-up. Explore AGSIT’s Growth Marketing services.', canonicalUrl: 'https://agsit.com.mx/en/digital-marketing/growth-marketing-and-digital-strategy/', image: socialImage, imageAlt: 'Luminous paths representing business growth guided by a plan.', htmlLang: 'en', locale: 'en_US' },
   hero: { label: 'Growth Marketing and Digital Strategy', title: 'Turn your effort into customers.', copy: 'We organize your actions to reach the right people, support their interest and make buying easier.', chapters: ['Your business runs ads.', 'But who are they reaching?', 'Interest gets lost along the way.', 'First, we understand your customer.', 'We give them a reason to choose you.', 'Every contact has a next step.', 'We learn from what works.', 'Your business moves forward with a plan.'], skip: 'Skip the sequence', contact: 'Let’s talk about your business', explore: 'Explore the services', sequence: 'The story, in eight moments', progress: 'Sequence progress', play: 'Play this chapter', media, poster: { src: '/_demo-local/hero-poster.webp', alt: 'First frame of the Growth Marketing video.', width: 1920, height: 1080 } },
+  transition: { word: 'FORWARD.' },
   manifesto: { words: ['Attract.', 'Support.', 'Grow.'], copy: 'Publishing is only the beginning. Your customer needs to understand your offer, get answers and find a simple way to buy.', from: 'First contact', to: 'Purchase', conclusion: 'What happens in between needs attention too.' },
-  comparison: { title: 'See how the path to a purchase changes.', copy: 'Follow a person discovering your business. Switch scenarios to see what happens at each stage.', without: 'Without a plan', with: 'With a plan', play: 'Play', pause: 'Pause', reset: 'Restart', timeline: 'Stage of the journey', entries: 'The points of contact', entriesCopy: 'The same person. The same channels. A different way to support them.', route: 'Your customer’s journey', actions: 'What happens at each stage', result: 'At the end of the journey', channels: ['Ad', 'Website', 'Inquiry', 'Support', 'Follow-up'], stages: [
-    { title: 'Discovery', without: 'The ad appears without a clear idea of who it can help.', with: 'The message reaches people who may need what you offer.' },
-    { title: 'Interest', without: 'The post catches their eye but does not explain what to do next.', with: 'The person understands the offer and finds a next step.' },
-    { title: 'Questions', without: 'The conversation is left waiting or starts over on another channel.', with: 'They get an answer and can pick up where the conversation left off.' },
-    { title: 'Decision', without: 'Unanswered questions and confusing steps make buying difficult.', with: 'They find the information and support they need to decide.' },
-    { title: 'Return', without: 'After the purchase, nobody gets back in touch.', with: 'The business maintains a useful relationship and gives them reasons to return.' },
-  ], results: ['Interest is left without follow-up.', 'The conversation can become a purchase and a lasting relationship.'], note: 'An illustrative customer journey. It does not represent guaranteed results.' },
-  integration: { title: 'Your channels are already there. Let’s make them work together.', copy: 'We start with the tools you already use. AGSIT coordinates messages and follow-up so every contact has continuity.', channels: ['Social media', 'Website', 'Email', 'WhatsApp'], center: 'Strategy and follow-up', outcome: 'More customers', note: 'We begin by reviewing what makes sense to connect and how to do it for your business.', diagram: 'Social media, your website, email and WhatsApp connect with AGSIT to help you win more customers.' },
-  audience: { title: 'A next step for every business.', items: [
-    { title: 'You run a small business', copy: 'You want to attract customers and know where to start. We help you choose your first actions and decide where to focus your investment.' },
-    { title: 'Your company already sells', copy: 'You want new opportunities without losing those already coming in. We organize follow-up from the first inquiry to after the purchase.' },
-    { title: 'You manage the marketing', copy: 'You need campaigns, content and sales to work together. We agree on priorities so your team knows what to do and what to review.' },
-  ] },
 };
 export const getGrowthMarketingStory = (lang: SupportedLang): MarketingStoryContent => lang === 'en' ? en : es;
-
-// Curve coordinates describe an illustrative drawing, never measured purchase probabilities.
-export const getGrowthComparisonVisuals = (lang: SupportedLang) => lang === 'en' ? {
-  title: 'How interest develops', reasons: 'What changes at each stage',
-  levels: ['Low', 'Developing', 'High'], current: 'Current interest', inProgress: 'In progress',
-  note: 'An illustrative trend, not percentages or measured results.',
-  withReasons: ['The offer addresses a need.', 'The next step is easy to find.', 'An answer resolves their questions.', 'Clear information supports the decision.', 'Useful follow-up gives them a reason to return.'],
-  withoutReasons: ['The message reaches people without a clear focus.', 'Attention has no clear next step.', 'Waiting for an answer interrupts the conversation.', 'Unanswered questions slow the decision.', 'The relationship fades without follow-up.'],
-} : {
-  title: 'Cómo evoluciona el interés', reasons: 'Qué cambia en cada etapa',
-  levels: ['Bajo', 'En desarrollo', 'Alto'], current: 'Interés actual', inProgress: 'En curso',
-  note: 'Evolución ilustrativa; no representa porcentajes ni resultados medidos.',
-  withReasons: ['La oferta responde a una necesidad.', 'El siguiente paso es fácil de encontrar.', 'Una respuesta ayuda a resolver las dudas.', 'La información clara facilita la decisión.', 'El seguimiento útil da una razón para volver.'],
-  withoutReasons: ['El mensaje llega sin un público bien definido.', 'La atención no tiene un siguiente paso claro.', 'La espera de una respuesta interrumpe la conversación.', 'Las dudas pendientes frenan la decisión.', 'Sin seguimiento, la relación se enfría.'],
-};

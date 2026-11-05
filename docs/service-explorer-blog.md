@@ -15,7 +15,7 @@ Las páginas incluyen `robots: noindex, nofollow` y no aparecen en la lista expl
 
 Astro 6.4.8 interpreta el segmento final `/es/` como un prefijo del idioma predeterminado y puede devolver el documento renderizado con HTTP 404. La ruta de desarrollo establece `X-Astro-Reroute: no`, que su middleware reconoce para conservar la respuesta original. Este ajuste es local a la vista previa y debe verificarse al actualizar Astro; no cambia el enrutamiento público ni la configuración global de idiomas.
 
-Después de `pnpm build`, comprobar que `dist/client/vista-previa/servicios-blog/` no existe, que no hay HTML de esta vista en la salida y que ambas URLs responden 404 al servir el build. Los recursos compartidos de la cuadrícula pueden estar presentes mientras la página pública de Growth todavía la use.
+Después de `pnpm build`, comprobar que `dist/client/vista-previa/servicios-blog/` no existe, que no hay HTML de esta vista en la salida y que ambas URLs responden 404 al servir el build. La página pública de Growth ya no importa la cuadrícula.
 
 ## Archivos y uso posterior
 
@@ -41,8 +41,8 @@ El componente se lee completo sin JavaScript, sin alturas fijadas y sin animacio
 
 Los parámetros opcionales `useDrawer` y `reveal` se reservan para integraciones que ya proporcionen, respectivamente, el manejador compartido `data-contact-trigger` y un controlador para `data-reveal`. Ambos están desactivados por defecto; no hay dependencia de esos controladores dentro de la familia del blog.
 
-## Integración temporal durante el rediseño
+## Separación del recorrido de Growth
 
-El commit de extracción conserva la cuadrícula en Growth mediante una importación desde blog para verificar que el refactor mantiene la composición y el botón existentes. Su retirada del montaje público corresponde al siguiente commit, que sustituye el recorrido y elimina las secciones descartadas. El blog no depende de Growth; esta importación temporal tiene la dirección inversa.
+El primer commit de extracción conservó temporalmente la cuadrícula en Growth para verificar su composición. El segundo commit la retiró de ese montaje. Ahora se utiliza únicamente en la vista previa de desarrollo, lista para un artículo futuro. No hay importaciones entre las familias de blog y `marketing-story`.
 
 No copiar aquí el video ni el póster de `public/_demo-local/`. Esos recursos siguen fuera de git y no forman parte de esta familia.
