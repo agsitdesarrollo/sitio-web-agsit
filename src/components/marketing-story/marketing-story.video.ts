@@ -1,6 +1,12 @@
 /** Media player only. Scroll position and all animation timing belong to the family driver. */
 export function createStoryVideo(hero: HTMLElement, signal: AbortSignal) {
   const video = hero.querySelector<HTMLVideoElement>('[data-story-video]');
+  // Keep claim positioning, but do not initialize chapter playback without a source.
+  if (!video) {
+    hero.dataset.mode = 'fallback';
+    const noop = () => {};
+    return { update: noop, tick: noop, pause: noop, dispose() { delete hero.dataset.mode; } };
+  }
   const retry = hero.querySelector<HTMLButtonElement>('[data-video-retry]')!;
   const captions = [...hero.querySelectorAll<HTMLElement>('[data-caption]')];
   const segments = [...hero.querySelectorAll('[data-segment]')];

@@ -7,14 +7,14 @@ const { content } = Astro.props;
 const available = (!content.media.pending || import.meta.env.DEV) && existsSync(`${process.cwd()}/public${content.media.src}`);
 const posterAvailable = available && existsSync(`${process.cwd()}/public${content.poster.src}`);
 ---
-<section class="ms-hero" aria-labelledby="ms-title" data-hero data-duration={content.media.duration} data-frame-rate={content.media.frameRate} data-clips={JSON.stringify(content.media.clips)}>
+<section class="ms-hero" aria-labelledby="ms-title" data-hero data-video-available={String(available)} data-duration={content.media.duration} data-frame-rate={content.media.frameRate} data-clips={JSON.stringify(content.media.clips)}>
   <div class="ms-hero-stage" data-hero-stage>
     <div class="ms-media-space" aria-hidden="true">
       <div class="ms-film" data-film>
         {posterAvailable && <img class="ms-poster" src={content.poster.src} alt="" width={content.poster.width} height={content.poster.height} fetchpriority="high" />}
         {available && <video data-story-video data-src={content.media.src} poster={posterAvailable ? content.poster.src : undefined} muted playsinline preload="none" disablepictureinpicture tabindex="-1" aria-hidden="true"></video>}
         <div class="ms-film-shade"></div>
-        <div class="ms-captions">
+        <div class="ms-captions" hidden={!available}>
           {content.chapters.map((chapter, i) => <div class="ms-caption" data-caption aria-hidden="true"><span class="ms-count">{String(i + 1).padStart(2, '0')} <span>/ {String(content.chapters.length).padStart(2, '0')}</span></span><p>{chapter}</p></div>)}
         </div>
       </div>
@@ -28,7 +28,7 @@ const posterAvailable = available && existsSync(`${process.cwd()}/public${conten
         <div class="ms-buttons"><button class="ms-button" data-contact-trigger>{content.contact}</button><a class="ms-button ms-button-outline" href="#ms-manifesto">{content.explore}</a></div>
       </div>
     </div>
-    <div class="ms-hero-controls ms-shell" data-hero-controls>
+    <div class="ms-hero-controls ms-shell" data-hero-controls hidden={!available}>
       <button class="ms-skip" data-skip>{content.skip}</button>
       <button class="ms-skip ms-video-retry" data-video-retry hidden>{content.play}</button>
       <div class="ms-segments" role="progressbar" aria-label={content.progress} aria-valuemin="1" aria-valuemax={content.chapters.length} aria-valuenow="1">
@@ -36,7 +36,7 @@ const posterAvailable = available && existsSync(`${process.cwd()}/public${conten
       </div>
     </div>
   </div>
-  <div class="ms-static-chapters ms-shell" data-static-chapters>
+  <div class="ms-static-chapters ms-shell" data-static-chapters hidden={!available}>
     <h2>{content.sequence}</h2><ol>{content.chapters.map(chapter => <li>{chapter}</li>)}</ol>
   </div>
 </section>

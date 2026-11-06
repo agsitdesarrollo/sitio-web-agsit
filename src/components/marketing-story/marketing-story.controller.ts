@@ -43,6 +43,7 @@ export function initMarketingStory() {
     const track = page.querySelector<HTMLElement>('[data-journey-track]')!;
     const stage = page.querySelector<HTMLElement>('[data-journey-stage]')!;
     const hero = page.querySelector<HTMLElement>('[data-hero]')!;
+    const hasVideo = hero.dataset.videoAvailable === 'true';
     const split = page.querySelector<HTMLElement>('[data-story-split]')!;
     const manifesto = page.querySelector<HTMLElement>('#ms-manifesto')!;
     const plan = page.querySelector<HTMLElement>('[data-plan]')!;
@@ -109,7 +110,7 @@ export function initMarketingStory() {
       page.style.setProperty('--ms-panel-h', `${panel}px`);
       page.style.setProperty('--ms-header-h', `${nav}px`);
       const start = Math.round(documentTop(track));
-      const heroEnd = Math.round(start + panel * HERO_END);
+      const heroEnd = Math.round(start + (hasVideo ? panel * HERO_END : 0));
       g = { ...g, panel, start, heroEnd, attractEnd: heroEnd + panel, accompanyEnd: heroEnd + panel * 2, growEnd: heroEnd + panel * 3, boostEnd: heroEnd + panel * 4, planEnd: heroEnd + panel * 5, revealEnd: heroEnd + panel * 6 };
       SERVICE_STOPS.forEach((name, index) => { g[name] = heroEnd + panel * (index + 7); });
       g.closingEnd = heroEnd + panel * 12;
@@ -209,7 +210,7 @@ export function initMarketingStory() {
     const render = () => {
       const y = window.scrollY;
       renderedY = y;
-      const units = y <= g.heroEnd ? clamp01((y - g.start) / (g.heroEnd - g.start)) * HERO_END : HERO_END + (y - g.heroEnd) / g.panel;
+      const units = hasVideo && y < g.heroEnd ? clamp01((y - g.start) / (g.heroEnd - g.start)) * HERO_END : HERO_END + (y - g.heroEnd) / g.panel;
       master.time(Math.max(0, Math.min(HERO_END + 12, units)));
       const localProgress = units - HERO_END;
       const mode = y < g.heroEnd - EPSILON ? 'continuous' : y < g.attractEnd - EPSILON ? 'entry' : y <= g.growEnd + EPSILON ? 'manifesto' : y <= g.boostEnd + EPSILON ? 'boost' : y <= g.planEnd + EPSILON ? 'plan-entry' : y <= g.revealEnd + EPSILON ? 'plan-split' : y <= g.channelsEnd + EPSILON ? 'services' : y <= g.closingEnd + EPSILON ? 'closing' : 'reading';

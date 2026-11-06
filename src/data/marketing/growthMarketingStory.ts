@@ -16,7 +16,7 @@ const es: MarketingStoryContent = {
     { name: 'Automatización', title: 'Da seguimiento sin depender de recordar cada pendiente.', copy: 'Organizamos mensajes y recordatorios para que tu equipo sepa cuándo retomar una conversación y pueda dedicar más tiempo a atender.' },
     { name: 'Canales conectados', title: 'Continúa la conversación aunque cambie de canal.', copy: 'Coordinamos redes sociales, sitio web, correo y WhatsApp para que tus clientes encuentren información coherente y atención con continuidad.' },
   ] },
-  plan: { phrase: 'CRECER CON PLAN', cue: '[ASÍ LO HACEMOS]', particlesLabel: 'Puntos que se reúnen para presentar nuestros servicios.' },
+  plan: { phrase: 'CRECER CON PLAN', cue: '[ASÍ LO HACEMOS]' },
   closing: { phrase: 'Demos dirección a tu crecimiento.', cta: 'Hablemos de tu negocio' },
   manifesto: { eyebrow: 'CÓMO HACEMOS CRECER TU NEGOCIO', words: ['Atraer.', 'Acompañar.', 'Crecer.'], lines: ['Llegamos a las personas que buscan lo que ofreces.', 'Respondemos sus dudas y damos seguimiento.', 'Convertimos el interés en ventas que se repiten.'], scenes: { attract: { business: 'Tu negocio', action: 'Ver más', reach: 'Alcance' }, follow: { title: 'Tu cliente', status: ['Interesado', 'En conversación', 'Listo para comprar'], steps: ['Conoce tu negocio', 'Resuelve sus dudas', 'Decide comprar'] }, grow: { title: 'Ventas', chip: 'En crecimiento', returning: 'Clientes que regresan' } }, from: 'Primer contacto', to: 'Cliente que regresa' },
 };
@@ -32,7 +32,7 @@ const en: MarketingStoryContent = {
     { name: 'Automation', title: 'Follow up without having to remember every task.', copy: 'We organize messages and reminders so your team knows when to return to a conversation and has more time to help.' },
     { name: 'Connected channels', title: 'Keep the conversation going across channels.', copy: 'We coordinate social media, your website, email and WhatsApp so customers find consistent information and continuous support.' },
   ] },
-  plan: { phrase: 'GROW WITH A PLAN', cue: '[HOW WE DO IT]', particlesLabel: 'Points gathering to introduce our services.' },
+  plan: { phrase: 'GROW WITH A PLAN', cue: '[HOW WE DO IT]' },
   closing: { phrase: 'Let’s give your growth a direction.', cta: 'Let’s talk about your business' },
   manifesto: { eyebrow: 'HOW WE GROW YOUR BUSINESS', words: ['Attract.', 'Support.', 'Grow.'], lines: ['We reach people looking for what you offer.', 'We answer their questions and follow up.', 'We turn interest into sales that keep coming.'], scenes: { attract: { business: 'Your business', action: 'Learn more', reach: 'Reach' }, follow: { title: 'Your customer', status: ['Interested', 'In conversation', 'Ready to buy'], steps: ['Discovers your business', 'Gets answers', 'Decides to buy'] }, grow: { title: 'Sales', chip: 'Growing', returning: 'Returning customers' } }, from: 'First contact', to: 'Returning customer' },
 };

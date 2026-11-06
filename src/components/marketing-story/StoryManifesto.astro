@@ -15,7 +15,7 @@ const { content } = Astro.props;
       </div>
       <div class="ms-manifesto-figure"><StoryManifestoScenes copy={content.scenes} /></div>
     </div>
-    <div class="ms-manifesto-diagram">
+    <div>
       <div class="ms-rule" data-manifesto-rule aria-hidden="true"><i data-manifesto-thread></i>{[0, 1, 2].map(index => <b style={`--ms-node: ${(index + 1) / 3}`}><span data-manifesto-node></span></b>)}</div>
       <div class="ms-manifesto-labels"><span>{content.from}</span><span>{content.to}</span></div>
     </div>

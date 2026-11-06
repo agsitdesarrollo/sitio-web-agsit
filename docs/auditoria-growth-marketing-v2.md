@@ -87,3 +87,28 @@ Ninguno es un archivo compartido de menú, contacto, footer, layout ni `global.c
 - No se probó la pausa por pestaña oculta ni con el cajón de contacto abierto durante el recorrido.
 - No se auditó el video del hero ni sus capítulos (hallazgo 1). Este recorrido no probó el tramo continuo con video real.
 - Regreso desde el footer solo en 1366×768 en español, como se pidió.
+
+
+## Correcciones de la auditoría final — 6 de noviembre de 2026
+
+El diagnóstico anterior se conserva como evidencia del estado auditado. Esta revisión parte de `860ef9e`, en `codex/marketing-growth-v2` con árbol limpio y origin comprobado mediante fetch.
+
+| # | Estado | Corrección / resultado |
+|---|---|---|
+| 1 | Corregido | Sin archivo disponible para este entorno, `heroEnd` coincide con el inicio: título final, texto y botones sobre el fondo de respaldo; capítulos, contador y barra ocultos. El siguiente gesto entra al manifiesto. Se conserva el recorrido continuo cuando hay video autorizado por el filtro existente (demo solo DEV, propio con `pending: false`). No se modifica `pending: true`. |
+| 2 | Corregido | Orden DOM: manifiesto → IMPULSA. → CRECER CON PLAN → servicios → cierre. Verificado con movimiento reducido a 1366×768. |
+| 3 | Corregido | En teléfono horizontal, figura y tarjeta van lado a lado. A 844×390 el área de figura mide 315×280 px y la tarjeta 385×206 px, separadas por 20 px; las cinco figuras quedan completas, sin tapar la tarjeta ni desbordar horizontalmente. |
+| 4 | Corregido | Antetítulo sin límite de 32ch y sin salto de línea en escritorio. ES 1366×768: una línea de 16,8 px de alto. El teléfono conserva el ajuste de líneas. |
+| 5 | Corregido | Eliminados `particlesLabel` del tipo y ambos idiomas, `sampledStoryShape`, `.ms-paper`, `.ms-section-space` y la clase sin estilos `ms-manifesto-diagram`. Búsqueda posterior en `src`: cero coincidencias de esos identificadores/selectores; se conserva la variable de color `--ms-paper`, que sí se usa. La auditoría no marca otros archivos huérfanos. |
+| 6 | Reportado, sin cambio de rendimiento | `createManifestoScenes()` ya ejecuta `build()` durante la inicialización del controlador, antes del primer gesto. No se identificó una causa clara adicional y no se amplió la investigación. Una sola medición de entrada: p95 16,8 ms; máximos 33,4 y 33,3 ms; cero tareas largas. No se afirma haber corregido los picos originales. |
+
+### Verificación ligera de las correcciones
+
+- `pnpm build`: correcto (adapter Node). La ejecución inicial dentro del sandbox falló con `spawn EPERM`; la ejecución autorizada fuera del sandbox terminó correctamente. `git diff --check`: correcto.
+- Producción con `pnpm preview --host 127.0.0.1 --port 4399`, Chromium: a 1366×768, `heroEnd=0`, título opaco y controles/capítulos ocultos; una rueda de 120 px llega a `attractEnd=768`. A 390×844, igual estado inicial y un swipe CDP llega a `attractEnd=844`. Sin video renderizado ni scroll horizontal.
+- Desarrollo con `pnpm dev --host 127.0.0.1 --port 4398`: demo cargada, `readyState=4`, 1920 px de ancho, modo scrub y tramo continuo conservados (`heroEnd=4129` a 1366×768). Al desplazar 1800 px, el video pasa de 0 a 24,67 s y la barra marca el quinto capítulo.
+- Movimiento reducido a 1366×768: manifiesto en y=768, IMPULSA. en y=1807,6, plan en y=2575,6, servicios en y=2799,95 y cierre en y=5470,5; canvas oculto y sin video.
+- Capturas ES fuera del repositorio: `C:\Users\USER\.codex\visualizations\2026\11\06\01a1b1dd-81e1-7eb2-8b4e-c0f634afd80d\`. Archivos: `manifesto-es-1366x768.png`, `hero-production-390x844.png`, `manifesto-es-390x844.png` y `services-es-844x390-{strategyEnd,journeyEnd,intelligenceEnd,automationEnd,channelsEnd}.png`.
+- Una sola medición de entrada al manifiesto (no recorrido completo): Chromium móvil emulado, 390×844, CPU 4× mediante CDP desde antes de cargar, después de inicializar se registran intervalos rAF durante un swipe y 1800 ms posteriores. 157 intervalos; p95 16,8 ms; dos cuadros >33 ms: 33,3 ms en y=700 y 33,4 ms en y=727; siguiente máximo 16,9 ms; cero tareas largas. Sin repeticiones.
+- No se verificaron dispositivos físicos ni Safari. La comprobación del video fue en Chromium de escritorio con la demo local; el video propio sigue pendiente. No se repite la auditoría completa fuera del alcance solicitado.
+- Menú, contacto, footer, layout, `global.css` y otras familias sin cambios. `public/_demo-local/` permanece ignorada y fuera de los archivos del commit; las capturas también quedan fuera del repositorio.

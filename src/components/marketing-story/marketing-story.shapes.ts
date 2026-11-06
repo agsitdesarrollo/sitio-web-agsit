@@ -91,4 +91,3 @@ export const storyShapes = {
 export const serviceShapes: readonly StoryShape[] = [target,funnel,brain,gear,chat];
 export const logoShape: StoryShape = logo;
 export const mapStoryShape = (shape: StoryShape, space: StorySpace): StoryShape => ({ source: shape, motion: shape.motion, space });
-export const sampledStoryShape = (points: readonly StoryPoint[]): StoryShape => ({ sample: (index,count) => points[Math.min(points.length - 1,Math.floor(index / Math.max(1,count) * points.length))] || { x: .5, y: .5 } });

@@ -23,10 +23,8 @@
 .ms-story-content h2 { font-size: clamp(2.5rem, 4.1vw, 4.3rem); }
 .ms-story-content section[id] { scroll-margin-top: calc(var(--nav-h) + 20px); }
 .ms-shell { width: min(1240px, calc(100% - var(--ms-gutter) * 2)); margin-inline: auto; }
-.ms-section-space { padding-block: clamp(80px, 10vw, 144px); }
 .ms-light { background: #fff; color: var(--ms-navy); }
-.ms-paper { background: var(--ms-paper); color: var(--ms-navy); }
-.ms-light :is(h2,h3), .ms-paper :is(h2,h3) { color: var(--ms-blue); }
+.ms-light :is(h2,h3) { color: var(--ms-blue); }
 .ms-lead { font-size: clamp(1.05rem, 1.5vw, 1.3rem); line-height: 1.6; max-width: 48ch; }
 .ms-label { color: var(--ms-soft); font-size: .875rem; line-height: 1.45; letter-spacing: .12em; font-weight: 800; text-transform: uppercase; }
 .ms-button, .ms-skip { font: 700 .875rem/1.4 'Inter',sans-serif; cursor: pointer; }
@@ -77,7 +75,7 @@
 .ms-manifesto { background-color: var(--ms-paper); background-image: radial-gradient(rgba(37,63,108,.09) .7px,transparent .8px); background-size: 24px 24px; }
 .ms-manifesto-inner { min-height: var(--ms-panel-h,100svh); display: grid; grid-template-rows: 1fr auto; gap: clamp(16px,3svh,32px); padding-block: calc(var(--ms-header-h,var(--nav-h)) + 24px) max(24px,env(safe-area-inset-bottom)); }
 .ms-manifesto-body { display: grid; grid-template-columns: 47fr 53fr; align-items: center; gap: clamp(28px,4vw,60px); min-height: 0; }
-.ms-manifesto-eyebrow { font: 700 .75rem/1.4 'Inter',sans-serif; letter-spacing: .08em; color: var(--ms-teal); margin-bottom: 24px !important; max-width: 32ch; }
+.ms-manifesto-eyebrow { font: 700 .75rem/1.4 'Inter',sans-serif; letter-spacing: .08em; color: var(--ms-teal); margin-bottom: 24px !important; max-width: none; }
 .ms-manifesto-words { display: grid; gap: clamp(14px,2.2svh,24px); }
 .ms-manifesto-group h2 { font-size: clamp(3rem,7vw,6.3rem); font-weight: 300; line-height: .98; white-space: nowrap; }
 .ms-manifesto-group p { font-size: clamp(.875rem,1.05vw,1rem); line-height: 1.45; margin-top: 6px !important; max-width: 36ch; }
@@ -122,7 +120,6 @@ html.lenis.lenis-stopped:has(.ms-page[data-motion='enhanced']) { overflow: clip;
   .ms-page { --ms-gutter: 20px; }
   .ms-story-content h1 { font-size: clamp(2.5rem,10vw,3.4rem); }
   .ms-story-content h2 { font-size: 2.7rem; }
-  .ms-section-space { padding-block: 76px; }
   .ms-media-space { inset: calc(var(--nav-h) + 20px) 0 105px; }
   .ms-film { width: 100%; height: 100%; aspect-ratio: auto; }
   .ms-caption { bottom: 24px; }
@@ -200,4 +197,8 @@ html.lenis.lenis-stopped:has(.ms-page[data-motion='enhanced']) { overflow: clip;
   .ms-manifesto-group p { font-size: .6875rem; }
   .ms-manifesto-words { gap: 5px; }
   .ms-manifesto-inner { gap: 8px; padding-bottom: 10px; }
+}
+
+@media (min-width: 1024px) {
+  .ms-manifesto-eyebrow { white-space: nowrap; }
 }
