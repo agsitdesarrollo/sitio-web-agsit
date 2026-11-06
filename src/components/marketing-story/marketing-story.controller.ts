@@ -4,12 +4,12 @@ import Lenis from 'lenis';
 import { createStoryVideo } from './marketing-story.video';
 import { createStoryParticles } from './marketing-story.particles';
 import { createManifestoScenes, type SceneIndex } from './marketing-story.scenes';
-import { storyShapes, serviceShapes, mapStoryShape, type StoryShape } from './marketing-story.shapes';
+import { storyShapes, serviceShapes, logoShape, mapStoryShape, type StoryShape } from './marketing-story.shapes';
 
 gsap.registerPlugin(ScrollTrigger);
 type Direction = -1 | 1;
 const SERVICE_STOPS = ['strategyEnd', 'journeyEnd', 'intelligenceEnd', 'automationEnd', 'channelsEnd'] as const;
-const STOPS = ['heroEnd', 'attractEnd', 'accompanyEnd', 'growEnd', 'boostEnd', 'planEnd', 'revealEnd', ...SERVICE_STOPS, 'contactEntry'] as const;
+const STOPS = ['heroEnd', 'attractEnd', 'accompanyEnd', 'growEnd', 'boostEnd', 'planEnd', 'revealEnd', ...SERVICE_STOPS, 'closingEnd', 'contactEntry'] as const;
 type Stop = typeof STOPS[number];
 type MotionTarget = Stop | 'start' | 'end' | HTMLElement;
 type Decision = { kind: 'free' } | { kind: 'clamp' | 'stop'; stop: Stop };
@@ -57,6 +57,8 @@ export function initMarketingStory() {
     const services = plan.querySelector<HTMLElement>('[data-services]')!;
     const cards = [...services.querySelectorAll<HTMLElement>('[data-service-card]')];
     const serviceFigure = services.querySelector<HTMLElement>('[data-service-figure]')!;
+    const closing = plan.querySelector<HTMLElement>('[data-closing]')!;
+    const closingMark = closing.querySelector<HTMLElement>('[data-closing-mark]')!;
     const serviceCounter = services.querySelector<HTMLElement>('[data-service-counter]')!;
     const announcement = services.querySelector<HTMLElement>('[data-service-announcement]')!;
     const previous = services.querySelector<HTMLButtonElement>('[data-service-prev]')!;
@@ -84,8 +86,9 @@ export function initMarketingStory() {
     const phraseLine = mapStoryShape(storyShapes.planTransit,lineSpace);
     const entryLine = mapStoryShape(storyShapes.servicesFocus,entrySpace);
     let mappedShapes: StoryShape[] = [];
+    let closingShape: StoryShape = logoShape;
     let announced = -1;
-    let g = { panel: 1, start: 0, heroEnd: 0, attractEnd: 0, accompanyEnd: 0, growEnd: 0, boostEnd: 0, planEnd: 0, revealEnd: 0, strategyEnd: 0, journeyEnd: 0, intelligenceEnd: 0, automationEnd: 0, channelsEnd: 0, contactEntry: 0, contact: 0, stageHeight: 1 };
+    let g = { panel: 1, start: 0, heroEnd: 0, attractEnd: 0, accompanyEnd: 0, growEnd: 0, boostEnd: 0, planEnd: 0, revealEnd: 0, strategyEnd: 0, journeyEnd: 0, intelligenceEnd: 0, automationEnd: 0, channelsEnd: 0, closingEnd: 0, contactEntry: 0, contact: 0, stageHeight: 1 };
     let lenis: Lenis;
     let trigger: ScrollTrigger;
     let moving = false;
@@ -109,10 +112,11 @@ export function initMarketingStory() {
       const heroEnd = Math.round(start + panel * HERO_END);
       g = { ...g, panel, start, heroEnd, attractEnd: heroEnd + panel, accompanyEnd: heroEnd + panel * 2, growEnd: heroEnd + panel * 3, boostEnd: heroEnd + panel * 4, planEnd: heroEnd + panel * 5, revealEnd: heroEnd + panel * 6 };
       SERVICE_STOPS.forEach((name, index) => { g[name] = heroEnd + panel * (index + 7); });
+      g.closingEnd = heroEnd + panel * 12;
     };
     const measureTrack = () => {
       g.stageHeight = g.panel;
-      track.style.height = `${g.stageHeight + g.channelsEnd - g.start}px`;
+      track.style.height = `${g.stageHeight + g.closingEnd - g.start}px`;
       g.contact = Math.round(documentTop(contact));
       g.contactEntry = g.contact;
       for (const name of STOPS) page.dataset[name] = String(g[name]);
@@ -128,6 +132,10 @@ export function initMarketingStory() {
       const space = { cx: (bounds.left - field.left + bounds.width / 2) / field.width, cy: (bounds.top - field.top + bounds.height / 2) / field.height, sx: side / field.width, sy: side / field.height };
       mappedShapes = serviceShapes.map(shape => mapStoryShape(shape,space));
       planParticles.setShapeSize(side);
+      const mark = closingMark.getBoundingClientRect();
+      const markSide = Math.min(mark.width, mark.height);
+      closingShape = mapStoryShape(logoShape, { cx: (mark.left - field.left + mark.width / 2) / field.width, cy: (mark.top - field.top + mark.height / 2) / field.height, sx: markSide / field.width, sy: markSide / field.height });
+      planParticles.warm(closingShape);
     };
     measurePanel(); measureTrack();
 
@@ -147,6 +155,7 @@ export function initMarketingStory() {
     gsap.set(plan, { autoAlpha: 0 });
     gsap.set([...letters, ...lowerLetters, ...wholeLetters], { opacity: 0, yPercent: 115 });
     gsap.set([cue, planCanvas, frame], { autoAlpha: 0 });
+    gsap.set(closing, { autoAlpha: 0, y: 14 });
     gsap.set(services, { autoAlpha: 0 });
     gsap.set(cards, { autoAlpha: 0, y: 16 });
     const span = VIDEO_PANELS * .82 / captions.length;
@@ -187,7 +196,10 @@ export function initMarketingStory() {
       .to(frame, { autoAlpha: 1, duration: .3 }, HERO_END + 6.4)
       .to([upper, lower, cue], { autoAlpha: 0, duration: .18 }, HERO_END + 6.02)
       .to(services, { autoAlpha: 1, duration: .3 }, HERO_END + 6.3)
-      .to({}, { duration: 11 }, HERO_END);
+      // Closing stop: frame and card leave, the dots become the symbol, then the phrase and button appear.
+      .to([services, frame], { autoAlpha: 0, duration: .3 }, HERO_END + 11.02)
+      .to(closing, { autoAlpha: 1, y: 0, duration: .35, ease: 'power2.out' }, HERO_END + 11.65)
+      .to({}, { duration: 12 }, HERO_END);
     cards.forEach((card, index) => {
       const start = HERO_END + 6 + index;
       if (index) master.to(cards[index - 1], { autoAlpha: 0, y: -12, duration: .25 }, start + .05);
@@ -198,9 +210,9 @@ export function initMarketingStory() {
       const y = window.scrollY;
       renderedY = y;
       const units = y <= g.heroEnd ? clamp01((y - g.start) / (g.heroEnd - g.start)) * HERO_END : HERO_END + (y - g.heroEnd) / g.panel;
-      master.time(Math.max(0, Math.min(HERO_END + 11, units)));
+      master.time(Math.max(0, Math.min(HERO_END + 12, units)));
       const localProgress = units - HERO_END;
-      const mode = y < g.heroEnd - EPSILON ? 'continuous' : y < g.attractEnd - EPSILON ? 'entry' : y <= g.growEnd + EPSILON ? 'manifesto' : y <= g.boostEnd + EPSILON ? 'boost' : y <= g.planEnd + EPSILON ? 'plan-entry' : y <= g.revealEnd + EPSILON ? 'plan-split' : y <= g.channelsEnd + EPSILON ? 'services' : 'reading';
+      const mode = y < g.heroEnd - EPSILON ? 'continuous' : y < g.attractEnd - EPSILON ? 'entry' : y <= g.growEnd + EPSILON ? 'manifesto' : y <= g.boostEnd + EPSILON ? 'boost' : y <= g.planEnd + EPSILON ? 'plan-entry' : y <= g.revealEnd + EPSILON ? 'plan-split' : y <= g.channelsEnd + EPSILON ? 'services' : y <= g.closingEnd + EPSILON ? 'closing' : 'reading';
       const step = String(y < g.attractEnd - EPSILON ? 0 : Math.min(4, 1 + Math.floor((y - g.attractEnd + EPSILON) / g.panel)));
       if (page.dataset.manifestoStep !== step) page.dataset.manifestoStep = step;
       if (page.dataset.scrollStage !== mode) page.dataset.scrollStage = mode;
@@ -212,14 +224,17 @@ export function initMarketingStory() {
       scenes.update(sceneIndex, !overlayOpen() && !document.hidden);
       const planProgress = clamp01((localProgress - 5.12) / .83);
       if (localProgress <= 6) planParticles.setMorph(phraseLine, phraseLine, planProgress * planProgress * (3 - 2 * planProgress));
-      else {
+      else if (localProgress > 11) {
+        const t = clamp01((localProgress - 11.05) / .85);
+        planParticles.setMorph(mappedShapes[4], closingShape, t * t * (3 - 2 * t));
+      } else {
         const segment = Math.min(4, Math.floor(localProgress - 6));
         const dropping = clamp01((localProgress - 6 - .02) / .23);
         entrySpace.cy = lineSpace.cy + .1 * dropping * dropping * (3 - 2 * dropping);
         const progress = clamp01((localProgress - 6 - segment - (segment === 0 ? .25 : .08)) / (segment === 0 ? .70 : .82));
         planParticles.setMorph(segment === 0 ? entryLine : mappedShapes[segment - 1], mappedShapes[segment], progress * progress * (3 - 2 * progress));
       }
-      planParticles.setActive(!overlayOpen() && localProgress > 5.05 && localProgress < 12);
+      planParticles.setActive(!overlayOpen() && localProgress > 5.05 && localProgress < 13);
       const expansion = clamp01(localProgress - 6);
       const expand = expansion * expansion * (3 - 2 * expansion);
       frame.style.transform = `scale(${.96 + .04 * expand})`;
@@ -248,6 +263,7 @@ export function initMarketingStory() {
       setInert(plan, y < g.planEnd - EPSILON);
       setInert(split, localProgress >= 5);
       setInert(services, y < g.strategyEnd - EPSILON || y > g.channelsEnd + EPSILON);
+      setInert(closing, y < g.closingEnd - EPSILON);
       cards.forEach((card, index) => setInert(card, index !== serviceIndex));
       const changing = localProgress > 0 && localProgress < .68;
       const hint = changing ? 'transform' : '';
@@ -256,7 +272,7 @@ export function initMarketingStory() {
     };
     trigger = ScrollTrigger.create({
       id: 'marketing-story-journey', trigger: track, start: 'top top',
-      end: () => `+=${g.channelsEnd - g.start}`,
+      end: () => `+=${g.closingEnd - g.start}`,
       pin: stage, pinSpacing: false,
     });
 
@@ -382,9 +398,9 @@ export function initMarketingStory() {
       const old = g;
       const y = lenis.animatedScroll;
       const units = (y - old.start) / old.panel;
-      const reading = y > old.channelsEnd;
+      const reading = y > old.closingEnd;
       const pastContact = y >= old.contact;
-      const readingRatio = (y - old.channelsEnd) / Math.max(1, old.contact - old.channelsEnd);
+      const readingRatio = (y - old.closingEnd) / Math.max(1, old.contact - old.closingEnd);
       const resume = motionTarget;
       const resumeKind = motionKind;
       const settled = !moving ? STOPS.find(name => Math.abs(y - old[name]) <= EPSILON) : undefined;
@@ -395,7 +411,7 @@ export function initMarketingStory() {
       measureTrack();
       planParticles.invalidate();
       lenis.resize();
-      const next = settled ? g[settled] : !reading ? g.start + units * g.panel : pastContact ? g.contact + y - old.contact : g.channelsEnd + readingRatio * (g.contact - g.channelsEnd);
+      const next = settled ? g[settled] : !reading ? g.start + units * g.panel : pastContact ? g.contact + y - old.contact : g.closingEnd + readingRatio * (g.contact - g.closingEnd);
       lenis.scrollTo(Math.max(0, next), { immediate: true, force: true });
       ScrollTrigger.update(); render();
       if (resume) goTo(resolveTarget(resume), resumeKind, resume);
@@ -434,7 +450,7 @@ export function initMarketingStory() {
       overlayObserver.disconnect(); navSize.disconnect();
       gsap.ticker.remove(tick); lenis.destroy(); media.dispose(); scenes.dispose(); planParticles.dispose();
       hero.inert = false; claim.inert = false; controls.inert = false; manifesto.inert = false;
-      plan.inert = false; split.inert = false; split.classList.remove('is-open');
+      plan.inert = false; closing.inert = false; split.inert = false; split.classList.remove('is-open');
       services.inert = false; cards.forEach(card => { card.inert = false; });
       frame.style.removeProperty('transform'); delete services.dataset.serviceIndex; announcement.textContent = '';
       for (const element of [left, right, manifesto]) element.style.removeProperty('will-change');

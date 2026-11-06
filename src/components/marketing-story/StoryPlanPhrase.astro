@@ -2,8 +2,9 @@
 import type { MarketingStoryContent } from '../../types/marketingStory.types';
 import './marketing-story.plan.css';
 import StoryPointServices from './StoryPointServices.astro';
-type Props = { content: MarketingStoryContent['plan']; services: MarketingStoryContent['services'] };
-const { content, services } = Astro.props;
+import StoryClosing from './StoryClosing.astro';
+type Props = { content: MarketingStoryContent['plan']; services: MarketingStoryContent['services']; closing: MarketingStoryContent['closing'] };
+const { content, services, closing } = Astro.props;
 const letters = Array.from(content.phrase);
 ---
 <section class="ms-plan" id="ms-plan" aria-labelledby="ms-plan-title" data-plan>
@@ -20,4 +21,5 @@ const letters = Array.from(content.phrase);
   <canvas class="ms-plan-particles" data-story-particles data-plan-particles aria-hidden="true"></canvas>
   <div class="ms-plan-service-frame" data-plan-frame aria-hidden="true"></div>
   <StoryPointServices content={services} />
+  <StoryClosing content={closing} />
 </section>

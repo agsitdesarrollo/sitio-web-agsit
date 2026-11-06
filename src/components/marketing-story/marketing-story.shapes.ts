@@ -1,6 +1,6 @@
 /** Shared vector artwork for offscreen sampling and the static SVG fallback. Units: 0–1000. */
 export type StoryPoint = { x: number; y: number; part?: number };
-export type StoryMotion = 'target' | 'funnel' | 'brain' | 'gear' | 'chat' | 'line';
+export type StoryMotion = 'target' | 'funnel' | 'brain' | 'gear' | 'chat' | 'line' | 'logo';
 export type StorySpace = { cx: number; cy: number; sx: number; sy: number };
 export type StoryVectorLayer = { d: string; part: number; weight: number; mirror?: boolean; rule?: CanvasFillRule; contour?: number; glintStart?: string };
 export type StoryVector = { layers: StoryVectorLayer[] };
@@ -46,11 +46,49 @@ const chat: StoryShape = { motion: 'chat', vector: { layers: [
   { d: bubbles + chatDots.map(([x,y]) => circle(x,y,34)).join(''), part: 0, weight: .76, rule: 'evenodd', contour: .38 },
   ...chatDots.map(([x,y],index) => ({ d: circle(x,y,22), part: index + 1, weight: .04, contour: .4 })),
 ] } };
+// AGSIT symbol: three nested triangles (outer ring, middle ring, small core) split at the apex, as in the logo artwork.
+// Built from convex pieces so every layer is a plain polygon list in the shared 0–1000 space.
+type Pt = [number, number];
+const MARK = { width: 509, height: 441, inradius: 147, cx: 254.5, cy: 294 };
+const markVertices: Pt[] = [[MARK.cx, 0], [0, MARK.height], [MARK.width, MARK.height]];
+const scaled = (radius: number): Pt[] => markVertices.map(([x, y]) => [MARK.cx + (x - MARK.cx) * radius / MARK.inradius, MARK.cy + (y - MARK.cy) * radius / MARK.inradius]);
+const clipX = (points: Pt[], limit: number, keepLeft: boolean): Pt[] => {
+  const inside = (p: Pt) => keepLeft ? p[0] <= limit : p[0] >= limit;
+  const result: Pt[] = [];
+  points.forEach((a, index) => {
+    const b = points[(index + 1) % points.length];
+    if (inside(a)) result.push(a);
+    if (inside(a) !== inside(b)) result.push([limit, a[1] + (b[1] - a[1]) * (limit - a[0]) / (b[0] - a[0])]);
+  });
+  return result;
+};
+const toSpace = (points: Pt[]) => points.map(([x, y]): number[] => [x * 1000 / MARK.width, 67 + y * 1000 / MARK.width]);
+const markGap = 9, markCut = 8;
+/** One ring side: outer edge P→Q, inner edge P'→Q', with each end pulled back along the edge so the corners stay open. */
+const ringSide = (outer: Pt[], inner: Pt[], from: number, to: number, cutFrom: number, cutTo: number): Pt[] => {
+  const along = (a: Pt, b: Pt, d: number): Pt => { const length = Math.hypot(b[0] - a[0], b[1] - a[1]); return [a[0] + (b[0] - a[0]) / length * d, a[1] + (b[1] - a[1]) / length * d]; };
+  return [along(outer[from], outer[to], cutFrom), along(outer[to], outer[from], cutTo), along(inner[to], inner[from], cutTo), along(inner[from], inner[to], cutFrom)];
+};
+const markRing = (inner: number, outer: number) => {
+  const o = scaled(outer), i = scaled(inner), axis = MARK.cx;
+  const left = clipX(ringSide(o, i, 0, 1, 0, markCut), axis - markGap / 2, true);
+  const right = clipX(ringSide(o, i, 0, 2, 0, markCut), axis + markGap / 2, false);
+  const bottom = ringSide(o, i, 1, 2, markCut, markCut);
+  return [left, right, bottom].map(toSpace).map(piece => polygon(piece)).join('');
+};
+const core = scaled(38);
+const markCore = [clipX(core, MARK.cx - markGap / 2, true), clipX(core, MARK.cx + markGap / 2, false)].map(toSpace).map(piece => polygon(piece)).join('');
+const logo: StoryShape = { motion: 'logo', vector: { layers: [
+  { d: markRing(114, 146), part: 0, weight: .52, contour: .72 },
+  { d: markRing(70, 100), part: 1, weight: .36, contour: .72 },
+  { d: markCore, part: 2, weight: .12, contour: .6 },
+] } };
 const horizontalLine = (): StoryShape => ({ motion: 'line', sample: index => ({ x: .08 + (index % 48) / 47 * .84, y: .5, part: index < 48 ? 0 : 255 }) });
 export const storyShapes = {
   scatter: { sample: (index: number) => ({ x: .08 + (index % 16) / 15 * .84, y: .08 + (Math.floor(index / 16) % 16) / 15 * .84 }) } as StoryShape,
   planTransit: horizontalLine(), servicesFocus: horizontalLine(),
 };
 export const serviceShapes: readonly StoryShape[] = [target,funnel,brain,gear,chat];
+export const logoShape: StoryShape = logo;
 export const mapStoryShape = (shape: StoryShape, space: StorySpace): StoryShape => ({ source: shape, motion: shape.motion, space });
 export const sampledStoryShape = (points: readonly StoryPoint[]): StoryShape => ({ sample: (index,count) => points[Math.min(points.length - 1,Math.floor(index / Math.max(1,count) * points.length))] || { x: .5, y: .5 } });

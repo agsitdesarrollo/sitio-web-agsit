@@ -22,7 +22,9 @@ export function createStoryParticles(canvas: HTMLCanvasElement, options: Options
     const source = shape.source || shape;
     let points = cache.get(source);
     if (!points) {
-      const sampled = source.vector ? sampleStoryVector(source.vector,count,Math.max(1,shapeSize)) : null;
+      // The closing symbol is shown at its own size, so its lattice snaps to that size's pixels.
+      const size = source.motion === 'logo' && shape.space ? Math.min(shape.space.sx * width,shape.space.sy * height) : shapeSize;
+      const sampled = source.vector ? sampleStoryVector(source.vector,count,Math.max(1,Math.round(size))) : null;
       points = { rest: sampled?.rest || new Float32Array(count * 2), parts: sampled?.parts || new Uint8Array(count), edges: sampled?.edges || new Uint8Array(count), seeds: sampled ? source.motion === 'funnel' ? new Float32Array(sampled.phases) : sampled.phases : new Float32Array(count), output: new Float32Array(count * 4), motion: source.motion, time: -1 };
       for (let i = 0; i < count; i++) {
         if (!sampled) {
@@ -108,7 +110,7 @@ export function createStoryParticles(canvas: HTMLCanvasElement, options: Options
   compact.addEventListener('change',() => { allocate(); redraw(); },{ signal: lifetime.signal });
   document.addEventListener('visibilitychange',() => { lastTick = 0; dirty = true; if (options.static) tick(); },{ signal: lifetime.signal });
   return {
-    tick, invalidate: redraw, setShapeSize,
+    tick, invalidate: redraw, setShapeSize, warm: (shape: StoryShape) => { if (width > 0) prepare(shape); },
     setActive(value: boolean) { if (active !== value) { active = value; lastTick = 0; dirty = true; } },
     setMorph(nextFrom: StoryShape, nextTo: StoryShape, value: number) {
       const next = Math.max(0,Math.min(1,value));

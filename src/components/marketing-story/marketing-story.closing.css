@@ -1,0 +1,17 @@
+/* Closing stop: the dots of the last service form the AGSIT symbol, then the phrase and the contact button appear. */
+.ms-closing { display: grid; justify-items: center; gap: 24px; padding: 40px var(--ms-gutter) 56px; color: var(--ms-paper); text-align: center; }
+.ms-closing-mark { width: min(240px,60vw); }
+.ms-closing-static-figure { display: block; width: 100%; height: auto; fill: var(--ms-soft); color: var(--ms-soft); }
+.ms-closing-phrase { margin: 0; max-width: 18ch; font: 300 clamp(1.9rem,5vw,3.6rem)/1.12 'Cormorant Garamond',Georgia,serif; text-wrap: balance; }
+.ms-page[data-motion='enhanced'] .ms-closing { position: absolute; inset: calc(var(--ms-header-h) + 12px) var(--ms-gutter) 12px; z-index: 3; padding: 0; align-content: center; gap: clamp(14px,3.2svh,28px); }
+.ms-page[data-motion='enhanced'] .ms-closing-mark { width: min(40vw,44svh,420px); aspect-ratio: 1; }
+.ms-page[data-motion='enhanced'] .ms-closing-static-figure { display: none; }
+@media (max-width: 799px) and (min-height: 521px) {
+  .ms-page[data-motion='enhanced'] .ms-closing-mark { width: min(74vw,38svh,320px); }
+  .ms-closing-phrase { max-width: 14ch; }
+}
+@media (max-height: 520px) and (orientation: landscape) {
+  .ms-page[data-motion='enhanced'] .ms-closing { gap: 10px; }
+  .ms-page[data-motion='enhanced'] .ms-closing-mark { width: min(32vw,48svh); }
+  .ms-closing-phrase { font-size: clamp(1.4rem,4.6svh,2rem); max-width: 26ch; }
+}

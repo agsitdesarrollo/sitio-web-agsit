@@ -54,11 +54,17 @@ export function animateStoryPoints(points: PreparedStoryPoints, time: number, fi
         } else tone = edge ? 2 : 0;
         break;
       }
+      case 'logo': {
+        // A soft diagonal glint crosses the symbol; the core stays bright.
+        const glint = fixed ? -1 : Math.sin(time * 1.6 - (baseX + baseY) * 6);
+        tone = glint > .95 ? 3 : part === 0 ? edge ? 2 : 1 : part === 1 ? edge ? 1 : 0 : 2;
+        break;
+      }
       case 'line': {
         tone = fixed || Math.sin(time * 2 - baseX * 8) > 0 ? 2 : 1; break;
       }
     }
     const k = i * 4; points.output[k] = x; points.output[k + 1] = y;
-    points.output[k + 2] = 1; points.output[k + 3] = tone;
+    points.output[k + 2] = points.motion === 'logo' && !fixed ? 1 + .06 * Math.sin(time * 1.4) : 1; points.output[k + 3] = tone;
   }
 }

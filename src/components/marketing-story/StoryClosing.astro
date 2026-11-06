@@ -1,0 +1,15 @@
+---
+import type { MarketingStoryContent } from '../../types/marketingStory.types';
+import { logoShape } from './marketing-story.shapes';
+import StoryPointFallback from './StoryPointFallback.astro';
+import './marketing-story.closing.css';
+type Props = { content: MarketingStoryContent['closing'] };
+const { content } = Astro.props;
+---
+<div class="ms-closing" data-closing>
+  <div class="ms-closing-mark" data-closing-mark aria-hidden="true">
+    <StoryPointFallback shape={logoShape} id="ms-closing-static" class="ms-closing-static-figure" />
+  </div>
+  <p class="ms-closing-phrase">{content.phrase}</p>
+  <button class="ms-button" data-contact-trigger>{content.cta}</button>
+</div>
