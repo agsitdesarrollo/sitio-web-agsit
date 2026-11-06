@@ -65,6 +65,6 @@ export function animateStoryPoints(points: PreparedStoryPoints, time: number, fi
       }
     }
     const k = i * 4; points.output[k] = x; points.output[k + 1] = y;
-    points.output[k + 2] = 1; points.output[k + 3] = tone;
+    points.output[k + 2] = points.motion === 'logo' && !fixed ? 1 + .06 * Math.sin(time * 1.4) : 1; points.output[k + 3] = tone;
   }
 }

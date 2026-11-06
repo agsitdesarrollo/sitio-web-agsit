@@ -1,6 +1,6 @@
-import { storyShapes, serviceShapes, logoShape, type StoryShape } from './marketing-story.shapes';
+import { storyShapes, serviceShapes, type StoryShape } from './marketing-story.shapes';
 import { animateStoryPoints, type PreparedStoryPoints } from './marketing-story.motion';
-import { sampleStoryVector, storyPointSpacing } from './marketing-story.sampling';
+import { sampleStoryVector } from './marketing-story.sampling';
 
 type Options = { static?: boolean; initial?: StoryShape; colors?: readonly [string, string]; scene?: 'services' };
 /** One canvas per scene, driven exclusively by the existing family ticker. */
@@ -9,6 +9,7 @@ export function createStoryParticles(canvas: HTMLCanvasElement, options: Options
   const lifetime = new AbortController();
   const compact = matchMedia('(max-width: 799px), (max-height: 520px)');
   const services = options.scene === 'services';
+  const desktop = matchMedia('(min-width: 1200px) and (min-height: 521px)');
   const palette = options.colors ? ['#538ba0','#69a8bd',options.colors[0],'#fff','rgba(255,255,255,.75)','rgba(255,255,255,.5)','rgba(255,255,255,.25)','rgba(255,255,255,.1)'] : ['#53789b','#315679','#253f6c','#1f6f92','#1f6f92','#1f6f92','#1f6f92','#1f6f92'];
   let from = options.initial || storyShapes.scatter, to = from, progress = 1;
   let active = !!options.static, intersecting = false, dirty = true;
@@ -16,6 +17,7 @@ export function createStoryParticles(canvas: HTMLCanvasElement, options: Options
   let count = 0, rendered = new Float32Array(0), drift = new Float32Array(0);
   let cachedRatio = 0, cachedWidth = 0, cachedHeight = 0;
   let shapeSize = 0, closingSize = 0;
+  let logoBlend = 0;
   const cache = new Map<StoryShape, PreparedStoryPoints>();
   const prepare = (shape: StoryShape) => {
     const source = shape.source || shape;
@@ -23,14 +25,10 @@ export function createStoryParticles(canvas: HTMLCanvasElement, options: Options
     if (!points) {
       // The closing symbol is shown at its own size, so its lattice snaps to that size's pixels.
       const size = source.motion === 'logo' ? closingSize || shapeSize : shapeSize;
-      const sampled = source.vector ? sampleStoryVector(source.vector,Math.max(1,Math.round(size))) : null;
-      points = { rest: new Float32Array(count * 2), parts: new Uint8Array(count), edges: new Uint8Array(count), seeds: new Float32Array(count), output: new Float32Array(count * 4), motion: source.motion, time: -1 };
-      points.parts.fill(255);
+      const sampled = source.vector ? sampleStoryVector(source.vector,count,Math.max(1,Math.round(size))) : null;
+      points = { rest: sampled?.rest || new Float32Array(count * 2), parts: sampled?.parts || new Uint8Array(count), edges: sampled?.edges || new Uint8Array(count), seeds: sampled ? source.motion === 'funnel' ? new Float32Array(sampled.phases) : sampled.phases : new Float32Array(count), output: new Float32Array(count * 4), motion: source.motion, time: -1 };
       for (let i = 0; i < count; i++) {
-        if (sampled && i < sampled.parts.length) {
-          points.rest[i * 2] = sampled.rest[i * 2]; points.rest[i * 2 + 1] = sampled.rest[i * 2 + 1];
-          points.parts[i] = sampled.parts[i]; points.edges[i] = sampled.edges[i]; points.seeds[i] = sampled.phases[i];
-        } else if (!sampled) {
+        if (!sampled) {
           const point = source.sample!(i,count);
           points.rest[i * 2] = point.x; points.rest[i * 2 + 1] = point.y;
           points.parts[i] = point.part || 0; points.seeds[i] = point.y;
@@ -42,8 +40,7 @@ export function createStoryParticles(canvas: HTMLCanvasElement, options: Options
     return points;
   };
   const allocate = () => {
-    // A shared capacity permits morphing; each sampled shape uses only its own lattice points.
-    count = Math.max(256, ...shapeSize ? serviceShapes.map(shape => sampleStoryVector(shape.vector!,shapeSize).parts.length).concat(sampleStoryVector(logoShape.vector!,closingSize).parts.length) : []);
+    count = desktop.matches ? 1200 : Math.max(360,Math.min(1200,Math.round(1200 * (shapeSize / 440) ** 2)));
     cache.clear(); rendered = new Float32Array(count * 4); drift = new Float32Array(count * 2);
     for (let i = 0; i < count; i++) { drift[i * 2] = Math.cos(i * 2.39996323); drift[i * 2 + 1] = Math.sin(i * 2.39996323); }
     if (shapeSize) warm();
@@ -80,7 +77,7 @@ export function createStoryParticles(canvas: HTMLCanvasElement, options: Options
     const bcx = bf ? bf.cx * width : width / 2, bcy = bf ? bf.cy * height : height / 2;
     const bsx = bf ? bf.sx * width : services ? width : side, bsy = bf ? bf.sy * height : services ? height : side;
     const burst = Math.sin(progress * Math.PI) * Math.min(width,height) * .025;
-    const radius = 1.55;
+    const radius = services ? compact.matches ? 1.8 : 2.15 : 2.3;
     for (let i = 0; i < count; i++) {
       const k = i * 4;
       const ax = acx + (a.output[k] - .5) * asx, ay = acy + (a.output[k + 1] - .5) * asy;
@@ -90,7 +87,7 @@ export function createStoryParticles(canvas: HTMLCanvasElement, options: Options
       rendered[k + 2] = radius * (a.output[k + 2] + (b.output[k + 2] - a.output[k + 2]) * progress);
       rendered[k + 3] = Math.round(a.output[k + 3] + (b.output[k + 3] - a.output[k + 3]) * progress);
     }
-    ctx.setTransform(ratio,0,0,ratio,0,0); ctx.clearRect(0,0,width,height);
+    ctx.setTransform(ratio,0,0,ratio,0,0); ctx.clearRect(0,0,width,height); ctx.globalAlpha = 1 - logoBlend;
     // Exactly one path/fill per brightness color. No filters, shadows or per-point fillStyle changes.
     for (let color = 0; color < palette.length; color++) {
       ctx.fillStyle = palette[color]; ctx.beginPath();
@@ -103,11 +100,7 @@ export function createStoryParticles(canvas: HTMLCanvasElement, options: Options
     }
     canvas.dataset.particlesReady ||= 'true'; dirty = false; lastDraw = now;
     const painted = (progress >= .5 ? to.motion : from.motion) || 'scatter';
-    if (canvas.dataset.paintedFigure !== painted) {
-      canvas.dataset.paintedFigure = painted;
-      canvas.dataset.visiblePoints = String((progress >= .5 ? b : a).parts.reduce((n,part) => n + Number(part !== 255),0));
-      canvas.dataset.pointSpacing = String(storyPointSpacing(painted === 'logo' ? closingSize : shapeSize));
-    }
+    if (canvas.dataset.paintedFigure !== painted) canvas.dataset.paintedFigure = painted;
     const instrumented = canvas as HTMLCanvasElement & { storyPaintCount?: number };
     instrumented.storyPaintCount = (instrumented.storyPaintCount || 0) + 1;
     if (canvas.dataset.particleFigure === 'target') {
@@ -120,9 +113,10 @@ export function createStoryParticles(canvas: HTMLCanvasElement, options: Options
   sizes.observe(canvas); if (options.static) visibility.observe(canvas);
   const redraw = () => { dirty = true; if (options.static) tick(); };
   compact.addEventListener('change',() => { allocate(); redraw(); },{ signal: lifetime.signal });
+  desktop.addEventListener('change',() => { allocate(); redraw(); },{ signal: lifetime.signal });
   document.addEventListener('visibilitychange',() => { lastTick = 0; dirty = true; if (options.static) tick(); },{ signal: lifetime.signal });
   return {
-    tick, invalidate: redraw, setShapeSize, warm: (shape: StoryShape) => { if (width > 0) prepare(shape); },
+    tick, invalidate: redraw, setShapeSize, setLogoBlend(value: number) { logoBlend = value; dirty = true; }, warm: (shape: StoryShape) => { if (width > 0) prepare(shape); },
     setActive(value: boolean) { if (active !== value) { active = value; lastTick = 0; dirty = true; } },
     setMorph(nextFrom: StoryShape, nextTo: StoryShape, value: number) {
       const next = Math.max(0,Math.min(1,value));
@@ -131,6 +125,6 @@ export function createStoryParticles(canvas: HTMLCanvasElement, options: Options
       const motion = (next >= .5 ? to.motion : from.motion) || 'scatter';
       if (canvas.dataset.particleFigure !== motion) canvas.dataset.particleFigure = motion;
     },
-    dispose() { active = false; lifetime.abort(); sizes.disconnect(); visibility.disconnect(); cache.clear(); canvas.width = canvas.height = 0; delete canvas.dataset.particlesReady; delete canvas.dataset.particleCount; delete canvas.dataset.visiblePoints; delete canvas.dataset.pointSpacing; delete canvas.dataset.particleFigure; delete canvas.dataset.paintedFigure; delete (canvas as HTMLCanvasElement & { storyPaintCount?: number }).storyPaintCount; delete canvas.dataset.arrowState; },
+    dispose() { active = false; lifetime.abort(); sizes.disconnect(); visibility.disconnect(); cache.clear(); canvas.width = canvas.height = 0; delete canvas.dataset.particlesReady; delete canvas.dataset.particleCount; delete canvas.dataset.particleFigure; delete canvas.dataset.paintedFigure; delete (canvas as HTMLCanvasElement & { storyPaintCount?: number }).storyPaintCount; delete canvas.dataset.arrowState; },
   };
 }

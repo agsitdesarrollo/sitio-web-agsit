@@ -2,7 +2,7 @@
 export type StoryPoint = { x: number; y: number; part?: number };
 export type StoryMotion = 'target' | 'funnel' | 'brain' | 'gear' | 'chat' | 'line' | 'logo';
 export type StorySpace = { cx: number; cy: number; sx: number; sy: number };
-export type StoryVectorLayer = { d: string; part: number; weight: number; mirror?: boolean; rule?: CanvasFillRule; contour?: number; glintStart?: string };
+export type StoryVectorLayer = { d: string; part: number; weight: number; minPoints?: number; mirror?: boolean; rule?: CanvasFillRule; contour?: number; glintStart?: string };
 export type StoryVector = { layers: StoryVectorLayer[] };
 export type StoryShape = { motion?: StoryMotion; source?: StoryShape; space?: StorySpace; vector?: StoryVector; sample?: (index: number, count: number) => StoryPoint };
 const circle = (x: number, y: number, radius: number) => `M${x + radius} ${y}a${radius} ${radius} 0 1 1 ${-radius * 2} 0a${radius} ${radius} 0 1 1 ${radius * 2} 0Z`;
@@ -18,7 +18,7 @@ const arrow = polygon([[500,500],arrowPoint(115,-48),arrowPoint(115,48)])
   + polygon([arrowPoint(410,-10),arrowPoint(460,-68),arrowPoint(540,-68),arrowPoint(510,-10)]);
 const target: StoryShape = { motion: 'target', vector: { layers: [
   { d: circle(500,500,90) + circle(500,500,250) + circle(500,500,170) + circle(500,500,425) + circle(500,500,335), part: 0, weight: .8, rule: 'evenodd', contour: .4 },
-  { d: arrow, part: 1, weight: .2, contour: .62 },
+  { d: arrow, part: 1, weight: .2, minPoints: 90, contour: .62 },
 ] } };
 const funnelPath = 'M900 150H100L440 650V860H560V650Z';
 const funnel: StoryShape = { motion: 'funnel', vector: { layers: [
@@ -44,7 +44,7 @@ const bubbles = 'M130 180H490Q550 180 550 240V420Q550 480 490 480H280L150 580V48
 const chatDots = [[225,330],[315,330],[405,330],[595,690],[685,690],[775,690]];
 const chat: StoryShape = { motion: 'chat', vector: { layers: [
   { d: bubbles + chatDots.map(([x,y]) => circle(x,y,34)).join(''), part: 0, weight: .76, rule: 'evenodd', contour: .38 },
-  ...chatDots.map(([x,y],index) => ({ d: circle(x,y,22), part: index + 1, weight: .04, contour: .4 })),
+  ...chatDots.map(([x,y],index) => ({ d: circle(x,y,22), part: index + 1, weight: .04, minPoints: 18, contour: .4 })),
 ] } };
 // AGSIT symbol: three nested triangles (outer ring, middle ring, small core) split at the apex, as in the logo artwork.
 // Built from convex pieces so every layer is a plain polygon list in the shared 0–1000 space.

@@ -60,6 +60,7 @@ export function initMarketingStory() {
     const serviceFigure = services.querySelector<HTMLElement>('[data-service-figure]')!;
     const closing = plan.querySelector<HTMLElement>('[data-closing]')!;
     const closingMark = closing.querySelector<HTMLElement>('[data-closing-mark]')!;
+    const closingLogo = closing.querySelector<HTMLElement>('[data-closing-logo]')!;
     const serviceCounter = services.querySelector<HTMLElement>('[data-service-counter]')!;
     const announcement = services.querySelector<HTMLElement>('[data-service-announcement]')!;
     const previous = services.querySelector<HTMLButtonElement>('[data-service-prev]')!;
@@ -89,6 +90,15 @@ export function initMarketingStory() {
     let mappedShapes: StoryShape[] = [];
     let closingShape: StoryShape = logoShape;
     let announced = -1;
+    const logoFade = { value: 0 };
+    let logoFormed = false;
+    const showOfficialLogo = (formed: boolean) => {
+      if (formed === logoFormed) return;
+      logoFormed = formed;
+      gsap.to(logoFade, { value: formed ? 1 : 0, duration: formed ? .5 : .25, ease: 'power1.inOut', overwrite: true,
+        onUpdate: () => { closingLogo.style.opacity = String(logoFade.value); planParticles.setLogoBlend(logoFade.value); },
+      });
+    };
     let g = { panel: 1, start: 0, heroEnd: 0, attractEnd: 0, accompanyEnd: 0, growEnd: 0, boostEnd: 0, planEnd: 0, revealEnd: 0, strategyEnd: 0, journeyEnd: 0, intelligenceEnd: 0, automationEnd: 0, channelsEnd: 0, closingEnd: 0, contactEntry: 0, contact: 0, stageHeight: 1 };
     let lenis: Lenis;
     let trigger: ScrollTrigger;
@@ -131,7 +141,7 @@ export function initMarketingStory() {
       lineSpace.cy = (cueBounds.bottom - field.top + 14) / field.height;
       lineSpace.sx = (lastLetter.right - firstLetter.left) / field.width / .84;
       Object.assign(entrySpace,lineSpace);
-      const side = Math.min(bounds.width, bounds.height) * .94;
+      const side = Math.min(bounds.width, bounds.height) * (matchMedia('(min-width: 1200px) and (min-height: 521px)').matches ? 1.02 : .94);
       const space = { cx: (bounds.left - field.left + bounds.width / 2) / field.width, cy: (bounds.top - field.top + bounds.height / 2) / field.height, sx: side / field.width, sy: side / field.height };
       mappedShapes = serviceShapes.map(shape => mapStoryShape(shape,space));
       const mark = closingMark.getBoundingClientRect();
@@ -215,6 +225,8 @@ export function initMarketingStory() {
       const units = hasVideo && y < g.heroEnd ? clamp01((y - g.start) / (g.heroEnd - g.start)) * HERO_END : HERO_END + (y - g.heroEnd) / g.panel;
       master.time(Math.max(0, Math.min(HERO_END + 12, units)));
       const localProgress = units - HERO_END;
+      // Finish the point morph first, then crossfade in real time at the closing stop.
+      showOfficialLogo(localProgress >= 11.95);
       const mode = y < g.heroEnd - EPSILON ? 'continuous' : y < g.attractEnd - EPSILON ? 'entry' : y <= g.growEnd + EPSILON ? 'manifesto' : y <= g.boostEnd + EPSILON ? 'boost' : y <= g.planEnd + EPSILON ? 'plan-entry' : y <= g.revealEnd + EPSILON ? 'plan-split' : y <= g.channelsEnd + EPSILON ? 'services' : y <= g.closingEnd + EPSILON ? 'closing' : 'reading';
       const step = String(y < g.attractEnd - EPSILON ? 0 : Math.min(4, 1 + Math.floor((y - g.attractEnd + EPSILON) / g.panel)));
       if (page.dataset.manifestoStep !== step) page.dataset.manifestoStep = step;
@@ -474,6 +486,7 @@ export function initMarketingStory() {
       disposed = true; local.abort();
       window.clearTimeout(wheelTimer); window.clearTimeout(refreshTimer);
       overlayObserver.disconnect(); navSize.disconnect();
+      gsap.killTweensOf(logoFade); closingLogo.style.removeProperty('opacity');
       gsap.ticker.remove(tick); lenis.destroy(); media.dispose(); scenes.dispose(); planParticles.dispose();
       hero.inert = false; claim.inert = false; controls.inert = false; manifesto.inert = false;
       plan.inert = false; closing.inert = false; split.inert = false; split.classList.remove('is-open');

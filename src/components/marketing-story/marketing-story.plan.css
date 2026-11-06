@@ -22,7 +22,6 @@
 .ms-page[data-motion='enhanced'] .ms-plan-semantic { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
 .ms-page[data-motion='enhanced'] .ms-plan-copy { display: flex; }
 .ms-page[data-motion='enhanced'] .ms-plan-cue { top: var(--ms-plan-center); }
-.ms-page[data-motion='enhanced'] .ms-split { z-index: 4; }
 .ms-page[data-motion='enhanced'] .ms-split.is-open { visibility: hidden !important; }
 .ms-page:not([data-motion='enhanced']) .ms-plan-title { position: relative; inset: auto; height: auto; transform: none; padding: 40px var(--ms-gutter) 20px; }
 .ms-page:not([data-motion='enhanced']) .ms-plan-cue { position: relative; inset: auto; transform: none; text-align: center; }

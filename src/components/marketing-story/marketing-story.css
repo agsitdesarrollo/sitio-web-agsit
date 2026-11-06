@@ -102,7 +102,7 @@ html.lenis.lenis-stopped:has(.ms-page[data-motion='enhanced']) { overflow: clip;
 .ms-page[data-motion='enhanced'] .ms-manifesto-inner { height: 100%; min-height: 0; }
 .ms-page[data-motion='enhanced'] .ms-journey-stage > .ms-hero { position: absolute; inset: 0 0 auto; height: var(--ms-panel-h); z-index: 1; }
 .ms-page[data-motion='enhanced'] .ms-hero.is-occluded { visibility: hidden; }
-.ms-page[data-motion='enhanced'] .ms-split { position: absolute; inset: 0 0 auto; height: var(--ms-panel-h); min-height: 0; overflow: clip; z-index: 3; pointer-events: none; background: transparent; }
+.ms-page[data-motion='enhanced'] .ms-split { position: absolute; inset: 0 0 auto; height: var(--ms-panel-h); min-height: 0; overflow: clip; z-index: 4; pointer-events: none; background: transparent; }
 .ms-page[data-motion='enhanced'] .ms-split-static { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
 .ms-page[data-motion='enhanced'] .ms-split-half { position: absolute; inset: 0; display: block; }
 /* At rest one whole copy is shown; the two halves take over only while the word opens, overlapping 1px so no seam shows. */
