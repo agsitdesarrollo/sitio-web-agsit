@@ -48,6 +48,8 @@ export function initMarketingStory() {
     const plan = page.querySelector<HTMLElement>('[data-plan]')!;
     const upper = plan.querySelector<HTMLElement>('[data-plan-half="0"]')!;
     const lower = plan.querySelector<HTMLElement>('[data-plan-half="1"]')!;
+    const whole = plan.querySelector<HTMLElement>('[data-plan-whole]')!;
+    const wholeLetters = [...whole.querySelectorAll<HTMLElement>('[data-plan-letter]')];
     const letters = [...upper.querySelectorAll<HTMLElement>('[data-plan-letter]')];
     const lowerLetters = [...lower.querySelectorAll<HTMLElement>('[data-plan-letter]')];
     const cue = plan.querySelector<HTMLElement>('[data-plan-cue]')!;
@@ -143,7 +145,7 @@ export function initMarketingStory() {
     gsap.set(splitWords, { opacity: 0, y: 24 });
     gsap.set(thread, { scaleX: 0 });
     gsap.set(plan, { autoAlpha: 0 });
-    gsap.set([...letters, ...lowerLetters], { opacity: 0, yPercent: 115 });
+    gsap.set([...letters, ...lowerLetters, ...wholeLetters], { opacity: 0, yPercent: 115 });
     gsap.set([cue, planCanvas, frame], { autoAlpha: 0 });
     gsap.set(services, { autoAlpha: 0 });
     gsap.set(cards, { autoAlpha: 0, y: 16 });
@@ -176,7 +178,7 @@ export function initMarketingStory() {
       .to(left, { xPercent: -104, duration: 1, ease: 'power2.inOut' }, HERO_END + 4)
       .to(right, { xPercent: 104, duration: 1, ease: 'power2.inOut' }, HERO_END + 4);
     letters.forEach((letter, index) => {
-      master.to([letter, lowerLetters[index]], { opacity: 1, yPercent: 0, duration: .32, ease: 'power3.out' }, HERO_END + 4.08 + index * .035);
+      master.to([letter, lowerLetters[index], wholeLetters[index]], { opacity: 1, yPercent: 0, duration: .32, ease: 'power3.out' }, HERO_END + 4.08 + index * .035);
     });
     master.to(upper, { yPercent: -110, duration: .8, ease: 'power2.inOut' }, HERO_END + 5.05)
       .to(lower, { yPercent: 110, duration: .8, ease: 'power2.inOut' }, HERO_END + 5.05)
@@ -233,6 +235,8 @@ export function initMarketingStory() {
         announcement.textContent = (services.dataset.announcement || '').replace('{n}', String(serviceIndex + 1)).replace('{name}', cards[serviceIndex].dataset.serviceName || '');
       } else if (y < g.strategyEnd - EPSILON && announced !== -1) { announced = -1; announcement.textContent = ''; }
       split.classList.toggle('is-open', localProgress >= 5);
+      split.classList.toggle('is-parting', localProgress > 4);
+      plan.classList.toggle('is-parting', localProgress > 5.05);
       const sequenceVisible = !overlayOpen() && y >= g.start - 1 && units < VIDEO_PANELS * .84;
       media.update(clamp01(units / VIDEO_PANELS), sequenceVisible);
       const setInert = (element: HTMLElement, value: boolean) => { if (element.inert !== value) element.inert = value; };

@@ -10,8 +10,10 @@
 .ms-plan-copy { position: absolute; inset: 0; display: none; justify-content: center; }
 .ms-plan-letter-mask { display: inline-block; overflow: clip; }
 .ms-plan-letter-mask > span { display: inline-block; }
-.ms-plan-upper { clip-path: inset(0 0 50% 0); }
-.ms-plan-lower { clip-path: inset(50% 0 0 0); }
+.ms-plan-upper { clip-path: inset(0 0 calc(50% - 1px) 0); }
+.ms-plan-lower { clip-path: inset(calc(50% - 1px) 0 0 0); }
+/* One whole copy at rest; the halves (overlapping 1px) only exist while the phrase opens. */
+.ms-plan:not(.is-parting) .ms-plan-upper, .ms-plan:not(.is-parting) .ms-plan-lower, .ms-plan.is-parting .ms-plan-whole { visibility: hidden !important; }
 .ms-plan-cue { position: absolute; left: 50%; top: calc(var(--ms-plan-center) + 3.5rem); transform: translate(-50%,-50%); z-index: 3; padding: 6px 10px; background: var(--ms-ink); color: var(--ms-soft); white-space: nowrap; font: 700 clamp(.75rem,1.1vw,.875rem)/1.4 'Inter',sans-serif; letter-spacing: .08em; }
 .ms-plan-particles { position: absolute; top: 0; bottom: 0; left: 50%; width: min(1240px,calc(100% - var(--ms-gutter) * 2)); height: 100%; transform: translateX(-50%); z-index: 1; pointer-events: none; }
 .ms-plan-service-frame { display: none; position: absolute; inset: calc(var(--ms-header-h) + 12px) var(--ms-gutter) 12px; border: 1px solid rgba(139,226,255,.3); border-radius: 14px; transform-origin: center; background-image: radial-gradient(rgba(139,226,255,.09) .8px,transparent .8px); background-size: 18px 18px; }

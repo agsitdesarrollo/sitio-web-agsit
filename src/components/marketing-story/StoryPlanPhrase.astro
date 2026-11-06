@@ -9,6 +9,9 @@ const letters = Array.from(content.phrase);
 <section class="ms-plan" id="ms-plan" aria-labelledby="ms-plan-title" data-plan>
   <div class="ms-plan-title">
     <h2 id="ms-plan-title" class="ms-plan-semantic">{content.phrase}</h2>
+    <div class="ms-plan-copy ms-plan-whole" data-plan-whole aria-hidden="true">
+      {letters.map((letter, index) => <span class="ms-plan-letter-mask"><span data-plan-letter={index}>{letter === ' ' ? ' ' : letter}</span></span>)}
+    </div>
     {[0, 1].map(half => <div class:list={['ms-plan-copy', half === 0 ? 'ms-plan-upper' : 'ms-plan-lower']} data-plan-half={half} aria-hidden="true">
       {letters.map((letter, index) => <span class="ms-plan-letter-mask"><span data-plan-letter={index}>{letter === ' ' ? '\u00a0' : letter}</span></span>)}
     </div>)}
