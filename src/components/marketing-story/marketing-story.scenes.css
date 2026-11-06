@@ -92,3 +92,14 @@
   .ms-sc-person { left: -11px; top: -11px; width: 22px; height: 22px; }
   .ms-sc-chart { margin-bottom: 8px; }
 }
+
+@media (max-height: 520px) and (orientation: landscape) {
+  .ms-page[data-motion='enhanced'] .ms-scenes { height: 100%; min-height: 0; }
+  .ms-page[data-motion='enhanced'] .ms-scene { height: 100%; min-height: 0; }
+  .ms-page[data-motion='enhanced'] .ms-sc-attract { height: 100%; min-height: 0; grid-template-rows: minmax(0,1fr) auto; }
+  .ms-page[data-motion='enhanced'] .ms-sc-attract > .ms-sc-card { display: flex; flex-direction: column; min-height: 0; }
+  .ms-page[data-motion='enhanced'] .ms-sc-image { flex: 1; min-height: 16px; height: auto; }
+  .ms-page[data-motion='enhanced'] .ms-sc-button { align-self: start; flex: none; }
+  .ms-scenes { --sc-pad: 10px; --sc-node: 26px; --sc-text: .75rem; }
+  .ms-sc-step:not(:last-child) { min-height: calc(var(--sc-node) + 10px); }
+}

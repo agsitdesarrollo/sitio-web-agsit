@@ -45,7 +45,7 @@
 .ms-poster { opacity: 1; object-fit: contain; }
 .ms-film video { opacity: 0; object-fit: contain; }
 .ms-film :is(video,.ms-poster) { object-fit: contain; }
-.ms-film-shade { background: linear-gradient(180deg,rgba(2,7,18,.03) 20%,rgba(2,7,18,.15) 50%,rgba(2,7,18,.94) 100%); }
+.ms-film-shade { pointer-events: none; background: linear-gradient(90deg,var(--ms-ink),transparent 6%,transparent 94%,var(--ms-ink)), linear-gradient(180deg,rgb(2 7 18 / .35),transparent 18%,transparent 62%,var(--ms-ink)); }
 .ms-captions { display: none; }
 .ms-caption { position: absolute; bottom: clamp(25px,5vw,70px); left: var(--ms-gutter); right: var(--ms-gutter); }
 .ms-caption p { font: 600 clamp(3.3rem,5.8vw,6.6rem)/1.02 'Cormorant Garamond',Georgia,serif; max-width: 18ch; text-wrap: balance; margin-top: 10px; }
@@ -65,7 +65,7 @@
 .ms-hero[data-mode] .ms-captions { display: block; }
 .ms-hero[data-mode] .ms-caption { opacity: 0; }
 .ms-hero[data-mode] .ms-caption:first-child { opacity: 1; }
-.ms-hero[data-mode] .ms-claim { position: absolute; inset: var(--nav-h) 0 80px; padding-block: 20px; display: flex; align-items: center; opacity: 0; }
+.ms-hero[data-mode] .ms-claim { position: absolute; inset: var(--ms-header-h,var(--nav-h)) 0 80px; padding-block: 20px; display: flex; align-items: center; opacity: 0; }
 .ms-hero[data-mode] .ms-hero-controls { position: absolute; bottom: max(20px,env(safe-area-inset-bottom)); left: 0; right: 0; display: flex; align-items: center; gap: 14px; justify-content: space-between; }
 .ms-hero[data-mode] .ms-static-chapters { position: absolute; width: 1px; height: 1px; padding: 0; overflow: hidden; clip-path: inset(50%); }
 .ms-segments { display: flex; gap: 6px; margin-left: auto; }
@@ -126,6 +126,7 @@ html.lenis.lenis-stopped:has(.ms-page[data-motion='enhanced']) { overflow: clip;
   .ms-caption p { font-size: clamp(2.8rem,12vw,3.7rem); max-width: 16ch; }
   .ms-story-content .ms-claim h1 { font-size: clamp(2.6rem,11vw,3.6rem); max-width: 15ch; }
   .ms-film :is(video,.ms-poster) { object-fit: cover; }
+  .ms-film-shade { background: linear-gradient(180deg,rgb(2 7 18 / .35),transparent 18%,transparent 62%,var(--ms-ink)); }
   .ms-hero[data-mode] .ms-claim { bottom: 90px; }
   .ms-claim .ms-label { margin-bottom: 18px; }
   .ms-claim .ms-lead { font-size: 1rem; margin-top: 18px; }
@@ -140,13 +141,13 @@ html.lenis.lenis-stopped:has(.ms-page[data-motion='enhanced']) { overflow: clip;
 }
 @media (max-height: 520px) and (orientation: landscape) {
   .ms-story-content h1 { font-size: clamp(2rem,4.7vw,3.1rem); }
-  .ms-story-content .ms-claim h1 { font-size: clamp(2rem,4.7vw,3.1rem); max-width: 28ch; }
+  .ms-story-content .ms-claim h1 { font-size: clamp(1.9rem,8svh,2.6rem); max-width: 28ch; }
   .ms-media-space { inset: var(--nav-h) 0 0; }
   .ms-caption { bottom: 64px; }
   .ms-caption p { font-size: clamp(1.8rem,4.6vw,2.8rem); max-width: 24ch; margin-top: 4px; }
-  .ms-hero[data-mode] .ms-claim { bottom: 58px; padding-block: 8px; }
-  .ms-claim .ms-label { font-size: .875rem; margin-bottom: 8px; }
-  .ms-claim .ms-lead { margin-top: 8px; max-width: 72ch; font-size: .875rem; line-height: 1.4; }
+  .ms-hero[data-mode] .ms-claim { top: calc(var(--ms-header-h,var(--nav-h)) + 8px); bottom: 12px; padding-block: 0; }
+  .ms-claim .ms-label { font-size: .75rem; margin-bottom: 6px; }
+  .ms-claim .ms-lead { margin-top: 6px; max-width: 72ch; font-size: .875rem; line-height: 1.4; }
   .ms-claim .ms-buttons { margin-top: 12px; }
   .ms-claim .ms-button { min-height: 40px; padding: 8px 16px; font-size: .875rem; }
   .ms-hero[data-mode] .ms-hero-controls { bottom: 9px; }
@@ -189,7 +190,7 @@ html.lenis.lenis-stopped:has(.ms-page[data-motion='enhanced']) { overflow: clip;
   .ms-manifesto-words { gap: 8px; }
   .ms-manifesto-group h2 { font-size: clamp(1.8rem,4.2vw,2.4rem); }
   .ms-manifesto-group p { font-size: .75rem; line-height: 1.3; margin-top: 3px !important; }
-  .ms-manifesto-figure { height: 100%; }
+  .ms-page[data-motion='enhanced'] .ms-manifesto-figure { height: 100%; min-height: 0; align-self: stretch; }
   .ms-manifesto-labels { font-size: .6875rem; margin-top: 6px; }
 }
 @media (max-height: 350px) and (orientation: landscape) {
@@ -201,4 +202,10 @@ html.lenis.lenis-stopped:has(.ms-page[data-motion='enhanced']) { overflow: clip;
 
 @media (min-width: 1024px) {
   .ms-manifesto-eyebrow { white-space: nowrap; }
+}
+
+/* The pinned body gets only the height left above the route's own grid row. */
+.ms-page[data-motion='enhanced'] .ms-manifesto-body { grid-template-rows: minmax(0,1fr); }
+@media (max-width: 799px) and (min-height: 521px) {
+  .ms-page[data-motion='enhanced'] .ms-manifesto-body { grid-template-rows: auto minmax(0,1fr); }
 }

@@ -12,6 +12,6 @@
 }
 @media (max-height: 520px) and (orientation: landscape) {
   .ms-page[data-motion='enhanced'] .ms-closing { gap: 10px; }
-  .ms-page[data-motion='enhanced'] .ms-closing-mark { width: min(32vw,48svh); }
+  .ms-page[data-motion='enhanced'] .ms-closing-mark { width: min(30vw, calc((var(--ms-panel-h,100svh) - var(--ms-header-h,var(--nav-h)) - 144px) * .9)); }
   .ms-closing-phrase { font-size: clamp(1.4rem,4.6svh,2rem); max-width: 26ch; }
 }

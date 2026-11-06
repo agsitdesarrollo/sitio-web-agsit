@@ -97,6 +97,8 @@ export function initMarketingStory() {
     let motionKind: 'stop' | 'clamp' | 'jump' = 'stop';
     let consumed = false;
     let touchTravel = 0;
+    let touchConsumed = false;
+    let touchOrigin = 0;
     let wheelTravel = 0;
     let wheelTimer = 0;
     let refreshTimer = 0;
@@ -129,12 +131,12 @@ export function initMarketingStory() {
       lineSpace.cy = (cueBounds.bottom - field.top + 14) / field.height;
       lineSpace.sx = (lastLetter.right - firstLetter.left) / field.width / .84;
       Object.assign(entrySpace,lineSpace);
-      const side = Math.min(bounds.width, bounds.height) * 1.02;
+      const side = Math.min(bounds.width, bounds.height) * .94;
       const space = { cx: (bounds.left - field.left + bounds.width / 2) / field.width, cy: (bounds.top - field.top + bounds.height / 2) / field.height, sx: side / field.width, sy: side / field.height };
       mappedShapes = serviceShapes.map(shape => mapStoryShape(shape,space));
-      planParticles.setShapeSize(side);
       const mark = closingMark.getBoundingClientRect();
       const markSide = Math.min(mark.width, mark.height);
+      planParticles.setShapeSize(side, markSide);
       closingShape = mapStoryShape(logoShape, { cx: (mark.left - field.left + mark.width / 2) / field.width, cy: (mark.top - field.top + mark.height / 2) / field.height, sx: markSide / field.width, sy: markSide / field.height });
       planParticles.warm(closingShape);
     };
@@ -308,9 +310,36 @@ export function initMarketingStory() {
     }, { signal });
     const gate = ({ deltaY, event }: { deltaY: number; event: WheelEvent | TouchEvent }) => {
       if ('touches' in event && event.touches.length > 1) return false; // Leave pinch zoom native.
+      if (event.type === 'touchstart') {
+        // Own a swipe from finger-down through release, separately from wheel idle timers.
+        touchTravel = 0;
+        touchOrigin = lenis.targetScroll;
+        touchConsumed = moving || lenis.isLocked;
+        return !touchConsumed;
+      }
       if (!deltaY || ('ctrlKey' in event && event.ctrlKey)) return true;
       if (overlayOpen()) return true; // The driver's prevent callback leaves overlay scrolling native.
       const veto = () => { if (event.cancelable) event.preventDefault(); return false; };
+      if ('touches' in event) {
+        if (touchConsumed || moving || lenis.isLocked) { touchConsumed = true; return veto(); }
+        touchTravel += event.type === 'touchmove' ? deltaY : 0;
+        const direction: Direction = (touchTravel || deltaY) > 0 ? 1 : -1;
+        const distance = event.type === 'touchend' ? Math.max(Math.abs(deltaY), Math.abs(lenis.velocity) ** 1.6) : Math.abs(deltaY);
+        const decision = decide(touchOrigin, direction, distance);
+        if (decision.kind === 'free') {
+          // A continuous hero swipe may reach its final stop, but cannot enter the next one.
+          const boundary = decide(lenis.targetScroll, direction, distance);
+          if (boundary.kind === 'free') return true;
+          touchConsumed = true;
+          goTo(g[boundary.stop], boundary.kind, boundary.stop);
+          return veto();
+        }
+        // Prevent native scrolling from the first move, including the threshold period.
+        if (Math.abs(touchTravel) < 14) return veto();
+        touchConsumed = true;
+        goTo(g[decision.stop], decision.kind, decision.stop);
+        return veto();
+      }
       if (event.type === 'wheel') {
         window.clearTimeout(wheelTimer);
         wheelTimer = window.setTimeout(() => { consumed = false; wheelTravel = 0; }, 180);
@@ -321,10 +350,6 @@ export function initMarketingStory() {
       const distance = event.type === 'touchend' ? Math.max(Math.abs(deltaY), Math.abs(lenis.velocity) ** 1.6) : Math.abs(deltaY);
       const decision = decide(lenis.targetScroll, direction, distance);
       if (decision.kind === 'free') return true;
-      if (decision.kind === 'stop' && event.type === 'touchmove') {
-        touchTravel += deltaY;
-        if (Math.abs(touchTravel) < 14) return veto();
-      }
       if (decision.kind === 'stop' && event.type === 'wheel') {
         wheelTravel += deltaY;
         if (Math.abs(wheelTravel) < 6) return veto();
@@ -371,7 +396,7 @@ export function initMarketingStory() {
       else goTo(g[decision.stop], decision.kind, decision.stop);
     };
     window.addEventListener('keydown', onKey, { signal });
-    window.addEventListener('touchstart', event => { consumed = event.touches.length > 1; touchTravel = 0; }, { passive: true, signal });
+
     hero.querySelector('[data-skip]')?.addEventListener('click', () => {
       media.pause(); moving = false; motionTarget = null;
       lenis.scrollTo(g.attractEnd, { immediate: true, force: true });
