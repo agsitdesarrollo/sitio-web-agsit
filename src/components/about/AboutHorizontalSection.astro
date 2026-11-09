@@ -76,16 +76,26 @@ const getVideoRatioKind = (image: string) => (image.endsWith('/servicios.mp4') ?
               <p class="about-service-code">
                 {service.code} – {service.label}
               </p>
-              <h3>{service.title}</h3>
+              <h3>
+                {service.href ? <a class="about-service-title-link" href={service.href}>{service.title}</a> : service.title}
+              </h3>
               <p class="about-service-description">{service.description}</p>
               <div class="about-service-tags">
                 {service.tags.map((tag) => (
-                  <span>{tag}</span>
+                  tag.href ? (
+                    <a class="about-service-tag-link" href={tag.href}>
+                      {tag.label}
+                      <svg class="about-service-tag-arrow" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                        <path d="M4 12l8-8M4 4h8v8" />
+                      </svg>
+                    </a>
+                  ) : <span>{tag.label}</span>
                 ))}
               </div>
               {service.href ? (
                 <a class="about-service-link" href={service.href}>
-                  {service.linkLabel} →
+                  <span>{service.linkLabel}</span>
+                  <span aria-hidden="true">→</span>
                 </a>
               ) : (
                 <p class="about-service-link">

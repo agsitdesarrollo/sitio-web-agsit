@@ -35,6 +35,7 @@ const json = (body: Record<string, unknown>, status = 200) =>
   });
 
 const formValuesToLeadInput = (getValue: (name: string) => string | FormDataEntryValue | null): Partial<ContactLeadInput> => ({
+  lang: String(getValue('lang') || ''),
   name: String(getValue('name') || ''),
   lastName: String(getValue('lastName') || ''),
   phone: String(getValue('phone') || ''),

@@ -13,8 +13,8 @@ export const contactInfo = {
     destination: 'clientes@agsit.com.mx',
   },
   address: {
-    es: '229 Av. Patriotismo P8, San Pedro de los Pinos, Benito Juárez, 03800, CDMX, México.',
-    en: '229 Av. Patriotismo P8, San Pedro de los Pinos, Benito Juárez, 03800, Mexico City, Mexico.',
+    es: '229 Av. Patriotismo, San Pedro de los Pinos, Benito Juárez, 03800, CDMX, México.',
+    en: '229 Av. Patriotismo, San Pedro de los Pinos, Benito Juárez, 03800, Mexico City, Mexico.',
   },
   wazeUrl: 'https://www.waze.com/es/live-map/directions?navigate=yes&utm_campaign=default&utm_source=waze_website&utm_medium=lm_share_location&to=ll.19.39599069%2C-99.18057919',
 } as const;
