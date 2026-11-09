@@ -309,24 +309,39 @@
 
 .about-service-link {
   display: inline-flex;
+  align-items: center;
+  align-self: flex-start;
+  min-height: 48px;
+  padding: 0 18px;
+  gap: 12px;
+  border: 1px solid rgba(37, 63, 108, 0.26);
+  border-radius: 999px;
   margin: clamp(12px, 1.8vh, 20px) 0 0;
-  color: #287ca1;
+  color: #253f6c;
   font-family: 'Inter', 'Segoe UI', Tahoma, sans-serif;
   font-size: clamp(0.76rem, 0.86vw, 0.9rem);
-  font-weight: 800;
-  letter-spacing: 0.16em;
+  font-weight: 900;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
   text-align: left;
+  text-decoration: none;
 }
 
 a.about-service-link {
-  transition: color 180ms ease, transform 180ms ease;
+  transition: background-color 180ms ease, border-color 180ms ease, color 180ms ease, transform 180ms ease;
 }
 
 a.about-service-link:hover,
 a.about-service-link:focus-visible {
-  color: #253f6c;
-  transform: translateX(4px);
+  border-color: #253f6c;
+  background-color: #253f6c;
+  color: #ffffff;
+  transform: translateY(-2px);
+}
+
+a.about-service-link:focus-visible {
+  outline: 2px solid #1f6f92;
+  outline-offset: 3px;
 }
 
 .about-service-title-link {
@@ -373,8 +388,8 @@ a.about-service-link:focus-visible {
   height: 0.9em;
   stroke: currentColor;
   stroke-width: 1.75;
-  opacity: 0;
-  transform: translateX(0);
+  opacity: 0.6;
+  transform: translate(0, 0);
   transition: opacity 180ms ease, transform 180ms ease;
 }
 
@@ -385,11 +400,12 @@ a.about-service-link:focus-visible {
 .about-service-tag-link:hover .about-service-tag-arrow,
 .about-service-tag-link:focus-visible .about-service-tag-arrow {
   opacity: 1;
-  transform: translateX(3px);
+  transform: translate(2px, -2px);
 }
 
 @media (prefers-reduced-motion: reduce) {
   .about-service-title-link,
+  a.about-service-link,
   .about-service-tags > a,
   .about-service-tag-arrow {
     transition: none;

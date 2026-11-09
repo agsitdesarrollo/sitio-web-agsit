@@ -86,7 +86,7 @@ const getVideoRatioKind = (image: string) => (image.endsWith('/servicios.mp4') ?
                     <a class="about-service-tag-link" href={tag.href}>
                       {tag.label}
                       <svg class="about-service-tag-arrow" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-                        <path d="M3 8h10M9 4l4 4-4 4" />
+                        <path d="M4 12l8-8M4 4h8v8" />
                       </svg>
                     </a>
                   ) : <span>{tag.label}</span>
@@ -94,7 +94,8 @@ const getVideoRatioKind = (image: string) => (image.endsWith('/servicios.mp4') ?
               </div>
               {service.href ? (
                 <a class="about-service-link" href={service.href}>
-                  {service.linkLabel} →
+                  <span>{service.linkLabel}</span>
+                  <span aria-hidden="true">→</span>
                 </a>
               ) : (
                 <p class="about-service-link">
