@@ -1,3 +1,6 @@
+import { contactFieldConfig, type ContactFieldName } from '../data/contact';
+import { initContactPhone, ensureContactPhoneReady, isContactPhoneValid, getContactPhoneNumber } from './contactPhone';
+
 type ContactFormResponse = {
   ok?: boolean;
   leadId?: number;
@@ -5,6 +8,7 @@ type ContactFormResponse = {
 };
 
 type ContactFormPayload = {
+  lang: string;
   name: string;
   lastName: string;
   phone: string;
@@ -23,8 +27,6 @@ type ContactFormPayload = {
   };
 };
 
-type ContactFieldName = 'name' | 'lastName' | 'phone' | 'email' | 'company' | 'message';
-
 type ValidationMessageSet = Record<
   ContactFieldName,
   {
@@ -41,7 +43,6 @@ type FieldValidationResult = {
 };
 
 const personNameRegex = /^[\p{L}]+(?:[ '\.-][\p{L}]+)*$/u;
-const phoneCharactersRegex = /^\+?[0-9][0-9\s().-]{7,19}$/;
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 const validationMessagesByLang: Record<'es' | 'en', ValidationMessageSet> = {
@@ -60,7 +61,7 @@ const validationMessagesByLang: Record<'es' | 'en', ValidationMessageSet> = {
     },
     phone: {
       required: 'El telefono es obligatorio.',
-      invalid: 'Usa un telefono valido, por ejemplo +525512345678.',
+      invalid: 'Revisa el número y el país seleccionado.',
     },
     email: {
       required: 'El email es obligatorio.',
@@ -93,7 +94,7 @@ const validationMessagesByLang: Record<'es' | 'en', ValidationMessageSet> = {
     },
     phone: {
       required: 'Phone is required.',
-      invalid: 'Use a valid phone number, for example +12025550123.',
+      invalid: 'Check the number and selected country.',
     },
     email: {
       required: 'Email is required.',
@@ -172,20 +173,14 @@ const validatePersonName = (
   return '';
 };
 
-const validatePhone = (field: HTMLInputElement | HTMLTextAreaElement, messages: ValidationMessageSet['phone']) => {
+const validatePhone = (form: HTMLFormElement, field: HTMLInputElement | HTMLTextAreaElement, messages: ValidationMessageSet['phone']) => {
   const value = field.value.trim();
 
   if (!value) {
     return messages.required;
   }
 
-  if (!phoneCharactersRegex.test(value)) {
-    return messages.invalid || messages.required;
-  }
-
-  const digitCount = value.replace(/\D/g, '').length;
-
-  if (digitCount < 10 || digitCount > 15) {
+  if (!isContactPhoneValid(form)) {
     return messages.invalid || messages.required;
   }
 
@@ -244,13 +239,13 @@ const validateContactField = (form: HTMLFormElement, name: ContactFieldName) => 
   const validators: Record<ContactFieldName, () => string> = {
     name: () => validatePersonName(field, messages.name, 2, 60),
     lastName: () => validatePersonName(field, messages.lastName, 2, 80),
-    phone: () => validatePhone(field, messages.phone),
+    phone: () => validatePhone(form, field, messages.phone),
     email: () => validateEmail(field, messages.email),
     company: () => validateText(field, messages.company, 2, 120),
     message: () => validateText(field, messages.message, 10, 1000),
   };
 
-  const message = validators[name]();
+  const message = !contactFieldConfig[name].required && !field.value.trim() ? '' : validators[name]();
   setFieldError(field, message);
 
   return message ? { field, message } : null;
@@ -278,9 +273,10 @@ const buildPayload = (form: HTMLFormElement): ContactFormPayload => {
   const searchParams = new URLSearchParams(window.location.search);
 
   return {
+    lang: getFieldValue(formData, 'lang'),
     name: getFieldValue(formData, 'name'),
     lastName: getFieldValue(formData, 'lastName'),
-    phone: getFieldValue(formData, 'phone'),
+    phone: getFieldValue(formData, 'phone') ? getContactPhoneNumber(form) : '',
     email: getFieldValue(formData, 'email'),
     company: getFieldValue(formData, 'company'),
     message: getFieldValue(formData, 'message'),
@@ -306,11 +302,16 @@ export function initContactFormSubmissions(
     }
 
     form.dataset.contactFormReady = 'true';
+    form.noValidate = true;
+    initContactPhone(form);
 
     (['name', 'lastName', 'phone', 'email', 'company', 'message'] as ContactFieldName[]).forEach((fieldName) => {
       const field = getContactField(form, fieldName);
 
-      field?.addEventListener('blur', () => {
+      field?.addEventListener('blur', async () => {
+        if (fieldName === 'phone' && field.value.trim()) {
+          try { await ensureContactPhoneReady(); } catch { return; }
+        }
         const error = validateContactField(form, fieldName);
         setStatus(form, error?.message || '', error ? 'error' : 'idle');
       });
@@ -327,10 +328,8 @@ export function initContactFormSubmissions(
 
     form.addEventListener('submit', async (event) => {
       event.preventDefault();
-
-      if (!validateContactForm(form) || !form.reportValidity()) {
-        return;
-      }
+      if (form.dataset.contactSubmitting === 'true') return;
+      form.dataset.contactSubmitting = 'true';
 
       const submit = form.querySelector<HTMLButtonElement>('[data-contact-submit]');
       const originalSubmitText = submit?.textContent || '';
@@ -342,6 +341,16 @@ export function initContactFormSubmissions(
       setStatus(form, '', 'idle');
 
       try {
+        if (getContactField(form, 'phone')?.value.trim()) {
+          try {
+            await ensureContactPhoneReady();
+          } catch {
+            throw new Error(document.documentElement.lang.startsWith('en')
+              ? 'Phone validation could not load. Check your connection and try again.'
+              : 'No se pudo cargar la validación del teléfono. Revisa tu conexión e intenta de nuevo.');
+          }
+        }
+        if (!validateContactForm(form) || !form.reportValidity()) return;
         const response = await fetch(form.action || '/api/contact', {
           method: 'POST',
           headers: {
@@ -357,6 +366,7 @@ export function initContactFormSubmissions(
         }
 
         form.reset();
+        form.querySelectorAll<HTMLInputElement | HTMLTextAreaElement>('input, textarea').forEach((field) => setFieldError(field, ''));
         setStatus(form, form.dataset.successText || 'Solicitud enviada.', 'success');
         window.dispatchEvent(new CustomEvent('agsit:contact-submitted', { detail: { leadId: data.leadId } }));
       } catch (error) {
@@ -364,6 +374,7 @@ export function initContactFormSubmissions(
           error instanceof Error ? error.message : form.dataset.errorText || 'No se pudo enviar el formulario.';
         setStatus(form, message, 'error');
       } finally {
+        delete form.dataset.contactSubmitting;
         submit?.removeAttribute('disabled');
         if (submit) {
           submit.textContent = originalSubmitText;
