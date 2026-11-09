@@ -1,4 +1,6 @@
 import { z } from 'astro/zod';
+import phoneUtils from 'intl-tel-input/utils';
+import { contactFieldConfig, type ContactFieldName } from '../data/contact';
 import type { BitrixLeadResult, ContactLeadInput } from '../types/contactLead';
 
 type BitrixLeadFields = Record<string, string | Array<Record<string, string>>>;
@@ -33,7 +35,31 @@ const trim = (value: unknown) => (typeof value === 'string' ? value.trim() : '')
 const optionalField = (value: string) => (value ? value : undefined);
 
 const personNameRegex = /^[\p{L}]+(?:[ '\.-][\p{L}]+)*$/u;
-const phoneCharactersRegex = /^\+?[0-9][0-9\s().-]{7,19}$/;
+const phoneInputRegex = /^\+?[0-9][0-9\s().-]*$/;
+const internationalPhoneRegex = /^\+[1-9][0-9]{1,14}$/;
+const phoneNumberTypes = ['MOBILE', 'FIXED_LINE'] as const;
+
+function normalizePhone(value: unknown, lang: string) {
+  let phone = trim(value);
+  if (!phone) return '';
+  const country = lang === 'en' ? 'us' : 'mx';
+  const digits = phone.replace(/\D/g, '');
+  const dialCode = country === 'us' ? '1' : '52';
+  if (phoneInputRegex.test(phone) && !phone.startsWith('+') && digits.startsWith(dialCode) &&
+      !phoneUtils.isValidNumber(phone, country, [...phoneNumberTypes]) &&
+      phoneUtils.isValidNumber(`+${digits}`, country, [...phoneNumberTypes])) {
+    phone = `+${digits}`;
+  }
+  if (phone.length > 64 || !phoneInputRegex.test(phone) ||
+      !phoneUtils.isValidNumber(phone, country, [...phoneNumberTypes])) {
+    throw new ContactLeadValidationError('El teléfono no es válido para el país indicado.');
+  }
+  const international = phoneUtils.formatNumber(phone, country, 'E164');
+  if (!internationalPhoneRegex.test(international)) {
+    throw new ContactLeadValidationError('El teléfono tiene un formato internacional inválido.');
+  }
+  return international;
+}
 
 const requiredText = (minLength: number, maxLength: number, minMessage: string, maxMessage: string) =>
   z.string().min(minLength, minMessage).max(maxLength, maxMessage);
@@ -44,7 +70,7 @@ const requiredPersonName = z
   .max(80, 'El apellido no puede superar 80 caracteres.')
   .regex(personNameRegex, 'El apellido solo puede contener letras y separadores validos.');
 
-const contactLeadSchema = z.object({
+const contactLeadFields = {
   name: z
     .string()
     .min(2, 'El nombre debe tener al menos 2 caracteres.')
@@ -53,17 +79,20 @@ const contactLeadSchema = z.object({
   lastName: requiredPersonName,
   phone: z
     .string()
-    .min(8, 'El telefono es obligatorio.')
-    .max(20, 'El telefono no puede superar 20 caracteres.')
-    .refine((value) => phoneCharactersRegex.test(value), 'El telefono tiene un formato invalido.')
-    .refine((value) => {
-      const digitCount = value.replace(/\D/g, '').length;
-
-      return digitCount >= 10 && digitCount <= 15;
-    }, 'El telefono debe tener entre 10 y 15 digitos.'),
+    .regex(internationalPhoneRegex, 'El teléfono debe tener formato internacional.')
+    .refine((value) => phoneUtils.isValidNumber(value, undefined, [...phoneNumberTypes]), 'El teléfono no es válido.'),
   email: z.email('Agrega un email valido.').max(120, 'El email no puede superar 120 caracteres.'),
   company: requiredText(2, 120, 'La compania es obligatoria.', 'La compania no puede superar 120 caracteres.'),
   message: requiredText(10, 1000, 'El comentario debe tener al menos 10 caracteres.', 'El comentario no puede superar 1000 caracteres.'),
+};
+
+const configuredField = (name: ContactFieldName, schema: z.ZodType<string>) =>
+  contactFieldConfig[name].required ? schema : z.union([schema, z.literal('')]);
+
+const contactLeadSchema = z.object({
+  ...Object.fromEntries(
+    Object.entries(contactLeadFields).map(([name, schema]) => [name, configuredField(name as ContactFieldName, schema)]),
+  ),
   pageUrl: z.union([z.literal(''), z.url('La URL de origen es invalida.')]).default(''),
   pageTitle: z.string().max(200, 'El titulo de pagina no puede superar 200 caracteres.').default(''),
   website: z.string().max(200).default(''),
@@ -92,10 +121,12 @@ const buildBitrixMethodUrl = (webhookUrl: string) => {
 };
 
 export function normalizeContactLeadInput(input: Partial<ContactLeadInput>): ContactLeadInput {
+  const lang = trim(input.lang).toLowerCase().startsWith('en') ? 'en' : 'es';
   return {
+    lang,
     name: trim(input.name),
     lastName: trim(input.lastName),
-    phone: trim(input.phone),
+    phone: trim(input.website) ? trim(input.phone) : normalizePhone(input.phone, lang),
     email: trim(input.email),
     company: trim(input.company),
     message: trim(input.message),
