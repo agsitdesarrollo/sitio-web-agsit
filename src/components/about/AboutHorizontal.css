@@ -348,9 +348,13 @@ a.about-service-link:focus-visible {
 }
 
 .about-service-tags > a {
-  position: relative;
   text-decoration: none;
   transition: background-color 180ms ease, color 180ms ease;
+}
+
+.about-service-tags > a.about-service-tag-link {
+  gap: 6px;
+  padding-inline-end: 10px;
 }
 
 .about-service-tags > a:hover,
@@ -364,20 +368,24 @@ a.about-service-link:focus-visible {
 }
 
 .about-service-tag-arrow {
-  position: absolute;
-  right: 1px;
-  bottom: 0;
-  width: 7px;
-  height: 7px;
+  flex: none;
+  width: 0.9em;
+  height: 0.9em;
   stroke: currentColor;
-  stroke-width: 1.5;
+  stroke-width: 1.75;
   opacity: 0;
-  transition: opacity 180ms ease;
+  transform: translateX(0);
+  transition: opacity 180ms ease, transform 180ms ease;
+}
+
+.about-service-tag-arrow path {
+  vector-effect: non-scaling-stroke;
 }
 
 .about-service-tag-link:hover .about-service-tag-arrow,
 .about-service-tag-link:focus-visible .about-service-tag-arrow {
   opacity: 1;
+  transform: translateX(3px);
 }
 
 @media (prefers-reduced-motion: reduce) {
