@@ -21,6 +21,8 @@ const content = {
       ? { ...item, href: '/en/strategic-planning/corporate-strategic-planning/', cta: 'Learn more' }
       : item.code === 'ASSESS'
         ? { ...item, href: '/en/strategic-planning/strategic-assessment/', cta: 'Learn more' }
+      : item.code === 'GOV'
+        ? { ...item, href: '/en/strategic-planning/corporate-governance/', cta: 'Learn more' }
       : item),
   },
 };

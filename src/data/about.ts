@@ -95,7 +95,7 @@ const serviceTagCatalog: Record<string, ServiceTagDefinition[]> = {
   spm: [
     { label: 'Strategy', published: true, routes: { es: '/planeacion-estrategica/planeacion-estrategica-corporativa/', en: '/en/strategic-planning/corporate-strategic-planning/' } },
     { label: 'Assessment', published: true, routes: { es: '/planeacion-estrategica/diagnostico-estrategico/', en: '/en/strategic-planning/strategic-assessment/' } },
-    { label: 'Governance', published: false },
+    { label: 'Governance', published: true, routes: { es: '/planeacion-estrategica/gobierno-corporativo/', en: '/en/strategic-planning/corporate-governance/' } },
     { label: 'Growth', published: false },
     { label: 'Transformation', published: false },
   ],

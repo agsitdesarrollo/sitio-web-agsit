@@ -14,6 +14,10 @@ export const strategicPlanningServiceRoutes: Record<StrategicPlanningServiceId, 
   "es": "/planeacion-estrategica/diagnostico-estrategico/",
   "en": "/en/strategic-planning/strategic-assessment/"
 },
+  'corporate-governance': {
+  "es": "/planeacion-estrategica/gobierno-corporativo/",
+  "en": "/en/strategic-planning/corporate-governance/"
+},
 };
 
 // Published entries only. Future services use this same schema and component family.
@@ -384,6 +388,292 @@ export const strategicPlanningDetailCatalog: Record<StrategicPlanningServiceId, 
         "src": "/assets/planeacion-estrategica/diagnostico-estrategico/sesion-trabajo.webp",
         "alt": "Working session to review business findings and priorities.",
         "placeholder": "A business review",
+        "ratio": "4/5",
+        "pending": true
+      }
+    }
+  }
+},
+  'corporate-governance': {
+  "es": {
+    "metadata": {
+      "title": "Gobierno Corporativo | AGSIT",
+      "description": "Define quién decide, quién responde y cómo revisar los avances de tu empresa. En AGSIT te ayudamos a dirigir con responsabilidades y acuerdos claros.",
+      "canonicalUrl": "https://agsit.com.mx/planeacion-estrategica/gobierno-corporativo/",
+      "image": "/assets/social/gobierno-corporativo-es.jpg",
+      "imageAlt": "Gobierno corporativo AGSIT para dirigir con decisiones y responsabilidades claras.",
+      "htmlLang": "es-MX",
+      "locale": "es_MX"
+    },
+    "hero": {
+      "eyebrow": "Gobierno Corporativo",
+      "primary": "Decisiones claras",
+      "secondary": "para dirigir mejor",
+      "copy": "Definimos contigo quién toma cada decisión, quién responde por los acuerdos y cómo revisar el avance de tu empresa.",
+      "scrollHint": "Continuar a la siguiente sección",
+      "scrollLabel": "DESLIZA · EXPLORA · DESLIZA · EXPLORA · "
+    },
+    "narrative": {
+      "ariaLabel": "Cuando las decisiones dependen siempre de la misma persona, el trabajo se detiene. Las responsabilidades claras y los acuerdos compartidos ayudan a tu equipo a actuar y a la dirección a mantener el control.",
+      "segments": [
+        {
+          "text": "Cuando las decisiones dependen siempre de la misma persona, el trabajo se detiene. Las "
+        },
+        {
+          "accent": "responsabilidades claras"
+        },
+        {
+          "text": " y los "
+        },
+        {
+          "accent": "acuerdos compartidos"
+        },
+        {
+          "text": " ayudan a tu equipo a actuar y a la dirección a mantener el "
+        },
+        {
+          "accent": "control"
+        },
+        {
+          "text": "."
+        }
+      ]
+    },
+    "lifecycle": {
+      "eyebrow": "Lo que incluye",
+      "title": "Cinco bases para una dirección clara.",
+      "copy": "Ordenamos las decisiones, las responsabilidades y la revisión de resultados para que dirigir no dependa de resolver todo personalmente.",
+      "stages": [
+        {
+          "label": "Dirección",
+          "sublabel": "Quién decide sobre cada tema",
+          "copy": "Aclaramos qué decisiones corresponden a los dueños, a la dirección y a cada responsable. Así los asuntos llegan a quien puede resolverlos.",
+          "media": {
+            "src": "/assets/planeacion-estrategica/gobierno-corporativo/punto-1.webp",
+            "alt": "Dueños y directivos conversando sobre las decisiones de la empresa.",
+            "placeholder": "Las decisiones de la empresa",
+            "ratio": "4/3",
+            "pending": true
+          }
+        },
+        {
+          "label": "Responsabilidades",
+          "sublabel": "Cada acuerdo tiene un responsable",
+          "copy": "Definimos quién responde por cada compromiso y qué puede decidir. El equipo sabe qué se espera de su trabajo y cuándo pedir apoyo.",
+          "media": {
+            "src": "/assets/planeacion-estrategica/gobierno-corporativo/punto-2.webp",
+            "alt": "Equipo revisando sus responsabilidades y compromisos.",
+            "placeholder": "Las responsabilidades del equipo",
+            "ratio": "4/3",
+            "pending": true
+          }
+        },
+        {
+          "label": "Acuerdos",
+          "sublabel": "Reglas claras para trabajar juntos",
+          "copy": "Acordamos cómo presentar propuestas, tomar decisiones y dejar constancia de lo decidido. Esto ayuda a evitar confusiones y asuntos sin resolver.",
+          "media": {
+            "src": "/assets/planeacion-estrategica/gobierno-corporativo/punto-3.webp",
+            "alt": "Participantes dejando por escrito los acuerdos de una reunión.",
+            "placeholder": "Los acuerdos de trabajo",
+            "ratio": "4/3",
+            "pending": true
+          }
+        },
+        {
+          "label": "Resultados",
+          "sublabel": "Información útil para dirigir",
+          "copy": "Definimos qué resultados necesita revisar la dirección. Reunimos la información relevante para ver avances y detectar problemas a tiempo.",
+          "media": {
+            "src": "/assets/planeacion-estrategica/gobierno-corporativo/punto-4.webp",
+            "alt": "Directivos revisando los resultados de la empresa.",
+            "placeholder": "Los resultados del negocio",
+            "ratio": "4/3",
+            "pending": true
+          }
+        },
+        {
+          "label": "Seguimiento",
+          "sublabel": "Decisiones que llegan a la acción",
+          "copy": "Organizamos la revisión de compromisos y resultados. Así puedes saber qué se cumplió, qué requiere apoyo y qué necesita una nueva decisión.",
+          "media": {
+            "src": "/assets/planeacion-estrategica/gobierno-corporativo/punto-5.webp",
+            "alt": "Equipo revisando el avance de los compromisos acordados.",
+            "placeholder": "El seguimiento de acuerdos",
+            "ratio": "4/3",
+            "pending": true
+          }
+        }
+      ]
+    },
+    "method": {
+      "eyebrow": "Cómo trabajamos contigo",
+      "title": "Orden para dirigir y dar seguimiento.",
+      "copy": "Partimos de cómo se toman hoy las decisiones y acordamos una forma de trabajar que tu equipo pueda sostener.",
+      "steps": [
+        {
+          "title": "Entender cómo decides",
+          "copy": "Revisamos quién participa, dónde se atoran los asuntos y qué información falta."
+        },
+        {
+          "title": "Aclarar responsabilidades",
+          "copy": "Acordamos quién decide, quién participa y quién responde por cada compromiso."
+        },
+        {
+          "title": "Definir los acuerdos",
+          "copy": "Establecemos cómo documentar decisiones y compartir la información necesaria."
+        },
+        {
+          "title": "Organizar la revisión",
+          "copy": "Definimos cómo revisar resultados, atender pendientes y ajustar las decisiones."
+        }
+      ],
+      "media": {
+        "src": "/assets/planeacion-estrategica/gobierno-corporativo/sesion-trabajo.webp",
+        "alt": "Sesión de dirección para acordar responsabilidades y seguimiento.",
+        "placeholder": "Una sesión de dirección",
+        "ratio": "4/5",
+        "pending": true
+      }
+    }
+  },
+  "en": {
+    "metadata": {
+      "title": "Corporate Governance | AGSIT",
+      "description": "Clarify who makes decisions, who is accountable and how progress is reviewed. AGSIT helps you lead with clear responsibilities and agreements.",
+      "canonicalUrl": "https://agsit.com.mx/en/strategic-planning/corporate-governance/",
+      "image": "/assets/social/corporate-governance-en.jpg",
+      "imageAlt": "AGSIT corporate governance for clear decisions and responsibilities.",
+      "htmlLang": "en",
+      "locale": "en_US"
+    },
+    "hero": {
+      "eyebrow": "Corporate Governance",
+      "primary": "Clear decisions",
+      "secondary": "stronger leadership",
+      "copy": "We help you define who makes each decision, who is responsible for carrying it out and how to review your company’s progress.",
+      "scrollHint": "Continue to the next section",
+      "scrollLabel": "SCROLL · EXPLORE · SCROLL · EXPLORE · "
+    },
+    "narrative": {
+      "ariaLabel": "When every decision depends on one person, work slows down. Clear responsibilities and shared agreements help your team act while giving leadership the oversight it needs.",
+      "segments": [
+        {
+          "text": "When every decision depends on one person, work slows down. "
+        },
+        {
+          "accent": "Clear responsibilities"
+        },
+        {
+          "text": " and "
+        },
+        {
+          "accent": "shared agreements"
+        },
+        {
+          "text": " help your team act while giving leadership the "
+        },
+        {
+          "accent": "oversight"
+        },
+        {
+          "text": " it needs."
+        }
+      ]
+    },
+    "lifecycle": {
+      "eyebrow": "What is included",
+      "title": "Five foundations for clearer leadership.",
+      "copy": "We organize decisions, responsibilities and reviews so you can lead without having to handle every issue yourself.",
+      "stages": [
+        {
+          "label": "Leadership roles",
+          "sublabel": "Who decides on each issue",
+          "copy": "We clarify which decisions belong to owners, senior leaders and individual managers. Issues reach the person who can resolve them.",
+          "media": {
+            "src": "/assets/planeacion-estrategica/gobierno-corporativo/punto-1.webp",
+            "alt": "Owners and senior leaders discussing business decisions.",
+            "placeholder": "Business decisions",
+            "ratio": "4/3",
+            "pending": true
+          }
+        },
+        {
+          "label": "Responsibilities",
+          "sublabel": "Someone accountable for each commitment",
+          "copy": "We define who is responsible for each commitment and what they can decide. Your team knows what is expected and when to ask for support.",
+          "media": {
+            "src": "/assets/planeacion-estrategica/gobierno-corporativo/punto-2.webp",
+            "alt": "Team reviewing their responsibilities and commitments.",
+            "placeholder": "Team responsibilities",
+            "ratio": "4/3",
+            "pending": true
+          }
+        },
+        {
+          "label": "Agreements",
+          "sublabel": "Clear rules for working together",
+          "copy": "We agree on how to bring forward proposals, make decisions and record what was agreed. This helps prevent confusion and unresolved issues.",
+          "media": {
+            "src": "/assets/planeacion-estrategica/gobierno-corporativo/punto-3.webp",
+            "alt": "Participants recording the agreements reached in a meeting.",
+            "placeholder": "Working agreements",
+            "ratio": "4/3",
+            "pending": true
+          }
+        },
+        {
+          "label": "Results",
+          "sublabel": "Information that supports decisions",
+          "copy": "We define which results leadership needs to review. We bring together relevant information to see progress and spot problems early.",
+          "media": {
+            "src": "/assets/planeacion-estrategica/gobierno-corporativo/punto-4.webp",
+            "alt": "Business leaders reviewing company results.",
+            "placeholder": "Business results",
+            "ratio": "4/3",
+            "pending": true
+          }
+        },
+        {
+          "label": "Follow-through",
+          "sublabel": "Turning decisions into action",
+          "copy": "We organize reviews of commitments and results. You can see what has been completed, where support is needed and what calls for a new decision.",
+          "media": {
+            "src": "/assets/planeacion-estrategica/gobierno-corporativo/punto-5.webp",
+            "alt": "Team reviewing progress on agreed commitments.",
+            "placeholder": "Following through on agreements",
+            "ratio": "4/3",
+            "pending": true
+          }
+        }
+      ]
+    },
+    "method": {
+      "eyebrow": "How we work with you",
+      "title": "A clearer way to lead and follow through.",
+      "copy": "We start with how decisions are made today and agree on a way of working your team can maintain.",
+      "steps": [
+        {
+          "title": "Understand how you decide",
+          "copy": "We review who takes part, where issues get stuck and what information is missing."
+        },
+        {
+          "title": "Clarify responsibilities",
+          "copy": "We agree on who decides, who contributes and who is accountable for each commitment."
+        },
+        {
+          "title": "Set out the agreements",
+          "copy": "We define how to record decisions and share the information people need."
+        },
+        {
+          "title": "Organize reviews",
+          "copy": "We agree on how to review results, address outstanding issues and adjust decisions."
+        }
+      ],
+      "media": {
+        "src": "/assets/planeacion-estrategica/gobierno-corporativo/sesion-trabajo.webp",
+        "alt": "Leadership session to agree on responsibilities and reviews.",
+        "placeholder": "A leadership session",
         "ratio": "4/5",
         "pending": true
       }
