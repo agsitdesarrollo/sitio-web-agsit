@@ -23,6 +23,8 @@ const content = {
         ? { ...item, href: '/planeacion-estrategica/diagnostico-estrategico/', cta: 'Conocer servicio' }
       : item.code === 'GOV'
         ? { ...item, href: '/planeacion-estrategica/gobierno-corporativo/', cta: 'Conocer servicio' }
+      : item.code === 'GROWTH'
+        ? { ...item, href: '/planeacion-estrategica/crecimiento-empresarial/', cta: 'Conocer servicio' }
       : item),
   },
 };

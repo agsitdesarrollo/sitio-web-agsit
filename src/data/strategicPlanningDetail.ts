@@ -18,6 +18,10 @@ export const strategicPlanningServiceRoutes: Record<StrategicPlanningServiceId, 
   "es": "/planeacion-estrategica/gobierno-corporativo/",
   "en": "/en/strategic-planning/corporate-governance/"
 },
+  'business-growth': {
+  "es": "/planeacion-estrategica/crecimiento-empresarial/",
+  "en": "/en/strategic-planning/business-growth/"
+},
 };
 
 // Published entries only. Future services use this same schema and component family.
@@ -674,6 +678,292 @@ export const strategicPlanningDetailCatalog: Record<StrategicPlanningServiceId, 
         "src": "/assets/planeacion-estrategica/gobierno-corporativo/sesion-trabajo.webp",
         "alt": "Leadership session to agree on responsibilities and reviews.",
         "placeholder": "A leadership session",
+        "ratio": "4/5",
+        "pending": true
+      }
+    }
+  }
+},
+  'business-growth': {
+  "es": {
+    "metadata": {
+      "title": "Crecimiento Empresarial | AGSIT",
+      "description": "Evalúa nuevos mercados y oportunidades para hacer crecer tu empresa. En AGSIT te ayudamos a elegir dónde invertir tus esfuerzos y qué necesitas para avanzar.",
+      "canonicalUrl": "https://agsit.com.mx/planeacion-estrategica/crecimiento-empresarial/",
+      "image": "/assets/social/crecimiento-empresarial-es.jpg",
+      "imageAlt": "Crecimiento empresarial AGSIT para elegir oportunidades y preparar tu negocio.",
+      "htmlLang": "es-MX",
+      "locale": "es_MX"
+    },
+    "hero": {
+      "eyebrow": "Crecimiento Empresarial",
+      "primary": "Elige dónde crecer",
+      "secondary": "con más claridad",
+      "copy": "Evaluamos contigo las oportunidades de tu empresa para decidir dónde crecer y qué necesitas para hacerlo sin perder el control del negocio.",
+      "scrollHint": "Continuar a la siguiente sección",
+      "scrollLabel": "DESLIZA · EXPLORA · DESLIZA · EXPLORA · "
+    },
+    "narrative": {
+      "ariaLabel": "Tener más oportunidades no siempre hace más fácil decidir. Elegir dónde crecer exige conocer a tus clientes, cuidar la rentabilidad y saber qué puede sostener tu empresa antes de dar el siguiente paso.",
+      "segments": [
+        {
+          "text": "Tener más oportunidades no siempre hace más fácil decidir. Elegir "
+        },
+        {
+          "accent": "dónde crecer"
+        },
+        {
+          "text": " exige conocer a tus clientes, cuidar la "
+        },
+        {
+          "accent": "rentabilidad"
+        },
+        {
+          "text": " y saber qué puede sostener tu empresa antes de "
+        },
+        {
+          "accent": "dar el siguiente paso"
+        },
+        {
+          "text": "."
+        }
+      ]
+    },
+    "lifecycle": {
+      "eyebrow": "Lo que incluye",
+      "title": "Cinco decisiones para orientar tu crecimiento.",
+      "copy": "Revisamos las oportunidades, los recursos y la forma en que tu empresa genera ingresos para elegir dónde concentrar el esfuerzo.",
+      "stages": [
+        {
+          "label": "Oportunidades",
+          "sublabel": "Dónde vale la pena crecer",
+          "copy": "Revisamos opciones para ampliar tu negocio a partir de lo que ya sabes hacer. Distinguimos las oportunidades que encajan con tus objetivos y recursos.",
+          "media": {
+            "src": "/assets/planeacion-estrategica/crecimiento-empresarial/punto-1.webp",
+            "alt": "Equipo evaluando oportunidades para ampliar el negocio.",
+            "placeholder": "Las oportunidades del negocio",
+            "ratio": "4/3",
+            "pending": true
+          }
+        },
+        {
+          "label": "Mercados",
+          "sublabel": "A qué clientes puedes llegar",
+          "copy": "Analizamos qué clientes podrías atender y qué necesitan. Evaluamos nuevos mercados y formas de llegar a ellos con una oferta relevante.",
+          "media": {
+            "src": "/assets/planeacion-estrategica/crecimiento-empresarial/punto-2.webp",
+            "alt": "Equipo revisando las necesidades de posibles clientes.",
+            "placeholder": "Los nuevos mercados",
+            "ratio": "4/3",
+            "pending": true
+          }
+        },
+        {
+          "label": "Rentabilidad",
+          "sublabel": "Crecer con sentido para el negocio",
+          "copy": "Revisamos cómo cada opción puede generar ingresos y qué costos implica. Así puedes valorar el crecimiento más allá de vender más.",
+          "media": {
+            "src": "/assets/planeacion-estrategica/crecimiento-empresarial/punto-3.webp",
+            "alt": "Directivos revisando ingresos y costos de una oportunidad de crecimiento.",
+            "placeholder": "Los ingresos y costos",
+            "ratio": "4/3",
+            "pending": true
+          }
+        },
+        {
+          "label": "Capacidad",
+          "sublabel": "Lo que necesitas para responder",
+          "copy": "Revisamos si tu equipo, tus recursos y tu operación pueden sostener el crecimiento. Identificamos qué necesitas fortalecer antes de ampliar el negocio.",
+          "media": {
+            "src": "/assets/planeacion-estrategica/crecimiento-empresarial/punto-4.webp",
+            "alt": "Equipo revisando los recursos necesarios para crecer.",
+            "placeholder": "La capacidad de la empresa",
+            "ratio": "4/3",
+            "pending": true
+          }
+        },
+        {
+          "label": "Plan de crecimiento",
+          "sublabel": "Una opción clara para avanzar",
+          "copy": "Elegimos contigo las oportunidades prioritarias y ordenamos las acciones. Definimos responsables y qué resultados revisar para decidir si seguir o ajustar.",
+          "media": {
+            "src": "/assets/planeacion-estrategica/crecimiento-empresarial/punto-5.webp",
+            "alt": "Equipo acordando acciones y responsabilidades para crecer.",
+            "placeholder": "El plan de crecimiento",
+            "ratio": "4/3",
+            "pending": true
+          }
+        }
+      ]
+    },
+    "method": {
+      "eyebrow": "Cómo trabajamos contigo",
+      "title": "Convertimos oportunidades en decisiones.",
+      "copy": "Te ayudamos a comparar opciones y elegir un camino que tenga sentido para tu empresa.",
+      "steps": [
+        {
+          "title": "Entender tu meta",
+          "copy": "Aclaramos qué quieres lograr al crecer y qué necesitas cuidar del negocio actual."
+        },
+        {
+          "title": "Comparar oportunidades",
+          "copy": "Revisamos clientes, ingresos, costos y recursos necesarios para cada opción."
+        },
+        {
+          "title": "Elegir dónde enfocarte",
+          "copy": "Priorizamos contigo las opciones que mejor encajan con tu empresa."
+        },
+        {
+          "title": "Preparar el avance",
+          "copy": "Acordamos acciones, responsables y resultados que permitan revisar el crecimiento."
+        }
+      ],
+      "media": {
+        "src": "/assets/planeacion-estrategica/crecimiento-empresarial/sesion-trabajo.webp",
+        "alt": "Sesión de trabajo para comparar oportunidades y acordar prioridades de crecimiento.",
+        "placeholder": "Una sesión de crecimiento",
+        "ratio": "4/5",
+        "pending": true
+      }
+    }
+  },
+  "en": {
+    "metadata": {
+      "title": "Business Growth | AGSIT",
+      "description": "Explore new markets and opportunities to grow your business. AGSIT helps you decide where to focus your resources and what you need to move forward.",
+      "canonicalUrl": "https://agsit.com.mx/en/strategic-planning/business-growth/",
+      "image": "/assets/social/business-growth-en.jpg",
+      "imageAlt": "AGSIT business growth to choose opportunities and prepare your business.",
+      "htmlLang": "en",
+      "locale": "en_US"
+    },
+    "hero": {
+      "eyebrow": "Business Growth",
+      "primary": "Choose where to grow",
+      "secondary": "with greater clarity",
+      "copy": "We assess opportunities with you so you can decide where to grow and what you need to do it while staying in control of your business.",
+      "scrollHint": "Continue to the next section",
+      "scrollLabel": "SCROLL · EXPLORE · SCROLL · EXPLORE · "
+    },
+    "narrative": {
+      "ariaLabel": "More opportunities do not always make decisions easier. Choosing where to grow means understanding your customers, protecting profitability and knowing what your business can support before you take the next step.",
+      "segments": [
+        {
+          "text": "More opportunities do not always make decisions easier. Choosing "
+        },
+        {
+          "accent": "where to grow"
+        },
+        {
+          "text": " means understanding your customers, protecting "
+        },
+        {
+          "accent": "profitability"
+        },
+        {
+          "text": " and knowing what your business can support before you "
+        },
+        {
+          "accent": "take the next step"
+        },
+        {
+          "text": "."
+        }
+      ]
+    },
+    "lifecycle": {
+      "eyebrow": "What is included",
+      "title": "Five decisions to guide your growth.",
+      "copy": "We review opportunities, resources and how your business earns revenue to help you choose where to focus your efforts.",
+      "stages": [
+        {
+          "label": "Opportunities",
+          "sublabel": "Where growth makes sense",
+          "copy": "We explore ways to expand your business by building on what you already do well. We identify opportunities that fit your goals and resources.",
+          "media": {
+            "src": "/assets/planeacion-estrategica/crecimiento-empresarial/punto-1.webp",
+            "alt": "Team evaluating opportunities to expand the business.",
+            "placeholder": "Business opportunities",
+            "ratio": "4/3",
+            "pending": true
+          }
+        },
+        {
+          "label": "Markets",
+          "sublabel": "Which customers you could reach",
+          "copy": "We look at the customers you could serve and what they need. We assess new markets and ways to reach them with an offer that matters to them.",
+          "media": {
+            "src": "/assets/planeacion-estrategica/crecimiento-empresarial/punto-2.webp",
+            "alt": "Team reviewing the needs of potential customers.",
+            "placeholder": "New markets",
+            "ratio": "4/3",
+            "pending": true
+          }
+        },
+        {
+          "label": "Profitability",
+          "sublabel": "Growth that makes business sense",
+          "copy": "We review how each option could generate revenue and the costs involved. You can assess growth beyond an increase in sales.",
+          "media": {
+            "src": "/assets/planeacion-estrategica/crecimiento-empresarial/punto-3.webp",
+            "alt": "Business leaders reviewing revenue and costs for a growth opportunity.",
+            "placeholder": "Revenue and costs",
+            "ratio": "4/3",
+            "pending": true
+          }
+        },
+        {
+          "label": "Capacity",
+          "sublabel": "What you need to deliver",
+          "copy": "We review whether your team, resources and operations can support growth. We identify what needs strengthening before you expand.",
+          "media": {
+            "src": "/assets/planeacion-estrategica/crecimiento-empresarial/punto-4.webp",
+            "alt": "Team reviewing the resources needed for growth.",
+            "placeholder": "Business capacity",
+            "ratio": "4/3",
+            "pending": true
+          }
+        },
+        {
+          "label": "Growth plan",
+          "sublabel": "A clear path forward",
+          "copy": "Together we choose the priority opportunities and set out the actions. We agree on responsibilities and the results to review before continuing or adjusting course.",
+          "media": {
+            "src": "/assets/planeacion-estrategica/crecimiento-empresarial/punto-5.webp",
+            "alt": "Team agreeing on actions and responsibilities for growth.",
+            "placeholder": "The growth plan",
+            "ratio": "4/3",
+            "pending": true
+          }
+        }
+      ]
+    },
+    "method": {
+      "eyebrow": "How we work with you",
+      "title": "Turn opportunities into decisions.",
+      "copy": "We help you compare options and choose a path that makes sense for your business.",
+      "steps": [
+        {
+          "title": "Understand your goal",
+          "copy": "We clarify what you want from growth and what you need to protect in your current business."
+        },
+        {
+          "title": "Compare opportunities",
+          "copy": "We review the customers, revenue, costs and resources involved in each option."
+        },
+        {
+          "title": "Choose your focus",
+          "copy": "Together we prioritize the options that best fit your business."
+        },
+        {
+          "title": "Prepare to move forward",
+          "copy": "We agree on actions, responsibilities and results to review as the business grows."
+        }
+      ],
+      "media": {
+        "src": "/assets/planeacion-estrategica/crecimiento-empresarial/sesion-trabajo.webp",
+        "alt": "Working session to compare opportunities and agree on growth priorities.",
+        "placeholder": "A growth planning session",
         "ratio": "4/5",
         "pending": true
       }

@@ -37,4 +37,4 @@ export type StrategicPlanningDetailContent = {
   };
 };
 
-export type StrategicPlanningServiceId = 'corporate-strategic-planning' | 'strategic-assessment' | 'corporate-governance';
+export type StrategicPlanningServiceId = 'corporate-strategic-planning' | 'strategic-assessment' | 'corporate-governance' | 'business-growth';
