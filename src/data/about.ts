@@ -93,8 +93,8 @@ const serviceTagCatalog: Record<string, ServiceTagDefinition[]> = {
     { label: 'Assessment', published: false, routes: { es: '/direccion-de-proyectos/diagnostico-y-madurez-en-gestion-de-proyectos/', en: '/en/project-management/project-management-assessment-and-maturity/' } },
   ],
   spm: [
-    { label: 'Strategy', published: false, routes: { es: '/planeacion-estrategica/planeacion-estrategica-corporativa/', en: '/en/strategic-planning/corporate-strategic-planning/' } },
-    { label: 'Assessment', published: false },
+    { label: 'Strategy', published: true, routes: { es: '/planeacion-estrategica/planeacion-estrategica-corporativa/', en: '/en/strategic-planning/corporate-strategic-planning/' } },
+    { label: 'Assessment', published: true, routes: { es: '/planeacion-estrategica/diagnostico-estrategico/', en: '/en/strategic-planning/strategic-assessment/' } },
     { label: 'Governance', published: false },
     { label: 'Growth', published: false },
     { label: 'Transformation', published: false },

@@ -19,6 +19,8 @@ const content = {
     ...baseContent.capabilities,
     items: baseContent.capabilities.items.map((item) => item.code === 'STRAT'
       ? { ...item, href: '/en/strategic-planning/corporate-strategic-planning/', cta: 'Learn more' }
+      : item.code === 'ASSESS'
+        ? { ...item, href: '/en/strategic-planning/strategic-assessment/', cta: 'Learn more' }
       : item),
   },
 };

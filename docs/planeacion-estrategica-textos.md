@@ -154,7 +154,7 @@ When daily problems demand all your attention, it is hard to see what needs to c
 #### 05. Priorities
 
 - Subtitle: Where to act first
-- Copy: We organise the findings around your business needs. Together we decide what to address first and which decisions need more information.
+- Copy: We organize the findings around your business needs. Together we decide what to address first and which decisions need more information.
 
 ### How we work with you
 
@@ -257,7 +257,7 @@ When every decision depends on one person, work slows down. **Clear responsibili
 ### What is included
 
 - Title: Five foundations for clearer leadership.
-- Copy: We organise decisions, responsibilities and reviews so you can lead without having to handle every issue yourself.
+- Copy: We organize decisions, responsibilities and reviews so you can lead without having to handle every issue yourself.
 
 #### 01. Leadership roles
 
@@ -282,7 +282,7 @@ When every decision depends on one person, work slows down. **Clear responsibili
 #### 05. Follow-through
 
 - Subtitle: Turning decisions into action
-- Copy: We organise reviews of commitments and results. You can see what has been completed, where support is needed and what calls for a new decision.
+- Copy: We organize reviews of commitments and results. You can see what has been completed, where support is needed and what calls for a new decision.
 
 ### How we work with you
 
@@ -292,7 +292,7 @@ When every decision depends on one person, work slows down. **Clear responsibili
 1. **Understand how you decide.** We review who takes part, where issues get stuck and what information is missing.
 2. **Clarify responsibilities.** We agree on who decides, who contributes and who is accountable for each commitment.
 3. **Set out the agreements.** We define how to record decisions and share the information people need.
-4. **Organise reviews.** We agree on how to review results, address outstanding issues and adjust decisions.
+4. **Organize reviews.** We agree on how to review results, address outstanding issues and adjust decisions.
 
 ### Shared final contact
 
@@ -419,7 +419,7 @@ More opportunities do not always make decisions easier. Choosing **where to grow
 
 1. **Understand your goal.** We clarify what you want from growth and what you need to protect in your current business.
 2. **Compare opportunities.** We review the customers, revenue, costs and resources involved in each option.
-3. **Choose your focus.** Together we prioritise the options that best fit your business.
+3. **Choose your focus.** Together we prioritize the options that best fit your business.
 4. **Prepare to move forward.** We agree on actions, responsibilities and results to review as the business grows.
 
 ### Shared final contact

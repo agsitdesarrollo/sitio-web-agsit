@@ -212,7 +212,7 @@ export const strategicPlanningTemplateByLang: Record<SupportedLang, TechnologySo
         {
           code: 'ASSESS',
           label: 'Assessment',
-          title: 'Strategic Diagnosis',
+          title: 'Strategic Assessment',
           copy:
             'We analyze your company’s current situation to identify opportunities and define priorities that guide the next decisions.',
         },

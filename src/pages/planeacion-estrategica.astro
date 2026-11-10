@@ -19,6 +19,8 @@ const content = {
     ...baseContent.capabilities,
     items: baseContent.capabilities.items.map((item) => item.code === 'STRAT'
       ? { ...item, href: '/planeacion-estrategica/planeacion-estrategica-corporativa/', cta: 'Conocer servicio' }
+      : item.code === 'ASSESS'
+        ? { ...item, href: '/planeacion-estrategica/diagnostico-estrategico/', cta: 'Conocer servicio' }
       : item),
   },
 };
