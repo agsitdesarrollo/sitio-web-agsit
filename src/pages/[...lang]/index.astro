@@ -220,6 +220,7 @@ const alternates = [
       );
       closeButtons.forEach((button) => button.addEventListener('click', () => setContactOpen(false)));
       window.addEventListener('keydown', (event) => {
+        if (event.defaultPrevented) return;
         if (event.key === 'Escape') {
           setMenuOpen(false);
           setContactOpen(false);

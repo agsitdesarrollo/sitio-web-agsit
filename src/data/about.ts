@@ -11,7 +11,7 @@ export type AboutService = {
   label: string;
   title: string;
   description: string;
-  tags: string[];
+  tags: { label: string; href?: string }[];
   linkLabel: string;
   image: string;
   poster: string;
@@ -52,6 +52,61 @@ export type AboutContent = {
     cta: string;
   };
 };
+
+type ServiceTagDefinition = {
+  label: string;
+  published: boolean;
+  routes?: Record<SupportedLang, string>;
+};
+
+// Al publicar la terciaria en main, cambia published a true; si falta, agrega antes su par de rutas.
+const serviceTagCatalog: Record<string, ServiceTagDefinition[]> = {
+  its: [
+    { label: 'Software', published: true, routes: { es: '/soluciones-tecnologicas/desarrollo-de-software/', en: '/en/technology-solutions/software-development/' } },
+    { label: 'Business Platforms', published: true, routes: { es: '/soluciones-tecnologicas/plataforma-empresarial-inteligente/', en: '/en/technology-solutions/intelligent-enterprise-platform/' } },
+    { label: 'Automation', published: true, routes: { es: '/soluciones-tecnologicas/automatizacion-inteligente-de-procesos/', en: '/en/technology-solutions/intelligent-process-automation/' } },
+    { label: 'Data & Analytics', published: true, routes: { es: '/soluciones-tecnologicas/ingenieria-de-datos-y-analitica-estrategica/', en: '/en/technology-solutions/data-engineering-and-strategic-analytics/' } },
+    { label: 'AI', published: true, routes: { es: '/soluciones-tecnologicas/inteligencia-artificial/', en: '/en/technology-solutions/artificial-intelligence/' } },
+    { label: 'Consulting', published: true, routes: { es: '/soluciones-tecnologicas/consultoria-y-transformacion-tecnologica/', en: '/en/technology-solutions/technology-consulting-and-transformation/' } },
+    { label: 'Cloud', published: true, routes: { es: '/soluciones-tecnologicas/infraestructura-cloud-y-servicios-ti/', en: '/en/technology-solutions/cloud-infrastructure-and-it-services/' } },
+  ],
+  dm: [
+    { label: 'Growth', published: true, routes: { es: '/marketing-digital/growth-marketing-y-estrategia-digital/', en: '/en/digital-marketing/growth-marketing-and-digital-strategy/' } },
+    { label: 'SEO', published: true, routes: { es: '/marketing-digital/posicionamiento-organico-seo/', en: '/en/digital-marketing/organic-search-positioning-seo/' } },
+    { label: 'Ads', published: true, routes: { es: '/marketing-digital/publicidad-digital/', en: '/en/digital-marketing/digital-advertising/' } },
+    { label: 'Content', published: true, routes: { es: '/marketing-digital/content-marketing-social-media/', en: '/en/digital-marketing/content-marketing-social-media/' } },
+    { label: 'Ecommerce', published: true, routes: { es: '/marketing-digital/estrategia-ecommerce/', en: '/en/digital-marketing/ecommerce-strategy/' } },
+    { label: 'Analytics', published: true, routes: { es: '/marketing-digital/analytics-cro/', en: '/en/digital-marketing/analytics-cro/' } },
+  ],
+  bpm: [
+    { label: 'Process Design', published: true, routes: { es: '/administracion-de-procesos/modelado-y-optimizacion-de-procesos/', en: '/en/process-management/process-modeling-and-optimization/' } },
+    { label: 'Process Automation', published: true, routes: { es: '/administracion-de-procesos/automatizacion-inteligente-de-procesos/', en: '/en/process-management/intelligent-process-automation/' } },
+    { label: 'Process Intelligence', published: true, routes: { es: '/administracion-de-procesos/inteligencia-y-gobierno-de-procesos/', en: '/en/process-management/process-intelligence-and-governance/' } },
+    { label: 'Operational Excellence', published: true, routes: { es: '/administracion-de-procesos/excelencia-operativa/', en: '/en/process-management/operational-excellence/' } },
+    { label: 'Process Assessment', published: true, routes: { es: '/administracion-de-procesos/diagnostico-y-auditoria-de-procesos/', en: '/en/process-management/process-diagnosis-and-audit/' } },
+  ],
+  pm: [
+    { label: 'Governance', published: false, routes: { es: '/direccion-de-proyectos/pmo-y-gobierno-de-proyectos/', en: '/en/project-management/pmo-project-governance/' } },
+    { label: 'Delivery', published: false, routes: { es: '/direccion-de-proyectos/direccion-estrategica-de-proyectos/', en: '/en/project-management/strategic-project-delivery/' } },
+    { label: 'Agile', published: false, routes: { es: '/direccion-de-proyectos/gestion-agil-de-proyectos/', en: '/en/project-management/agile-project-delivery/' } },
+    { label: 'Recovery', published: false, routes: { es: '/direccion-de-proyectos/auditoria-y-recuperacion-de-proyectos/', en: '/en/project-management/project-audit-and-recovery/' } },
+    { label: 'Assessment', published: false, routes: { es: '/direccion-de-proyectos/diagnostico-y-madurez-en-gestion-de-proyectos/', en: '/en/project-management/project-management-assessment-and-maturity/' } },
+  ],
+  spm: [
+    { label: 'Strategy', published: false, routes: { es: '/planeacion-estrategica/planeacion-estrategica-corporativa/', en: '/en/strategic-planning/corporate-strategic-planning/' } },
+    { label: 'Assessment', published: false },
+    { label: 'Governance', published: false },
+    { label: 'Growth', published: false },
+    { label: 'Transformation', published: false },
+  ],
+};
+
+function getServiceTags(area: string, lang: SupportedLang): AboutService['tags'] {
+  return serviceTagCatalog[area].map((tag) => ({
+    label: tag.label,
+    href: tag.published ? tag.routes?.[lang] : undefined,
+  }));
+}
 
 const commonServices = {
   its: {
@@ -113,7 +168,7 @@ export const aboutContentByLang: Record<SupportedLang, AboutContent> = {
         title: 'Soluciones Tecnológicas',
         description:
           'Fusionamos visión estratégica y capacidad digital para evolucionar el modelo operativo de tu empresa, elevar su eficiencia y consolidar una ventaja competitiva sostenible.',
-        tags: ['Software', 'Business Platforms', 'Automation', 'Data & Analytics', 'AI', 'Consulting', 'Cloud'],
+        tags: getServiceTags('its', 'es'),
         linkLabel: 'Explorar Servicios ITS',
         alt: 'Visual de soluciones tecnológicas',
         href: '/soluciones-tecnologicas/',
@@ -123,7 +178,7 @@ export const aboutContentByLang: Record<SupportedLang, AboutContent> = {
         title: 'Marketing Digital',
         description:
           'Diseñamos e implementamos estrategias de atracción y conversión que aceleran la generación de prospectos calificados, posicionan tu marca y potencian el crecimiento de tu empresa.',
-        tags: ['Growth', 'SEO', 'Ads', 'Content', 'Ecommerce', 'Analytics'],
+        tags: getServiceTags('dm', 'es'),
         linkLabel: 'Explorar Servicios DM',
         alt: 'Visual de mercadotecnia digital',
         href: '/marketing-digital/',
@@ -133,7 +188,7 @@ export const aboutContentByLang: Record<SupportedLang, AboutContent> = {
         title: 'Administración de Procesos',
         description:
           'Convertimos la operación de tu empresa en un sistema ordenado, ágil y estandarizado que optimiza el uso de recursos, minimiza el margen de error y potencia el desempeño de tu organización.',
-        tags: ['Process Design', 'Process Automation', 'Process Intelligence', 'Operational Excellence', 'Process Assessment'],
+        tags: getServiceTags('bpm', 'es'),
         linkLabel: 'Explorar Servicios BPM',
         alt: 'Visual de administración de procesos',
         href: '/administracion-de-procesos/',
@@ -143,7 +198,7 @@ export const aboutContentByLang: Record<SupportedLang, AboutContent> = {
         title: 'Dirección de Proyectos',
         description:
           'Lideramos la dirección de tus proyectos en cualquier etapa de su ciclo de vida, integrando una estructura clara que previene retrasos, acelera la ejecución y garantiza el control de los resultados.',
-        tags: ['Governance', 'Delivery', 'Agile', 'Recovery', 'Assessment'],
+        tags: getServiceTags('pm', 'es'),
         linkLabel: 'Explorar Servicios PM',
         alt: 'Visual de dirección de proyectos',
         href: '/direccion-de-proyectos/',
@@ -153,7 +208,7 @@ export const aboutContentByLang: Record<SupportedLang, AboutContent> = {
         title: 'Planeación Estratégica',
         description:
           'Definimos el rumbo estratégico de la organización y alineamos a sus equipos para convertir la visión ejecutiva en un crecimiento sólido y constante.',
-        tags: ['Strategy', 'Assessment', 'Governance', 'Growth', 'Transformation'],
+        tags: getServiceTags('spm', 'es'),
         linkLabel: 'Explorar Servicios SPM',
         alt: 'Visual de planeación estratégica',
         href: '/planeacion-estrategica/',
@@ -192,7 +247,7 @@ export const aboutContentByLang: Record<SupportedLang, AboutContent> = {
         title: 'Technology Solutions',
         description:
           'We combine strategic vision and digital capabilities to evolve your company’s operating model, increase efficiency and build a sustainable competitive advantage.',
-        tags: ['Software', 'Business Platforms', 'Automation', 'Data & Analytics', 'AI', 'Consulting', 'Cloud'],
+        tags: getServiceTags('its', 'en'),
         linkLabel: 'Explore ITS Services',
         alt: 'Technology solutions visual',
         href: '/en/technology-solutions/',
@@ -202,7 +257,7 @@ export const aboutContentByLang: Record<SupportedLang, AboutContent> = {
         title: 'Digital Marketing',
         description:
           'We design and implement attraction and conversion strategies that accelerate qualified lead generation, position your brand and fuel your company’s growth.',
-        tags: ['Growth', 'SEO', 'Ads', 'Content', 'Ecommerce', 'Analytics'],
+        tags: getServiceTags('dm', 'en'),
         linkLabel: 'Explore DM Services',
         alt: 'Digital marketing visual',
         href: '/en/digital-marketing/',
@@ -212,7 +267,7 @@ export const aboutContentByLang: Record<SupportedLang, AboutContent> = {
         title: 'Process Management',
         description:
           'We turn your company’s operation into an organized, agile and standardized system that optimizes resource use, minimizes the margin for error and strengthens your organization’s performance.',
-        tags: ['Process Design', 'Process Automation', 'Process Intelligence', 'Operational Excellence', 'Process Assessment'],
+        tags: getServiceTags('bpm', 'en'),
         linkLabel: 'Explore BPM Services',
         alt: 'Process management visual',
         href: '/en/process-management/',
@@ -222,7 +277,7 @@ export const aboutContentByLang: Record<SupportedLang, AboutContent> = {
         title: 'Project Management',
         description:
           'We lead your projects at every stage of their life cycle, integrating a clear structure that prevents delays, accelerates execution and ensures control over results.',
-        tags: ['Governance', 'Delivery', 'Agile', 'Recovery', 'Assessment'],
+        tags: getServiceTags('pm', 'en'),
         linkLabel: 'Explore PM Services',
         alt: 'Project management visual',
         href: '/en/project-management/',
@@ -232,7 +287,7 @@ export const aboutContentByLang: Record<SupportedLang, AboutContent> = {
         title: 'Strategic Planning',
         description:
           'We define your organization’s strategic direction and align its teams to turn executive vision into solid, consistent growth.',
-        tags: ['Strategy', 'Assessment', 'Governance', 'Growth', 'Transformation'],
+        tags: getServiceTags('spm', 'en'),
         linkLabel: 'Explore SPM Services',
         alt: 'Strategic planning visual',
         href: '/en/strategic-planning/',

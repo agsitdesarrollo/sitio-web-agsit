@@ -1,4 +1,5 @@
 export type ContactLeadInput = {
+  lang?: string;
   name: string;
   lastName?: string;
   phone?: string;
