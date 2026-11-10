@@ -22,6 +22,10 @@ export const strategicPlanningServiceRoutes: Record<StrategicPlanningServiceId, 
   "es": "/planeacion-estrategica/crecimiento-empresarial/",
   "en": "/en/strategic-planning/business-growth/"
 },
+  'business-transformation': {
+  "es": "/planeacion-estrategica/transformacion-empresarial/",
+  "en": "/en/strategic-planning/business-transformation/"
+},
 };
 
 // Published entries only. Future services use this same schema and component family.
@@ -964,6 +968,292 @@ export const strategicPlanningDetailCatalog: Record<StrategicPlanningServiceId, 
         "src": "/assets/planeacion-estrategica/crecimiento-empresarial/sesion-trabajo.webp",
         "alt": "Working session to compare opportunities and agree on growth priorities.",
         "placeholder": "A growth planning session",
+        "ratio": "4/5",
+        "pending": true
+      }
+    }
+  }
+},
+  'business-transformation': {
+  "es": {
+    "metadata": {
+      "title": "Transformación Empresarial | AGSIT",
+      "description": "Adapta tu empresa a nuevas necesidades del negocio. En AGSIT te ayudamos a definir qué cambiar, preparar a tu equipo y revisar los avances.",
+      "canonicalUrl": "https://agsit.com.mx/planeacion-estrategica/transformacion-empresarial/",
+      "image": "/assets/social/transformacion-empresarial-es.jpg",
+      "imageAlt": "Transformación empresarial AGSIT para preparar al equipo y llevar el cambio a la práctica.",
+      "htmlLang": "es-MX",
+      "locale": "es_MX"
+    },
+    "hero": {
+      "eyebrow": "Transformación Empresarial",
+      "primary": "Cambia con sentido",
+      "secondary": "para seguir avanzando",
+      "copy": "Te ayudamos a decidir qué necesita cambiar en tu empresa y a preparar a tu equipo para llevarlo a la práctica sin perder de vista el negocio.",
+      "scrollHint": "Continuar a la siguiente sección",
+      "scrollLabel": "DESLIZA · EXPLORA · DESLIZA · EXPLORA · "
+    },
+    "narrative": {
+      "ariaLabel": "Lo que antes funcionaba puede dejar de responder a tus clientes y a tu negocio. Tener claro qué cambiar, involucrar a tu equipo y revisar el avance ayuda a que las nuevas ideas se conviertan en mejoras reales.",
+      "segments": [
+        {
+          "text": "Lo que antes funcionaba puede dejar de responder a tus clientes y a tu negocio. Tener claro "
+        },
+        {
+          "accent": "qué cambiar"
+        },
+        {
+          "text": ", involucrar a tu "
+        },
+        {
+          "accent": "equipo"
+        },
+        {
+          "text": " y revisar el avance ayuda a que las nuevas ideas se conviertan en "
+        },
+        {
+          "accent": "mejoras reales"
+        },
+        {
+          "text": "."
+        }
+      ]
+    },
+    "lifecycle": {
+      "eyebrow": "Lo que incluye",
+      "title": "Cinco bases para llevar el cambio a la práctica.",
+      "copy": "Conectamos lo que tu empresa necesita lograr con los cambios en el trabajo diario y con las personas que los harán posibles.",
+      "stages": [
+        {
+          "label": "Necesidad de cambio",
+          "sublabel": "Qué ya no está funcionando",
+          "copy": "Revisamos qué necesita cambiar para responder a tus clientes y a tus objetivos. Aclaramos qué problema debe resolver la transformación.",
+          "media": {
+            "src": "/assets/planeacion-estrategica/transformacion-empresarial/punto-1.webp",
+            "alt": "Equipo revisando qué necesita cambiar en su empresa.",
+            "placeholder": "La necesidad de cambio",
+            "ratio": "4/3",
+            "pending": true
+          }
+        },
+        {
+          "label": "Rumbo del cambio",
+          "sublabel": "Qué quieres lograr",
+          "copy": "Definimos cómo necesitas que funcione tu empresa y qué vale la pena conservar. El equipo entiende para qué cambia y qué resultado se busca.",
+          "media": {
+            "src": "/assets/planeacion-estrategica/transformacion-empresarial/punto-2.webp",
+            "alt": "Directivos acordando qué debe lograr el cambio.",
+            "placeholder": "El rumbo del cambio",
+            "ratio": "4/3",
+            "pending": true
+          }
+        },
+        {
+          "label": "Nuevas formas de trabajar",
+          "sublabel": "Ideas que resuelven necesidades",
+          "copy": "Evaluamos cambios en cómo trabajas, atiendes a tus clientes y ofreces tus productos o servicios. Elegimos las ideas por su utilidad para el negocio.",
+          "media": {
+            "src": "/assets/planeacion-estrategica/transformacion-empresarial/punto-3.webp",
+            "alt": "Colaboradores evaluando una nueva forma de atender a sus clientes.",
+            "placeholder": "Las nuevas formas de trabajar",
+            "ratio": "4/3",
+            "pending": true
+          }
+        },
+        {
+          "label": "Equipo preparado",
+          "sublabel": "Personas que entienden el cambio",
+          "copy": "Aclaramos qué cambia para cada equipo y qué apoyo necesita. Definimos responsabilidades y cómo comunicar los cambios para facilitar su adopción.",
+          "media": {
+            "src": "/assets/planeacion-estrategica/transformacion-empresarial/punto-4.webp",
+            "alt": "Equipo conversando sobre sus responsabilidades ante un cambio.",
+            "placeholder": "El equipo ante el cambio",
+            "ratio": "4/3",
+            "pending": true
+          }
+        },
+        {
+          "label": "Avance del cambio",
+          "sublabel": "Mejoras que puedes revisar",
+          "copy": "Ordenamos las acciones y definimos qué resultados observar. Revisamos contigo qué funciona y qué necesita ajustarse para sostener el cambio.",
+          "media": {
+            "src": "/assets/planeacion-estrategica/transformacion-empresarial/punto-5.webp",
+            "alt": "Equipo revisando los avances y ajustes de un cambio en la empresa.",
+            "placeholder": "Los avances del cambio",
+            "ratio": "4/3",
+            "pending": true
+          }
+        }
+      ]
+    },
+    "method": {
+      "eyebrow": "Cómo trabajamos contigo",
+      "title": "Del cambio necesario al trabajo diario.",
+      "copy": "Te acompañamos a definir el cambio, preparar a quienes participan y revisar cómo avanza en la práctica.",
+      "steps": [
+        {
+          "title": "Entender la necesidad",
+          "copy": "Revisamos qué dejó de funcionar y qué necesita lograr ahora tu empresa."
+        },
+        {
+          "title": "Acordar qué cambiar",
+          "copy": "Definimos las prioridades y qué resultados deben orientar las decisiones."
+        },
+        {
+          "title": "Preparar al equipo",
+          "copy": "Aclaramos responsabilidades, comunicación y apoyos para llevar los cambios al trabajo diario."
+        },
+        {
+          "title": "Revisar y ajustar",
+          "copy": "Damos seguimiento a los avances y acordamos ajustes según lo que ocurre en la práctica."
+        }
+      ],
+      "media": {
+        "src": "/assets/planeacion-estrategica/transformacion-empresarial/sesion-trabajo.webp",
+        "alt": "Sesión de trabajo para preparar al equipo y revisar las acciones de cambio.",
+        "placeholder": "Una sesión de cambio",
+        "ratio": "4/5",
+        "pending": true
+      }
+    }
+  },
+  "en": {
+    "metadata": {
+      "title": "Business Transformation | AGSIT",
+      "description": "Adapt your company to changing business needs. AGSIT helps you decide what to change, prepare your team and review progress as changes take hold.",
+      "canonicalUrl": "https://agsit.com.mx/en/strategic-planning/business-transformation/",
+      "image": "/assets/social/business-transformation-en.jpg",
+      "imageAlt": "AGSIT business transformation to prepare your team and put change into practice.",
+      "htmlLang": "en",
+      "locale": "en_US"
+    },
+    "hero": {
+      "eyebrow": "Business Transformation",
+      "primary": "Change with purpose",
+      "secondary": "keep moving forward",
+      "copy": "We help you decide what needs to change and prepare your team to put it into practice while keeping the business in focus.",
+      "scrollHint": "Continue to the next section",
+      "scrollLabel": "SCROLL · EXPLORE · SCROLL · EXPLORE · "
+    },
+    "narrative": {
+      "ariaLabel": "What worked before may no longer meet the needs of your customers or your business. Knowing what to change, involving your team and reviewing progress helps turn new ideas into practical improvements.",
+      "segments": [
+        {
+          "text": "What worked before may no longer meet the needs of your customers or your business. Knowing "
+        },
+        {
+          "accent": "what to change"
+        },
+        {
+          "text": ", involving your "
+        },
+        {
+          "accent": "team"
+        },
+        {
+          "text": " and reviewing progress helps turn new ideas into "
+        },
+        {
+          "accent": "practical improvements"
+        },
+        {
+          "text": "."
+        }
+      ]
+    },
+    "lifecycle": {
+      "eyebrow": "What is included",
+      "title": "Five foundations for putting change into practice.",
+      "copy": "We connect what your business needs to achieve with changes in everyday work and the people who will make them happen.",
+      "stages": [
+        {
+          "label": "Need for change",
+          "sublabel": "What is no longer working",
+          "copy": "We review what needs to change to meet your customers’ needs and your business goals. We clarify the problem the transformation must solve.",
+          "media": {
+            "src": "/assets/planeacion-estrategica/transformacion-empresarial/punto-1.webp",
+            "alt": "Team reviewing what needs to change in their business.",
+            "placeholder": "The need for change",
+            "ratio": "4/3",
+            "pending": true
+          }
+        },
+        {
+          "label": "Direction for change",
+          "sublabel": "What you want to achieve",
+          "copy": "We define how your business needs to work and what is worth keeping. Your team understands why things are changing and the result you want.",
+          "media": {
+            "src": "/assets/planeacion-estrategica/transformacion-empresarial/punto-2.webp",
+            "alt": "Business leaders agreeing on what the change should achieve.",
+            "placeholder": "Direction for change",
+            "ratio": "4/3",
+            "pending": true
+          }
+        },
+        {
+          "label": "New ways of working",
+          "sublabel": "Ideas that meet real needs",
+          "copy": "We assess changes to how you work, serve customers and offer products or services. We choose ideas for the value they bring to the business.",
+          "media": {
+            "src": "/assets/planeacion-estrategica/transformacion-empresarial/punto-3.webp",
+            "alt": "Colleagues assessing a new way to serve their customers.",
+            "placeholder": "New ways of working",
+            "ratio": "4/3",
+            "pending": true
+          }
+        },
+        {
+          "label": "Team readiness",
+          "sublabel": "People who understand the change",
+          "copy": "We clarify what changes for each team and what support they need. We define responsibilities and how to communicate changes so people can put them into practice.",
+          "media": {
+            "src": "/assets/planeacion-estrategica/transformacion-empresarial/punto-4.webp",
+            "alt": "Team discussing their responsibilities as the business changes.",
+            "placeholder": "The team preparing for change",
+            "ratio": "4/3",
+            "pending": true
+          }
+        },
+        {
+          "label": "Progress",
+          "sublabel": "Improvements you can review",
+          "copy": "We set out the actions and define which results to watch. Together we review what works and what needs adjusting to make the changes last.",
+          "media": {
+            "src": "/assets/planeacion-estrategica/transformacion-empresarial/punto-5.webp",
+            "alt": "Team reviewing progress and adjustments to a business change.",
+            "placeholder": "Progress on change",
+            "ratio": "4/3",
+            "pending": true
+          }
+        }
+      ]
+    },
+    "method": {
+      "eyebrow": "How we work with you",
+      "title": "From the need for change to everyday work.",
+      "copy": "We help you define the change, prepare the people involved and review how it works in practice.",
+      "steps": [
+        {
+          "title": "Understand the need",
+          "copy": "We review what is no longer working and what your business needs to achieve now."
+        },
+        {
+          "title": "Agree on what to change",
+          "copy": "We define the priorities and the results that should guide decisions."
+        },
+        {
+          "title": "Prepare your team",
+          "copy": "We clarify responsibilities, communication and support to bring changes into everyday work."
+        },
+        {
+          "title": "Review and adjust",
+          "copy": "We follow progress and agree on adjustments based on what happens in practice."
+        }
+      ],
+      "media": {
+        "src": "/assets/planeacion-estrategica/transformacion-empresarial/sesion-trabajo.webp",
+        "alt": "Working session to prepare the team and review actions for change.",
+        "placeholder": "A session to plan change",
         "ratio": "4/5",
         "pending": true
       }

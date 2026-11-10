@@ -25,6 +25,8 @@ const content = {
         ? { ...item, href: '/planeacion-estrategica/gobierno-corporativo/', cta: 'Conocer servicio' }
       : item.code === 'GROWTH'
         ? { ...item, href: '/planeacion-estrategica/crecimiento-empresarial/', cta: 'Conocer servicio' }
+      : item.code === 'TRANS'
+        ? { ...item, href: '/planeacion-estrategica/transformacion-empresarial/', cta: 'Conocer servicio' }
       : item),
   },
 };

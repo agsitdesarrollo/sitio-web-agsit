@@ -25,6 +25,8 @@ const content = {
         ? { ...item, href: '/en/strategic-planning/corporate-governance/', cta: 'Learn more' }
       : item.code === 'GROWTH'
         ? { ...item, href: '/en/strategic-planning/business-growth/', cta: 'Learn more' }
+      : item.code === 'TRANS'
+        ? { ...item, href: '/en/strategic-planning/business-transformation/', cta: 'Learn more' }
       : item),
   },
 };

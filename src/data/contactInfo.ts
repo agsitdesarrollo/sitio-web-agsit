@@ -52,6 +52,7 @@ export const pageNamesByRoute: Record<SupportedLang, Record<string, string>> = {
     '/direccion-de-proyectos/auditoria-y-recuperacion-de-proyectos/': 'Auditoría y Recuperación de Proyectos',
     '/direccion-de-proyectos/diagnostico-y-madurez-en-gestion-de-proyectos/': 'Diagnóstico y Madurez en Gestión de Proyectos',
     '/planeacion-estrategica/planeacion-estrategica-corporativa/': 'Planeación Estratégica Corporativa',
+    '/planeacion-estrategica/transformacion-empresarial/': 'Transformación Empresarial',
     '/planeacion-estrategica/crecimiento-empresarial/': 'Crecimiento Empresarial',
     '/planeacion-estrategica/gobierno-corporativo/': 'Gobierno Corporativo',
     '/planeacion-estrategica/diagnostico-estrategico/': 'Diagnóstico Estratégico',
@@ -88,6 +89,7 @@ export const pageNamesByRoute: Record<SupportedLang, Record<string, string>> = {
     '/en/project-management/project-audit-and-recovery/': 'Project Audit and Recovery',
     '/en/project-management/project-management-assessment-and-maturity/': 'Project Management Assessment and Maturity',
     '/en/strategic-planning/corporate-strategic-planning/': 'Corporate Strategic Planning',
+    '/en/strategic-planning/business-transformation/': 'Business Transformation',
     '/en/strategic-planning/business-growth/': 'Business Growth',
     '/en/strategic-planning/corporate-governance/': 'Corporate Governance',
     '/en/strategic-planning/strategic-assessment/': 'Strategic Assessment',
@@ -133,6 +135,7 @@ export const whatsappMessagesByRoute: Record<SupportedLang, Record<string, strin
     '/direccion-de-proyectos/auditoria-y-recuperacion-de-proyectos/': createWhatsappMessage('es', 'auditoría y recuperación de proyectos'),
     '/direccion-de-proyectos/diagnostico-y-madurez-en-gestion-de-proyectos/': createWhatsappMessage('es', 'diagnóstico y madurez en gestión de proyectos'),
     '/planeacion-estrategica/planeacion-estrategica-corporativa/': createWhatsappMessage('es', 'planeación estratégica corporativa'),
+    '/planeacion-estrategica/transformacion-empresarial/': createWhatsappMessage('es', 'transformación empresarial'),
     '/planeacion-estrategica/crecimiento-empresarial/': createWhatsappMessage('es', 'crecimiento empresarial'),
     '/planeacion-estrategica/gobierno-corporativo/': createWhatsappMessage('es', 'gobierno corporativo'),
     '/planeacion-estrategica/diagnostico-estrategico/': createWhatsappMessage('es', 'diagnóstico estratégico'),
@@ -169,6 +172,7 @@ export const whatsappMessagesByRoute: Record<SupportedLang, Record<string, strin
     '/en/project-management/project-audit-and-recovery/': createWhatsappMessage('en', 'project audit and recovery'),
     '/en/project-management/project-management-assessment-and-maturity/': createWhatsappMessage('en', 'project management assessment and maturity'),
     '/en/strategic-planning/corporate-strategic-planning/': createWhatsappMessage('en', 'corporate strategic planning'),
+    '/en/strategic-planning/business-transformation/': createWhatsappMessage('en', 'business transformation'),
     '/en/strategic-planning/business-growth/': createWhatsappMessage('en', 'business growth'),
     '/en/strategic-planning/corporate-governance/': createWhatsappMessage('en', 'corporate governance'),
     '/en/strategic-planning/strategic-assessment/': createWhatsappMessage('en', 'strategic assessment'),
@@ -178,7 +182,6 @@ export const whatsappMessagesByRoute: Record<SupportedLang, Record<string, strin
 // Pendientes sin ruta: se asignarán a whatsappMessagesByRoute cuando se creen las
 // páginas. Esta lista no participa en la resolución de mensajes ni de enlaces.
 export const pendingWhatsappMessages = [
-  { name: 'transformación empresarial', es: createWhatsappMessage('es', 'transformación empresarial'), en: createWhatsappMessage('en', 'business transformation') },
 ];
 
 function normalizePath(pathname: string) {
