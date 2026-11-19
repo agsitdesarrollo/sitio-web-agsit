@@ -11,6 +11,7 @@ export const showDefaultLang = false;
 
 export const ui = {
   es: {
+    'nav.homePage': 'Página principal',
     'nav.home': 'Inicio',
     'nav.services': 'Servicios',
     'nav.contact': 'Contacto',
@@ -23,6 +24,7 @@ export const ui = {
     'floatingCta.tooltip': 'Agenda una asesoría',
   },
   en: {
+    'nav.homePage': 'Home page',
     'nav.home': 'Home',
     'nav.services': 'Services',
     'nav.contact': 'Contact',
