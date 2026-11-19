@@ -1,5 +1,6 @@
 ---
 import type { TechnologySolutionJourneyContent } from './types';
+import TechnologySolutionVideo from './TechnologySolutionVideo.astro';
 
 type Props = {
   content: TechnologySolutionJourneyContent;
@@ -107,12 +108,16 @@ const { content } = Astro.props;
       <div class="crm-shell crm-pillar-step-shell">
         <article class="crm-pillar-card">
           <figure class="crm-pillar-media">
-            <img
-              src={item.image}
-              alt={`${item.eyebrow}: ${item.title}`}
-              loading="lazy"
-              decoding="async"
-            />
+            {item.video ? (
+              <TechnologySolutionVideo {...item.video} label={`${item.eyebrow}: ${item.title}`} />
+            ) : (
+              <img
+                src={item.image}
+                alt={`${item.eyebrow}: ${item.title}`}
+                loading="lazy"
+                decoding="async"
+              />
+            )}
           </figure>
           <div class="crm-pillar-card-copy">
             <span class="crm-pillar-index">{item.eyebrow}</span>

@@ -12,21 +12,29 @@ export type TechnologySolutionHeroContent = {
   pathwaysLabel: string;
   pathways: TechnologySolutionPathway[];
   visualAlt: string;
+  visualSize?: 'large';
 };
 
 export type TechnologySolutionHeroMedia =
   | {
       kind?: 'video';
       poster?: string;
+      playWhenVisible?: false;
       sources: Array<{
         src: string;
         type: string;
       }>;
     }
+  | ({ kind: 'video'; playWhenVisible: true } & TechnologySolutionVideoMedia)
   | {
       kind: 'image';
       src: string;
     };
+
+export type TechnologySolutionVideoMedia = {
+  src: string;
+  poster: string;
+};
 
 export type TechnologySolutionJourneyItem = {
   anchor?: string;
@@ -35,6 +43,7 @@ export type TechnologySolutionJourneyItem = {
   copy: string;
   detail: string;
   image: string;
+  video?: TechnologySolutionVideoMedia;
 };
 
 export type TechnologySolutionJourneyContent = {
@@ -58,5 +67,6 @@ export type TechnologySolutionBenefitsContent = {
   copy: string;
   image: string;
   imageAlt: string;
+  video?: TechnologySolutionVideoMedia;
   items: TechnologySolutionBenefitItem[];
 };
