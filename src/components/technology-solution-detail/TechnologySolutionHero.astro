@@ -3,6 +3,7 @@ import type {
   TechnologySolutionHeroContent,
   TechnologySolutionHeroMedia,
 } from './types';
+import TechnologySolutionVideo from './TechnologySolutionVideo.astro';
 
 type Props = {
   content: TechnologySolutionHeroContent;
@@ -41,6 +42,12 @@ const isImage = media.kind === 'image';
             loading="eager"
             decoding="async"
             fetchpriority="high"
+          />
+        ) : media.playWhenVisible ? (
+          <TechnologySolutionVideo
+            class="crm-hero-video crm-hero-image"
+            src={media.src}
+            poster={media.poster}
           />
         ) : (
           <video
