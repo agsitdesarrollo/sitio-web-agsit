@@ -196,7 +196,7 @@
 
 .crm-hero-visual :is(img, video),
 .crm-connection-visual img,
-.crm-pillar-media img {
+.crm-pillar-media :is(img, video) {
   width: 100%;
   height: auto;
   display: block;
@@ -763,7 +763,7 @@ button.crm-replacement-logo:focus-visible {
   z-index: 1;
 }
 
-.crm-pillar-media img {
+.crm-pillar-media :is(img, video) {
   max-height: min(46vh, 430px);
 }
 
@@ -993,7 +993,7 @@ button.crm-replacement-logo:focus-visible {
   }
 
   .crm-pillar-media,
-  .crm-pillar-media img {
+  .crm-pillar-media :is(img, video) {
     width: min(100%, 420px);
     max-height: min(28vh, 248px);
   }
@@ -1381,7 +1381,7 @@ button.crm-replacement-logo:focus-visible {
   }
 
   .crm-pillar-media,
-  .crm-pillar-media img {
+  .crm-pillar-media :is(img, video) {
     width: min(100%, 300px);
     max-height: min(46vh, 160px);
   }
@@ -1473,7 +1473,7 @@ button.crm-replacement-logo:focus-visible {
     justify-self: center;
   }
 
-  .crm-pillar-media img {
+  .crm-pillar-media :is(img, video) {
     width: 100%;
     max-height: min(42dvh, 430px);
   }
@@ -1511,7 +1511,7 @@ button.crm-replacement-logo:focus-visible {
   }
 
   .crm-pillar-media,
-  .crm-pillar-media img {
+  .crm-pillar-media :is(img, video) {
     width: min(100%, 560px);
     max-height: min(54dvh, 500px);
   }
@@ -1529,7 +1529,7 @@ button.crm-replacement-logo:focus-visible {
   }
 
   .crm-pillar-media,
-  .crm-pillar-media img {
+  .crm-pillar-media :is(img, video) {
     width: min(100%, 650px);
     max-height: min(54dvh, 500px);
   }
@@ -1560,7 +1560,7 @@ button.crm-replacement-logo:focus-visible {
   }
 
   .crm-pillar-media,
-  .crm-pillar-media img {
+  .crm-pillar-media :is(img, video) {
     width: min(100%, 350px);
     max-height: min(58dvh, 220px);
   }

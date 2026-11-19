@@ -1,4 +1,11 @@
 import type { SupportedLang } from '../i18n/ui';
+import type {
+  TechnologySolutionBenefitsContent,
+  TechnologySolutionHeroContent,
+  TechnologySolutionHeroMedia,
+  TechnologySolutionJourneyContent,
+  TechnologySolutionVideoMedia,
+} from '../components/technology-solution-detail/types';
 
 export type SoftwareDevelopmentContent = {
   metadata: {
@@ -10,45 +17,22 @@ export type SoftwareDevelopmentContent = {
     htmlLang: string;
     locale: string;
   };
-  hero: {
-    eyebrow: string;
-    title: string;
-    titleAccent: string;
-    copy: string;
-    primaryCta: string;
-    pathwaysLabel: string;
-    pathways: Array<{
-      label: string;
-      href: string;
-    }>;
-    visualAlt: string;
-  };
-  benefits: {
-    eyebrow: string;
-    title: string;
-    copy: string;
-    image: string;
-    imageAlt: string;
-    items: Array<{
-      icon: 'fit' | 'quality' | 'growth' | 'integration';
-      title: string;
-      copy: string;
-    }>;
-  };
-  journey: {
-    eyebrow: string;
-    title: string;
-    copy: string;
-    items: Array<{
-      anchor: string;
-      eyebrow: string;
-      title: string;
-      copy: string;
-      detail: string;
-      image: string;
-    }>;
-  };
+  hero: TechnologySolutionHeroContent;
+  heroMedia: TechnologySolutionHeroMedia;
+  benefits: TechnologySolutionBenefitsContent;
+  journey: TechnologySolutionJourneyContent;
 };
+
+const softwareVideo = (name: string): TechnologySolutionVideoMedia => ({
+  src: `/assets/desarrollo-software/${name}.mp4`,
+  poster: `/assets/desarrollo-software/${name}-poster.webp`,
+});
+
+const heroMedia = {
+  kind: 'video',
+  playWhenVisible: true,
+  ...softwareVideo('hero-desarrollo-software'),
+} satisfies TechnologySolutionHeroMedia;
 
 export const softwareDevelopmentByLang: Record<SupportedLang, SoftwareDevelopmentContent> = {
   es: {
@@ -63,6 +47,7 @@ export const softwareDevelopmentByLang: Record<SupportedLang, SoftwareDevelopmen
       locale: 'es_MX',
     },
     hero: {
+      visualSize: 'large',
       eyebrow: 'Desarrollo de software a la medida',
       title: 'Creamos el software',
       titleAccent: 'que tu empresa necesita.',
@@ -74,12 +59,14 @@ export const softwareDevelopmentByLang: Record<SupportedLang, SoftwareDevelopmen
       visualAlt:
         'Ilustración de una solución de software a la medida conectada entre computadora, móvil y nube.',
     },
+    heroMedia,
     benefits: {
       eyebrow: 'Beneficios del desarrollo a la medida',
       title: 'Software que trabaja a favor de tu empresa.',
       copy:
         'Obtén una solución que responde a tus procesos, se integra con tus herramientas y puede crecer con tu operación.',
       image: '/assets/desarrollo-software/beneficios.png',
+      video: softwareVideo('beneficios'),
       imageAlt: 'Solución de software adaptable, segura e integrada para una empresa.',
       items: [
         {
@@ -118,6 +105,7 @@ export const softwareDevelopmentByLang: Record<SupportedLang, SoftwareDevelopmen
             'Diseñamos software alrededor de tus procesos, necesidades y objetivos para que tu equipo trabaje con mayor claridad y control.',
           detail: 'Análisis · diseño · desarrollo · integración',
           image: '/assets/desarrollo-software/software-a-la-medida.png',
+          video: softwareVideo('software-a-la-medida'),
         },
         {
           anchor: 'desarrollo-web',
@@ -127,6 +115,7 @@ export const softwareDevelopmentByLang: Record<SupportedLang, SoftwareDevelopmen
             'Creamos plataformas y sistemas web fáciles de usar, preparados para acompañar la operación diaria de tu empresa.',
           detail: 'Plataformas web · portales · sistemas · integraciones',
           image: '/assets/desarrollo-software/desarrollo-web.png',
+          video: softwareVideo('desarrollo-web'),
         },
         {
           anchor: 'apps-moviles',
@@ -136,6 +125,7 @@ export const softwareDevelopmentByLang: Record<SupportedLang, SoftwareDevelopmen
             'Desarrollamos aplicaciones móviles intuitivas para consultar información, atender tareas y mantener la operación en movimiento.',
           detail: 'iOS · Android · experiencia móvil · información actualizada',
           image: '/assets/desarrollo-software/apps-moviles.png',
+          video: softwareVideo('apps-moviles'),
         },
         {
           anchor: 'aplicaciones-escritorio',
@@ -145,6 +135,7 @@ export const softwareDevelopmentByLang: Record<SupportedLang, SoftwareDevelopmen
             'Construimos herramientas de escritorio eficientes para organizar procesos internos y trabajar con seguridad desde cada equipo.',
           detail: 'Procesos internos · rendimiento · seguridad · integración',
           image: '/assets/desarrollo-software/aplicaciones-escritorio.png',
+          video: softwareVideo('aplicaciones-escritorio'),
         },
         {
           anchor: 'testing',
@@ -154,6 +145,7 @@ export const softwareDevelopmentByLang: Record<SupportedLang, SoftwareDevelopmen
             'Probamos funciones, conexiones y recorridos antes de cada entrega para detectar errores y proteger la experiencia de tus usuarios.',
           detail: 'Pruebas funcionales · integración · regresión · calidad',
           image: '/assets/desarrollo-software/testing.png',
+          video: softwareVideo('testing'),
         },
       ],
     },
@@ -170,6 +162,7 @@ export const softwareDevelopmentByLang: Record<SupportedLang, SoftwareDevelopmen
       locale: 'en_US',
     },
     hero: {
+      visualSize: 'large',
       eyebrow: 'Custom software development',
       title: 'We create the software',
       titleAccent: 'your business needs.',
@@ -181,12 +174,14 @@ export const softwareDevelopmentByLang: Record<SupportedLang, SoftwareDevelopmen
       visualAlt:
         'Illustration of a custom software solution connected across desktop, mobile and cloud systems.',
     },
+    heroMedia,
     benefits: {
       eyebrow: 'Benefits of custom development',
       title: 'Software that works for your business.',
       copy:
         'Get a solution that fits your processes, connects with your tools and grows with your operation.',
       image: '/assets/desarrollo-software/beneficios.png',
+      video: softwareVideo('beneficios'),
       imageAlt: 'Adaptable, secure and integrated software solution for a business.',
       items: [
         {
@@ -225,6 +220,7 @@ export const softwareDevelopmentByLang: Record<SupportedLang, SoftwareDevelopmen
             'We design software around your processes, needs and goals so your team can work with greater clarity and control.',
           detail: 'Analysis · design · development · integration',
           image: '/assets/desarrollo-software/software-a-la-medida.png',
+          video: softwareVideo('software-a-la-medida'),
         },
         {
           anchor: 'web-development',
@@ -234,6 +230,7 @@ export const softwareDevelopmentByLang: Record<SupportedLang, SoftwareDevelopmen
             'We create easy-to-use web platforms and systems built to support your company’s daily operation.',
           detail: 'Web platforms · portals · systems · integrations',
           image: '/assets/desarrollo-software/desarrollo-web.png',
+          video: softwareVideo('desarrollo-web'),
         },
         {
           anchor: 'mobile-apps',
@@ -243,6 +240,7 @@ export const softwareDevelopmentByLang: Record<SupportedLang, SoftwareDevelopmen
             'We develop intuitive mobile apps to check information, handle tasks and keep the operation moving.',
           detail: 'iOS · Android · mobile experience · updated information',
           image: '/assets/desarrollo-software/apps-moviles.png',
+          video: softwareVideo('apps-moviles'),
         },
         {
           anchor: 'desktop-applications',
@@ -252,6 +250,7 @@ export const softwareDevelopmentByLang: Record<SupportedLang, SoftwareDevelopmen
             'We build efficient desktop tools to organize internal processes and work securely from every computer.',
           detail: 'Internal processes · performance · security · integration',
           image: '/assets/desarrollo-software/aplicaciones-escritorio.png',
+          video: softwareVideo('aplicaciones-escritorio'),
         },
         {
           anchor: 'testing',
@@ -261,6 +260,7 @@ export const softwareDevelopmentByLang: Record<SupportedLang, SoftwareDevelopmen
             'We test functions, connections and user journeys before every release to detect errors and protect the user experience.',
           detail: 'Functional tests · integration · regression · quality',
           image: '/assets/desarrollo-software/testing.png',
+          video: softwareVideo('testing'),
         },
       ],
     },

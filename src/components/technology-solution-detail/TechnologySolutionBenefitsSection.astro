@@ -3,6 +3,7 @@ import type {
   TechnologySolutionBenefitIcon,
   TechnologySolutionBenefitsContent,
 } from './types';
+import TechnologySolutionVideo from './TechnologySolutionVideo.astro';
 
 type Props = {
   content: TechnologySolutionBenefitsContent;
@@ -37,12 +38,16 @@ const iconPaths: Record<TechnologySolutionBenefitIcon, string[]> = {
 >
   <div class="crm-shell technology-solution-benefits-layout">
     <figure class="technology-solution-benefits-media">
-      <img
-        src={content.image}
-        alt={content.imageAlt}
-        loading="eager"
-        decoding="async"
-      />
+      {content.video ? (
+        <TechnologySolutionVideo {...content.video} label={content.imageAlt} />
+      ) : (
+        <img
+          src={content.image}
+          alt={content.imageAlt}
+          loading="eager"
+          decoding="async"
+        />
+      )}
     </figure>
 
     <div class="technology-solution-benefits-content">
