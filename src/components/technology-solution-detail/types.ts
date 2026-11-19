@@ -12,6 +12,7 @@ export type TechnologySolutionHeroContent = {
   pathwaysLabel: string;
   pathways: TechnologySolutionPathway[];
   visualAlt: string;
+  visualSize?: 'large';
 };
 
 export type TechnologySolutionHeroMedia =

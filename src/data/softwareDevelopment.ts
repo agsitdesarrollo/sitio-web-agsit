@@ -47,6 +47,7 @@ export const softwareDevelopmentByLang: Record<SupportedLang, SoftwareDevelopmen
       locale: 'es_MX',
     },
     hero: {
+      visualSize: 'large',
       eyebrow: 'Desarrollo de software a la medida',
       title: 'Creamos el software',
       titleAccent: 'que tu empresa necesita.',
@@ -161,6 +162,7 @@ export const softwareDevelopmentByLang: Record<SupportedLang, SoftwareDevelopmen
       locale: 'en_US',
     },
     hero: {
+      visualSize: 'large',
       eyebrow: 'Custom software development',
       title: 'We create the software',
       titleAccent: 'your business needs.',

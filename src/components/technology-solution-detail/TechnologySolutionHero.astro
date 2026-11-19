@@ -14,7 +14,10 @@ const { content, media } = Astro.props;
 const isImage = media.kind === 'image';
 ---
 
-<section class="crm-platform-hero" aria-labelledby="technology-solution-detail-title">
+<section
+  class:list={['crm-platform-hero', { 'crm-platform-hero--large-visual': content.visualSize === 'large' }]}
+  aria-labelledby="technology-solution-detail-title"
+>
   <div class="crm-shell crm-platform-hero-layout">
     <div class="crm-platform-hero-copy">
       <p class="crm-kicker">{content.eyebrow}</p>
