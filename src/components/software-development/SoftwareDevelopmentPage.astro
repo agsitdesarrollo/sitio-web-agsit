@@ -14,10 +14,7 @@ const { content, contactCopy } = Astro.props;
 
 <TechnologySolutionDetailPage
   hero={content.hero}
-  heroMedia={{
-    kind: 'image',
-    src: '/assets/desarrollo-software/hero-desarrollo-software.webp',
-  }}
+  heroMedia={content.heroMedia}
   journey={content.journey}
   contactCopy={contactCopy}
   pageClass="software-development-detail illustrated-technology-solution-detail"

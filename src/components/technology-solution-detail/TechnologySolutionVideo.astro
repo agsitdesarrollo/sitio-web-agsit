@@ -1,0 +1,89 @@
+---
+import type { TechnologySolutionVideoMedia } from './types';
+
+type Props = TechnologySolutionVideoMedia & {
+  class?: string;
+  label?: string;
+};
+
+const { src, poster, class: className, label } = Astro.props;
+---
+
+<video
+  class={className}
+  data-technology-solution-video={src}
+  muted
+  loop
+  playsinline
+  webkit-playsinline
+  preload="metadata"
+  poster={poster}
+  role={label ? 'img' : undefined}
+  aria-label={label}
+  aria-hidden={label ? undefined : 'true'}
+  tabindex="-1"
+></video>
+
+<style>
+  video {
+    pointer-events: none;
+  }
+
+  video::-webkit-media-controls-start-playback-button {
+    display: none;
+  }
+</style>
+
+<script>
+  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+  let observer: IntersectionObserver | undefined;
+  let videos: HTMLVideoElement[] = [];
+
+  const showPoster = (video: HTMLVideoElement) => {
+    video.pause();
+    if (video.hasAttribute('src')) {
+      video.removeAttribute('src');
+      video.load();
+    }
+  };
+
+  const initialize = () => {
+    observer?.disconnect();
+    videos = Array.from(document.querySelectorAll<HTMLVideoElement>('[data-technology-solution-video]'));
+
+    if (reducedMotion.matches || !('IntersectionObserver' in window)) {
+      videos.forEach(showPoster);
+      return;
+    }
+
+    observer = new IntersectionObserver((entries) => {
+      entries.forEach(({ target, isIntersecting, intersectionRatio }) => {
+        const video = target as HTMLVideoElement;
+        if (!isIntersecting || intersectionRatio === 0) {
+          video.pause();
+          return;
+        }
+
+        const source = video.dataset.technologySolutionVideo;
+        if (reducedMotion.matches || !source) return;
+
+        video.muted = true;
+        if (!video.hasAttribute('src')) video.src = source;
+        void video.play().catch((error: unknown) => {
+          // Leaving the viewport can interrupt a pending play without invalidating the source.
+          if (!(error instanceof DOMException && error.name === 'AbortError')) showPoster(video);
+        });
+      });
+    }, { threshold: [0, 0.01] });
+
+    videos.forEach((video) => observer?.observe(video));
+  };
+
+  initialize();
+  document.addEventListener('astro:page-load', initialize);
+  document.addEventListener('astro:before-swap', () => {
+    observer?.disconnect();
+    videos.forEach((video) => video.pause());
+  });
+  reducedMotion.addEventListener('change', initialize);
+</script>
