@@ -37,17 +37,17 @@ const englishHref = '/en/digital-marketing/organic-search-positioning-seo/';
   <div class="app-shell">
     <Header
       lang={lang}
-      homeHref="/#inicio"
-      servicesHref="/#servicios"
+      homeHref="#inicio"
+      servicesHref="#servicios"
       contactHref="#contacto"
       alternateHref={englishHref}
     />
-    <DigitalStrategyPage content={content} contactCopy={contactCopy} />
+    <DigitalStrategyPage localNavigation content={content} contactCopy={contactCopy} />
     <Footer
       copy={footerCopy}
       services={servicesContent.services}
-      homeHref="/#inicio"
-      servicesHref="/#servicios"
+      homeHref="#inicio"
+      servicesHref="#servicios"
       contactHref="#contacto"
     />
     <ContactDrawer copy={contactCopy} />

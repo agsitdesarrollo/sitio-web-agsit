@@ -5,13 +5,14 @@ import './DigitalMarketingServiceHero.css';
 type Props = {
   content: DigitalMarketingServiceHeroCopy;
   titleId?: string;
+  id?: string;
 };
 
-const { content, titleId = 'digital-marketing-service-title' } = Astro.props;
+const { content, titleId = 'digital-marketing-service-title', id } = Astro.props;
 const orbitId = `${titleId}-scroll-orbit`;
 ---
 
-<section class="dm-service-hero js-dm-service-hero" aria-labelledby={titleId} data-marketing-track>
+<section id={id} class="dm-service-hero js-dm-service-hero" aria-labelledby={titleId} data-marketing-track>
   <div class="dm-service-hero__content">
     <p class="dm-service-hero__eyebrow js-dm-service-hero-eyebrow">{content.eyebrow}</p>
     <h1 id={titleId} class="dm-service-hero__title">
