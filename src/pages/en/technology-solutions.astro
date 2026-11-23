@@ -36,18 +36,18 @@ const t = useTranslations(lang);
   <div class="app-shell">
     <Header
       lang={lang}
-      homeHref="/en/#inicio"
-      servicesHref="/en/#servicios"
+      homeHref="#inicio"
+      servicesHref="#capacidades"
       contactHref="#contacto"
       alternateHref="/soluciones-tecnologicas/"
     />
     <!-- Published pages are enabled from the catalogue by code. -->
-    <TechnologySolutionsPage content={content} contactCopy={contactCopy} capabilityLinkCodes={['BIZ', 'SW', 'AUTO', 'DATA']} />
+    <TechnologySolutionsPage localNavigation content={content} contactCopy={contactCopy} capabilityLinkCodes={['BIZ', 'SW', 'AUTO', 'DATA']} />
     <Footer
       copy={footerCopy}
       services={servicesContent.services}
-      homeHref="/en/#inicio"
-      servicesHref="/en/#servicios"
+      homeHref="#inicio"
+      servicesHref="#capacidades"
       contactHref="#contacto"
     />
     <ContactDrawer copy={contactCopy} />

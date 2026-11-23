@@ -4,12 +4,12 @@ import DigitalMarketingServiceHero from '../digital-marketing-service-detail/Dig
 import type { ContactCopy } from '../../data/contact';
 import type { DigitalStrategyContent } from '../../data/digitalStrategy';
 
-type Props = { content: DigitalStrategyContent; contactCopy: ContactCopy };
-const { content, contactCopy } = Astro.props;
+type Props = { content: DigitalStrategyContent; contactCopy: ContactCopy; localNavigation?: boolean };
+const { content, contactCopy, localNavigation = false } = Astro.props;
 ---
 
 <main class="strategy-page js-strategy-page" data-track-controller>
-  <DigitalMarketingServiceHero content={content.hero} titleId="growth-marketing-title" />
+  <DigitalMarketingServiceHero id={localNavigation ? 'inicio' : undefined} content={content.hero} titleId="growth-marketing-title" />
 
   <section class="strategy-narrative-track js-strategy-narrative-track" aria-label={content.narrative.ariaLabel}>
     <div class="strategy-narrative js-strategy-narrative" data-track-native-scroll>
@@ -27,7 +27,7 @@ const { content, contactCopy } = Astro.props;
     </div>
   </section>
 
-  <section class="strategy-lifecycle-track js-strategy-lifecycle-track" aria-label={content.lifecycle.title}>
+  <section id={localNavigation ? 'servicios' : undefined} class="strategy-lifecycle-track js-strategy-lifecycle-track" aria-label={content.lifecycle.title}>
     <div class="strategy-lifecycle strategy-lifecycle-cards js-strategy-lifecycle-panel">
       <div class="strategy-journey js-strategy-journey">
         <div class="strategy-journey-rail" aria-hidden="true">
@@ -132,6 +132,7 @@ const { content, contactCopy } = Astro.props;
     const stages = Array.from(root.querySelectorAll<HTMLElement>('.js-strategy-stage'));
     const words = root.querySelector<HTMLElement>('.js-strategy-words');
     if (!hero || !narrativeTrack || !narrative || !lifecycleIntro || !lifecycleTrack || !lifecyclePanel || !method || !contact) return;
+    const localNavigation = lifecycleTrack.id === 'servicios';
     if (words) splitWords(words);
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) { root.classList.add('is-reduced-motion'); return; }
     root.classList.add('is-enhanced');
@@ -371,6 +372,24 @@ const { content, contactCopy } = Astro.props;
     };
     const heroNext = () => { if (!moving && !lenis.isLocked) goTo(geometry().narrativeStart, 'stop'); };
 
+    const onNavigationClick = (event: MouseEvent) => {
+      if (event.defaultPrevented || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+      const link = (event.target as Element | null)?.closest<HTMLAnchorElement>('.site-nav a, .site-footer a');
+      const hash = link?.getAttribute('href');
+      if (hash !== '#inicio' && hash !== '#servicios') return;
+
+      event.preventDefault();
+      // Lenis also handles anchors on window. Use only the track destination for these two links.
+      event.stopPropagation();
+      setTrackGeometry();
+      ScrollTrigger.refresh();
+      lenis.resize();
+      consumed = false;
+      if (window.location.hash !== hash) window.history.pushState(null, '', hash);
+      const stops = geometry();
+      goTo(hash === '#inicio' ? stops.hero : stops.stages[0], 'stop');
+    };
+
     // The contact drawer freezes the body (position: fixed). Lenis must sleep
     // while it is open and re-read the real scroll position when it closes.
     const bodyObserver = new MutationObserver(() => {
@@ -390,11 +409,22 @@ const { content, contactCopy } = Astro.props;
       }, 160);
     };
 
+    const onMobileMenuChange = () => {
+      if (localNavigation && !menuOpen() && root.style.getPropertyValue('--strategy-panel-h') !== `${panelHeight()}px`) {
+        // Lenis measures link destinations in the same click that closes the menu.
+        setTrackGeometry();
+        ScrollTrigger.refresh();
+        lenis.resize();
+      }
+      refresh();
+    };
+
     root.addEventListener('agsit:track-next', heroNext);
+    if (localNavigation) document.addEventListener('click', onNavigationClick);
     window.addEventListener('touchstart', onTouchStart, { passive: true });
     window.addEventListener('keydown', onKeyDown);
     window.addEventListener('agsit:viewport-change', refresh, { passive: true });
-    window.addEventListener('agsit:mobile-menu-change', refresh, { passive: true });
+    window.addEventListener('agsit:mobile-menu-change', onMobileMenuChange, { passive: true });
     window.addEventListener('load', refresh, { once: true });
     document.fonts?.ready.then(refresh);
     root.querySelectorAll('img').forEach((image) => image.addEventListener('load', refresh, { once: true }));
@@ -402,8 +432,9 @@ const { content, contactCopy } = Astro.props;
     window.addEventListener('pagehide', () => {
       window.clearTimeout(refreshTimer); window.clearTimeout(wheelTimer); window.clearTimeout(movingTimer);
       root.removeEventListener('agsit:track-next', heroNext);
+      document.removeEventListener('click', onNavigationClick);
       window.removeEventListener('touchstart', onTouchStart); window.removeEventListener('keydown', onKeyDown);
-      window.removeEventListener('agsit:viewport-change', refresh); window.removeEventListener('agsit:mobile-menu-change', refresh);
+      window.removeEventListener('agsit:viewport-change', refresh); window.removeEventListener('agsit:mobile-menu-change', onMobileMenuChange);
       bodyObserver.disconnect(); gsap.ticker.remove(tick); lenis.destroy(); context.revert();
     }, { once: true });
   };
