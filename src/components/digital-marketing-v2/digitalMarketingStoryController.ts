@@ -1657,10 +1657,10 @@ export const setupDigitalMarketingStory = () => {
       methodology.classList.toggle('is-converged', complete);
     };
 
-    const setMethodologyState = (stepNumber: number) => {
+    const setMethodologyState = (stepNumber: number, introComplete = true) => {
       const nextStep = gsap.utils.clamp(0, methodologySteps.length, stepNumber);
-      methodologyIntroComplete = true;
-      methodologyIntroTimeline.progress(1);
+      methodologyIntroComplete = introComplete;
+      methodologyIntroTimeline.progress(introComplete ? 1 : 0);
       methodologyStepTimelines.forEach((timeline, index) => {
         const complete = index < nextStep;
         timeline.progress(complete ? 1 : 0);
@@ -2370,7 +2370,7 @@ export const setupDigitalMarketingStory = () => {
       });
     }
 
-    const syncDeepLinkState = () => {
+    const syncDeepLinkState = (resetEarlierPhases = false) => {
       const stops = getStops();
       const y = window.scrollY;
       getOrbitApi()?.setCollapsed(y >= stops.hero - BOUNDARY_TOLERANCE);
@@ -2396,6 +2396,12 @@ export const setupDigitalMarketingStory = () => {
         root.classList.add('is-white-passed');
         titleCentered = true;
         titleTimeline.progress(1);
+      } else if (resetEarlierPhases) {
+        whiteExpanded = false;
+        titleCentered = false;
+        whiteTimeline.progress(0);
+        titleTimeline.progress(0);
+        root.classList.remove('is-white-expanded', 'is-white-passed');
       }
       if (y >= stops.methodology.start - BOUNDARY_TOLERANCE) {
         const methodologyPhase = gsap.utils.clamp(
@@ -2416,8 +2422,47 @@ export const setupDigitalMarketingStory = () => {
         setMethodologyConvergenceState(
           hasReachedContact || methodologyPhase > methodologySteps.length,
         );
+      } else if (resetEarlierPhases) {
+        if (methodologyConverged) setMethodologyConvergenceState(false);
+        if (methodologyIntroComplete) setMethodologyState(0, false);
       }
     };
+
+    let navigationLinkTimer = 0;
+    const onNavigationClick = (event: MouseEvent) => {
+      if (event.defaultPrevented || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+      const link = (event.target as Element | null)?.closest<HTMLAnchorElement>('.site-nav a, .site-footer a');
+      const hash = link?.getAttribute('href');
+      if (hash !== '#inicio' && hash !== '#servicios-marketing-digital') return;
+
+      event.preventDefault();
+      window.clearTimeout(navigationLinkTimer);
+      window.clearTimeout(queuedGestureTimer);
+      queuedGestureDirection = null;
+      queuedGestureDistance = 0;
+
+      const jump = () => {
+        if (navigationAnimating || phaseAnimating) {
+          navigationLinkTimer = window.setTimeout(jump, 40);
+          return;
+        }
+
+        const stops = getStops();
+        const toHero = hash === '#inicio';
+        if (window.location.hash !== hash) window.history.pushState(null, '', hash);
+        navigateTo(toHero ? stops.orbitHero : stops.cards.start, () => {
+          syncDeepLinkState(true);
+          if (toHero) getOrbitApi()?.wake();
+        }, 0);
+      };
+      jump();
+    };
+
+    document.addEventListener('click', onNavigationClick);
+    registerCleanup(() => {
+      window.clearTimeout(navigationLinkTimer);
+      document.removeEventListener('click', onNavigationClick);
+    });
 
     const refresh = () => {
       const preserveCardStop = cardTrackMode && cardTrackEngaged;

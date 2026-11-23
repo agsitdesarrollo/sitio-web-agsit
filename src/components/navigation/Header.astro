@@ -2,7 +2,7 @@
 import { Image } from 'astro:assets';
 import logoImage from '../../assets/images/logo-asit.webp';
 import type { SupportedLang } from '../../i18n/ui';
-import { getAlternateLangPath, useTranslations } from '../../i18n/utils';
+import { getAlternateLangPath, getLocalizedPath, useTranslations } from '../../i18n/utils';
 
 type Props = {
   lang: SupportedLang;
@@ -15,10 +15,13 @@ type Props = {
 const { lang, homeHref = '#inicio', servicesHref = '#servicios', contactHref = '#contacto', alternateHref } = Astro.props;
 const t = useTranslations(lang);
 const alternateLangPath = alternateHref ?? getAlternateLangPath(lang);
+const homePageHref = getLocalizedPath(lang);
+const isHomePage = Astro.url.pathname.replace(/\/?$/, '/') === homePageHref;
+const logoHref = isHomePage ? homeHref : homePageHref;
 ---
 
 <header class="site-nav">
-  <a class="brand" href={homeHref} aria-label={t('nav.brandLabel')} data-nav-close>
+  <a class="brand" href={logoHref} aria-label={t('nav.brandLabel')} data-nav-close>
     <Image src={logoImage} alt="AGSIT" loading="eager" fetchpriority="high" />
   </a>
   <button
@@ -33,6 +36,7 @@ const alternateLangPath = alternateHref ?? getAlternateLangPath(lang);
     <span></span>
   </button>
   <nav id="main-navigation">
+    {!isHomePage && <a href={homePageHref} data-nav-close>{t('nav.homePage')}</a>}
     <a href={homeHref} data-nav-close>{t('nav.home')}</a>
     <a href={servicesHref} data-nav-close>{t('nav.services')}</a>
     <a href={contactHref} data-nav-close>{t('nav.contact')}</a>
