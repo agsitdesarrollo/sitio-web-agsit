@@ -4,6 +4,7 @@ import type { FooterCopy } from '../../data/footer';
 import { getContactInfoForPath } from '../../data/contactInfo';
 import type { ServiceItem } from '../../data/services';
 import logoImage from '../../assets/images/logo-asit.webp';
+import { getLangFromUrl, getLocalizedPath, useTranslations } from '../../i18n/utils';
 
 type Props = {
   copy: FooterCopy;
@@ -15,6 +16,10 @@ type Props = {
 
 const { copy, services, homeHref = '#inicio', servicesHref = '#servicios', contactHref = '#contacto' } = Astro.props;
 const contact = getContactInfoForPath(Astro.url.pathname);
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+const homePageHref = getLocalizedPath(lang);
+const isHomePage = Astro.url.pathname.replace(/\/?$/, '/') === homePageHref;
 ---
 
 <footer class="site-footer">
@@ -25,6 +30,7 @@ const contact = getContactInfoForPath(Astro.url.pathname);
 
   <div>
     <h4>{copy.menuTitle}</h4>
+    {!isHomePage && <a href={homePageHref}>{t('nav.homePage')}</a>}
     <a href={homeHref}>{copy.nav.home}</a>
     <a href={servicesHref}>{copy.nav.services}</a>
     <a href={contactHref}>{copy.nav.contact}</a>

@@ -36,17 +36,17 @@ const t = useTranslations(lang);
   <div class="app-shell">
     <Header
       lang={lang}
-      homeHref="/en/#inicio"
-      servicesHref="/en/#servicios"
+      homeHref="#inicio"
+      servicesHref="#capacidades"
       contactHref="#contacto"
       alternateHref="/direccion-de-proyectos/"
     />
-    <TechnologySolutionsPage content={content} contactCopy={contactCopy} />
+    <TechnologySolutionsPage localNavigation content={content} contactCopy={contactCopy} />
     <Footer
       copy={footerCopy}
       services={servicesContent.services}
-      homeHref="/en/#inicio"
-      servicesHref="/en/#servicios"
+      homeHref="#inicio"
+      servicesHref="#capacidades"
       contactHref="#contacto"
     />
     <ContactDrawer copy={contactCopy} />

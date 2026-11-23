@@ -36,13 +36,13 @@ const t = useTranslations(lang);
   <div class="app-shell app-shell-dm-v2">
     <Header
       lang={lang}
-      homeHref="/#inicio"
-      servicesHref="/#servicios"
+      homeHref="#inicio"
+      servicesHref="#servicios-marketing-digital"
       contactHref="#contacto"
       alternateHref="/en/digital-marketing/"
     />
     <DigitalMarketingStoryV2 content={content} contactCopy={contactCopy} />
-    <Footer copy={footerCopy} services={servicesContent.services} homeHref="/#inicio" servicesHref="/#servicios" contactHref="#contacto" />
+    <Footer copy={footerCopy} services={servicesContent.services} homeHref="#inicio" servicesHref="#servicios-marketing-digital" contactHref="#contacto" />
     <ContactDrawer copy={contactCopy} />
     <PageShellScripts openMenuLabel={t('nav.openMenu')} closeMenuLabel={t('nav.closeMenu')} />
   </div>
