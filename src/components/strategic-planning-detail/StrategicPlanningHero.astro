@@ -11,7 +11,7 @@ const { content, titleId = 'strategic-planning-service-title' } = Astro.props;
 const orbitId = `${titleId}-scroll-orbit`;
 ---
 
-<section class="sp-hero js-sp-hero" aria-labelledby={titleId} data-planning-hero>
+<section id="inicio" class="sp-hero js-sp-hero" aria-labelledby={titleId} data-planning-hero>
   <div class="sp-hero__content">
     <p class="sp-hero__eyebrow js-sp-hero-eyebrow">{content.eyebrow}</p>
     <h1 id={titleId} class="sp-hero__title">

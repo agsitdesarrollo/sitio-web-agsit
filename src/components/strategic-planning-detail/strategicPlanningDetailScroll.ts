@@ -328,6 +328,20 @@
     };
     const heroNext = () => { if (!moving && !lenis.isLocked) goTo(geometry().narrativeStart, 'stop'); };
 
+    const onNavigationClick = (event: MouseEvent) => {
+      if (event.defaultPrevented || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+      const link = (event.target as Element | null)?.closest<HTMLAnchorElement>('.site-nav a, .site-footer a');
+      const hash = link?.getAttribute('href');
+      if (hash !== '#inicio' && hash !== '#servicios') return;
+
+      event.preventDefault();
+      // Lenis handles other anchors on window, including Contacto.
+      event.stopPropagation();
+      if (window.location.hash !== hash) window.history.pushState(null, '', hash);
+      const stops = geometry();
+      goTo(hash === '#inicio' ? stops.hero : stops.intro, 'stop');
+    };
+
     // The contact drawer freezes the body (position: fixed). Lenis must sleep
     // while it is open and re-read the real scroll position when it closes.
     const bodyObserver = new MutationObserver(() => {
@@ -364,6 +378,7 @@
     };
 
     root.addEventListener('agsit:track-next', heroNext);
+    document.addEventListener('click', onNavigationClick);
     window.addEventListener('touchstart', onTouchStart, { passive: true });
     window.addEventListener('keydown', onKeyDown);
     window.addEventListener('agsit:viewport-change', refresh, { passive: true });
@@ -378,6 +393,7 @@
     return () => {
       window.clearTimeout(refreshTimer); window.clearTimeout(wheelTimer); window.clearTimeout(movingTimer);
       root.removeEventListener('agsit:track-next', heroNext);
+      document.removeEventListener('click', onNavigationClick);
       window.removeEventListener('touchstart', onTouchStart); window.removeEventListener('keydown', onKeyDown);
       window.removeEventListener('agsit:viewport-change', refresh); window.removeEventListener('agsit:mobile-menu-change', refresh);
       window.removeEventListener('resize', refresh); window.removeEventListener('orientationchange', refresh);
