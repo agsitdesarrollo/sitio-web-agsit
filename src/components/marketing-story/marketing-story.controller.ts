@@ -112,6 +112,7 @@ export function initMarketingStory() {
     let wheelTravel = 0;
     let wheelTimer = 0;
     let refreshTimer = 0;
+    let navigationFrame = 0;
     let pendingRefresh = false;
     let disposed = false;
     const overlayOpen = () => document.body.classList.contains('drawer-open') || document.documentElement.classList.contains('mobile-menu-open');
@@ -302,7 +303,7 @@ export function initMarketingStory() {
       return stop ? { kind: 'stop', stop } : { kind: 'free' };
     };
     const resolveTarget = (target: MotionTarget) => {
-      if (target instanceof HTMLElement) return target === manifesto ? g.attractEnd : Math.max(0, documentTop(target) - (header?.offsetHeight || 0));
+      if (target instanceof HTMLElement) return Math.max(0, documentTop(target) - (header?.offsetHeight || 0));
       if (target === 'start') return 0;
       if (target === 'end') return lenis.limit;
       return g[target];
@@ -414,6 +415,10 @@ export function initMarketingStory() {
       lenis.scrollTo(g.attractEnd, { immediate: true, force: true });
       manifesto.focus({ preventScroll: true });
     }, { signal });
+
+    const anchorStops = new Map<HTMLElement, MotionTarget>([
+      [hero, 'start'], [manifesto, 'attractEnd'], [services, SERVICE_STOPS[0]], [contact, 'contactEntry'],
+    ]);
     document.addEventListener('click', event => {
       if (!(event.target instanceof Element) || (event as MouseEvent).button !== 0 || event.defaultPrevented) return;
       const link = event.target.closest<HTMLAnchorElement>('a[href]');
@@ -424,9 +429,22 @@ export function initMarketingStory() {
       try { target = document.getElementById(decodeURIComponent(url.hash.slice(1))); } catch { return; }
       if (!target) return;
       event.preventDefault();
-      const y = target === manifesto ? g.attractEnd : Math.max(0, documentTop(target) - (header?.offsetHeight || 0));
-      goTo(y, 'jump', target);
-      if (location.hash !== url.hash) history.pushState(null, '', url.hash);
+      const destination = anchorStops.get(target) ?? target;
+      const menuWasOpen = overlayWasOpen;
+      cancelAnimationFrame(navigationFrame);
+      // Let the shared menu close and the overlay observer resume Lenis before measuring.
+      navigationFrame = requestAnimationFrame(() => {
+        if (overlayOpen()) return;
+        if (menuWasOpen || pendingRefresh) {
+          window.clearTimeout(refreshTimer);
+          refresh();
+        } else {
+          // A native scroll or a focus change can leave Lenis a frame behind.
+          lenis.resize();
+        }
+        if (location.hash !== url.hash) history.pushState(null, '', url.hash);
+        goTo(resolveTarget(destination), 'jump', destination);
+      });
     }, { signal });
 
     const refresh = () => {
@@ -485,6 +503,7 @@ export function initMarketingStory() {
     return () => {
       disposed = true; local.abort();
       window.clearTimeout(wheelTimer); window.clearTimeout(refreshTimer);
+      cancelAnimationFrame(navigationFrame);
       overlayObserver.disconnect(); navSize.disconnect();
       gsap.killTweensOf(logoFade); closingLogo.style.removeProperty('opacity');
       gsap.ticker.remove(tick); lenis.destroy(); media.dispose(); scenes.dispose(); planParticles.dispose();

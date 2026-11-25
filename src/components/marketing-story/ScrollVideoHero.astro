@@ -7,7 +7,7 @@ const { content } = Astro.props;
 const available = (!content.media.pending || import.meta.env.DEV) && existsSync(`${process.cwd()}/public${content.media.src}`);
 const posterAvailable = available && existsSync(`${process.cwd()}/public${content.poster.src}`);
 ---
-<section class="ms-hero" aria-labelledby="ms-title" data-hero data-video-available={String(available)} data-duration={content.media.duration} data-frame-rate={content.media.frameRate} data-clips={JSON.stringify(content.media.clips)}>
+<section id="inicio" class="ms-hero" aria-labelledby="ms-title" data-hero data-video-available={String(available)} data-duration={content.media.duration} data-frame-rate={content.media.frameRate} data-clips={JSON.stringify(content.media.clips)}>
   <div class="ms-hero-stage" data-hero-stage>
     <div class="ms-media-space" aria-hidden="true">
       <div class="ms-film" data-film>
