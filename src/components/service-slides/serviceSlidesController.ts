@@ -539,6 +539,11 @@ const setupLandingTrackNavigation = (root: HTMLElement) => {
   const isContactFree = () => html.classList.contains('service-slides-footer-free');
   const isMenuOpen = () => html.classList.contains('mobile-menu-open');
 
+  const getChapterDestination = (section: HTMLElement, index: number) => {
+    const owner = section.closest('.pin-spacer') ?? section;
+    return getDestinations().filter((destination) => destination.owner === owner)[index];
+  };
+
   const onChapterLinkClick = (event: MouseEvent) => {
     const link = (event.target as Element | null)?.closest<HTMLAnchorElement>('[data-service-chapter-link]');
     if (!link || event.defaultPrevented || event.metaKey || event.ctrlKey || event.shiftKey) return;
@@ -548,17 +553,40 @@ const setupLandingTrackNavigation = (root: HTMLElement) => {
     const items = section?.querySelectorAll<HTMLElement>('.pm-story-chapter');
     if (!section || !items?.length || !Number.isFinite(index)) return;
 
-    const spacer = section.closest<HTMLElement>('.pin-spacer');
-    const destinations = getDestinations().filter((destination) => {
-      if (spacer) return destination.owner === spacer;
-      return destination.owner === section;
-    });
-    const destination = destinations[index];
+    const destination = getChapterDestination(section, index);
     if (!destination) return;
 
     event.preventDefault();
     event.stopPropagation();
     navigateTo(destination.position);
+  };
+
+  const onProjectNavigationClick = (event: MouseEvent) => {
+    if (event.defaultPrevented || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+    const link = (event.target as Element | null)?.closest<HTMLAnchorElement>('.site-nav a, .site-footer a');
+    const hash = link?.getAttribute('href');
+    if (hash !== '#pm-hero-title' && !hash?.startsWith('#pm-chapter-')) return;
+
+    const target = document.getElementById(hash.slice(1));
+    const section = target?.closest('section');
+    if (!target || !section || !root.contains(section)) return;
+
+    const index = hash === '#pm-hero-title'
+      ? 0
+      : Array.from(section.querySelectorAll('.pm-story-chapter')).indexOf(target);
+    const destination = getChapterDestination(section, index);
+    if (!destination) return;
+
+    event.preventDefault();
+    if (window.location.hash !== hash) window.history.pushState(null, '', hash);
+    navigateTo(destination.position, true);
+    ScrollTrigger.update();
+    // Going back from Contact can restore its preceding stop during the first update.
+    if (Math.abs(window.scrollY - destination.position) > 2) {
+      navigateTo(destination.position, true);
+      ScrollTrigger.update();
+    }
+    target.focus({ preventScroll: true });
   };
 
   const queueNavigationDirection = (direction: 1 | -1) => {
@@ -796,6 +824,9 @@ const setupLandingTrackNavigation = (root: HTMLElement) => {
     Boolean(target.closest('input, textarea, select, button, a, [data-contact-drawer], [data-mobile-menu]'));
 
   root.addEventListener('click', onChapterLinkClick, true);
+  if (root.matches('[data-project-management-detail]')) {
+    document.addEventListener('click', onProjectNavigationClick);
+  }
 
   window.addEventListener(
     'wheel',

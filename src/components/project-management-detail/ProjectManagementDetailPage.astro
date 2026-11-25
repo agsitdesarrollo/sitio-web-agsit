@@ -17,7 +17,7 @@ const { content, contactCopy } = Astro.props;
   <section class="pm-panel pm-mobile-hero" aria-labelledby="pm-hero-title">
     <div class="pm-mobile-hero-copy">
       <p class="pm-eyebrow">{content.story.eyebrow}</p>
-      <h1 id="pm-hero-title" data-pm-page-title>{content.hero.title}</h1>
+      <h1 id="pm-hero-title" data-pm-page-title tabindex="-1">{content.hero.title}</h1>
       <p class="pm-experience-lead">{content.hero.copy}</p>
       <button class="pm-primary-cta" type="button" data-contact-trigger>{content.hero.primaryCta}</button>
     </div>
@@ -67,6 +67,7 @@ const { content, contactCopy } = Astro.props;
               data-chapter-kind={chapter.kind}
               data-chapter-tone={index % 2 === 0 ? 'paper' : 'ink'}
               aria-labelledby={`pm-chapter-title-${chapter.id}`}
+                tabindex={chapter.kind === 'service' ? -1 : undefined}
             >
               <div class="pm-chapter-copy">
                 <div class="pm-chapter-kicker">

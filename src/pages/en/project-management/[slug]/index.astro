@@ -21,6 +21,8 @@ export function getStaticPaths() {
 
 const lang = 'en';
 const { page } = Astro.props as { page: ProjectManagementDetailContent };
+const firstService = page.story.chapters.find((chapter) => chapter.kind === 'service');
+const servicesHref = firstService ? `#pm-chapter-${firstService.id}` : '#pm-hero-title';
 const alternateHref = getProjectManagementDetailAlternatePath(lang, page.slug);
 const contactCopy = getContactCopy(lang);
 const footerCopy = getFooterCopy(lang);
@@ -43,9 +45,9 @@ const t = useTranslations(lang);
   ]}
 >
   <div class="app-shell">
-    <Header lang={lang} homeHref="/en/#inicio" servicesHref="/en/#servicios" contactHref="#contacto" alternateHref={alternateHref} />
+    <Header lang={lang} homeHref="#pm-hero-title" servicesHref={servicesHref} contactHref="#contacto" alternateHref={alternateHref} />
     <ProjectManagementDetailPage content={page} contactCopy={contactCopy} />
-    <Footer copy={footerCopy} services={servicesContent.services} homeHref="/en/#inicio" servicesHref="/en/#servicios" contactHref="#contacto" />
+    <Footer copy={footerCopy} services={servicesContent.services} homeHref="#pm-hero-title" servicesHref={servicesHref} contactHref="#contacto" />
     <ContactDrawer copy={contactCopy} />
     <PageShellScripts openMenuLabel={t('nav.openMenu')} closeMenuLabel={t('nav.closeMenu')} />
   </div>

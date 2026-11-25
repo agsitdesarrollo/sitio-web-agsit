@@ -1879,6 +1879,10 @@ html:has(.pm-detail-page) .site-nav {
     gap: clamp(20px, 3svh, 32px);
   }
 
+  .pm-detail-page :is([data-pm-page-title], .pm-story-chapter[data-chapter-kind='service']) {
+    scroll-margin-top: var(--nav-h);
+  }
+
   .pm-detail-page .service-card-track-reduced .pm-story-chapter {
     position: relative;
     inset: auto;
