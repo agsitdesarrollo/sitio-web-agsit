@@ -467,6 +467,10 @@ const setupPageSnapState = (root: HTMLElement) => {
   const contact = root.querySelector<HTMLElement>('.final-contact-section');
   if (!contact) return;
 
+  // ScrollTrigger treats progress zero as outside the section. Include the
+  // aligned Contact stop in the active range on project pages.
+  const contactStartInset = root.hasAttribute('data-project-management-detail') ? 1 : 0;
+
   const getPreviousTrackPosition = () => {
     let previousSibling = contact.previousElementSibling;
 
@@ -505,7 +509,7 @@ const setupPageSnapState = (root: HTMLElement) => {
   ScrollTrigger.create({
     id: 'service-page-contact-state',
     trigger: contact,
-    start: getStart,
+    start: () => `top top+=${getNavOffset() + contactStartInset}`,
     end: () => `bottom top+=${getNavOffset()}`,
     invalidateOnRefresh: true,
     onEnter: () => html.classList.add('service-slides-footer-free'),
@@ -565,7 +569,7 @@ const setupLandingTrackNavigation = (root: HTMLElement) => {
     if (event.defaultPrevented || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
     const link = (event.target as Element | null)?.closest<HTMLAnchorElement>('.site-nav a, .site-footer a');
     const hash = link?.getAttribute('href');
-    if (hash !== '#pm-hero-title' && !hash?.startsWith('#pm-chapter-')) return;
+    if (hash !== '#contacto' && hash !== '#pm-hero-title' && !hash?.startsWith('#pm-chapter-')) return;
 
     const target = document.getElementById(hash.slice(1));
     const section = target?.closest('section');
@@ -574,18 +578,19 @@ const setupLandingTrackNavigation = (root: HTMLElement) => {
     const index = hash === '#pm-hero-title'
       ? 0
       : Array.from(section.querySelectorAll('.pm-story-chapter')).indexOf(target);
-    const destination = getChapterDestination(section, index);
-    if (!destination) return;
+    const position = section === contact ? getContactStart() : getChapterDestination(section, index)?.position;
+    if (position == null) return;
 
     event.preventDefault();
     if (window.location.hash !== hash) window.history.pushState(null, '', hash);
-    navigateTo(destination.position, true);
+    navigateTo(position, true);
     ScrollTrigger.update();
     // Going back from Contact can restore its preceding stop during the first update.
-    if (Math.abs(window.scrollY - destination.position) > 2) {
-      navigateTo(destination.position, true);
+    if (Math.abs(window.scrollY - position) > 2) {
+      navigateTo(position, true);
       ScrollTrigger.update();
     }
+    if (target === contact) target.tabIndex = -1;
     target.focus({ preventScroll: true });
   };
 
