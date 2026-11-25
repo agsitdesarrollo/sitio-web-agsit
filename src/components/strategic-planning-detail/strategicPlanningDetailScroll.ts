@@ -332,14 +332,15 @@
       if (event.defaultPrevented || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
       const link = (event.target as Element | null)?.closest<HTMLAnchorElement>('.site-nav a, .site-footer a');
       const hash = link?.getAttribute('href');
-      if (hash !== '#inicio' && hash !== '#servicios') return;
+      if (hash !== '#inicio' && hash !== '#servicios' && hash !== '#contacto') return;
 
       event.preventDefault();
-      // Lenis handles other anchors on window, including Contacto.
+      // Keep Lenis's window anchor handler from starting a second scroll.
       event.stopPropagation();
       if (window.location.hash !== hash) window.history.pushState(null, '', hash);
-      const stops = geometry();
-      goTo(hash === '#inicio' ? stops.hero : stops.intro, 'stop');
+      const { hero, intro, contact } = geometry();
+      const destinations = { '#inicio': hero, '#servicios': intro, '#contacto': contact };
+      goTo(destinations[hash], 'stop');
     };
 
     // The contact drawer freezes the body (position: fixed). Lenis must sleep
