@@ -1,5 +1,6 @@
 <script>
   import { ScrollTrigger } from 'gsap/ScrollTrigger';
+  import { setupContactNavigation } from './contactNavigation';
   import { setupServiceSlides } from './serviceSlidesController';
 
   const setupTechnologyNavigation = () => {
@@ -42,6 +43,7 @@
     requestAnimationFrame(() => {
       requestAnimationFrame(() => {
         setupServiceSlides();
+        setupContactNavigation();
         setupTechnologyNavigation();
       });
     });
